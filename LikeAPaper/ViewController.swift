@@ -17,7 +17,5 @@ class ViewController: UIViewController {
         view.addSubview(canvas)
         canvas.tool = PKInkingTool(.pen, color: .black, width: 1)
     }
-
-
 }
 
