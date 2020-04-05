@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		A6DE5BBB2437167C006D3D47 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */; };
-		A6DE5BBD2437167C006D3D47 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BBC2437167C006D3D47 /* SceneDelegate.swift */; };
 		A6DE5BBF2437167C006D3D47 /* CanvasViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */; };
 		A6DE5BC22437167C006D3D47 /* CanvasView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC02437167C006D3D47 /* CanvasView.storyboard */; };
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
@@ -37,7 +36,6 @@
 /* Begin PBXFileReference section */
 		A6DE5BB72437167C006D3D47 /* LikeAPaper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LikeAPaper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A6DE5BBC2437167C006D3D47 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewController.swift; sourceTree = "<group>"; };
 		A6DE5BC12437167C006D3D47 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/CanvasView.storyboard; sourceTree = "<group>"; };
 		A6DE5BC32437167E006D3D47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -100,7 +98,6 @@
 			isa = PBXGroup;
 			children = (
 				A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */,
-				A6DE5BBC2437167C006D3D47 /* SceneDelegate.swift */,
 				A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */,
 				A6DE5BC02437167C006D3D47 /* CanvasView.storyboard */,
 				A6DE5BEE24397A82006D3D47 /* CollectionView.storyboard */,
@@ -261,7 +258,6 @@
 			files = (
 				A6DE5BBF2437167C006D3D47 /* CanvasViewController.swift in Sources */,
 				A6DE5BBB2437167C006D3D47 /* AppDelegate.swift in Sources */,
-				A6DE5BBD2437167C006D3D47 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
