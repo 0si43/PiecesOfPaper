@@ -10,10 +10,11 @@
 		A6DE5BBB2437167C006D3D47 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */; };
 		A6DE5BBD2437167C006D3D47 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BBC2437167C006D3D47 /* SceneDelegate.swift */; };
 		A6DE5BBF2437167C006D3D47 /* CanvasViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */; };
-		A6DE5BC22437167C006D3D47 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC02437167C006D3D47 /* Main.storyboard */; };
+		A6DE5BC22437167C006D3D47 /* CanvasView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC02437167C006D3D47 /* CanvasView.storyboard */; };
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
 		A6DE5BD22437167E006D3D47 /* LikeAPaperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BD12437167E006D3D47 /* LikeAPaperTests.swift */; };
 		A6DE5BDD2437167E006D3D47 /* LikeAPaperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BDC2437167E006D3D47 /* LikeAPaperUITests.swift */; };
+		A6DE5BEF24397A82006D3D47 /* CollectionView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BEE24397A82006D3D47 /* CollectionView.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +39,7 @@
 		A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A6DE5BBC2437167C006D3D47 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewController.swift; sourceTree = "<group>"; };
-		A6DE5BC12437167C006D3D47 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		A6DE5BC12437167C006D3D47 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/CanvasView.storyboard; sourceTree = "<group>"; };
 		A6DE5BC32437167E006D3D47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A6DE5BC82437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6DE5BCD2437167E006D3D47 /* LikeAPaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LikeAPaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -47,6 +48,7 @@
 		A6DE5BD82437167E006D3D47 /* LikeAPaperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LikeAPaperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BDC2437167E006D3D47 /* LikeAPaperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeAPaperUITests.swift; sourceTree = "<group>"; };
 		A6DE5BDE2437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A6DE5BEE24397A82006D3D47 /* CollectionView.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CollectionView.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,7 +102,8 @@
 				A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */,
 				A6DE5BBC2437167C006D3D47 /* SceneDelegate.swift */,
 				A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */,
-				A6DE5BC02437167C006D3D47 /* Main.storyboard */,
+				A6DE5BC02437167C006D3D47 /* CanvasView.storyboard */,
+				A6DE5BEE24397A82006D3D47 /* CollectionView.storyboard */,
 				A6DE5BC32437167E006D3D47 /* Assets.xcassets */,
 				A6DE5BC82437167E006D3D47 /* Info.plist */,
 			);
@@ -229,8 +232,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A6DE5BEF24397A82006D3D47 /* CollectionView.storyboard in Resources */,
 				A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */,
-				A6DE5BC22437167C006D3D47 /* Main.storyboard in Resources */,
+				A6DE5BC22437167C006D3D47 /* CanvasView.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,12 +297,12 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		A6DE5BC02437167C006D3D47 /* Main.storyboard */ = {
+		A6DE5BC02437167C006D3D47 /* CanvasView.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				A6DE5BC12437167C006D3D47 /* Base */,
 			);
-			name = Main.storyboard;
+			name = CanvasView.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
