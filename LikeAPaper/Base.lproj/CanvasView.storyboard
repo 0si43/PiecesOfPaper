@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fSL-jP-CXv">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <device id="ipad12_9rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -10,9 +10,10 @@
         <!--Canvas View Controller-->
         <scene sceneID="Bl9-fQ-slx">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hyL-eu-1Z4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <viewController id="qJ8-dG-QYr" customClass="CanvasViewController" customModule="LikeAPaper" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="tRT-Wn-Xtb">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <accessibility key="accessibilityConfiguration">
@@ -20,9 +21,22 @@
                         </accessibility>
                         <viewLayoutGuide key="safeArea" id="9OX-YD-5dz"/>
                     </view>
-                    <navigationItem key="navigationItem" id="91O-TO-dSK"/>
+                    <navigationItem key="navigationItem" id="91O-TO-dSK">
+                        <rightBarButtonItems>
+                            <barButtonItem title="Save" id="NcI-Cu-GYZ">
+                                <connections>
+                                    <segue destination="Zij-e0-vIc" kind="show" id="OQ2-PF-09Z"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Delete" id="bps-Rv-lAK">
+                                <color key="tintColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <connections>
+                                    <segue destination="Zij-e0-vIc" kind="show" id="6Op-Fi-QOr"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
+                    </navigationItem>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="hyL-eu-1Z4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="614" y="128"/>
         </scene>
@@ -31,7 +45,7 @@
             <objects>
                 <navigationController id="fSL-jP-CXv" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="ZMx-gz-p0T">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -42,5 +56,18 @@
             </objects>
             <point key="canvasLocation" x="-348" y="128"/>
         </scene>
+        <!--CollectionView-->
+        <scene sceneID="1uv-BA-bAb">
+            <objects>
+                <viewControllerPlaceholder storyboardName="CollectionView" id="Zij-e0-vIc" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="IJm-qH-wVN"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="j3n-AR-cds" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1063" y="128"/>
+        </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="OQ2-PF-09Z"/>
+    </inferredMetricsTieBreakers>
 </document>
