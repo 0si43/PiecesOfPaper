@@ -10,7 +10,6 @@
         <!--Canvas View Controller-->
         <scene sceneID="Bl9-fQ-slx">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="hyL-eu-1Z4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <viewController id="qJ8-dG-QYr" customClass="CanvasViewController" customModule="LikeAPaper" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="tRT-Wn-Xtb">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
@@ -19,6 +18,7 @@
                         <accessibility key="accessibilityConfiguration">
                             <accessibilityTraits key="traits" notEnabled="YES"/>
                         </accessibility>
+                        <gestureRecognizers/>
                         <viewLayoutGuide key="safeArea" id="9OX-YD-5dz"/>
                     </view>
                     <navigationItem key="navigationItem" id="91O-TO-dSK">
@@ -37,6 +37,7 @@
                         </rightBarButtonItems>
                     </navigationItem>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hyL-eu-1Z4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="614" y="128"/>
         </scene>

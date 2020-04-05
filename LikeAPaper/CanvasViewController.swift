@@ -12,10 +12,12 @@ import PencilKit
 class CanvasViewController: UIViewController {
 
     var statusBarHidden = false
+    override var prefersStatusBarHidden: Bool {
+        return statusBarHidden
+    }
     
     override func viewWillAppear(_ animated: Bool) {
-        navigationController?.setNavigationBarHidden(true, animated: true)
-        statusBarHidden = true
+        upSideBarHidden(true)
     }
     
     override func viewDidLoad() {
@@ -23,11 +25,27 @@ class CanvasViewController: UIViewController {
         let canvas = PKCanvasView(frame: view.frame)
         view.addSubview(canvas)
         canvas.tool = PKInkingTool(.pen, color: .black, width: 1)
-        navigationController?.hidesBarsOnSwipe = true
+        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
+//        gesture.direction = .up
+//        view.addGestureRecognizer(gesture)
+        gesture.direction = .down
+        view.addGestureRecognizer(gesture)
     }
     
-    override var prefersStatusBarHidden: Bool {
-        return statusBarHidden
+    @objc func didSwipe(sender: UISwipeGestureRecognizer) {
+        switch sender.direction {
+//        case .up:
+//            upSideBarHidden(true)
+        case .down:
+            upSideBarHidden(false)
+        default:
+            return
+        }
+    }
+    
+    private func upSideBarHidden(_ isHidden: Bool) {
+        statusBarHidden = isHidden
+        navigationController?.setNavigationBarHidden(isHidden, animated: true)
     }
 }
 
