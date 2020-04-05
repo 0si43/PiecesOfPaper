@@ -9,7 +9,7 @@
 import UIKit
 import PencilKit
 
-class ViewController: UIViewController {
+class CanvasViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

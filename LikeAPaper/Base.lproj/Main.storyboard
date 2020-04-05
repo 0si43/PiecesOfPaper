@@ -7,10 +7,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Canvas View Controller-->
         <scene sceneID="Bl9-fQ-slx">
             <objects>
-                <viewController id="qJ8-dG-QYr" customClass="ViewController" customModule="LikeAPaper" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="qJ8-dG-QYr" customClass="CanvasViewController" customModule="LikeAPaper" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="tRT-Wn-Xtb">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
