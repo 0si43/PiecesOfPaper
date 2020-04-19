@@ -25,7 +25,7 @@ class CanvasViewController: UIViewController {
         let canvas = PKCanvasView(frame: view.frame)
         view.addSubview(canvas)
         canvas.tool = PKInkingTool(.pen, color: .black, width: 1)
-        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
+        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))        
 //        gesture.direction = .up
 //        view.addGestureRecognizer(gesture)
         gesture.direction = .down
