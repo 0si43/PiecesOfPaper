@@ -2,7 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fSL-jP-CXv">
     <device id="ipad12_9rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -57,10 +57,10 @@
             </objects>
             <point key="canvasLocation" x="-348" y="128"/>
         </scene>
-        <!--CollectionView-->
+        <!--ThumbnailCollectionView-->
         <scene sceneID="1uv-BA-bAb">
             <objects>
-                <viewControllerPlaceholder storyboardName="CollectionView" id="Zij-e0-vIc" sceneMemberID="viewController">
+                <viewControllerPlaceholder storyboardName="ThumbnailCollectionView" id="Zij-e0-vIc" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="IJm-qH-wVN"/>
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="j3n-AR-cds" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

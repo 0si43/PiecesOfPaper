@@ -13,7 +13,7 @@
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
 		A6DE5BD22437167E006D3D47 /* LikeAPaperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BD12437167E006D3D47 /* LikeAPaperTests.swift */; };
 		A6DE5BDD2437167E006D3D47 /* LikeAPaperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BDC2437167E006D3D47 /* LikeAPaperUITests.swift */; };
-		A6DE5BEF24397A82006D3D47 /* CollectionView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BEE24397A82006D3D47 /* CollectionView.storyboard */; };
+		A6DE5BEF24397A82006D3D47 /* ThumbnailCollectionView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BEE24397A82006D3D47 /* ThumbnailCollectionView.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,7 +46,7 @@
 		A6DE5BD82437167E006D3D47 /* LikeAPaperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LikeAPaperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BDC2437167E006D3D47 /* LikeAPaperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeAPaperUITests.swift; sourceTree = "<group>"; };
 		A6DE5BDE2437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A6DE5BEE24397A82006D3D47 /* CollectionView.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CollectionView.storyboard; sourceTree = "<group>"; };
+		A6DE5BEE24397A82006D3D47 /* ThumbnailCollectionView.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ThumbnailCollectionView.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,7 +100,7 @@
 				A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */,
 				A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */,
 				A6DE5BC02437167C006D3D47 /* CanvasView.storyboard */,
-				A6DE5BEE24397A82006D3D47 /* CollectionView.storyboard */,
+				A6DE5BEE24397A82006D3D47 /* ThumbnailCollectionView.storyboard */,
 				A6DE5BC32437167E006D3D47 /* Assets.xcassets */,
 				A6DE5BC82437167E006D3D47 /* Info.plist */,
 			);
@@ -229,7 +229,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A6DE5BEF24397A82006D3D47 /* CollectionView.storyboard in Resources */,
+				A6DE5BEF24397A82006D3D47 /* ThumbnailCollectionView.storyboard in Resources */,
 				A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */,
 				A6DE5BC22437167C006D3D47 /* CanvasView.storyboard in Resources */,
 			);
