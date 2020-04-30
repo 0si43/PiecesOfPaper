@@ -25,7 +25,7 @@
                         <rightBarButtonItems>
                             <barButtonItem title="Save" id="NcI-Cu-GYZ">
                                 <connections>
-                                    <segue destination="Zij-e0-vIc" kind="show" id="OQ2-PF-09Z"/>
+                                    <action selector="saveAction:" destination="qJ8-dG-QYr" id="lHp-Oj-2OZ"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem title="Delete" id="bps-Rv-lAK">
@@ -57,10 +57,10 @@
             </objects>
             <point key="canvasLocation" x="-348" y="128"/>
         </scene>
-        <!--ThumbnailCollectionView-->
+        <!--ThumbnailCollectionViewController-->
         <scene sceneID="1uv-BA-bAb">
             <objects>
-                <viewControllerPlaceholder storyboardName="ThumbnailCollectionView" id="Zij-e0-vIc" sceneMemberID="viewController">
+                <viewControllerPlaceholder storyboardName="ThumbnailCollectionViewController" id="Zij-e0-vIc" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="IJm-qH-wVN"/>
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="j3n-AR-cds" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -68,7 +68,4 @@
             <point key="canvasLocation" x="1063" y="128"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="OQ2-PF-09Z"/>
-    </inferredMetricsTieBreakers>
 </document>
