@@ -15,17 +15,21 @@ class CanvasViewController: UIViewController {
     override var prefersStatusBarHidden: Bool {
         return statusBarHidden
     }
+    var canvas: PKCanvasView!
     
     override func viewWillAppear(_ animated: Bool) {
         upSideBarHidden(true)
     }
+    let key = "Papers"
+    var papers: [PKDrawing]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let canvas = PKCanvasView(frame: view.frame)
+        canvas = PKCanvasView(frame: view.frame)
         view.addSubview(canvas)
+        papers = UserDefaults.standard.array(forKey: key) as? [PKDrawing]
         canvas.tool = PKInkingTool(.pen, color: .black, width: 1)
-        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))        
+        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
 //        gesture.direction = .up
 //        view.addGestureRecognizer(gesture)
         gesture.direction = .down
@@ -46,6 +50,11 @@ class CanvasViewController: UIViewController {
     private func upSideBarHidden(_ isHidden: Bool) {
         statusBarHidden = isHidden
         navigationController?.setNavigationBarHidden(isHidden, animated: true)
+    }
+    
+    @IBAction func saveAction(_ sender: Any) {
+        papers?.append(canvas.drawing)
+        UserDefaults.standard.set(papers, forKey: key)
     }
 }
 
