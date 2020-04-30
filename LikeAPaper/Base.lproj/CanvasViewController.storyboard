@@ -36,6 +36,9 @@
                             </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
+                    <connections>
+                        <segue destination="Zij-e0-vIc" kind="show" identifier="toThumbnailCollectionViewController" id="hzn-D1-VKZ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hyL-eu-1Z4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -68,4 +71,7 @@
             <point key="canvasLocation" x="1063" y="128"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="hzn-D1-VKZ"/>
+    </inferredMetricsTieBreakers>
 </document>

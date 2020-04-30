@@ -21,13 +21,12 @@ class CanvasViewController: UIViewController {
         upSideBarHidden(true)
     }
     let key = "Papers"
-    var papers: [PKDrawing]?
+    var papers = [PKDrawing]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         canvas = PKCanvasView(frame: view.frame)
         view.addSubview(canvas)
-        papers = UserDefaults.standard.array(forKey: key) as? [PKDrawing]
         canvas.tool = PKInkingTool(.pen, color: .black, width: 1)
         let gesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
 //        gesture.direction = .up
@@ -53,8 +52,15 @@ class CanvasViewController: UIViewController {
     }
     
     @IBAction func saveAction(_ sender: Any) {
-        papers?.append(canvas.drawing)
-        UserDefaults.standard.set(papers, forKey: key)
+        papers.append(canvas.drawing)
+        performSegue(withIdentifier: "toThumbnailCollectionViewController", sender: self)
+    }
+    
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == "toThumbnailCollectionViewController" else { return }
+        let view = segue.destination as? ThumbnailCollectionViewController
+        view?.data = papers
     }
 }
 
