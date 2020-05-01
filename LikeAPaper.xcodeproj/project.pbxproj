@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A6134B7E245AC61D00E5F0FB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6134B7D245AC61D00E5F0FB /* LaunchScreen.storyboard */; };
+		A6134B80245C09FC00E5F0FB /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6134B7F245C09FC00E5F0FB /* DataModel.swift */; };
 		A63A37CA244BF3E400B16575 /* ThumbnailCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63A37C9244BF3E400B16575 /* ThumbnailCollectionViewController.swift */; };
 		A6DE5BBB2437167C006D3D47 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */; };
 		A6DE5BBF2437167C006D3D47 /* CanvasViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */; };
@@ -37,6 +38,7 @@
 
 /* Begin PBXFileReference section */
 		A6134B7D245AC61D00E5F0FB /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A6134B7F245C09FC00E5F0FB /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		A63A37C9244BF3E400B16575 /* ThumbnailCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCollectionViewController.swift; sourceTree = "<group>"; };
 		A6DE5BB72437167C006D3D47 /* LikeAPaper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LikeAPaper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 			children = (
 				A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */,
 				A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */,
+				A6134B7F245C09FC00E5F0FB /* DataModel.swift */,
 				A63A37C9244BF3E400B16575 /* ThumbnailCollectionViewController.swift */,
 				A6DE5BC02437167C006D3D47 /* CanvasViewController.storyboard */,
 				A6DE5BEE24397A82006D3D47 /* ThumbnailCollectionViewController.storyboard */,
@@ -264,6 +267,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A6DE5BBF2437167C006D3D47 /* CanvasViewController.swift in Sources */,
+				A6134B80245C09FC00E5F0FB /* DataModel.swift in Sources */,
 				A6DE5BBB2437167C006D3D47 /* AppDelegate.swift in Sources */,
 				A63A37CA244BF3E400B16575 /* ThumbnailCollectionViewController.swift in Sources */,
 			);

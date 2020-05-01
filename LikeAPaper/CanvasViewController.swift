@@ -20,8 +20,6 @@ class CanvasViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         upSideBarHidden(true)
     }
-    let key = "Papers"
-    var papers = [PKDrawing]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,7 +50,6 @@ class CanvasViewController: UIViewController {
     }
     
     @IBAction func saveAction(_ sender: Any) {
-        papers.append(canvas.drawing)
         performSegue(withIdentifier: "toThumbnailCollectionViewController", sender: self)
     }
     
@@ -60,7 +57,9 @@ class CanvasViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard segue.identifier == "toThumbnailCollectionViewController" else { return }
         let view = segue.destination as? ThumbnailCollectionViewController
-        view?.data = papers
+        view?.loadDataModel()
+        view?.dataModel.drawings.append(canvas.drawing)
+        view?.saveDataModel()
     }
 }
 
