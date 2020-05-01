@@ -13,12 +13,46 @@ private let reuseIdentifier = "Cell"
 
 class ThumbnailCollectionViewController: UICollectionViewController {
 
-    let key = "Papers"
-    var data: [PKDrawing]?
+    var dataModel = DataModel()
+    
+    private var saveURL: URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentsDirectory = paths.first!
+        return documentsDirectory.appendingPathComponent("Like_a_Paper.data")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadDataModel()
         collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        saveDataModel()
+    }
+    
+    func saveDataModel() {
+        let url = saveURL
+        do {
+            let encoder = PropertyListEncoder()
+            let data = try encoder.encode(dataModel)
+            try data.write(to: url)
+        } catch(let error) {
+            print("Could not save data model: ", error.localizedDescription)
+        }
+    }
+    
+    func loadDataModel() {
+        let url = saveURL
+        if FileManager.default.fileExists(atPath: url.path) {
+            do {
+                let decoder = PropertyListDecoder()
+                let data = try Data(contentsOf: url)
+                dataModel = try decoder.decode(DataModel.self, from: data)
+            } catch(let error) {
+                print("Could not load data model: ", error.localizedDescription)
+            }
+        }
     }
 
     // MARK: UICollectionViewDataSource
@@ -27,12 +61,12 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     }
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return data?.count ?? 0
+        return dataModel.drawings.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-        guard let drawing = data?.first?.image(from: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height), scale: 1.0) else { return cell }
+        let drawing = dataModel.drawings[indexPath.item].image(from: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height), scale: 1.0)
         cell.backgroundView = UIImageView(image: drawing)
         return cell
     }
@@ -69,10 +103,4 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     }
     */
 
-}
-
-extension ThumbnailCollectionViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 300.0, height: 300.0)
-    }
 }
