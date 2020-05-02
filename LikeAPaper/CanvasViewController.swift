@@ -26,28 +26,16 @@ class CanvasViewController: UIViewController {
         canvas = PKCanvasView(frame: view.frame)
         view.addSubview(canvas)
         canvas.tool = PKInkingTool(.pen, color: .black, width: 1)
-        addGesture()
     }
     
-    private func addGesture() {
-        let upSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
-        upSwipeGesture.direction = .up
-        view.addGestureRecognizer(upSwipeGesture)
-        let downSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
-        downSwipeGesture.direction = .down
-        view.addGestureRecognizer(downSwipeGesture)
+    @IBAction func swipeUp(_ sender: Any) {
+        upSideBarHidden(true)
     }
     
-    @objc func didSwipe(sender: UISwipeGestureRecognizer) {
-        switch sender.direction {
-        case .up:
-            upSideBarHidden(true)
-        case .down:
-            upSideBarHidden(false)
-        default:
-            return
-        }
+    @IBAction func swipeDown(_ sender: Any) {
+        upSideBarHidden(false)
     }
+    
     
     private func upSideBarHidden(_ isHidden: Bool) {
         statusBarHidden = isHidden

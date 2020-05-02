@@ -20,6 +20,10 @@
                         </accessibility>
                         <gestureRecognizers/>
                         <viewLayoutGuide key="safeArea" id="9OX-YD-5dz"/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="V1P-Ov-C37" appends="YES" id="Kg6-7k-0We"/>
+                            <outletCollection property="gestureRecognizers" destination="9VQ-dz-F58" appends="YES" id="OrN-nn-Npn"/>
+                        </connections>
                     </view>
                     <navigationItem key="navigationItem" id="91O-TO-dSK">
                         <rightBarButtonItems>
@@ -38,6 +42,16 @@
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hyL-eu-1Z4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="up" id="V1P-Ov-C37">
+                    <connections>
+                        <action selector="swipeUp:" destination="qJ8-dG-QYr" id="o5d-Xx-oe2"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="down" id="9VQ-dz-F58">
+                    <connections>
+                        <action selector="swipeDown:" destination="qJ8-dG-QYr" id="wLZ-ue-2MG"/>
+                    </connections>
+                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="614" y="128"/>
         </scene>
