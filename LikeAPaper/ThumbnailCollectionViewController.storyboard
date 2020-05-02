@@ -70,7 +70,7 @@
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
-                        <segue destination="Tob-bq-tg3" kind="show" identifier="toCanvasView" id="7AO-dm-xWu"/>
+                        <segue destination="Tob-bq-tg3" kind="presentation" identifier="toCanvasView" animates="NO" modalPresentationStyle="fullScreen" id="7AO-dm-xWu"/>
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TcE-I9-jFh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
