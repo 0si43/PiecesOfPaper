@@ -18,7 +18,7 @@ class CanvasViewController: UIViewController {
     var canvas: PKCanvasView!
     
     override func viewWillAppear(_ animated: Bool) {
-        upSideBarHidden(true)
+//        upSideBarHidden(true)
     }
     
     override func viewDidLoad() {
@@ -37,8 +37,8 @@ class CanvasViewController: UIViewController {
         switch sender.direction {
 //        case .up:
 //            upSideBarHidden(true)
-        case .down:
-            upSideBarHidden(false)
+//        case .down:
+//            upSideBarHidden(false)
         default:
             return
         }
@@ -50,16 +50,14 @@ class CanvasViewController: UIViewController {
     }
     
     @IBAction func saveAction(_ sender: Any) {
-        performSegue(withIdentifier: "toThumbnailCollectionViewController", sender: self)
+        if let navigationController = presentingViewController as? UINavigationController,
+            let collectionViewController = navigationController.topViewController as? ThumbnailCollectionViewController {
+            collectionViewController.dataModel.drawings.append(canvas.drawing)
+        }
+        dismiss(animated: false, completion: nil)
     }
     
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard segue.identifier == "toThumbnailCollectionViewController" else { return }
-        let view = segue.destination as? ThumbnailCollectionViewController
-        view?.loadDataModel()
-        view?.dataModel.drawings.append(canvas.drawing)
-        view?.saveDataModel()
+    @IBAction func deleteAction(_ sender: Any) {
+        dismiss(animated: false, completion: nil)
     }
 }
-
