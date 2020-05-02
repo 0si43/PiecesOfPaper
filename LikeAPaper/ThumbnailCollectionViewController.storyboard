@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="wNf-e5-erg">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ntt-vR-2hO">
     <device id="ipad12_9rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
@@ -50,10 +50,58 @@
                             <outlet property="delegate" destination="wNf-e5-erg" id="ePf-as-Fcg"/>
                         </connections>
                     </collectionView>
+                    <navigationItem key="navigationItem" id="7LI-dD-rQ8">
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="add" id="ffm-ty-zES">
+                                <connections>
+                                    <action selector="newCanvas:" destination="wNf-e5-erg" id="ztC-9A-f1z"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="refresh" id="VIP-vO-45i">
+                                <connections>
+                                    <action selector="update:" destination="wNf-e5-erg" id="q7k-xk-oig"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="trash" id="g37-3C-7u4">
+                                <connections>
+                                    <action selector="daleteData:" destination="wNf-e5-erg" id="3u6-or-DMd"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
+                    </navigationItem>
+                    <connections>
+                        <segue destination="Tob-bq-tg3" kind="show" identifier="toCanvasView" id="7AO-dm-xWu"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TcE-I9-jFh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="49" y="701"/>
+        </scene>
+        <!--CanvasViewController-->
+        <scene sceneID="f5m-FM-dAg">
+            <objects>
+                <viewControllerPlaceholder storyboardName="CanvasViewController" id="Tob-bq-tg3" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="IDf-ND-GDW"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MDG-Ii-ija" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="575" y="701"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="0cE-tu-eCB">
+            <objects>
+                <navigationController id="Ntt-vR-2hO" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="6Ae-Ih-RD9">
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="50"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="wNf-e5-erg" kind="relationship" relationship="rootViewController" id="Dyq-RU-nB0"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Adv-ET-LEd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-673" y="701"/>
         </scene>
     </scenes>
 </document>

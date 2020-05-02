@@ -25,20 +25,17 @@
                         <rightBarButtonItems>
                             <barButtonItem title="Save" id="NcI-Cu-GYZ">
                                 <connections>
-                                    <action selector="saveAction:" destination="qJ8-dG-QYr" id="lHp-Oj-2OZ"/>
+                                    <action selector="saveAction:" destination="qJ8-dG-QYr" id="2lj-Jb-gah"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem title="Delete" id="bps-Rv-lAK">
                                 <color key="tintColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
-                                    <segue destination="Zij-e0-vIc" kind="show" id="6Op-Fi-QOr"/>
+                                    <action selector="deleteAction:" destination="qJ8-dG-QYr" id="b1S-Sf-gYm"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
-                    <connections>
-                        <segue destination="Zij-e0-vIc" kind="show" identifier="toThumbnailCollectionViewController" id="hzn-D1-VKZ"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hyL-eu-1Z4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -60,18 +57,5 @@
             </objects>
             <point key="canvasLocation" x="-348" y="128"/>
         </scene>
-        <!--ThumbnailCollectionViewController-->
-        <scene sceneID="1uv-BA-bAb">
-            <objects>
-                <viewControllerPlaceholder storyboardName="ThumbnailCollectionViewController" id="Zij-e0-vIc" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="IJm-qH-wVN"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="j3n-AR-cds" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1063" y="128"/>
-        </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="hzn-D1-VKZ"/>
-    </inferredMetricsTieBreakers>
 </document>

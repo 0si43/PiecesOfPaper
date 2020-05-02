@@ -15,45 +15,24 @@ class ThumbnailCollectionViewController: UICollectionViewController {
 
     var dataModel = DataModel()
     
-    private var saveURL: URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentsDirectory = paths.first!
-        return documentsDirectory.appendingPathComponent("Like_a_Paper.data")
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadDataModel()
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        saveDataModel()
-    }
-    
-    func saveDataModel() {
-        let url = saveURL
-        do {
-            let encoder = PropertyListEncoder()
-            let data = try encoder.encode(dataModel)
-            try data.write(to: url)
-        } catch(let error) {
-            print("Could not save data model: ", error.localizedDescription)
-        }
-    }
-    
-    func loadDataModel() {
-        let url = saveURL
-        if FileManager.default.fileExists(atPath: url.path) {
-            do {
-                let decoder = PropertyListDecoder()
-                let data = try Data(contentsOf: url)
-                dataModel = try decoder.decode(DataModel.self, from: data)
-            } catch(let error) {
-                print("Could not load data model: ", error.localizedDescription)
-            }
-        }
+        performSegue(withIdentifier: "toCanvasView", sender: self)
     }
 
+    @IBAction func newCanvas(_ sender: Any) {
+        performSegue(withIdentifier: "toCanvasView", sender: self)
+    }
+    
+    @IBAction func update(_ sender: Any) {
+        collectionView!.reloadData()
+    }
+    
+    @IBAction func daleteData(_ sender: Any) {
+        dataModel.drawings.removeLast()
+        collectionView!.reloadData()
+    }
+    
     // MARK: UICollectionViewDataSource
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
