@@ -9,7 +9,7 @@
 import UIKit
 import PencilKit
 
-private let reuseIdentifier = "Cell"
+private let reuseIdentifier = "ThumbnailCollectionViewCell"
 
 class ThumbnailCollectionViewController: UICollectionViewController {
 
@@ -24,7 +24,6 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loadDataModel()
-        collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -65,9 +64,9 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? ThumbnailCollectionViewCell else { fatalError("Unexpected cell type.") }
         let drawing = dataModel.drawings[indexPath.item].image(from: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height), scale: 1.0)
-        cell.backgroundView = UIImageView(image: drawing)
+        cell.imageView.image = drawing
         return cell
     }
     
