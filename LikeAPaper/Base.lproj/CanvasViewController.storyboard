@@ -26,16 +26,21 @@
                         </connections>
                     </view>
                     <navigationItem key="navigationItem" id="91O-TO-dSK">
+                        <barButtonItem key="leftBarButtonItem" systemItem="trash" id="bps-Rv-lAK">
+                            <color key="tintColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <action selector="deleteAction:" destination="qJ8-dG-QYr" id="b1S-Sf-gYm"/>
+                            </connections>
+                        </barButtonItem>
                         <rightBarButtonItems>
-                            <barButtonItem title="Save" id="NcI-Cu-GYZ">
+                            <barButtonItem systemItem="done" id="NcI-Cu-GYZ">
                                 <connections>
                                     <action selector="saveAction:" destination="qJ8-dG-QYr" id="2lj-Jb-gah"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Delete" id="bps-Rv-lAK">
-                                <color key="tintColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <barButtonItem systemItem="action" id="qWs-dD-QFF">
                                 <connections>
-                                    <action selector="deleteAction:" destination="qJ8-dG-QYr" id="b1S-Sf-gYm"/>
+                                    <action selector="shareAction:" destination="qJ8-dG-QYr" id="1eO-Az-NLF"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>

@@ -58,4 +58,11 @@ class CanvasViewController: UIViewController {
     @IBAction func deleteAction(_ sender: Any) {
         dismiss(animated: false, completion: nil)
     }
+    
+    @IBAction func shareAction(_ sender: UIBarButtonItem) {
+        let shareImage = canvas.drawing.image(from: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height), scale: 1.0)
+        let activityViewController = UIActivityViewController(activityItems: [shareImage], applicationActivities: nil)
+        activityViewController.popoverPresentationController?.barButtonItem = sender
+        present(activityViewController, animated: true, completion: nil)
+    }
 }
