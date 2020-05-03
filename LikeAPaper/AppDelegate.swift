@@ -7,14 +7,17 @@
 //
 
 import UIKit
+import PencilKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    
     var window: UIWindow?
-
-//    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-//        // Override point for customization after application launch.
-//        return true
-//    }
+    var drawings = [PKDrawing]()
+    
+    func applicationWillResignActive(_ application: UIApplication) {
+        let dataModel = DataModel(loadSkip: true)
+        dataModel.save(drawings: drawings)
+    }
 }
 
