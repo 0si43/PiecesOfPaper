@@ -10,17 +10,16 @@ import Foundation
 import PencilKit
 
 struct DataModel: Codable {
-    var drawings = [PKDrawing]() {
-        didSet { save() }
-    }
     
+    private(set) var drawings = [PKDrawing]()
     private var saveURL: URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let documentsDirectory = paths.first!
         return documentsDirectory.appendingPathComponent("Like_a_Paper.data")
     }
     
-    init() {
+    init(loadSkip: Bool = false) {
+        guard !loadSkip else { return }
         let url = saveURL
         if FileManager.default.fileExists(atPath: url.path) {
             do {
@@ -34,7 +33,11 @@ struct DataModel: Codable {
         }
     }
     
-    func save() {
+    init(drawings: [PKDrawing]) {
+        self.drawings = drawings
+    }
+    
+    private func save() {
         let url = saveURL
         do {
             let encoder = PropertyListEncoder()
@@ -43,5 +46,10 @@ struct DataModel: Codable {
         } catch(let error) {
             print("Could not save data model: ", error.localizedDescription)
         }
+    }
+    
+    func save(drawings: [PKDrawing]) {
+        let model = DataModel(drawings: drawings)
+        model.save()
     }
 }

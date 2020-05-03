@@ -13,6 +13,7 @@ class CanvasViewController: UIViewController {
 
     private var statusBarHidden = false
     var drawing: PKDrawing?
+    var indexAtCollectionView: Int?
     
     override var prefersStatusBarHidden: Bool {
         return statusBarHidden
@@ -48,15 +49,34 @@ class CanvasViewController: UIViewController {
     }
     
     @IBAction func saveAction(_ sender: Any) {
-        if let navigationController = presentingViewController as? UINavigationController,
-            let collectionViewController = navigationController.topViewController as? ThumbnailCollectionViewController {
-            collectionViewController.dataModel.drawings.append(canvas.drawing)
+        guard let collectionViewController = thumbnailCollectionViewController() else { return }
+        if let index = indexAtCollectionView {
+            collectionViewController.drawings[index] = canvas.drawing
+            let indexPath = IndexPath(row: index, section: 0)
+            collectionViewController.collectionView?.reloadItems(at: [indexPath])
+        } else {
+            let numberOfCells = collectionViewController.collectionView.numberOfItems(inSection: 0)
+            collectionViewController.drawings.append(canvas.drawing)
+            let indexPath = IndexPath(row: numberOfCells, section: 0)
+            collectionViewController.collectionView.insertItems(at: [indexPath])
         }
         dismiss(animated: false, completion: nil)
     }
     
     @IBAction func deleteAction(_ sender: Any) {
+        let collectionViewController = thumbnailCollectionViewController()
+        if let index = indexAtCollectionView {
+            collectionViewController?.drawings.remove(at: index)
+            let indexPath = IndexPath(row: index, section: 0)
+            collectionViewController?.collectionView?.deleteItems(at: [indexPath])
+        }
         dismiss(animated: false, completion: nil)
+    }
+    
+    private func thumbnailCollectionViewController() -> ThumbnailCollectionViewController? {
+        guard let navigationController = presentingViewController as? UINavigationController,
+                let collectionViewController = navigationController.topViewController as? ThumbnailCollectionViewController else { return nil }
+        return collectionViewController
     }
     
     @IBAction func shareAction(_ sender: UIBarButtonItem) {
