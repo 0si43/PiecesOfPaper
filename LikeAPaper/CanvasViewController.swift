@@ -11,7 +11,9 @@ import PencilKit
 
 class CanvasViewController: UIViewController {
 
-    var statusBarHidden = false
+    private var statusBarHidden = false
+    var drawing: PKDrawing?
+    
     override var prefersStatusBarHidden: Bool {
         return statusBarHidden
     }
@@ -24,6 +26,9 @@ class CanvasViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         canvas = PKCanvasView(frame: view.frame)
+        if let drawing = drawing {
+            canvas.drawing = drawing
+        }
         view.addSubview(canvas)
         canvas.tool = PKInkingTool(.pen, color: .black, width: 1)
     }

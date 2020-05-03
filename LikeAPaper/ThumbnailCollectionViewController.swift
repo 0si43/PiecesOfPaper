@@ -14,6 +14,7 @@ private let reuseIdentifier = "ThumbnailCollectionViewCell"
 class ThumbnailCollectionViewController: UICollectionViewController {
 
     var dataModel = DataModel()
+    var selectedDrawing: PKDrawing?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +32,14 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     @IBAction func daleteData(_ sender: Any) {
         dataModel.drawings.removeLast()
         collectionView!.reloadData()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let navigationController = segue.destination as? UINavigationController,
+            let canvas = navigationController.topViewController as? CanvasViewController {
+            canvas.drawing = selectedDrawing
+        }
+        selectedDrawing = nil
     }
     
     // MARK: UICollectionViewDataSource
@@ -51,6 +60,11 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     
 
     // MARK: UICollectionViewDelegate
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        selectedDrawing = dataModel.drawings[indexPath.row]
+        performSegue(withIdentifier: "toCanvasView", sender: self)
+    }
     
     /*
     // Uncomment this method to specify if the specified item should be highlighted during tracking
