@@ -27,6 +27,16 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     // タップしたノートのIndex
     var selectedIndex: Int?
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle {
+            reload()
+        }
+    }
+    
+    private func reload() {
+        collectionView?.reloadData()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.drawings = dataModel.drawings
@@ -38,7 +48,7 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     }
     
     @IBAction func update(_ sender: Any) {
-        collectionView?.reloadData()
+        reload()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
