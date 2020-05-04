@@ -80,5 +80,28 @@ class ThumbnailCollectionViewController: UICollectionViewController {
         selectedIndex = indexPath.row
         performSegue(withIdentifier: "toCanvasView", sender: self)
     }
+    
+    override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+            
+        // ①プレビューの定義
+//            let previewProvider: () -> PreviewViewController? = { [unowned self] in
+//                return PreviewViewController(image: self.images[indexPath.row])
+//            }
+        let actionProvider: ([UIMenuElement]) -> UIMenu? = { _ in
+            let share = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                // some action
+            }
+            let copy = UIAction(title: "Copy", image: UIImage(systemName: "doc.on.doc")) { _ in
+                // some action
+            }
+            let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+                // some action
+            }
+            return UIMenu(title: "", image: nil, identifier: nil, children: [copy, delete, share])
+        }
 
+        return UIContextMenuConfiguration(identifier: nil,
+                                          previewProvider: nil,
+                                          actionProvider: actionProvider)
+    }
 }
