@@ -73,8 +73,9 @@ class ThumbnailCollectionViewController: UICollectionViewController {
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? ThumbnailCollectionViewCell else { fatalError("Unexpected cell type.") }
-        let drawing = drawings[indexPath.row].image(from: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height), scale: 1.0)
-        cell.imageView.image = drawing
+        let drawing = drawings[indexPath.row]
+        let image = drawing.image(from: drawing.bounds, scale: 1.0)
+        cell.imageView.image = image
         return cell
     }
     
@@ -111,7 +112,8 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     }
     
     private func shareAction(index: Int, point: CGPoint) {
-        let shareImage = drawings[index].image(from: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height), scale: 1.0)
+        let drawing = drawings[index]
+        let shareImage = drawing.image(from: drawing.bounds, scale: 1.0)
         let activityViewController = UIActivityViewController(activityItems: [shareImage], applicationActivities: nil)
         activityViewController.popoverPresentationController?.sourceView = collectionView
         activityViewController.popoverPresentationController?.sourceRect = CGRect(origin: point, size: .zero)

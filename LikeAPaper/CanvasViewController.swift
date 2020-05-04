@@ -15,15 +15,10 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     // 既存のノート編集の場合、CollectionViewがセットする
     var drawing: PKDrawing?
     var indexAtCollectionView: Int?
-    
     override var prefersStatusBarHidden: Bool {
         return statusBarHidden
     }
     private var canvasView: PKCanvasView!
-    
-    override func viewWillAppear(_ animated: Bool) {
-        upSideBarHidden(true)
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +27,9 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
             canvasView.drawing = drawing
         }
         view.addSubview(canvasView)
-        
+        canvasView.isScrollEnabled = true
+        canvasView.alwaysBounceHorizontal = true
+        canvasView.alwaysBounceVertical = true
         if let window = UIApplication.shared.windows.first,
             let toolPicker = PKToolPicker.shared(for: window) {
             toolPicker.setVisible(true, forFirstResponder: canvasView)
@@ -41,6 +38,10 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
             canvasView.becomeFirstResponder()
             toolPicker.selectedTool = PKInkingTool(.pen, color: .black, width: 1)
         }
+    }
+    
+    override func viewWillLayoutSubviews() {
+        upSideBarHidden(true)
     }
     
     @IBAction func swipeUp(_ sender: Any) {
@@ -103,7 +104,8 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     }
     
     @IBAction func shareAction(_ sender: UIBarButtonItem) {
-        let shareImage = canvasView.drawing.image(from: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height), scale: 1.0)
+        let drawing = canvasView.drawing
+        let shareImage = drawing.image(from: drawing.bounds, scale: 1.0)
         let activityViewController = UIActivityViewController(activityItems: [shareImage], applicationActivities: nil)
         activityViewController.popoverPresentationController?.barButtonItem = sender
         present(activityViewController, animated: true, completion: nil)
