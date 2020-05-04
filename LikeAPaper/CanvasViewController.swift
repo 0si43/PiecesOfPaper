@@ -9,16 +9,17 @@
 import UIKit
 import PencilKit
 
-class CanvasViewController: UIViewController {
+class CanvasViewController: UIViewController, PKToolPickerObserver {
 
     private var statusBarHidden = false
+    // 既存のノート編集の場合、CollectionViewがセットする
     var drawing: PKDrawing?
     var indexAtCollectionView: Int?
     
     override var prefersStatusBarHidden: Bool {
         return statusBarHidden
     }
-    var canvas: PKCanvasView!
+    private var canvasView: PKCanvasView!
     
     override func viewWillAppear(_ animated: Bool) {
         upSideBarHidden(true)
@@ -26,12 +27,20 @@ class CanvasViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        canvas = PKCanvasView(frame: view.frame)
+        canvasView = PKCanvasView(frame: view.frame)
         if let drawing = drawing {
-            canvas.drawing = drawing
+            canvasView.drawing = drawing
         }
-        view.addSubview(canvas)
-        canvas.tool = PKInkingTool(.pen, color: .black, width: 1)
+        view.addSubview(canvasView)
+        
+        if let window = UIApplication.shared.windows.first,
+            let toolPicker = PKToolPicker.shared(for: window) {
+            toolPicker.setVisible(true, forFirstResponder: canvasView)
+            toolPicker.addObserver(canvasView)
+            toolPicker.addObserver(self)
+            canvasView.becomeFirstResponder()
+            toolPicker.selectedTool = PKInkingTool(.pen, color: .black, width: 1)
+        }
     }
     
     @IBAction func swipeUp(_ sender: Any) {
@@ -50,12 +59,12 @@ class CanvasViewController: UIViewController {
     @IBAction func saveAction(_ sender: Any) {
         guard let collectionViewController = thumbnailCollectionViewController() else { return }
         if let index = indexAtCollectionView {
-            collectionViewController.drawings[index] = canvas.drawing
+            collectionViewController.drawings[index] = canvasView.drawing
             let indexPath = IndexPath(row: index, section: 0)
             collectionViewController.collectionView?.reloadItems(at: [indexPath])
         } else {
             let numberOfCells = collectionViewController.collectionView.numberOfItems(inSection: 0)
-            collectionViewController.drawings.append(canvas.drawing)
+            collectionViewController.drawings.append(canvasView.drawing)
             let indexPath = IndexPath(row: numberOfCells, section: 0)
             collectionViewController.collectionView.insertItems(at: [indexPath])
         }
@@ -94,7 +103,7 @@ class CanvasViewController: UIViewController {
     }
     
     @IBAction func shareAction(_ sender: UIBarButtonItem) {
-        let shareImage = canvas.drawing.image(from: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height), scale: 1.0)
+        let shareImage = canvasView.drawing.image(from: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height), scale: 1.0)
         let activityViewController = UIActivityViewController(activityItems: [shareImage], applicationActivities: nil)
         activityViewController.popoverPresentationController?.barButtonItem = sender
         present(activityViewController, animated: true, completion: nil)
