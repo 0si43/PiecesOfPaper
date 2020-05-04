@@ -82,20 +82,22 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-            
-        // ①プレビューの定義
-//            let previewProvider: () -> PreviewViewController? = { [unowned self] in
-//                return PreviewViewController(image: self.images[indexPath.row])
-//            }
+        let index = indexPath.row
         let actionProvider: ([UIMenuElement]) -> UIMenu? = { _ in
-            let share = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                // some action
+            let share = UIAction(title: "Share",
+                                 image: UIImage(systemName: "square.and.arrow.up")
+                                 ) {[weak self] _ in
+                self?.shareAction(index: index, point: point)
             }
-            let copy = UIAction(title: "Copy", image: UIImage(systemName: "doc.on.doc")) { _ in
-                // some action
+            let copy = UIAction(title: "Copy",
+                                image: UIImage(systemName: "doc.on.doc")
+                                ) {[weak self] _ in
+                self?.copyAction(index: index)
             }
-            let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-                // some action
+            let delete = UIAction(title: "Delete",
+                                  image: UIImage(systemName: "trash"),
+                                  attributes: .destructive) {[weak self] _ in
+                self?.deleteAction(index: index)
             }
             return UIMenu(title: "", image: nil, identifier: nil, children: [copy, delete, share])
         }
@@ -103,5 +105,27 @@ class ThumbnailCollectionViewController: UICollectionViewController {
         return UIContextMenuConfiguration(identifier: nil,
                                           previewProvider: nil,
                                           actionProvider: actionProvider)
+    }
+    
+    private func shareAction(index: Int, point: CGPoint) {
+        let shareImage = drawings[index].image(from: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height), scale: 1.0)
+        let activityViewController = UIActivityViewController(activityItems: [shareImage], applicationActivities: nil)
+        activityViewController.popoverPresentationController?.sourceView = collectionView
+        activityViewController.popoverPresentationController?.sourceRect = CGRect(origin: point, size: .zero)
+        present(activityViewController, animated: true, completion: nil)
+    }
+    
+    private func copyAction(index: Int) {
+        drawings.append(drawings[index])
+        let indexPath = IndexPath(row: collectionView.numberOfItems(inSection: 0), section: 0)
+        collectionView.insertItems(at: [indexPath])
+    }
+    
+    private func deleteAction(index: Int) {
+        drawings.remove(at: index)
+        let indexPaths = (index ..< drawings.count).map {
+            return IndexPath(row: $0, section: 0)
+        }
+        collectionView.reloadItems(at: indexPaths)
     }
 }
