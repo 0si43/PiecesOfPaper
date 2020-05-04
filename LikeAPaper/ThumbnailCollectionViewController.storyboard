@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ntt-vR-2hO">
-    <device id="ipad12_9rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
+    <device id="ipad9_7" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -12,7 +12,7 @@
             <objects>
                 <collectionViewController id="wNf-e5-erg" customClass="ThumbnailCollectionViewController" customModule="LikeAPaper" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="UEZ-RR-S9t">
-                        <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="eRO-an-YLh">
@@ -31,13 +31,14 @@
                                     <subviews>
                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="PbX-qm-zUE">
                                             <rect key="frame" x="20" y="20" width="251" height="192"/>
+                                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </imageView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="PbX-qm-zUE" firstAttribute="top" secondItem="NTe-KW-qDl" secondAttribute="top" constant="20" id="4Um-e0-pGy"/>
-                                        <constraint firstItem="PbX-qm-zUE" firstAttribute="leading" secondItem="NTe-KW-qDl" secondAttribute="leading" constant="20" id="Toq-8J-CBl"/>
-                                        <constraint firstAttribute="bottom" secondItem="PbX-qm-zUE" secondAttribute="bottom" constant="20" id="Vn2-BA-zGw"/>
-                                        <constraint firstAttribute="trailing" secondItem="PbX-qm-zUE" secondAttribute="trailing" constant="20" id="zpm-WM-rEa"/>
+                                        <constraint firstItem="PbX-qm-zUE" firstAttribute="top" secondItem="NTe-KW-qDl" secondAttribute="top" priority="750" constant="20" id="4Um-e0-pGy"/>
+                                        <constraint firstItem="PbX-qm-zUE" firstAttribute="leading" secondItem="NTe-KW-qDl" secondAttribute="leading" priority="750" constant="20" id="Toq-8J-CBl"/>
+                                        <constraint firstAttribute="bottom" secondItem="PbX-qm-zUE" secondAttribute="bottom" priority="750" constant="20" id="Vn2-BA-zGw"/>
+                                        <constraint firstAttribute="trailing" secondItem="PbX-qm-zUE" secondAttribute="trailing" priority="750" constant="20" id="zpm-WM-rEa"/>
                                     </constraints>
                                 </collectionViewCellContentView>
                                 <connections>
@@ -87,7 +88,7 @@
             <objects>
                 <navigationController id="Ntt-vR-2hO" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="6Ae-Ih-RD9">
-                        <rect key="frame" x="0.0" y="0.0" width="1366" height="50"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
