@@ -41,13 +41,6 @@ class ThumbnailCollectionViewController: UICollectionViewController {
         collectionView?.reloadData()
     }
     
-    @IBAction func daleteData(_ sender: Any) {
-        let numberOfCells = collectionView.numberOfItems(inSection: 0)
-        let indexPath = IndexPath(row: numberOfCells - 1, section: 0)
-        drawings.removeLast()
-        collectionView?.deleteItems(at: [indexPath])
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let navigationController = segue.destination as? UINavigationController,
             let canvas = navigationController.topViewController as? CanvasViewController {

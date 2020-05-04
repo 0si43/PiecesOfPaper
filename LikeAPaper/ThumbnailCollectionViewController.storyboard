@@ -62,11 +62,6 @@
                                     <action selector="update:" destination="wNf-e5-erg" id="q7k-xk-oig"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem systemItem="trash" id="g37-3C-7u4">
-                                <connections>
-                                    <action selector="daleteData:" destination="wNf-e5-erg" id="3u6-or-DMd"/>
-                                </connections>
-                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
