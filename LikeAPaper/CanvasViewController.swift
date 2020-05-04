@@ -42,7 +42,6 @@ class CanvasViewController: UIViewController {
         upSideBarHidden(false)
     }
     
-    
     private func upSideBarHidden(_ isHidden: Bool) {
         statusBarHidden = isHidden
         navigationController?.setNavigationBarHidden(isHidden, animated: true)
@@ -64,19 +63,34 @@ class CanvasViewController: UIViewController {
     }
     
     @IBAction func deleteAction(_ sender: Any) {
-        let collectionViewController = thumbnailCollectionViewController()
         if let index = indexAtCollectionView {
-            collectionViewController?.drawings.remove(at: index)
-            let indexPath = IndexPath(row: index, section: 0)
-            collectionViewController?.collectionView?.deleteItems(at: [indexPath])
+            alertWhenDelete(index: index)
+        } else {
+            dismiss(animated: false, completion: nil)
         }
-        dismiss(animated: false, completion: nil)
     }
     
     private func thumbnailCollectionViewController() -> ThumbnailCollectionViewController? {
         guard let navigationController = presentingViewController as? UINavigationController,
                 let collectionViewController = navigationController.topViewController as? ThumbnailCollectionViewController else { return nil }
         return collectionViewController
+    }
+    
+    private func alertWhenDelete(index: Int) {
+        let alertController = UIAlertController(title: "",
+                                      message: "本当に削除しますか？",
+                                      preferredStyle: .alert)
+        let deleteAction = UIAlertAction(title: "OK", style: .destructive) {[weak self](action) in
+            let collectionViewController = self?.thumbnailCollectionViewController()
+            collectionViewController?.drawings.remove(at: index)
+            let indexPath = IndexPath(row: index, section: 0)
+            collectionViewController?.collectionView?.deleteItems(at: [indexPath])
+            self?.dismiss(animated: false, completion: nil)
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) {(action) in return }
+        alertController.addAction(deleteAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true)
     }
     
     @IBAction func shareAction(_ sender: UIBarButtonItem) {
