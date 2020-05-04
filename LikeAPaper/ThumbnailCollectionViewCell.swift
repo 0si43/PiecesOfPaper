@@ -17,7 +17,7 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         
         imageView.layer.shadowPath = UIBezierPath(rect: imageView.bounds).cgPath
-        imageView.layer.shadowOpacity = 0.1
+        imageView.layer.shadowOpacity = 0.3
         imageView.layer.shadowOffset = CGSize(width: 0, height: 3)
         imageView.clipsToBounds = false
     }
