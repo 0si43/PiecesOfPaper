@@ -26,10 +26,10 @@
                         </connections>
                     </view>
                     <navigationItem key="navigationItem" id="91O-TO-dSK">
-                        <barButtonItem key="leftBarButtonItem" systemItem="trash" id="bps-Rv-lAK">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="bps-Rv-lAK">
                             <color key="tintColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
-                                <action selector="deleteAction:" destination="qJ8-dG-QYr" id="b1S-Sf-gYm"/>
+                                <action selector="cancelAction:" destination="qJ8-dG-QYr" id="tXU-Hh-eMT"/>
                             </connections>
                         </barButtonItem>
                         <rightBarButtonItems>

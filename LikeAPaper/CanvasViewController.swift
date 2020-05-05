@@ -30,6 +30,10 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
         canvasView.isScrollEnabled = true
         canvasView.alwaysBounceHorizontal = true
         canvasView.alwaysBounceVertical = true
+        addPalette()
+    }
+    
+    private func addPalette() {
         if let window = UIApplication.shared.windows.first,
             let toolPicker = PKToolPicker.shared(for: window) {
             toolPicker.setVisible(true, forFirstResponder: canvasView)
@@ -59,22 +63,14 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     @IBAction func saveAction(_ sender: Any) {
         guard let collectionViewController = thumbnailCollectionViewController() else { return }
-        if let index = indexAtCollectionView {
-            collectionViewController.drawings[index] = canvasView.drawing
-            let indexPath = IndexPath(row: index, section: 0)
-            collectionViewController.collectionView?.reloadItems(at: [indexPath])
-        } else {
-            let numberOfCells = collectionViewController.collectionView.numberOfItems(inSection: 0)
-            collectionViewController.drawings.append(canvasView.drawing)
-            let indexPath = IndexPath(row: numberOfCells, section: 0)
-            collectionViewController.collectionView.insertItems(at: [indexPath])
-        }
+        collectionViewController.saveDrawingOnCanvas(drawing: canvasView.drawing,
+                                                     index: indexAtCollectionView)
         dismiss(animated: false, completion: nil)
     }
     
-    @IBAction func deleteAction(_ sender: Any) {
+    @IBAction func cancelAction(_ sender: Any) {
         if let index = indexAtCollectionView {
-            alertWhenDelete(index: index)
+            alertWhenCancel(index: index)
         } else {
             dismiss(animated: false, completion: nil)
         }
@@ -86,15 +82,12 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
         return collectionViewController
     }
     
-    private func alertWhenDelete(index: Int) {
+    private func alertWhenCancel(index: Int) {
         let alertController = UIAlertController(title: "",
-                                      message: "本当に削除しますか？",
+                                      message: "編集内容が破棄されますが、よろしいですか？",
                                       preferredStyle: .alert)
-        let deleteAction = UIAlertAction(title: "OK", style: .destructive) {[weak self](action) in
-            let collectionViewController = self?.thumbnailCollectionViewController()
-            collectionViewController?.drawings.remove(at: index)
-            let indexPath = IndexPath(row: index, section: 0)
-            collectionViewController?.collectionView?.deleteItems(at: [indexPath])
+        let deleteAction = UIAlertAction(title: "OK",
+                                         style: .destructive) {[weak self](action) in
             self?.dismiss(animated: false, completion: nil)
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) {(action) in return }
@@ -105,8 +98,9 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     @IBAction func shareAction(_ sender: UIBarButtonItem) {
         let drawing = canvasView.drawing
-        let shareImage = drawing.image(from: drawing.bounds, scale: 1.0)
-        let activityViewController = UIActivityViewController(activityItems: [shareImage], applicationActivities: nil)
+        let image = drawing.image(from: drawing.bounds, scale: 1.0)
+        let activityViewController = UIActivityViewController(activityItems: [image],
+                                                              applicationActivities: nil)
         activityViewController.popoverPresentationController?.barButtonItem = sender
         present(activityViewController, animated: true, completion: nil)
     }
