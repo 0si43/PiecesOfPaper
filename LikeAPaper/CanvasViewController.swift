@@ -11,14 +11,15 @@ import PencilKit
 
 class CanvasViewController: UIViewController, PKToolPickerObserver {
 
-    private var statusBarHidden = false
+    private var canvasView: PKCanvasView!
+    private var toolPicker: PKToolPicker!
+    private var isHiddenStatusBar = false
+    override var prefersStatusBarHidden: Bool {
+        return isHiddenStatusBar
+    }
     // 既存のノート編集の場合、CollectionViewがセットする
     var drawing: PKDrawing?
     var indexAtCollectionView: Int?
-    override var prefersStatusBarHidden: Bool {
-        return statusBarHidden
-    }
-    private var canvasView: PKCanvasView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,38 +28,44 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
             canvasView.drawing = drawing
         }
         view.addSubview(canvasView)
+        canvasView.allowsFingerDrawing = false
         canvasView.isScrollEnabled = true
         canvasView.alwaysBounceHorizontal = true
         canvasView.alwaysBounceVertical = true
         addPalette()
+        // 上部のバーは全て非表示にする
+        setStatusBar(hidden: true)
+        setNavigationBar(hidden: true)
     }
     
     private func addPalette() {
         if let window = UIApplication.shared.windows.first,
             let toolPicker = PKToolPicker.shared(for: window) {
-            toolPicker.setVisible(true, forFirstResponder: canvasView)
-            toolPicker.addObserver(canvasView)
-            toolPicker.addObserver(self)
+            self.toolPicker = toolPicker
+            self.toolPicker.addObserver(canvasView)
+            self.toolPicker.addObserver(self)
             canvasView.becomeFirstResponder()
-            toolPicker.selectedTool = PKInkingTool(.pen, color: .black, width: 1)
+            self.toolPicker.selectedTool = PKInkingTool(.pen, color: .black, width: 1)
         }
     }
     
-    override func viewWillLayoutSubviews() {
-        upSideBarHidden(true)
+    @IBAction func tapAction(_ sender: Any) {
+        toggleAllToolsVisibility()
     }
     
-    @IBAction func swipeUp(_ sender: Any) {
-        upSideBarHidden(true)
+    private func toggleAllToolsVisibility() {
+        let hidden = !isHiddenStatusBar
+        setStatusBar(hidden: hidden)
+        setNavigationBar(hidden: hidden)
+        toolPicker.setVisible(!hidden, forFirstResponder: canvasView) // toolPickerはvisible指定なので、hiddenを反転させる
     }
     
-    @IBAction func swipeDown(_ sender: Any) {
-        upSideBarHidden(false)
+    private func setStatusBar(hidden: Bool) {
+        isHiddenStatusBar = hidden
     }
     
-    private func upSideBarHidden(_ isHidden: Bool) {
-        statusBarHidden = isHidden
-        navigationController?.setNavigationBarHidden(isHidden, animated: true)
+    private func setNavigationBar(hidden: Bool) {
+        navigationController?.setNavigationBarHidden(hidden, animated: true)
     }
     
     @IBAction func saveAction(_ sender: Any) {
