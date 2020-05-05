@@ -18,8 +18,7 @@ struct DataModel: Codable {
         return documentsDirectory.appendingPathComponent("Like_a_Paper.data")
     }
     
-    init(loadSkip: Bool = false) {
-        guard !loadSkip else { return }
+    init() {
         let url = saveURL
         if FileManager.default.fileExists(atPath: url.path) {
             do {

@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var drawings = [PKDrawing]()
     
     func applicationWillResignActive(_ application: UIApplication) {
-        let dataModel = DataModel(loadSkip: true)
+        let dataModel = DataModel(drawings: drawings)
         dataModel.save(drawings: drawings)
     }
 }
