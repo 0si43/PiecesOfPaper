@@ -9,23 +9,20 @@
 import UIKit
 import PencilKit
 
-private let reuseIdentifier = "ThumbnailCollectionViewCell"
-
 class ThumbnailCollectionViewController: UICollectionViewController {
     
-    let dataModel = DataModel()
+    private let reuseIdentifier = "ThumbnailCollectionViewCell"
+    private let dataModel = DataModel()
     var drawings = [PKDrawing]() {
-        didSet {
-            appDelegate?.drawings = drawings
-        }
+        didSet { appDelegate?.drawings = drawings }
     }
     
-    var appDelegate: AppDelegate? {
+    private var appDelegate: AppDelegate? {
         return UIApplication.shared.delegate as? AppDelegate
     }
     
     // タップしたノートのIndex
-    var selectedIndex: Int?
+    private var selectedIndex: Int?
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle {
@@ -55,8 +52,7 @@ class ThumbnailCollectionViewController: UICollectionViewController {
         if let navigationController = segue.destination as? UINavigationController,
             let canvas = navigationController.topViewController as? CanvasViewController {
             canvas.indexAtCollectionView = selectedIndex
-            guard let index = selectedIndex,
-                index < drawings.count else { return }
+            guard let index = selectedIndex, index <= drawings.endIndex else { return }
             canvas.drawing = drawings[index]
         }
         selectedIndex = nil
@@ -89,20 +85,15 @@ class ThumbnailCollectionViewController: UICollectionViewController {
         let index = indexPath.row
         let actionProvider: ([UIMenuElement]) -> UIMenu? = { _ in
             let share = UIAction(title: "Share",
-                                 image: UIImage(systemName: "square.and.arrow.up")
-                                 ) {[weak self] _ in
-                self?.shareAction(index: index, point: point)
-            }
+                                 image: UIImage(systemName: "square.and.arrow.up"))
+                                {[weak self] _ in self?.shareAction(index: index, point: point) }
             let copy = UIAction(title: "Copy",
-                                image: UIImage(systemName: "doc.on.doc")
-                                ) {[weak self] _ in
-                self?.copyAction(index: index)
-            }
+                                image: UIImage(systemName: "doc.on.doc"))
+                                {[weak self] _ in self?.copyAction(index: index) }
             let delete = UIAction(title: "Delete",
                                   image: UIImage(systemName: "trash"),
-                                  attributes: .destructive) {[weak self] _ in
-                self?.deleteAction(index: index)
-            }
+                                  attributes: .destructive)
+                                {[weak self] _ in self?.deleteAction(index: index) }
             return UIMenu(title: "", image: nil, identifier: nil, children: [copy, delete, share])
         }
 
@@ -112,6 +103,7 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     }
     
     private func shareAction(index: Int, point: CGPoint) {
+        guard index <= drawings.endIndex else { return }
         let drawing = drawings[index]
         let shareImage = drawing.image(from: drawing.bounds, scale: 1.0)
         let activityViewController = UIActivityViewController(activityItems: [shareImage], applicationActivities: nil)
@@ -121,14 +113,18 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     }
     
     private func copyAction(index: Int) {
+        guard index <= drawings.endIndex else { return }
         drawings.append(drawings[index])
         let indexPath = IndexPath(row: collectionView.numberOfItems(inSection: 0), section: 0)
         collectionView.insertItems(at: [indexPath])
     }
     
     private func deleteAction(index: Int) {
+        guard index < drawings.endIndex else { return }
         drawings.remove(at: index)
-        let indexPaths = (index ..< drawings.count).map {
+        collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
+        guard index != drawings.endIndex else { return } // 削除した要素が配列の末尾だった場合はリロード不要
+        let indexPaths = (index ..< drawings.endIndex).map {
             return IndexPath(row: $0, section: 0)
         }
         collectionView.reloadItems(at: indexPaths)
