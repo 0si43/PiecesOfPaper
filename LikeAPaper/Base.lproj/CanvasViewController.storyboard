@@ -42,6 +42,11 @@
                                     <action selector="shareAction:" destination="qJ8-dG-QYr" id="1eO-Az-NLF"/>
                                 </connections>
                             </barButtonItem>
+                            <barButtonItem title="Item" image="hand.draw" catalog="system" id="N2y-Rn-jr9">
+                                <connections>
+                                    <action selector="fingerDrawingAction:" destination="qJ8-dG-QYr" id="7sh-eA-bXx"/>
+                                </connections>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                 </viewController>
@@ -71,4 +76,7 @@
             <point key="canvasLocation" x="-348" y="128"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="hand.draw" catalog="system" width="128" height="108"/>
+    </resources>
 </document>
