@@ -42,7 +42,7 @@
 		A6134B7F245C09FC00E5F0FB /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		A6134B81245CF40400E5F0FB /* ThumbnailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCollectionViewCell.swift; sourceTree = "<group>"; };
 		A63A37C9244BF3E400B16575 /* ThumbnailCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCollectionViewController.swift; sourceTree = "<group>"; };
-		A6DE5BB72437167C006D3D47 /* LikeAPaper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LikeAPaper.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6DE5BB72437167C006D3D47 /* Like a Paper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Like a Paper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewController.swift; sourceTree = "<group>"; };
 		A6DE5BC12437167C006D3D47 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/CanvasViewController.storyboard; sourceTree = "<group>"; };
@@ -95,7 +95,7 @@
 		A6DE5BB82437167C006D3D47 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A6DE5BB72437167C006D3D47 /* LikeAPaper.app */,
+				A6DE5BB72437167C006D3D47 /* Like a Paper.app */,
 				A6DE5BCD2437167E006D3D47 /* LikeAPaperTests.xctest */,
 				A6DE5BD82437167E006D3D47 /* LikeAPaperUITests.xctest */,
 			);
@@ -154,7 +154,7 @@
 			);
 			name = LikeAPaper;
 			productName = LikeAPaper;
-			productReference = A6DE5BB72437167C006D3D47 /* LikeAPaper.app */;
+			productReference = A6DE5BB72437167C006D3D47 /* Like a Paper.app */;
 			productType = "com.apple.product-type.application";
 		};
 		A6DE5BCC2437167E006D3D47 /* LikeAPaperTests */ = {
@@ -446,7 +446,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Like a Paper";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -464,7 +464,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Like a Paper";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
