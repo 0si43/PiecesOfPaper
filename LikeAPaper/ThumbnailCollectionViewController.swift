@@ -13,7 +13,7 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     
     private let reuseIdentifier = "ThumbnailCollectionViewCell"
     private let dataModel = DataModel()
-    var drawings = [PKDrawing]() {
+    private var drawings = [PKDrawing]() {
         didSet { appDelegate?.drawings = drawings }
     }
     
@@ -52,10 +52,25 @@ class ThumbnailCollectionViewController: UICollectionViewController {
         if let navigationController = segue.destination as? UINavigationController,
             let canvas = navigationController.topViewController as? CanvasViewController {
             canvas.indexAtCollectionView = selectedIndex
-            guard let index = selectedIndex, index <= drawings.endIndex else { return }
+            guard let index = selectedIndex, index < drawings.endIndex else { return }
             canvas.drawing = drawings[index]
         }
         selectedIndex = nil
+    }
+    
+    // 新規作成の場合、indexはnilで渡す
+    func saveDrawingOnCanvas(drawing: PKDrawing, index: Int?) {
+        if let index = index {
+            guard index < drawings.endIndex else { return }
+            drawings[index] = drawing
+            let indexPath = IndexPath(row: index, section: 0)
+            collectionView.reloadItems(at: [indexPath])
+        } else {
+            let numberOfCells = collectionView.numberOfItems(inSection: 0)
+            drawings.append(drawing)
+            let indexPath = IndexPath(row: numberOfCells, section: 0)
+            collectionView.insertItems(at: [indexPath])
+        }
     }
     
     // MARK: UICollectionViewDataSource
@@ -102,6 +117,7 @@ class ThumbnailCollectionViewController: UICollectionViewController {
                                           actionProvider: actionProvider)
     }
     
+    // UIMenuタップ時のアクション
     private func shareAction(index: Int, point: CGPoint) {
         guard index <= drawings.endIndex else { return }
         let drawing = drawings[index]
