@@ -111,4 +111,9 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
         activityViewController.popoverPresentationController?.barButtonItem = sender
         present(activityViewController, animated: true, completion: nil)
     }
+    
+    @IBAction func fingerDrawingAction(_ sender: UIBarButtonItem) {
+        canvasView.allowsFingerDrawing.toggle()
+        sender.image = canvasView.allowsFingerDrawing ? UIImage(systemName: "hand.draw.fill") : UIImage(systemName: "hand.draw")
+    }
 }
