@@ -111,7 +111,6 @@ class ThumbnailCollectionViewController: UICollectionViewController {
                                 {[weak self] _ in self?.deleteAction(index: index) }
             return UIMenu(title: "", image: nil, identifier: nil, children: [copy, delete, share])
         }
-
         return UIContextMenuConfiguration(identifier: nil,
                                           previewProvider: nil,
                                           actionProvider: actionProvider)
