@@ -42,16 +42,16 @@
 		A6134B7F245C09FC00E5F0FB /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		A6134B81245CF40400E5F0FB /* ThumbnailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCollectionViewCell.swift; sourceTree = "<group>"; };
 		A63A37C9244BF3E400B16575 /* ThumbnailCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCollectionViewController.swift; sourceTree = "<group>"; };
-		A6DE5BB72437167C006D3D47 /* Like a Paper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Like a Paper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6DE5BB72437167C006D3D47 /* Like Paper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Like Paper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewController.swift; sourceTree = "<group>"; };
 		A6DE5BC12437167C006D3D47 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/CanvasViewController.storyboard; sourceTree = "<group>"; };
 		A6DE5BC32437167E006D3D47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A6DE5BC82437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A6DE5BCD2437167E006D3D47 /* LikeAPaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LikeAPaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6DE5BCD2437167E006D3D47 /* LikePaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LikePaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BD12437167E006D3D47 /* LikeAPaperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeAPaperTests.swift; sourceTree = "<group>"; };
 		A6DE5BD32437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A6DE5BD82437167E006D3D47 /* LikeAPaperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LikeAPaperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6DE5BD82437167E006D3D47 /* LikePaperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LikePaperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BDC2437167E006D3D47 /* LikeAPaperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeAPaperUITests.swift; sourceTree = "<group>"; };
 		A6DE5BDE2437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6DE5BEE24397A82006D3D47 /* ThumbnailCollectionViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ThumbnailCollectionViewController.storyboard; sourceTree = "<group>"; };
@@ -85,9 +85,9 @@
 		A6DE5BAE2437167C006D3D47 = {
 			isa = PBXGroup;
 			children = (
-				A6DE5BB92437167C006D3D47 /* LikeAPaper */,
-				A6DE5BD02437167E006D3D47 /* LikeAPaperTests */,
-				A6DE5BDB2437167E006D3D47 /* LikeAPaperUITests */,
+				A6DE5BB92437167C006D3D47 /* LikePaper */,
+				A6DE5BD02437167E006D3D47 /* LikePaperTests */,
+				A6DE5BDB2437167E006D3D47 /* LikePaperUITests */,
 				A6DE5BB82437167C006D3D47 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -95,14 +95,14 @@
 		A6DE5BB82437167C006D3D47 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A6DE5BB72437167C006D3D47 /* Like a Paper.app */,
-				A6DE5BCD2437167E006D3D47 /* LikeAPaperTests.xctest */,
-				A6DE5BD82437167E006D3D47 /* LikeAPaperUITests.xctest */,
+				A6DE5BB72437167C006D3D47 /* Like Paper.app */,
+				A6DE5BCD2437167E006D3D47 /* LikePaperTests.xctest */,
+				A6DE5BD82437167E006D3D47 /* LikePaperUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		A6DE5BB92437167C006D3D47 /* LikeAPaper */ = {
+		A6DE5BB92437167C006D3D47 /* LikePaper */ = {
 			isa = PBXGroup;
 			children = (
 				A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */,
@@ -116,33 +116,33 @@
 				A6134B7D245AC61D00E5F0FB /* LaunchScreen.storyboard */,
 				A6DE5BC82437167E006D3D47 /* Info.plist */,
 			);
-			path = LikeAPaper;
+			path = LikePaper;
 			sourceTree = "<group>";
 		};
-		A6DE5BD02437167E006D3D47 /* LikeAPaperTests */ = {
+		A6DE5BD02437167E006D3D47 /* LikePaperTests */ = {
 			isa = PBXGroup;
 			children = (
 				A6DE5BD12437167E006D3D47 /* LikeAPaperTests.swift */,
 				A6DE5BD32437167E006D3D47 /* Info.plist */,
 			);
-			path = LikeAPaperTests;
+			path = LikePaperTests;
 			sourceTree = "<group>";
 		};
-		A6DE5BDB2437167E006D3D47 /* LikeAPaperUITests */ = {
+		A6DE5BDB2437167E006D3D47 /* LikePaperUITests */ = {
 			isa = PBXGroup;
 			children = (
 				A6DE5BDC2437167E006D3D47 /* LikeAPaperUITests.swift */,
 				A6DE5BDE2437167E006D3D47 /* Info.plist */,
 			);
-			path = LikeAPaperUITests;
+			path = LikePaperUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A6DE5BB62437167C006D3D47 /* LikeAPaper */ = {
+		A6DE5BB62437167C006D3D47 /* LikePaper */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A6DE5BE12437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikeAPaper" */;
+			buildConfigurationList = A6DE5BE12437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikePaper" */;
 			buildPhases = (
 				A6DE5BB32437167C006D3D47 /* Sources */,
 				A6DE5BB42437167C006D3D47 /* Frameworks */,
@@ -152,14 +152,14 @@
 			);
 			dependencies = (
 			);
-			name = LikeAPaper;
+			name = LikePaper;
 			productName = LikeAPaper;
-			productReference = A6DE5BB72437167C006D3D47 /* Like a Paper.app */;
+			productReference = A6DE5BB72437167C006D3D47 /* Like Paper.app */;
 			productType = "com.apple.product-type.application";
 		};
-		A6DE5BCC2437167E006D3D47 /* LikeAPaperTests */ = {
+		A6DE5BCC2437167E006D3D47 /* LikePaperTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A6DE5BE42437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikeAPaperTests" */;
+			buildConfigurationList = A6DE5BE42437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikePaperTests" */;
 			buildPhases = (
 				A6DE5BC92437167E006D3D47 /* Sources */,
 				A6DE5BCA2437167E006D3D47 /* Frameworks */,
@@ -170,14 +170,14 @@
 			dependencies = (
 				A6DE5BCF2437167E006D3D47 /* PBXTargetDependency */,
 			);
-			name = LikeAPaperTests;
+			name = LikePaperTests;
 			productName = LikeAPaperTests;
-			productReference = A6DE5BCD2437167E006D3D47 /* LikeAPaperTests.xctest */;
+			productReference = A6DE5BCD2437167E006D3D47 /* LikePaperTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		A6DE5BD72437167E006D3D47 /* LikeAPaperUITests */ = {
+		A6DE5BD72437167E006D3D47 /* LikePaperUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A6DE5BE72437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikeAPaperUITests" */;
+			buildConfigurationList = A6DE5BE72437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikePaperUITests" */;
 			buildPhases = (
 				A6DE5BD42437167E006D3D47 /* Sources */,
 				A6DE5BD52437167E006D3D47 /* Frameworks */,
@@ -188,9 +188,9 @@
 			dependencies = (
 				A6DE5BDA2437167E006D3D47 /* PBXTargetDependency */,
 			);
-			name = LikeAPaperUITests;
+			name = LikePaperUITests;
 			productName = LikeAPaperUITests;
-			productReference = A6DE5BD82437167E006D3D47 /* LikeAPaperUITests.xctest */;
+			productReference = A6DE5BD82437167E006D3D47 /* LikePaperUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -216,7 +216,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A6DE5BB22437167C006D3D47 /* Build configuration list for PBXProject "LikeAPaper" */;
+			buildConfigurationList = A6DE5BB22437167C006D3D47 /* Build configuration list for PBXProject "LikePaper" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -229,9 +229,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A6DE5BB62437167C006D3D47 /* LikeAPaper */,
-				A6DE5BCC2437167E006D3D47 /* LikeAPaperTests */,
-				A6DE5BD72437167E006D3D47 /* LikeAPaperUITests */,
+				A6DE5BB62437167C006D3D47 /* LikePaper */,
+				A6DE5BCC2437167E006D3D47 /* LikePaperTests */,
+				A6DE5BD72437167E006D3D47 /* LikePaperUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -298,12 +298,12 @@
 /* Begin PBXTargetDependency section */
 		A6DE5BCF2437167E006D3D47 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A6DE5BB62437167C006D3D47 /* LikeAPaper */;
+			target = A6DE5BB62437167C006D3D47 /* LikePaper */;
 			targetProxy = A6DE5BCE2437167E006D3D47 /* PBXContainerItemProxy */;
 		};
 		A6DE5BDA2437167E006D3D47 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A6DE5BB62437167C006D3D47 /* LikeAPaper */;
+			target = A6DE5BB62437167C006D3D47 /* LikePaper */;
 			targetProxy = A6DE5BD92437167E006D3D47 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -440,13 +440,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = JDTR4Y333X;
-				INFOPLIST_FILE = LikeAPaper/Info.plist;
+				INFOPLIST_FILE = LikePaper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper;
-				PRODUCT_NAME = "Like a Paper";
+				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikePaper;
+				PRODUCT_NAME = "Like Paper";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -458,13 +458,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = JDTR4Y333X;
-				INFOPLIST_FILE = LikeAPaper/Info.plist;
+				INFOPLIST_FILE = LikePaper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper;
-				PRODUCT_NAME = "Like a Paper";
+				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikePaper;
+				PRODUCT_NAME = "Like Paper";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -488,7 +488,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LikeAPaper.app/LikeAPaper";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LikePaper.app/LikePaper";
 			};
 			name = Debug;
 		};
@@ -510,7 +510,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LikeAPaper.app/LikeAPaper";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LikePaper.app/LikePaper";
 			};
 			name = Release;
 		};
@@ -557,7 +557,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A6DE5BB22437167C006D3D47 /* Build configuration list for PBXProject "LikeAPaper" */ = {
+		A6DE5BB22437167C006D3D47 /* Build configuration list for PBXProject "LikePaper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A6DE5BDF2437167E006D3D47 /* Debug */,
@@ -566,7 +566,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A6DE5BE12437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikeAPaper" */ = {
+		A6DE5BE12437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikePaper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A6DE5BE22437167E006D3D47 /* Debug */,
@@ -575,7 +575,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A6DE5BE42437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikeAPaperTests" */ = {
+		A6DE5BE42437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikePaperTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A6DE5BE52437167E006D3D47 /* Debug */,
@@ -584,7 +584,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A6DE5BE72437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikeAPaperUITests" */ = {
+		A6DE5BE72437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikePaperUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A6DE5BE82437167E006D3D47 /* Debug */,
