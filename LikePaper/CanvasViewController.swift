@@ -91,7 +91,7 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     private func alertWhenCancel(index: Int) {
         let alertController = UIAlertController(title: "",
-                                      message: "編集内容が破棄されますが、よろしいですか？",
+                                      message: "Your changes will be discarded",
                                       preferredStyle: .alert)
         let deleteAction = UIAlertAction(title: "OK",
                                          style: .destructive) {[weak self](action) in
