@@ -12,7 +12,14 @@ import PencilKit
 class CanvasViewController: UIViewController, PKToolPickerObserver {
 
     private var canvasView: PKCanvasView!
-    private var toolPicker: PKToolPicker!
+    private var toolPicker: PKToolPicker = {
+        if #available(iOS 14.0, *) {
+            return PKToolPicker()
+        } else {
+            return PKToolPicker.shared(for: UIApplication.shared.windows.first!)!
+        }
+    }()
+    
     private var isHiddenStatusBar = false
     override var prefersStatusBarHidden: Bool {
         return isHiddenStatusBar
@@ -23,6 +30,7 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         canvasView = PKCanvasView(frame: view.frame)
         if let drawing = drawing {
             canvasView.drawing = drawing
@@ -32,10 +40,12 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
         canvasView.allowsFingerDrawing = false
         canvasView.isScrollEnabled = true
         canvasView.alwaysBounceHorizontal = true
         canvasView.alwaysBounceVertical = true
+        
         addPalette()
         // 上部のバーは全て非表示にする
         setStatusBar(hidden: true)
@@ -43,14 +53,10 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     }
     
     private func addPalette() {
-        if let window = UIApplication.shared.windows.first,
-            let toolPicker = PKToolPicker.shared(for: window) {
-            self.toolPicker = toolPicker
-            self.toolPicker.addObserver(canvasView)
-            self.toolPicker.addObserver(self)
-            canvasView.becomeFirstResponder()
-            self.toolPicker.selectedTool = PKInkingTool(.pen, color: .black, width: 1)
-        }
+        toolPicker.addObserver(canvasView)
+        toolPicker.addObserver(self)
+        canvasView.becomeFirstResponder()
+        toolPicker.selectedTool = PKInkingTool(.pen, color: .black, width: 1)
     }
     
     @IBAction func tapAction(_ sender: Any) {
