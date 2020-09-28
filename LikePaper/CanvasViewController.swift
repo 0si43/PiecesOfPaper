@@ -28,6 +28,10 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
             canvasView.drawing = drawing
         }
         view.addSubview(canvasView)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         canvasView.allowsFingerDrawing = false
         canvasView.isScrollEnabled = true
         canvasView.alwaysBounceHorizontal = true
