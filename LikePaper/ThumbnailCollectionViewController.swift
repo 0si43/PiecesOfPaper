@@ -21,6 +21,8 @@ class ThumbnailCollectionViewController: UICollectionViewController {
         return UIApplication.shared.delegate as? AppDelegate
     }
     
+    private var firstLunch = true
+    
     // タップしたノートのIndex
     private var selectedIndex: Int?
     
@@ -37,7 +39,13 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.drawings = dataModel.drawings
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard firstLunch else { return }
         performSegue(withIdentifier: "toCanvasView", sender: self)
+        firstLunch = false
     }
 
     @IBAction func newCanvas(_ sender: Any) {
