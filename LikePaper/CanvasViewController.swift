@@ -130,7 +130,11 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     }
     
     @IBAction func fingerDrawingAction(_ sender: UIBarButtonItem) {
-        canvasView.allowsFingerDrawing.toggle()
+        if #available(iOS 14.0, *) {
+            canvasView.drawingPolicy = canvasView.drawingPolicy == .anyInput ? .pencilOnly : .anyInput
+        } else {
+            canvasView.allowsFingerDrawing.toggle()
+        }
         sender.image = canvasView.allowsFingerDrawing ? UIImage(systemName: "hand.draw.fill") : UIImage(systemName: "hand.draw")
     }
 }
