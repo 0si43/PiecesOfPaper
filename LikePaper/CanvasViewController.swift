@@ -12,7 +12,16 @@ import PencilKit
 class CanvasViewController: UIViewController, PKToolPickerObserver {
 
     private var canvasView: PKCanvasView!
-    private var toolPicker: PKToolPicker!
+    private var toolPicker: PKToolPicker = {
+        if #available(iOS 14.0, *) {
+            return PKToolPicker()
+        } else {
+            return PKToolPicker.shared(for: UIApplication.shared.windows.first!)!
+        }
+    }()
+    
+    private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
+    
     private var isHiddenStatusBar = false
     override var prefersStatusBarHidden: Bool {
         return isHiddenStatusBar
@@ -23,15 +32,26 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        settingCanvas()
+    }
+    
+    private func settingCanvas() {
         canvasView = PKCanvasView(frame: view.frame)
         if let drawing = drawing {
             canvasView.drawing = drawing
         }
         view.addSubview(canvasView)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
         canvasView.allowsFingerDrawing = false
         canvasView.isScrollEnabled = true
         canvasView.alwaysBounceHorizontal = true
         canvasView.alwaysBounceVertical = true
+        
         addPalette()
         // 上部のバーは全て非表示にする
         setStatusBar(hidden: true)
@@ -39,14 +59,10 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     }
     
     private func addPalette() {
-        if let window = UIApplication.shared.windows.first,
-            let toolPicker = PKToolPicker.shared(for: window) {
-            self.toolPicker = toolPicker
-            self.toolPicker.addObserver(canvasView)
-            self.toolPicker.addObserver(self)
-            canvasView.becomeFirstResponder()
-            self.toolPicker.selectedTool = PKInkingTool(.pen, color: .black, width: 1)
-        }
+        toolPicker.addObserver(canvasView)
+        toolPicker.addObserver(self)
+        canvasView.becomeFirstResponder()
+        toolPicker.selectedTool = defaultTool
     }
     
     @IBAction func tapAction(_ sender: Any) {
@@ -58,6 +74,7 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
         setStatusBar(hidden: hidden)
         setNavigationBar(hidden: hidden)
         toolPicker.setVisible(!hidden, forFirstResponder: canvasView) // toolPickerはvisible指定なので、hiddenを反転させる
+        canvasView.becomeFirstResponder()
     }
     
     private func setStatusBar(hidden: Bool) {
@@ -91,7 +108,7 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     private func alertWhenCancel(index: Int) {
         let alertController = UIAlertController(title: "",
-                                      message: "編集内容が破棄されますが、よろしいですか？",
+                                      message: "Your changes will be discarded",
                                       preferredStyle: .alert)
         let deleteAction = UIAlertAction(title: "OK",
                                          style: .destructive) {[weak self](action) in

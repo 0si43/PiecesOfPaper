@@ -88,3 +88,16 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+# other
+*.xcworkspace/*
+!*.xcworkspace/contents.xcworkspacedata 
+xcuserdata
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+*.ipa
+*.zip
+Build
+swiftlint.log
+.svn
+.DS_Store
