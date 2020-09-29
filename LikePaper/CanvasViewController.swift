@@ -20,6 +20,8 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
         }
     }()
     
+    private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
+    
     private var isHiddenStatusBar = false
     override var prefersStatusBarHidden: Bool {
         return isHiddenStatusBar
@@ -31,6 +33,10 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        settingCanvas()
+    }
+    
+    private func settingCanvas() {
         canvasView = PKCanvasView(frame: view.frame)
         if let drawing = drawing {
             canvasView.drawing = drawing
@@ -56,7 +62,7 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
         toolPicker.addObserver(canvasView)
         toolPicker.addObserver(self)
         canvasView.becomeFirstResponder()
-        toolPicker.selectedTool = PKInkingTool(.pen, color: .black, width: 1)
+        toolPicker.selectedTool = defaultTool
     }
     
     @IBAction func tapAction(_ sender: Any) {
@@ -68,6 +74,7 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
         setStatusBar(hidden: hidden)
         setNavigationBar(hidden: hidden)
         toolPicker.setVisible(!hidden, forFirstResponder: canvasView) // toolPickerはvisible指定なので、hiddenを反転させる
+        canvasView.becomeFirstResponder()
     }
     
     private func setStatusBar(hidden: Bool) {
