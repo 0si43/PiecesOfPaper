@@ -122,7 +122,7 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     @IBAction func shareAction(_ sender: UIBarButtonItem) {
         let drawing = canvasView.drawing
-        let image = drawing.image(from: drawing.bounds, scale: 1.0)
+        let image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
         let activityViewController = UIActivityViewController(activityItems: [image],
                                                               applicationActivities: nil)
         activityViewController.popoverPresentationController?.barButtonItem = sender
