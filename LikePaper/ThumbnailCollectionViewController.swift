@@ -12,15 +12,8 @@ import PencilKit
 class ThumbnailCollectionViewController: UICollectionViewController {
     
     private let reuseIdentifier = "ThumbnailCollectionViewCell"
-    private let dataModel = DataModel()
-    private var drawings = [PKDrawing]() {
-        didSet { appDelegate?.drawings = drawings }
-    }
-    
-    private var appDelegate: AppDelegate? {
-        return UIApplication.shared.delegate as? AppDelegate
-    }
-    
+    private var documentManager = DocumentManager()
+    private var drawings = [PKDrawing]()
     private var firstLunch = true
     
     // タップしたノートのIndex
@@ -32,13 +25,18 @@ class ThumbnailCollectionViewController: UICollectionViewController {
         }
     }
     
-    private func reload() {
+    @objc private func reload() {
+        drawings = documentManager.drawings
         collectionView?.reloadData()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.drawings = dataModel.drawings
+        self.drawings = documentManager.drawings
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(reload),
+                                               name: EventNames.loadedFromiCloud.eventName(),
+                                               object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -79,6 +77,8 @@ class ThumbnailCollectionViewController: UICollectionViewController {
             let indexPath = IndexPath(row: numberOfCells, section: 0)
             collectionView.insertItems(at: [indexPath])
         }
+        documentManager.drawings = drawings
+        documentManager.save()
     }
     
     // MARK: UICollectionViewDataSource
@@ -138,6 +138,8 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     private func copyAction(index: Int) {
         guard index <= drawings.endIndex else { return }
         drawings.append(drawings[index])
+        documentManager.drawings = drawings
+        documentManager.save()
         let indexPath = IndexPath(row: collectionView.numberOfItems(inSection: 0), section: 0)
         collectionView.insertItems(at: [indexPath])
     }
@@ -145,6 +147,8 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     private func deleteAction(index: Int) {
         guard index < drawings.endIndex else { return }
         drawings.remove(at: index)
+        documentManager.drawings = drawings
+        documentManager.save()
         collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
         guard index != drawings.endIndex else { return } // 削除した要素が配列の末尾だった場合はリロード不要
         let indexPaths = (index ..< drawings.endIndex).map {

@@ -11,6 +11,7 @@
 		A6134B80245C09FC00E5F0FB /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6134B7F245C09FC00E5F0FB /* DataModel.swift */; };
 		A6134B82245CF40400E5F0FB /* ThumbnailCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6134B81245CF40400E5F0FB /* ThumbnailCollectionViewCell.swift */; };
 		A63A37CA244BF3E400B16575 /* ThumbnailCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63A37C9244BF3E400B16575 /* ThumbnailCollectionViewController.swift */; };
+		A657B0762526A81800B7BE2D /* EventNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = A657B0752526A81800B7BE2D /* EventNames.swift */; };
 		A6DE5BBB2437167C006D3D47 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */; };
 		A6DE5BBF2437167C006D3D47 /* CanvasViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */; };
 		A6DE5BC22437167C006D3D47 /* CanvasViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC02437167C006D3D47 /* CanvasViewController.storyboard */; };
@@ -18,6 +19,8 @@
 		A6DE5BD22437167E006D3D47 /* LikeAPaperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BD12437167E006D3D47 /* LikeAPaperTests.swift */; };
 		A6DE5BDD2437167E006D3D47 /* LikeAPaperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BDC2437167E006D3D47 /* LikeAPaperUITests.swift */; };
 		A6DE5BEF24397A82006D3D47 /* ThumbnailCollectionViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BEE24397A82006D3D47 /* ThumbnailCollectionViewController.storyboard */; };
+		A6EE43272523271F000B203E /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE43262523271F000B203E /* Document.swift */; };
+		A6EE433125232DDE000B203E /* DocumentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE433025232DDE000B203E /* DocumentManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +45,8 @@
 		A6134B7F245C09FC00E5F0FB /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		A6134B81245CF40400E5F0FB /* ThumbnailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCollectionViewCell.swift; sourceTree = "<group>"; };
 		A63A37C9244BF3E400B16575 /* ThumbnailCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCollectionViewController.swift; sourceTree = "<group>"; };
+		A657B0752526A81800B7BE2D /* EventNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventNames.swift; sourceTree = "<group>"; };
+		A6675A37251D89BA00343151 /* Like Paper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Like Paper.entitlements"; sourceTree = "<group>"; };
 		A6DE5BB72437167C006D3D47 /* Like Paper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Like Paper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewController.swift; sourceTree = "<group>"; };
@@ -55,6 +60,8 @@
 		A6DE5BDC2437167E006D3D47 /* LikeAPaperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeAPaperUITests.swift; sourceTree = "<group>"; };
 		A6DE5BDE2437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6DE5BEE24397A82006D3D47 /* ThumbnailCollectionViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ThumbnailCollectionViewController.storyboard; sourceTree = "<group>"; };
+		A6EE43262523271F000B203E /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
+		A6EE433025232DDE000B203E /* DocumentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,12 +115,16 @@
 				A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */,
 				A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */,
 				A6134B7F245C09FC00E5F0FB /* DataModel.swift */,
+				A657B0752526A81800B7BE2D /* EventNames.swift */,
+				A6EE43262523271F000B203E /* Document.swift */,
+				A6EE433025232DDE000B203E /* DocumentManager.swift */,
 				A63A37C9244BF3E400B16575 /* ThumbnailCollectionViewController.swift */,
 				A6134B81245CF40400E5F0FB /* ThumbnailCollectionViewCell.swift */,
 				A6DE5BC02437167C006D3D47 /* CanvasViewController.storyboard */,
 				A6DE5BEE24397A82006D3D47 /* ThumbnailCollectionViewController.storyboard */,
 				A6DE5BC32437167E006D3D47 /* Assets.xcassets */,
 				A6134B7D245AC61D00E5F0FB /* LaunchScreen.storyboard */,
+				A6675A37251D89BA00343151 /* Like Paper.entitlements */,
 				A6DE5BC82437167E006D3D47 /* Info.plist */,
 			);
 			path = LikePaper;
@@ -270,7 +281,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				A6DE5BBF2437167C006D3D47 /* CanvasViewController.swift in Sources */,
+				A657B0762526A81800B7BE2D /* EventNames.swift in Sources */,
 				A6134B80245C09FC00E5F0FB /* DataModel.swift in Sources */,
+				A6EE433125232DDE000B203E /* DocumentManager.swift in Sources */,
+				A6EE43272523271F000B203E /* Document.swift in Sources */,
 				A6DE5BBB2437167C006D3D47 /* AppDelegate.swift in Sources */,
 				A6134B82245CF40400E5F0FB /* ThumbnailCollectionViewCell.swift in Sources */,
 				A63A37CA244BF3E400B16575 /* ThumbnailCollectionViewController.swift in Sources */,
@@ -438,6 +452,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "LikePaper/Like Paper.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = JDTR4Y333X;
@@ -458,6 +473,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "LikePaper/Like Paper.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = JDTR4Y333X;
