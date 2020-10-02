@@ -40,6 +40,12 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
         canvasView = PKCanvasView(frame: view.frame)
         if let drawing = drawing {
             canvasView.drawing = drawing
+            if drawing.bounds.origin != CGPoint.zero {
+                canvasView.contentOffset = drawing.bounds.origin
+            }
+            if drawing.bounds.size != CGSize.zero {
+                canvasView.contentSize = drawing.bounds.size
+            }
         }
         view.addSubview(canvasView)
     }
