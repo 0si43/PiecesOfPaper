@@ -57,7 +57,7 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
         setStatusBar(hidden: true)
         setNavigationBar(hidden: true)
     }
-    
+
     private func addPalette() {
         toolPicker.addObserver(canvasView)
         toolPicker.addObserver(self)
