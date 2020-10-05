@@ -9,7 +9,7 @@
 import UIKit
 import PencilKit
 
-class ThumbnailCollectionViewController: UICollectionViewController {
+final class ThumbnailCollectionViewController: UICollectionViewController {
     
     private let reuseIdentifier = "ThumbnailCollectionViewCell"
     private var documentManager = DocumentManager()
