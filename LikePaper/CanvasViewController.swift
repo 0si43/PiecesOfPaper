@@ -26,7 +26,7 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     override var prefersStatusBarHidden: Bool {
         return isHiddenStatusBar
     }
-    // 既存のノート編集の場合、CollectionViewがセットする
+    // if a note is exist、a CollectionView set below properties
     var drawing: PKDrawing?
     var indexAtCollectionView: Int?
     
@@ -45,16 +45,17 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
         canvasView = PKCanvasView(frame: view.frame)
         if let drawing = drawing {
             canvasView.drawing = drawing
-            if drawing.bounds.origin != CGPoint.zero {
-                canvasView.contentOffset = drawing.bounds.origin
-            }
             if canvasView.frame.size.width < drawing.bounds.size.width {
-                canvasView.contentSize.width = drawing.bounds.size.width
+                canvasView.contentSize.width = drawing.bounds.size.width + 100.0
+                // if drawing is far from canvasView's origin, add its distance
+                canvasView.contentSize.width += drawing.bounds.origin.x
             } else {
                 canvasView.contentSize.width = canvasView.frame.size.width
             }
             if canvasView.frame.size.height < drawing.bounds.size.height {
-                canvasView.contentSize.height = drawing.bounds.size.height
+                canvasView.contentSize.height = drawing.bounds.size.height + 100.0
+                // if drawing is far from canvasView's origin, add its distance
+                canvasView.contentSize.height += drawing.bounds.origin.y
             } else {
                 canvasView.contentSize.height = canvasView.frame.size.height
             }
