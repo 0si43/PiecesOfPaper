@@ -93,7 +93,8 @@ class ThumbnailCollectionViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? ThumbnailCollectionViewCell else { fatalError("Unexpected cell type.") }
         let drawing = drawings[indexPath.row]
-        let image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+        // When the scale was 2.0, the line was jagged(collectionView did something?)
+        let image = drawing.image(from: drawing.bounds, scale: 0.6)
         cell.imageView.image = image
         return cell
     }
