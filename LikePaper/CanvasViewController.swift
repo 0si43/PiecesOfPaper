@@ -36,6 +36,11 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
         settingCanvas()
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        canvasView.frame.size = size
+    }
+    
     private func settingCanvas() {
         canvasView = PKCanvasView(frame: view.frame)
         if let drawing = drawing {
@@ -45,9 +50,13 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
             }
             if canvasView.frame.size.width < drawing.bounds.size.width {
                 canvasView.contentSize.width = drawing.bounds.size.width
+            } else {
+                canvasView.contentSize.width = canvasView.frame.size.width
             }
             if canvasView.frame.size.height < drawing.bounds.size.height {
                 canvasView.contentSize.height = drawing.bounds.size.height
+            } else {
+                canvasView.contentSize.height = canvasView.frame.size.height
             }
         }
         view.addSubview(canvasView)
