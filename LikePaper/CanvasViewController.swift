@@ -9,7 +9,7 @@
 import UIKit
 import PencilKit
 
-class CanvasViewController: UIViewController, PKToolPickerObserver {
+final class CanvasViewController: UIViewController, PKToolPickerObserver {
 
     private var canvasView: PKCanvasView!
     private var toolPicker: PKToolPicker = {
