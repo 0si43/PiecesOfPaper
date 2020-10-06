@@ -26,6 +26,9 @@ final class CanvasViewController: UIViewController {
     override var prefersStatusBarHidden: Bool {
         return isHiddenStatusBar
     }
+    
+    @IBOutlet weak var autosaveButton: UIBarButtonItem!
+    
     // if a note is exist、a CollectionView set below properties
     var drawing: PKDrawing?
     var indexAtCollectionView: Int?
@@ -33,6 +36,11 @@ final class CanvasViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         settingCanvas()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateAutoSaveButton()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -48,6 +56,10 @@ final class CanvasViewController: UIViewController {
             adjustToCanvas(drawing: drawing)
         }
         view.addSubview(canvasView)
+    }
+    
+    private func updateAutoSaveButton() {
+        autosaveButton.title = Autosave.buttonTitle
     }
     
     private func adjustToCanvas(drawing: PKDrawing) {
@@ -150,6 +162,11 @@ final class CanvasViewController: UIViewController {
         }
         sender.image = canvasView.allowsFingerDrawing ? UIImage(systemName: "hand.draw.fill") : UIImage(systemName: "hand.draw")
     }
+    
+    @IBAction func autosaveChangeAction(_ sender: UIBarButtonItem) {
+        Autosave.isDisabled.toggle()
+        autosaveButton.title = Autosave.buttonTitle
+    }
 }
 
 // MARK: PKToolPickerObserver
@@ -166,6 +183,7 @@ extension CanvasViewController: PKToolPickerObserver {
 extension CanvasViewController: PKCanvasViewDelegate {
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
         guard let collectionViewController = thumbnailCollectionViewController() else { return }
+        guard !Autosave.isDisabled else { return }
         let index = collectionViewController.saveDrawingOnCanvas(drawing: canvasView.drawing, index: indexAtCollectionView)
         if indexAtCollectionView != index {
             indexAtCollectionView = index

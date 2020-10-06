@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fSL-jP-CXv">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fSL-jP-CXv">
     <device id="ipad12_9rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Canvas View Controller-->
         <scene sceneID="Bl9-fQ-slx">
             <objects>
-                <viewController storyboardIdentifier="CanvasViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="qJ8-dG-QYr" customClass="CanvasViewController" customModule="LikeAPaper" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CanvasViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="qJ8-dG-QYr" customClass="CanvasViewController" customModule="Like_Paper" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="tRT-Wn-Xtb">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemGray6Color" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="9OX-YD-5dz"/>
+                        <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <accessibility key="accessibilityConfiguration">
                             <accessibilityTraits key="traits" notEnabled="YES"/>
                         </accessibility>
                         <gestureRecognizers/>
-                        <viewLayoutGuide key="safeArea" id="9OX-YD-5dz"/>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="QIu-3L-WHL" appends="YES" id="bMX-6M-Qbo"/>
                         </connections>
                     </view>
                     <navigationItem key="navigationItem" id="91O-TO-dSK">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="bps-Rv-lAK">
-                            <color key="tintColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="tintColor" systemColor="systemRedColor"/>
                             <connections>
                                 <action selector="cancelAction:" destination="qJ8-dG-QYr" id="tXU-Hh-eMT"/>
                             </connections>
@@ -47,8 +49,16 @@
                                     <action selector="fingerDrawingAction:" destination="qJ8-dG-QYr" id="7sh-eA-bXx"/>
                                 </connections>
                             </barButtonItem>
+                            <barButtonItem title="Autosave: On" id="qzy-7p-YTL" userLabel="Autosave">
+                                <connections>
+                                    <action selector="autosaveChangeAction:" destination="qJ8-dG-QYr" id="trP-fq-I52"/>
+                                </connections>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
+                    <connections>
+                        <outlet property="autosaveButton" destination="qzy-7p-YTL" id="JwN-JF-jFV"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hyL-eu-1Z4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <tapGestureRecognizer id="QIu-3L-WHL">
@@ -77,6 +87,12 @@
         </scene>
     </scenes>
     <resources>
-        <image name="hand.draw" catalog="system" width="128" height="108"/>
+        <image name="hand.draw" catalog="system" width="128" height="113"/>
+        <systemColor name="systemGray6Color">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
     </resources>
 </document>
