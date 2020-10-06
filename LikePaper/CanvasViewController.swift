@@ -9,7 +9,7 @@
 import UIKit
 import PencilKit
 
-final class CanvasViewController: UIViewController, PKToolPickerObserver {
+final class CanvasViewController: UIViewController {
 
     private var canvasView: PKCanvasView!
     private var toolPicker: PKToolPicker = {
@@ -32,7 +32,6 @@ final class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         settingCanvas()
     }
     
@@ -43,24 +42,28 @@ final class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     private func settingCanvas() {
         canvasView = PKCanvasView(frame: view.frame)
+        canvasView.delegate = self
         if let drawing = drawing {
             canvasView.drawing = drawing
-            if canvasView.frame.size.width < drawing.bounds.size.width {
-                canvasView.contentSize.width = drawing.bounds.size.width + 100.0
-                // if drawing is far from canvasView's origin, add its distance
-                canvasView.contentSize.width += drawing.bounds.origin.x
-            } else {
-                canvasView.contentSize.width = canvasView.frame.size.width
-            }
-            if canvasView.frame.size.height < drawing.bounds.size.height {
-                canvasView.contentSize.height = drawing.bounds.size.height + 100.0
-                // if drawing is far from canvasView's origin, add its distance
-                canvasView.contentSize.height += drawing.bounds.origin.y
-            } else {
-                canvasView.contentSize.height = canvasView.frame.size.height
-            }
+            adjustToCanvas(drawing: drawing)
         }
         view.addSubview(canvasView)
+    }
+    
+    private func adjustToCanvas(drawing: PKDrawing) {
+        if canvasView.frame.size.width < drawing.bounds.size.width {
+            canvasView.contentSize.width = drawing.bounds.size.width + 100.0
+        } else {
+            canvasView.contentSize.width = canvasView.frame.size.width
+        }
+        if canvasView.frame.size.height < drawing.bounds.size.height {
+            canvasView.contentSize.height = drawing.bounds.size.height + 100.0
+        } else {
+            canvasView.contentSize.height = canvasView.frame.size.height
+        }
+        // if drawing is far from canvasView's origin, add its distance
+        canvasView.contentSize.width += drawing.bounds.origin.x
+        canvasView.contentSize.height += drawing.bounds.origin.y
     }
     
     override func viewDidLayoutSubviews() {
@@ -75,13 +78,6 @@ final class CanvasViewController: UIViewController, PKToolPickerObserver {
         // 上部のバーは全て非表示にする
         setStatusBar(hidden: true)
         setNavigationBar(hidden: true)
-    }
-
-    private func addPalette() {
-        toolPicker.addObserver(canvasView)
-        toolPicker.addObserver(self)
-        canvasView.becomeFirstResponder()
-        toolPicker.selectedTool = defaultTool
     }
     
     @IBAction func tapAction(_ sender: Any) {
@@ -106,8 +102,7 @@ final class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     @IBAction func saveAction(_ sender: Any) {
         guard let collectionViewController = thumbnailCollectionViewController() else { return }
-        collectionViewController.saveDrawingOnCanvas(drawing: canvasView.drawing,
-                                                     index: indexAtCollectionView)
+        _ = collectionViewController.saveDrawingOnCanvas(drawing: canvasView.drawing, index: indexAtCollectionView)
         dismiss(animated: false, completion: nil)
     }
     
@@ -142,8 +137,7 @@ final class CanvasViewController: UIViewController, PKToolPickerObserver {
     @IBAction func shareAction(_ sender: UIBarButtonItem) {
         let drawing = canvasView.drawing
         let image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
-        let activityViewController = UIActivityViewController(activityItems: [image],
-                                                              applicationActivities: nil)
+        let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         activityViewController.popoverPresentationController?.barButtonItem = sender
         present(activityViewController, animated: true, completion: nil)
     }
@@ -155,5 +149,26 @@ final class CanvasViewController: UIViewController, PKToolPickerObserver {
             canvasView.allowsFingerDrawing.toggle()
         }
         sender.image = canvasView.allowsFingerDrawing ? UIImage(systemName: "hand.draw.fill") : UIImage(systemName: "hand.draw")
+    }
+}
+
+// MARK: PKToolPickerObserver
+extension CanvasViewController: PKToolPickerObserver {
+    private func addPalette() {
+        toolPicker.addObserver(canvasView)
+        toolPicker.addObserver(self)
+        canvasView.becomeFirstResponder()
+        toolPicker.selectedTool = defaultTool
+    }
+}
+
+// MARK: PKCanvasViewDelegate
+extension CanvasViewController: PKCanvasViewDelegate {
+    func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+        guard let collectionViewController = thumbnailCollectionViewController() else { return }
+        let index = collectionViewController.saveDrawingOnCanvas(drawing: canvasView.drawing, index: indexAtCollectionView)
+        if indexAtCollectionView != index {
+            indexAtCollectionView = index
+        }
     }
 }

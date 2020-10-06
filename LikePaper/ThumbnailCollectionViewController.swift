@@ -16,7 +16,7 @@ final class ThumbnailCollectionViewController: UICollectionViewController {
     private var drawings = [PKDrawing]()
     private var firstLunch = true
     
-    // タップしたノートのIndex
+    // an index of a tapped note
     private var selectedIndex: Int?
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -64,10 +64,10 @@ final class ThumbnailCollectionViewController: UICollectionViewController {
         selectedIndex = nil
     }
     
-    // 新規作成の場合、indexはnilで渡す
-    func saveDrawingOnCanvas(drawing: PKDrawing, index: Int?) {
+    // if new, you pass an index as nil
+    func saveDrawingOnCanvas(drawing: PKDrawing, index: Int?) -> Int {
         if let index = index {
-            guard index < drawings.endIndex else { return }
+            guard index < drawings.endIndex else { return -1 }
             drawings[index] = drawing
             let indexPath = IndexPath(row: index, section: 0)
             collectionView.reloadItems(at: [indexPath])
@@ -79,6 +79,7 @@ final class ThumbnailCollectionViewController: UICollectionViewController {
         }
         documentManager.drawings = drawings
         documentManager.save()
+        return index ?? drawings.endIndex - 1
     }
     
     // MARK: UICollectionViewDataSource
@@ -125,7 +126,7 @@ final class ThumbnailCollectionViewController: UICollectionViewController {
                                           actionProvider: actionProvider)
     }
     
-    // UIMenuタップ時のアクション
+    // an action when UIMenu is tapped
     private func shareAction(index: Int, point: CGPoint) {
         guard index <= drawings.endIndex else { return }
         let drawing = drawings[index]
