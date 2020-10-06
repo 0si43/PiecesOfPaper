@@ -19,6 +19,8 @@ final class ThumbnailCollectionViewController: UICollectionViewController {
     // an index of a tapped note
     private var selectedIndex: Int?
     
+    @IBOutlet weak var autosaveButton: UIBarButtonItem!
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle {
             reload()
@@ -37,6 +39,11 @@ final class ThumbnailCollectionViewController: UICollectionViewController {
                                                selector: #selector(reload),
                                                name: EventNames.loadedFromiCloud.eventName(),
                                                object: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        autosaveButton.title = Autosave.buttonTitle
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -80,6 +87,12 @@ final class ThumbnailCollectionViewController: UICollectionViewController {
         documentManager.drawings = drawings
         documentManager.save()
         return index ?? drawings.endIndex - 1
+    }
+
+    
+    @IBAction func autosaveChangeAction(_ sender: UIBarButtonItem) {
+        Autosave.isDisabled.toggle()
+        autosaveButton.title = Autosave.buttonTitle
     }
     
     // MARK: UICollectionViewDataSource
