@@ -34,7 +34,7 @@
                             </connections>
                         </barButtonItem>
                         <rightBarButtonItems>
-                            <barButtonItem systemItem="done" id="NcI-Cu-GYZ">
+                            <barButtonItem enabled="NO" systemItem="save" id="NcI-Cu-GYZ">
                                 <connections>
                                     <action selector="saveAction:" destination="qJ8-dG-QYr" id="2lj-Jb-gah"/>
                                 </connections>
@@ -58,6 +58,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="autosaveButton" destination="qzy-7p-YTL" id="JwN-JF-jFV"/>
+                        <outlet property="saveButton" destination="NcI-Cu-GYZ" id="OSa-ls-VtL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hyL-eu-1Z4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

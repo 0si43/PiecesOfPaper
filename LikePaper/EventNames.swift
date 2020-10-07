@@ -9,7 +9,7 @@
 import Foundation
 
 enum EventNames: String {
-    case loadedFromiCloud
+    case oepnedDocument
     
     func eventName() -> Notification.Name {
         return Notification.Name(rawValue)

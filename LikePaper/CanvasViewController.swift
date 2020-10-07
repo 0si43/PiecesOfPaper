@@ -27,6 +27,7 @@ final class CanvasViewController: UIViewController {
         return isHiddenStatusBar
     }
     
+    @IBOutlet weak var saveButton: UIBarButtonItem!
     @IBOutlet weak var autosaveButton: UIBarButtonItem!
     
     // if a note is exist、a CollectionView set below properties
@@ -36,16 +37,11 @@ final class CanvasViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         settingCanvas()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        updateAutoSaveButton()
-    }
-    
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        canvasView.frame.size = size
+        guard let thumbnailCollectionViewController = thumbnailCollectionViewController() else { return }
+        if thumbnailCollectionViewController.didDocumentOpen {
+            enabledSaveButton()
+        }
+        settingNotification()
     }
     
     private func settingCanvas() {
@@ -56,6 +52,27 @@ final class CanvasViewController: UIViewController {
             adjustToCanvas(drawing: drawing)
         }
         view.addSubview(canvasView)
+    }
+    
+    private func settingNotification() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(enabledSaveButton),
+                                               name: EventNames.oepnedDocument.eventName(),
+                                               object: nil)
+    }
+    
+    @objc private func enabledSaveButton() {
+        saveButton.isEnabled = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateAutoSaveButton()
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        canvasView.frame.size = size
     }
     
     private func updateAutoSaveButton() {
@@ -184,7 +201,8 @@ extension CanvasViewController: PKCanvasViewDelegate {
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
         guard let collectionViewController = thumbnailCollectionViewController() else { return }
         guard !Autosave.isDisabled else { return }
-        let index = collectionViewController.saveDrawingOnCanvas(drawing: canvasView.drawing, index: indexAtCollectionView)
+        let index = collectionViewController.autosaveDrawingOnCanvas(drawing: canvasView.drawing, index: indexAtCollectionView)
+        
         if indexAtCollectionView != index {
             indexAtCollectionView = index
         }

@@ -19,6 +19,5 @@ final class Document: UIDocument {
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
         guard let data = contents as? Data else { return }
         dataModel = DataModel(data: data)
-        NotificationCenter.default.post(name: EventNames.loadedFromiCloud.eventName(), object: nil)
     }
 }
