@@ -9,13 +9,19 @@
 import Foundation
 import PencilKit
 
+protocol DocumentManagerDelegate: AnyObject {
+    var didDocumentOpen: Bool { get set }
+}
+
 struct DocumentManager {
+    weak var delegate: DocumentManagerDelegate?
+    
     var oldURLPath: URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths.first!
     }
     
-    // ver 1.0.0 ~ 1.2.0までのフォーマット
+    // formmat in ver 1.0.0 ~ 1.2.0
     var oldURL: URL {
         return oldURLPath.appendingPathComponent("Like_a_Paper.data")
     }
@@ -37,36 +43,41 @@ struct DocumentManager {
         set { document.dataModel.drawings = newValue }
     }
     
-    init() {
+    init(delegate: DocumentManagerDelegate) {
+        self.delegate = delegate
         document = Document(fileURL: saveURL)
-        let didMigrated = migrateICloudIfNeeded()
-        if !didMigrated {
-            document.open { success in
-                if success {
-                    print("open success")
-                } else {
-                    print("open failure")
-                }
+        migrateICloudIfNeeded()
+        document.open { [self]success in
+            if success {
+                self.delegate?.didDocumentOpen = true
+                print("open success")
+            } else {
+                print("open failure")
             }
         }
     }
     
-    private mutating func migrateICloudIfNeeded() -> Bool {
+    private mutating func migrateICloudIfNeeded() {
         guard FileManager.default.fileExists(atPath: oldURL.path),
-              !FileManager.default.fileExists(atPath: saveURL.path) else { return false }
+              !FileManager.default.fileExists(atPath: saveURL.path) else { return }
         let dataModel = DataModel(url: oldURL)
         try? FileManager.default.moveItem(atPath: oldURL.path, toPath: renamedOldURL.path)
         document.dataModel = dataModel
         document.save(to: saveURL, for: .forCreating)
-        return true
     }
     
     func save() {
         guard FileManager.default.fileExists(atPath: saveURL.path) else { return }
+        guard let didDocumentOpen = delegate?.didDocumentOpen, didDocumentOpen else { return }
         document.save(to: saveURL, for: .forOverwriting) { success in
             let result = success ? "success" : "failure"
             print("save " + result)
-            NotificationCenter.default.post(name: EventNames.loadedFromiCloud.eventName(), object: nil)
         }
+    }
+    
+    func autosave() {
+        guard let didDocumentOpen = delegate?.didDocumentOpen, didDocumentOpen else { return }
+        document.updateChangeCount(.done)
+        print("autosave")
     }
 }

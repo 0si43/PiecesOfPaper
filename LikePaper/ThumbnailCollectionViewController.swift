@@ -9,16 +9,28 @@
 import UIKit
 import PencilKit
 
-final class ThumbnailCollectionViewController: UICollectionViewController {
-    
+final class ThumbnailCollectionViewController: UICollectionViewController, DocumentManagerDelegate {
     private let reuseIdentifier = "ThumbnailCollectionViewCell"
-    private var documentManager = DocumentManager()
     private var drawings = [PKDrawing]()
+    // User made new drawings before load frome iCloud, set here and need to merge
+    private var tempolaryDrawings: [PKDrawing]?
     private var firstLunch = true
+    // update DocumentManager when first file is opened successfully
+    var didDocumentOpen = false {
+        didSet {
+            NotificationCenter.default.post(name: EventNames.oepnedDocument.eventName(), object: nil)
+            if let tempolaryDrawings = tempolaryDrawings {
+                documentManager.drawings += tempolaryDrawings
+            } else {
+                reload()
+            }
+        }
+    }
     
     // an index of a tapped note
     private var selectedIndex: Int?
     
+    private var documentManager: DocumentManager!
     @IBOutlet weak var autosaveButton: UIBarButtonItem!
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -27,17 +39,36 @@ final class ThumbnailCollectionViewController: UICollectionViewController {
         }
     }
     
-    @objc private func reload() {
+    @objc private func reloadIfNeeded() {
+        /*
+         UIDocument.State
+        .normal:            0b00000000 -> 0
+        .closed:            0b00000001 -> 1
+        .inConflict:        0b00000010 -> 2
+        .savingError:       0b00000100 -> 4
+        .editingDisabled:   0b00001000 -> 8
+        .progressAvailable: 0b00010000 -> 16
+         
+        State is OptionSet. Rawvalue can be some combination.
+        For example, .inConflict & .progressAvailable equales 20
+         */
+        print(documentManager.document.documentState.rawValue)
+        if documentManager.document.documentState == .normal {
+            reload()
+        }
+    }
+    
+    private func reload() {
         drawings = documentManager.drawings
         collectionView?.reloadData()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.drawings = documentManager.drawings
+        documentManager = DocumentManager(delegate: self)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(reload),
-                                               name: EventNames.loadedFromiCloud.eventName(),
+                                               selector: #selector(reloadIfNeeded),
+                                               name: UIDocument.stateChangedNotification,
                                                object: nil)
     }
     
@@ -74,19 +105,43 @@ final class ThumbnailCollectionViewController: UICollectionViewController {
     // if new, you pass an index as nil
     func saveDrawingOnCanvas(drawing: PKDrawing, index: Int?) -> Int {
         if let index = index {
-            guard index < drawings.endIndex else { return -1 }
-            drawings[index] = drawing
-            let indexPath = IndexPath(row: index, section: 0)
-            collectionView.reloadItems(at: [indexPath])
+            addExistDrawing(drawing: drawing, index: index)
         } else {
-            let numberOfCells = collectionView.numberOfItems(inSection: 0)
-            drawings.append(drawing)
-            let indexPath = IndexPath(row: numberOfCells, section: 0)
-            collectionView.insertItems(at: [indexPath])
+            addNewDrawing(drawing: drawing)
         }
         documentManager.drawings = drawings
         documentManager.save()
         return index ?? drawings.endIndex - 1
+    }
+    
+    // if new, you pass an index as nil
+    func autosaveDrawingOnCanvas(drawing: PKDrawing, index: Int?) -> Int {
+        if let index = index {
+            addExistDrawing(drawing: drawing, index: index)
+        } else {
+            addNewDrawing(drawing: drawing)
+        }
+        documentManager.drawings = drawings
+        documentManager.autosave()
+        return index ?? drawings.endIndex - 1
+    }
+    
+    private func addExistDrawing(drawing: PKDrawing, index: Int) {
+        guard index < drawings.endIndex else { return }
+        drawings[index] = drawing
+        let indexPath = IndexPath(row: index, section: 0)
+        collectionView.reloadItems(at: [indexPath])
+    }
+    
+    private func addNewDrawing(drawing: PKDrawing) {
+        let numberOfCells = collectionView.numberOfItems(inSection: 0)
+        if didDocumentOpen {
+            drawings.append(drawing)
+        } else {
+            tempolaryDrawings?.append(drawing)
+        }
+        let indexPath = IndexPath(row: numberOfCells, section: 0)
+        collectionView.insertItems(at: [indexPath])
     }
 
     
@@ -101,7 +156,7 @@ final class ThumbnailCollectionViewController: UICollectionViewController {
     }
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return drawings.count
+        return didDocumentOpen ? drawings.count : tempolaryDrawings?.count ?? 0
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -139,7 +194,7 @@ final class ThumbnailCollectionViewController: UICollectionViewController {
                                           actionProvider: actionProvider)
     }
     
-    // an action when UIMenu is tapped
+    // MARK: actions when UIMenu is tapped
     private func shareAction(index: Int, point: CGPoint) {
         guard index <= drawings.endIndex else { return }
         let drawing = drawings[index]
