@@ -37,6 +37,10 @@ struct DocumentManager {
         return url
     }
     
+    private var isiCloudEnabled: Bool {
+        (FileManager.default.ubiquityIdentityToken != nil)
+    }
+    
     var document: Document!
     var drawings: [PKDrawing] {
         get { document.dataModel.drawings }
