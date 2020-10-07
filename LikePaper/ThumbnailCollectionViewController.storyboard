@@ -12,7 +12,7 @@
         <!--Thumbnail Collection View Controller-->
         <scene sceneID="GND-Ir-GaI">
             <objects>
-                <collectionViewController id="wNf-e5-erg" customClass="ThumbnailCollectionViewController" customModule="Like_Paper" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController storyboardIdentifier="ThumbnailCollectionViewController" id="wNf-e5-erg" customClass="ThumbnailCollectionViewController" customModule="Like_Paper" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="UEZ-RR-S9t">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
