@@ -105,4 +105,16 @@ struct DocumentManager {
         document.updateChangeCount(.done)
         print("autosave")
     }
+    
+    // The winner choose by iCloud will be winner.
+    // Maybe simply based on modificationDate. A later saved is a winner.
+    func resolveConflict() {
+        do {
+            let currentVersion = NSFileVersion.currentVersionOfItem(at: saveURL)
+            try NSFileVersion.removeOtherVersionsOfItem(at: saveURL)
+            currentVersion?.isResolved = true
+        } catch {
+            print("failed delete conflict files")
+        }
+    }
 }
