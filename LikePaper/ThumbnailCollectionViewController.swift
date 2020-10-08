@@ -18,12 +18,7 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
     // update DocumentManager when first file is opened successfully
     var didDocumentOpen = false {
         didSet {
-            NotificationCenter.default.post(name: EventNames.oepnedDocument.eventName(), object: nil)
-            if let tempolaryDrawings = tempolaryDrawings {
-                documentManager.drawings += tempolaryDrawings
-            } else {
-                reload()
-            }
+            iCloudDocumentOpend()
         }
     }
     
@@ -61,6 +56,15 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
     private func reload() {
         drawings = documentManager.drawings
         collectionView?.reloadData()
+    }
+    
+    private func iCloudDocumentOpend() {
+        NotificationCenter.default.post(name: EventNames.oepnedDocument.eventName(), object: nil)
+        if let tempolaryDrawings = tempolaryDrawings {
+            documentManager.drawings += tempolaryDrawings
+        } else {
+            reload()
+        }
     }
     
     override func viewDidLoad() {
