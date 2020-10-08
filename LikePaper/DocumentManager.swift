@@ -16,21 +16,29 @@ protocol DocumentManagerDelegate: AnyObject {
 struct DocumentManager {
     weak var delegate: DocumentManagerDelegate?
     
-    var oldURLPath: URL {
+    var documentDirectory: URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths.first!
     }
     
     // formmat in ver 1.0.0 ~ 1.2.0
     var oldURL: URL {
-        return oldURLPath.appendingPathComponent("Like_a_Paper.data")
+        documentDirectory.appendingPathComponent("Like_a_Paper.data")
     }
     
     var renamedOldURL: URL {
-        return oldURLPath.appendingPathComponent("Like_a_Paper_v1format.data")
+        documentDirectory.appendingPathComponent("Like_Paper_v1format.plist")
     }
     
     var saveURL: URL {
+        isiCloudEnabled ? iCloudURL : deviceURL
+    }
+    
+    var deviceURL: URL {
+        documentDirectory.appendingPathComponent("drawings.plist")
+    }
+
+    var iCloudURL: URL {
         let url = FileManager.default.url(forUbiquityContainerIdentifier: nil)!
             .appendingPathComponent("Documents")
             .appendingPathComponent("drawings.plist")
@@ -50,7 +58,17 @@ struct DocumentManager {
     init(delegate: DocumentManagerDelegate) {
         self.delegate = delegate
         document = Document(fileURL: saveURL)
-        migrateICloudIfNeeded()
+        migrateFileIfNeeded()
+        
+        // new install after version 2.0
+        if !FileManager.default.fileExists(atPath: saveURL.path) {
+            document.dataModel = DataModel()
+            document.save(to: saveURL, for: .forCreating) { success in
+                let result = success ? "success" : "failure"
+                print("new document create: " + result)
+            }
+        }
+        
         document.open { [self]success in
             if success {
                 self.delegate?.didDocumentOpen = true
@@ -61,13 +79,16 @@ struct DocumentManager {
         }
     }
     
-    private mutating func migrateICloudIfNeeded() {
+    private mutating func migrateFileIfNeeded() {
         guard FileManager.default.fileExists(atPath: oldURL.path),
               !FileManager.default.fileExists(atPath: saveURL.path) else { return }
         let dataModel = DataModel(url: oldURL)
         try? FileManager.default.moveItem(atPath: oldURL.path, toPath: renamedOldURL.path)
         document.dataModel = dataModel
-        document.save(to: saveURL, for: .forCreating)
+        document.save(to: saveURL, for: .forCreating) { success in
+            let result = success ? "success" : "failure"
+            print("migrate: " + result)
+        }
     }
     
     func save() {
@@ -75,7 +96,7 @@ struct DocumentManager {
         guard let didDocumentOpen = delegate?.didDocumentOpen, didDocumentOpen else { return }
         document.save(to: saveURL, for: .forOverwriting) { success in
             let result = success ? "success" : "failure"
-            print("save " + result)
+            print("save: " + result)
         }
     }
     
