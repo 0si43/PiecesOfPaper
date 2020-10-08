@@ -51,6 +51,9 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
         if documentManager.document.documentState == .normal {
             reload()
         }
+        if documentManager.document.documentState == .inConflict {
+            documentManager.resolveConflict()
+        }
     }
     
     private func reload() {
