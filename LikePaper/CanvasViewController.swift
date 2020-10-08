@@ -91,8 +91,13 @@ final class CanvasViewController: UIViewController {
             canvasView.contentSize.height = canvasView.frame.size.height
         }
         // if drawing is far from canvasView's origin, add its distance
-        canvasView.contentSize.width += drawing.bounds.origin.x
-        canvasView.contentSize.height += drawing.bounds.origin.y
+        // surprisingly, no writing PKDrawing return origin(Infinite, Infinite)
+        if !drawing.bounds.origin.x.isInfinite {
+            canvasView.contentSize.width += drawing.bounds.origin.x
+        }
+        if !drawing.bounds.origin.y.isInfinite {
+            canvasView.contentSize.height += drawing.bounds.origin.y
+        }
     }
     
     override func viewDidLayoutSubviews() {
