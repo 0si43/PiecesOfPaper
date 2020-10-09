@@ -11,15 +11,11 @@ import PencilKit
 
 struct DataModel: Codable {
     
-    private(set) var drawings = [PKDrawing]()
-    private var saveURL: URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentsDirectory = paths.first!
-        return documentsDirectory.appendingPathComponent("Like_a_Paper.data")
-    }
+    var drawings = [PKDrawing]()
     
-    init() {
-        let url = saveURL
+    init() { }
+    
+    init(url: URL) {
         if FileManager.default.fileExists(atPath: url.path) {
             do {
                 let decoder = PropertyListDecoder()
@@ -32,23 +28,18 @@ struct DataModel: Codable {
         }
     }
     
-    init(drawings: [PKDrawing]) {
-        self.drawings = drawings
-    }
-    
-    private func save() {
-        let url = saveURL
+    init(data: Data) {
         do {
-            let encoder = PropertyListEncoder()
-            let data = try encoder.encode(self)
-            try data.write(to: url)
+            let decoder = PropertyListDecoder()
+            let dataModel = try decoder.decode(DataModel.self, from: data)
+            self = dataModel
         } catch(let error) {
-            print("Could not save data model: ", error.localizedDescription)
+            print("Could not load data model: ", error.localizedDescription)
         }
     }
     
-    func save(drawings: [PKDrawing]) {
-        let model = DataModel(drawings: drawings)
-        model.save()
+    func data() -> Data? {
+        let encoder = PropertyListEncoder()
+        return try? encoder.encode(self)
     }
 }

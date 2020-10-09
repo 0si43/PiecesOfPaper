@@ -1,14 +1,14 @@
 //
-//  LikeAPaperUITests.swift
-//  LikeAPaperUITests
+//  LikePaperUITests.swift
+//  LikePaperUITests
 //
-//  Created by nakajima on 2020/04/03.
+//  Created by nakajima on 2020/10/07.
 //  Copyright © 2020 Tsuyoshi nakajima. All rights reserved.
 //
 
 import XCTest
 
-class LikeAPaperUITests: XCTestCase {
+class LikePaperUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -35,7 +35,7 @@ class LikeAPaperUITests: XCTestCase {
     func testLaunchPerformance() throws {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) {
             // This measures how long it takes to launch your application.
-            measure(metrics: [XCTOSSignpostMetric.applicationLaunch]) {
+            measure(metrics: [XCTApplicationLaunchMetric()]) {
                 XCUIApplication().launch()
             }
         }

@@ -9,7 +9,7 @@
 import UIKit
 import PencilKit
 
-class CanvasViewController: UIViewController, PKToolPickerObserver {
+final class CanvasViewController: UIViewController {
 
     private var canvasView: PKCanvasView!
     private var toolPicker: PKToolPicker = {
@@ -26,22 +26,78 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     override var prefersStatusBarHidden: Bool {
         return isHiddenStatusBar
     }
-    // 既存のノート編集の場合、CollectionViewがセットする
+    
+    @IBOutlet weak var saveButton: UIBarButtonItem!
+    @IBOutlet weak var autosaveButton: UIBarButtonItem!
+    
+    // if a note is exist、a CollectionView set below properties
     var drawing: PKDrawing?
     var indexAtCollectionView: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         settingCanvas()
+        guard let thumbnailCollectionViewController = thumbnailCollectionViewController() else { return }
+        if thumbnailCollectionViewController.didDocumentOpen {
+            enabledSaveButton()
+        }
+        settingNotification()
     }
     
     private func settingCanvas() {
         canvasView = PKCanvasView(frame: view.frame)
+        canvasView.delegate = self
         if let drawing = drawing {
             canvasView.drawing = drawing
+            adjustToCanvas(drawing: drawing)
         }
         view.addSubview(canvasView)
+    }
+    
+    private func settingNotification() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(enabledSaveButton),
+                                               name: EventNames.oepnedDocument.eventName(),
+                                               object: nil)
+    }
+    
+    @objc private func enabledSaveButton() {
+        saveButton.isEnabled = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateAutoSaveButton()
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        canvasView.frame.size = size
+    }
+    
+    private func updateAutoSaveButton() {
+        autosaveButton.title = Autosave.buttonTitle
+    }
+    
+    private func adjustToCanvas(drawing: PKDrawing) {
+        if canvasView.frame.size.width < drawing.bounds.size.width {
+            canvasView.contentSize.width = drawing.bounds.size.width + 100.0
+        } else {
+            canvasView.contentSize.width = canvasView.frame.size.width
+        }
+        if canvasView.frame.size.height < drawing.bounds.size.height {
+            canvasView.contentSize.height = drawing.bounds.size.height + 100.0
+        } else {
+            canvasView.contentSize.height = canvasView.frame.size.height
+        }
+        // if drawing is far from canvasView's origin, add its distance
+        // surprisingly, no writing PKDrawing return origin(Infinite, Infinite)
+        if !drawing.bounds.origin.x.isInfinite {
+            canvasView.contentSize.width += drawing.bounds.origin.x
+        }
+        if !drawing.bounds.origin.y.isInfinite {
+            canvasView.contentSize.height += drawing.bounds.origin.y
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -56,13 +112,6 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
         // 上部のバーは全て非表示にする
         setStatusBar(hidden: true)
         setNavigationBar(hidden: true)
-    }
-    
-    private func addPalette() {
-        toolPicker.addObserver(canvasView)
-        toolPicker.addObserver(self)
-        canvasView.becomeFirstResponder()
-        toolPicker.selectedTool = defaultTool
     }
     
     @IBAction func tapAction(_ sender: Any) {
@@ -87,8 +136,7 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     @IBAction func saveAction(_ sender: Any) {
         guard let collectionViewController = thumbnailCollectionViewController() else { return }
-        collectionViewController.saveDrawingOnCanvas(drawing: canvasView.drawing,
-                                                     index: indexAtCollectionView)
+        _ = collectionViewController.saveDrawingOnCanvas(drawing: canvasView.drawing, index: indexAtCollectionView)
         dismiss(animated: false, completion: nil)
     }
     
@@ -122,15 +170,47 @@ class CanvasViewController: UIViewController, PKToolPickerObserver {
     
     @IBAction func shareAction(_ sender: UIBarButtonItem) {
         let drawing = canvasView.drawing
-        let image = drawing.image(from: drawing.bounds, scale: 1.0)
-        let activityViewController = UIActivityViewController(activityItems: [image],
-                                                              applicationActivities: nil)
+        let image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+        let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         activityViewController.popoverPresentationController?.barButtonItem = sender
         present(activityViewController, animated: true, completion: nil)
     }
     
     @IBAction func fingerDrawingAction(_ sender: UIBarButtonItem) {
-        canvasView.allowsFingerDrawing.toggle()
+        if #available(iOS 14.0, *) {
+            canvasView.drawingPolicy = canvasView.drawingPolicy == .anyInput ? .pencilOnly : .anyInput
+        } else {
+            canvasView.allowsFingerDrawing.toggle()
+        }
         sender.image = canvasView.allowsFingerDrawing ? UIImage(systemName: "hand.draw.fill") : UIImage(systemName: "hand.draw")
+    }
+    
+    @IBAction func autosaveChangeAction(_ sender: UIBarButtonItem) {
+        Autosave.isDisabled.toggle()
+        autosaveButton.title = Autosave.buttonTitle
+    }
+}
+
+// MARK: PKToolPickerObserver
+extension CanvasViewController: PKToolPickerObserver {
+    private func addPalette() {
+        toolPicker.addObserver(canvasView)
+        toolPicker.addObserver(self)
+        canvasView.becomeFirstResponder()
+        toolPicker.selectedTool = defaultTool
+    }
+}
+
+// MARK: PKCanvasViewDelegate
+extension CanvasViewController: PKCanvasViewDelegate {
+    func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+        guard let collectionViewController = thumbnailCollectionViewController() else { return }
+        guard collectionViewController.didDocumentOpen else { return }
+        guard !Autosave.isDisabled else { return }
+        let index = collectionViewController.autosaveDrawingOnCanvas(drawing: canvasView.drawing, index: indexAtCollectionView)
+        
+        if indexAtCollectionView != index {
+            indexAtCollectionView = index
+        }
     }
 }
