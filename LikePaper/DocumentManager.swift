@@ -58,23 +58,14 @@ struct DocumentManager {
     init(delegate: DocumentManagerDelegate) {
         self.delegate = delegate
         document = Document(fileURL: saveURL)
-        migrateFileIfNeeded()
         
-        // new install after version 2.0
-        if !FileManager.default.fileExists(atPath: saveURL.path) {
-            document.dataModel = DataModel()
-            document.save(to: saveURL, for: .forCreating) { success in
-                let result = success ? "success" : "failure"
-                print("new document create: " + result)
-            }
-        }
-        
-        document.open { [self]success in
-            if success {
-                self.delegate?.didDocumentOpen = true
-                print("open success")
+        if FileManager.default.fileExists(atPath: saveURL.path) {
+            openDocument()
+        } else {
+            if FileManager.default.fileExists(atPath: oldURL.path) {
+                migrateFileIfNeeded()
             } else {
-                print("open failure")
+                createNewDocument() // new install after version 2.0
             }
         }
     }
@@ -85,9 +76,41 @@ struct DocumentManager {
         let dataModel = DataModel(url: oldURL)
         try? FileManager.default.moveItem(atPath: oldURL.path, toPath: renamedOldURL.path)
         document.dataModel = dataModel
-        document.save(to: saveURL, for: .forCreating) { success in
-            let result = success ? "success" : "failure"
-            print("migrate: " + result)
+        document.save(to: saveURL, for: .forCreating) {[self] success in
+            if success {
+                print("migrate: success")
+                self.openDocument()
+            } else {
+                print("migrate: failure")
+                fatalError("could not maigrate old file")
+            }
+        }
+    }
+    
+    private mutating func createNewDocument() {
+        guard !FileManager.default.fileExists(atPath: saveURL.path) else { return }
+        document.dataModel = DataModel()
+        document.save(to: saveURL, for: .forCreating) {[self] success in
+            if success {
+                print("new document create: success")
+                self.openDocument()
+            } else {
+                print("new document create:  failure")
+                fatalError("could not create new document")
+            }
+        }
+    }
+    
+    private func openDocument() {
+        guard FileManager.default.fileExists(atPath: saveURL.path) else { return }
+        document.open { [self] success in
+            if success {
+                self.delegate?.didDocumentOpen = true
+                print("open success")
+            } else {
+                print("open failure")
+                fatalError("could not open document")
+            }
         }
     }
     

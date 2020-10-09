@@ -205,6 +205,7 @@ extension CanvasViewController: PKToolPickerObserver {
 extension CanvasViewController: PKCanvasViewDelegate {
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
         guard let collectionViewController = thumbnailCollectionViewController() else { return }
+        guard collectionViewController.didDocumentOpen else { return }
         guard !Autosave.isDisabled else { return }
         let index = collectionViewController.autosaveDrawingOnCanvas(drawing: canvasView.drawing, index: indexAtCollectionView)
         
