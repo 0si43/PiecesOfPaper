@@ -5,14 +5,17 @@
 - I cannot satisfied with (Apple)Notes app or Evernote when I wrote something by Apple Pencil. I felt it too much. 
 - You could lunch and write by this app. It's very minimalistic and essential.
 
-![Download_on_the_App_Store_Badge](https://apps.apple.com/jp/app/like-a-paper/id1511690088#?platform=ipad)
+[![Download_on_the_App_Store_Badge](./Documents/Download_on_the_App_Store_Badge.svg)](https://apps.apple.com/jp/app/like-a-paper/id1511690088#?platform=ipad)
 
 # Contributing
 Like Paper is started as indevidual project, but welcome to contribute!  
-If you want to contribute, clone tihs repository, and pull request to `develop` branch!
+If you want to contribute, fork tihs repository, and pull request to `develop` branch!
+
+If you are a learner or a developer for similar app, feel free to clone this repo.  
+I will happy to contribute your new project😃
 
 # Any complaints?
-If you have any complaints about this app, please make an issue!  
+If you have any complaints about this app, please [make an issue](https://github.com/0si43/LikePaper/issues/new)!  
 
 # License
 MIT License  
