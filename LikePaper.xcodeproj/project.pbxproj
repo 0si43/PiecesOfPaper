@@ -49,6 +49,7 @@
 		A657B0752526A81800B7BE2D /* EventNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventNames.swift; sourceTree = "<group>"; };
 		A6675A37251D89BA00343151 /* Like Paper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Like Paper.entitlements"; sourceTree = "<group>"; };
 		A66E7512253531440026B9A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A66E7513253538E00026B9A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		A66E81FF252C0D5F007A24D9 /* Autosave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Autosave.swift; sourceTree = "<group>"; };
 		A66E825C252D8453007A24D9 /* LikePaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LikePaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A66E825E252D8453007A24D9 /* LikePaperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikePaperTests.swift; sourceTree = "<group>"; };
@@ -114,6 +115,7 @@
 			isa = PBXGroup;
 			children = (
 				A66E7512253531440026B9A8 /* README.md */,
+				A66E7513253538E00026B9A8 /* LICENSE.md */,
 				A6DE5BB92437167C006D3D47 /* LikePaper */,
 				A66E825D252D8453007A24D9 /* LikePaperTests */,
 				A6B5B33C252D8AC0002D7B55 /* LikePaperUITests */,
