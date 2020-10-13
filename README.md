@@ -1,5 +1,5 @@
 # Like Paper
-[![License](https://img.shields.io/github/license/0si43/LikePaper)](https://github.com/0si43/LikePaper/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/0si43/LikePaper)](https://github.com/0si43/LikePaper/blob/master/LICENSE.md)
 
 - Like Paper is iOS application made by @0si43  
 - I cannot satisfied with (Apple)Notes app or Evernote when I wrote something by Apple Pencil. I felt it too much. 
