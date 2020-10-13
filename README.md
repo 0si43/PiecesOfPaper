@@ -9,10 +9,13 @@
 
 # Contributing
 Like Paper is started as indevidual project, but welcome to contribute!  
-If you want to contribute, clone tihs repository, and pull request to `develop` branch!
+If you want to contribute, fork tihs repository, and pull request to `develop` branch!
+
+If you are a learner or a developer for similar app, feel free to clone this repo.  
+I will happy to contribute your new project😃
 
 # Any complaints?
-If you have any complaints about this app, please make an issue!  
+If you have any complaints about this app, please [make an issue](https://github.com/0si43/LikePaper/issues/new)!  
 
 # License
 MIT License  
