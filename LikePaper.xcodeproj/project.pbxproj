@@ -50,7 +50,6 @@
 		A6675A37251D89BA00343151 /* Like Paper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Like Paper.entitlements"; sourceTree = "<group>"; };
 		A66E7512253531440026B9A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A66E7513253538E00026B9A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
-		A66E7516253547510026B9A8 /* Download_on_the_App_Store_Badge.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = Download_on_the_App_Store_Badge.svg; sourceTree = "<group>"; };
 		A66E81FF252C0D5F007A24D9 /* Autosave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Autosave.swift; sourceTree = "<group>"; };
 		A66E825C252D8453007A24D9 /* LikePaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LikePaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A66E825E252D8453007A24D9 /* LikePaperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikePaperTests.swift; sourceTree = "<group>"; };
@@ -94,14 +93,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A66E7515253547440026B9A8 /* Documents */ = {
-			isa = PBXGroup;
-			children = (
-				A66E7516253547510026B9A8 /* Download_on_the_App_Store_Badge.svg */,
-			);
-			path = Documents;
-			sourceTree = "<group>";
-		};
 		A66E825D252D8453007A24D9 /* LikePaperTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -127,7 +118,6 @@
 				A66E825D252D8453007A24D9 /* LikePaperTests */,
 				A6B5B33C252D8AC0002D7B55 /* LikePaperUITests */,
 				A6DE5BB82437167C006D3D47 /* Products */,
-				A66E7515253547440026B9A8 /* Documents */,
 				A66E7512253531440026B9A8 /* README.md */,
 				A66E7513253538E00026B9A8 /* LICENSE.md */,
 			);
@@ -228,7 +218,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1200;
-				LastUpgradeCheck = 1140;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Tsuyoshi nakajima";
 				TargetAttributes = {
 					A66E825B252D8453007A24D9 = {
@@ -464,6 +454,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -524,6 +515,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -558,14 +550,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "LikePaper/Like Paper.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = JDTR4Y333X;
 				INFOPLIST_FILE = LikePaper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper;
 				PRODUCT_NAME = "Like Paper";
 				SWIFT_VERSION = 5.0;
@@ -579,14 +571,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "LikePaper/Like Paper.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = JDTR4Y333X;
 				INFOPLIST_FILE = LikePaper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper;
 				PRODUCT_NAME = "Like Paper";
 				SWIFT_VERSION = 5.0;
