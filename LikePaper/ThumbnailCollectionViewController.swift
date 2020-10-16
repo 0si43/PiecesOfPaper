@@ -8,6 +8,7 @@
 
 import UIKit
 import PencilKit
+import StoreKit
 
 final class ThumbnailCollectionViewController: UICollectionViewController, DocumentManagerDelegate {
     private let reuseIdentifier = "ThumbnailCollectionViewCell"
@@ -86,9 +87,26 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        guard firstLunch else { return }
+        guard firstLunch else {
+            requestAppStoreReview()
+            return
+        }
         performSegue(withIdentifier: "toCanvasView", sender: self)
         firstLunch = false
+    }
+    
+    private func requestAppStoreReview() {
+        guard drawings.count >= 5 else { return } // frequently used
+        guard !UserDefaults.standard.bool(forKey: "DidAppStoreReviewRequested") else { return } // request once
+        if #available(iOS 14.0, *) {
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                SKStoreReviewController.requestReview(in: scene)
+                UserDefaults.standard.set(true, forKey: "DidAppStoreReviewRequested")
+            }
+        } else {
+            SKStoreReviewController.requestReview()
+            UserDefaults.standard.set(true, forKey: "DidAppStoreReviewRequested")
+        }
     }
 
     @IBAction func newCanvas(_ sender: Any) {
