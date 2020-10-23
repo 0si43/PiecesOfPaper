@@ -41,7 +41,8 @@ final class CanvasViewController: UIViewController {
         if thumbnailCollectionViewController.didDocumentOpen {
             enabledSaveButton()
         }
-        settingNotification()
+        settingNotificationCenter()
+        settingMinumumZoomLevelIfDeviceIsiPhone()
     }
     
     private func settingCanvas() {
@@ -54,11 +55,18 @@ final class CanvasViewController: UIViewController {
         view.addSubview(canvasView)
     }
     
-    private func settingNotification() {
+    private func settingNotificationCenter() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(enabledSaveButton),
                                                name: EventNames.oepnedDocument.eventName(),
                                                object: nil)
+    }
+    
+    private func settingMinumumZoomLevelIfDeviceIsiPhone() {
+        switch UIDevice.current.userInterfaceIdiom {
+        case .phone: canvasView.minimumZoomScale = 0.3
+        default: return
+        }
     }
     
     @objc private func enabledSaveButton() {
