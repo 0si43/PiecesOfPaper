@@ -29,6 +29,14 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
     private var documentManager: DocumentManager!
     @IBOutlet weak var autosaveButton: UIBarButtonItem!
     
+    private let scrollBottomButton: UIButton = {
+        let button = UIButton(frame: .zero)
+        button.backgroundColor = .systemBlue
+        button.alpha = 0.3
+        button.addTarget(self, action: #selector(scrollBottom), for: .touchDown)
+        return button
+    }()
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle {
             reload()
@@ -71,6 +79,13 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
         }
     }
     
+    @objc private func scrollBottom() {
+        guard !drawings.isEmpty else { return }
+        let index = drawings.count - 1
+        let indexPath = IndexPath(item: index, section: 0)
+        collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         documentManager = DocumentManager(delegate: self)
@@ -78,6 +93,12 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
                                                selector: #selector(reloadIfNeeded),
                                                name: UIDocument.stateChangedNotification,
                                                object: nil)
+        view.addSubview(scrollBottomButton)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        let frame = CGRect(x: view.frame.width  * 3 / 4, y: view.frame.maxY - 30, width: view.frame.width / 4, height: 30)
+        scrollBottomButton.frame = frame
     }
     
     override func viewWillAppear(_ animated: Bool) {
