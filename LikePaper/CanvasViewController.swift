@@ -21,6 +21,9 @@ final class CanvasViewController: UIViewController {
     }()
     
     private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
+    // for double tap action on Apple Pencil
+    private var currentTool: PKTool?
+    private var previousTool: PKTool?
     
     private var isHiddenStatusBar = false
     override var prefersStatusBarHidden: Bool {
@@ -41,6 +44,7 @@ final class CanvasViewController: UIViewController {
         if thumbnailCollectionViewController.didDocumentOpen {
             enabledSaveButton()
         }
+        addPencilInteraction()
         settingNotificationCenter()
         settingMinumumZoomLevelIfDeviceIsiPhone()
     }
@@ -206,6 +210,12 @@ extension CanvasViewController: PKToolPickerObserver {
         toolPicker.addObserver(self)
         canvasView.becomeFirstResponder()
         toolPicker.selectedTool = defaultTool
+        currentTool = defaultTool
+    }
+    
+    func toolPickerSelectedToolDidChange(_ toolPicker: PKToolPicker) {
+        previousTool = currentTool
+        currentTool = toolPicker.selectedTool
     }
 }
 
@@ -219,6 +229,39 @@ extension CanvasViewController: PKCanvasViewDelegate {
         
         if indexAtCollectionView != index {
             indexAtCollectionView = index
+        }
+    }
+}
+
+// MARK: UIPencilInteractionDelegate
+extension CanvasViewController: UIPencilInteractionDelegate {
+    private func addPencilInteraction() {
+        let pencilInteraction = UIPencilInteraction()
+        pencilInteraction.delegate = self
+        canvasView.addInteraction(pencilInteraction)
+    }
+    
+    func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
+        guard !toolPicker.isVisible else { return }
+        let action = UIPencilInteraction.preferredTapAction
+        switch action {
+        case .switchPrevious:   switchPreviousTool()
+        case .switchEraser:     switchEraser()
+        case .showColorPalette: toggleAllToolsVisibility()
+        case .ignore:           return
+        default:                return
+        }
+    }
+    
+    private func switchPreviousTool() {
+        toolPicker.selectedTool = previousTool ?? defaultTool
+    }
+    
+    private func switchEraser() {
+        if currentTool is PKEraserTool {
+            toolPicker.selectedTool = previousTool ?? defaultTool
+        } else {
+            toolPicker.selectedTool = PKEraserTool(.vector) // Maybe user could choice his/her preference
         }
     }
 }
