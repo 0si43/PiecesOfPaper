@@ -3,7 +3,8 @@
 
 - Like Paper is iOS application made by @0si43  
 - I cannot satisfied with (Apple)Notes app or Evernote when I wrote something by Apple Pencil. I felt it too much. 
-- You could lunch and write by this app. It's very minimalistic and essential.
+- You could lunch and write by this app. It's very intuitive, minimalistic, essential!
+- Technically, Like Paper largely depend on [PencilKit](https://developer.apple.com/documentation/pencilkit). You could see this app as one of the living sample using PencilKit framework(perhaps it's rare). 
 
 [![Download_on_the_App_Store_Badge](./docs/Download_on_the_App_Store_Badge.svg)](https://apps.apple.com/jp/app/like-a-paper/id1511690088#?platform=ipad)
 
