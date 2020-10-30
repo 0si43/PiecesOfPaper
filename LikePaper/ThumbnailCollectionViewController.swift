@@ -97,7 +97,10 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
     }
     
     override func viewDidLayoutSubviews() {
-        let frame = CGRect(x: view.frame.width  * 3 / 4, y: view.frame.maxY - 30, width: view.frame.width / 4, height: 30)
+        let frame = CGRect(x: view.frame.width  * 3 / 4,
+                           y: view.frame.maxY - 30 - view.safeAreaInsets.bottom,
+                           width: view.frame.width / 4,
+                           height: 30)
         scrollBottomButton.frame = frame
     }
     
