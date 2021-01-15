@@ -1,6 +1,6 @@
 # Variables
 
-PRODUCT_NAME := LikePaper
+PRODUCT_NAME := PiecesOfPaper
 PROJECT_NAME := ${PRODUCT_NAME}.xcodeproj
 SCHEME_NAME := ${PRODUCT_NAME}
 UI_TESTS_TARGET_NAME := ${PRODUCT_NAME}UITests
