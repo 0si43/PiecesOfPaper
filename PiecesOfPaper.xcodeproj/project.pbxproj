@@ -51,10 +51,10 @@
 		A66E7512253531440026B9A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A66E7513253538E00026B9A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		A66E81FF252C0D5F007A24D9 /* Autosave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Autosave.swift; sourceTree = "<group>"; };
-		A66E825C252D8453007A24D9 /* LikePaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LikePaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A66E825C252D8453007A24D9 /* PiecesOfPaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PiecesOfPaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A66E825E252D8453007A24D9 /* LikePaperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikePaperTests.swift; sourceTree = "<group>"; };
 		A66E8260252D8453007A24D9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A6B5B33B252D8AC0002D7B55 /* LikePaperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LikePaperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6B5B33B252D8AC0002D7B55 /* PiecesOfPaperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PiecesOfPaperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6B5B33D252D8AC0002D7B55 /* LikePaperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikePaperUITests.swift; sourceTree = "<group>"; };
 		A6B5B33F252D8AC0002D7B55 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6DE5BB72437167C006D3D47 /* Like Paper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Like Paper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -93,30 +93,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A66E825D252D8453007A24D9 /* LikePaperTests */ = {
+		A66E825D252D8453007A24D9 /* PiecesOfPaperTests */ = {
 			isa = PBXGroup;
 			children = (
 				A66E825E252D8453007A24D9 /* LikePaperTests.swift */,
 				A66E8260252D8453007A24D9 /* Info.plist */,
 			);
-			path = LikePaperTests;
+			path = PiecesOfPaperTests;
 			sourceTree = "<group>";
 		};
-		A6B5B33C252D8AC0002D7B55 /* LikePaperUITests */ = {
+		A6B5B33C252D8AC0002D7B55 /* PiecesOfPaperUITests */ = {
 			isa = PBXGroup;
 			children = (
 				A6B5B33D252D8AC0002D7B55 /* LikePaperUITests.swift */,
 				A6B5B33F252D8AC0002D7B55 /* Info.plist */,
 			);
-			path = LikePaperUITests;
+			path = PiecesOfPaperUITests;
 			sourceTree = "<group>";
 		};
 		A6DE5BAE2437167C006D3D47 = {
 			isa = PBXGroup;
 			children = (
-				A6DE5BB92437167C006D3D47 /* LikePaper */,
-				A66E825D252D8453007A24D9 /* LikePaperTests */,
-				A6B5B33C252D8AC0002D7B55 /* LikePaperUITests */,
+				A6DE5BB92437167C006D3D47 /* PiecesOfPaper */,
+				A66E825D252D8453007A24D9 /* PiecesOfPaperTests */,
+				A6B5B33C252D8AC0002D7B55 /* PiecesOfPaperUITests */,
 				A6DE5BB82437167C006D3D47 /* Products */,
 				A66E7512253531440026B9A8 /* README.md */,
 				A66E7513253538E00026B9A8 /* LICENSE.md */,
@@ -127,13 +127,13 @@
 			isa = PBXGroup;
 			children = (
 				A6DE5BB72437167C006D3D47 /* Like Paper.app */,
-				A66E825C252D8453007A24D9 /* LikePaperTests.xctest */,
-				A6B5B33B252D8AC0002D7B55 /* LikePaperUITests.xctest */,
+				A66E825C252D8453007A24D9 /* PiecesOfPaperTests.xctest */,
+				A6B5B33B252D8AC0002D7B55 /* PiecesOfPaperUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		A6DE5BB92437167C006D3D47 /* LikePaper */ = {
+		A6DE5BB92437167C006D3D47 /* PiecesOfPaper */ = {
 			isa = PBXGroup;
 			children = (
 				A6DE5BBA2437167C006D3D47 /* AppDelegate.swift */,
@@ -152,15 +152,15 @@
 				A6675A37251D89BA00343151 /* Like Paper.entitlements */,
 				A6DE5BC82437167E006D3D47 /* Info.plist */,
 			);
-			path = LikePaper;
+			path = PiecesOfPaper;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A66E825B252D8453007A24D9 /* LikePaperTests */ = {
+		A66E825B252D8453007A24D9 /* PiecesOfPaperTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A66E8263252D8453007A24D9 /* Build configuration list for PBXNativeTarget "LikePaperTests" */;
+			buildConfigurationList = A66E8263252D8453007A24D9 /* Build configuration list for PBXNativeTarget "PiecesOfPaperTests" */;
 			buildPhases = (
 				A66E8258252D8453007A24D9 /* Sources */,
 				A66E8259252D8453007A24D9 /* Frameworks */,
@@ -171,14 +171,14 @@
 			dependencies = (
 				A66E8262252D8453007A24D9 /* PBXTargetDependency */,
 			);
-			name = LikePaperTests;
+			name = PiecesOfPaperTests;
 			productName = LikePaperTests;
-			productReference = A66E825C252D8453007A24D9 /* LikePaperTests.xctest */;
+			productReference = A66E825C252D8453007A24D9 /* PiecesOfPaperTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		A6B5B33A252D8AC0002D7B55 /* LikePaperUITests */ = {
+		A6B5B33A252D8AC0002D7B55 /* PiecesOfPaperUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A6B5B342252D8AC0002D7B55 /* Build configuration list for PBXNativeTarget "LikePaperUITests" */;
+			buildConfigurationList = A6B5B342252D8AC0002D7B55 /* Build configuration list for PBXNativeTarget "PiecesOfPaperUITests" */;
 			buildPhases = (
 				A6B5B337252D8AC0002D7B55 /* Sources */,
 				A6B5B338252D8AC0002D7B55 /* Frameworks */,
@@ -189,14 +189,14 @@
 			dependencies = (
 				A6B5B341252D8AC0002D7B55 /* PBXTargetDependency */,
 			);
-			name = LikePaperUITests;
+			name = PiecesOfPaperUITests;
 			productName = LikePaperUITests;
-			productReference = A6B5B33B252D8AC0002D7B55 /* LikePaperUITests.xctest */;
+			productReference = A6B5B33B252D8AC0002D7B55 /* PiecesOfPaperUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		A6DE5BB62437167C006D3D47 /* LikePaper */ = {
+		A6DE5BB62437167C006D3D47 /* PiecesOfPaper */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A6DE5BE12437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikePaper" */;
+			buildConfigurationList = A6DE5BE12437167E006D3D47 /* Build configuration list for PBXNativeTarget "PiecesOfPaper" */;
 			buildPhases = (
 				A6DE5BB32437167C006D3D47 /* Sources */,
 				A6DE5BB42437167C006D3D47 /* Frameworks */,
@@ -206,7 +206,7 @@
 			);
 			dependencies = (
 			);
-			name = LikePaper;
+			name = PiecesOfPaper;
 			productName = LikeAPaper;
 			productReference = A6DE5BB72437167C006D3D47 /* Like Paper.app */;
 			productType = "com.apple.product-type.application";
@@ -234,7 +234,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A6DE5BB22437167C006D3D47 /* Build configuration list for PBXProject "LikePaper" */;
+			buildConfigurationList = A6DE5BB22437167C006D3D47 /* Build configuration list for PBXProject "PiecesOfPaper" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -247,9 +247,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A6DE5BB62437167C006D3D47 /* LikePaper */,
-				A66E825B252D8453007A24D9 /* LikePaperTests */,
-				A6B5B33A252D8AC0002D7B55 /* LikePaperUITests */,
+				A6DE5BB62437167C006D3D47 /* PiecesOfPaper */,
+				A66E825B252D8453007A24D9 /* PiecesOfPaperTests */,
+				A6B5B33A252D8AC0002D7B55 /* PiecesOfPaperUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -320,12 +320,12 @@
 /* Begin PBXTargetDependency section */
 		A66E8262252D8453007A24D9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A6DE5BB62437167C006D3D47 /* LikePaper */;
+			target = A6DE5BB62437167C006D3D47 /* PiecesOfPaper */;
 			targetProxy = A66E8261252D8453007A24D9 /* PBXContainerItemProxy */;
 		};
 		A6B5B341252D8AC0002D7B55 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A6DE5BB62437167C006D3D47 /* LikePaper */;
+			target = A6DE5BB62437167C006D3D47 /* PiecesOfPaper */;
 			targetProxy = A6B5B340252D8AC0002D7B55 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -548,11 +548,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "LikePaper/Like Paper.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "PiecesOfPaper/Like Paper.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = JDTR4Y333X;
-				INFOPLIST_FILE = LikePaper/Info.plist;
+				INFOPLIST_FILE = PiecesOfPaper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -569,11 +569,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "LikePaper/Like Paper.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "PiecesOfPaper/Like Paper.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = JDTR4Y333X;
-				INFOPLIST_FILE = LikePaper/Info.plist;
+				INFOPLIST_FILE = PiecesOfPaper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -589,7 +589,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A66E8263252D8453007A24D9 /* Build configuration list for PBXNativeTarget "LikePaperTests" */ = {
+		A66E8263252D8453007A24D9 /* Build configuration list for PBXNativeTarget "PiecesOfPaperTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A66E8264252D8453007A24D9 /* Debug */,
@@ -598,7 +598,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A6B5B342252D8AC0002D7B55 /* Build configuration list for PBXNativeTarget "LikePaperUITests" */ = {
+		A6B5B342252D8AC0002D7B55 /* Build configuration list for PBXNativeTarget "PiecesOfPaperUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A6B5B343252D8AC0002D7B55 /* Debug */,
@@ -607,7 +607,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A6DE5BB22437167C006D3D47 /* Build configuration list for PBXProject "LikePaper" */ = {
+		A6DE5BB22437167C006D3D47 /* Build configuration list for PBXProject "PiecesOfPaper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A6DE5BDF2437167E006D3D47 /* Debug */,
@@ -616,7 +616,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A6DE5BE12437167E006D3D47 /* Build configuration list for PBXNativeTarget "LikePaper" */ = {
+		A6DE5BE12437167E006D3D47 /* Build configuration list for PBXNativeTarget "PiecesOfPaper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A6DE5BE22437167E006D3D47 /* Debug */,
