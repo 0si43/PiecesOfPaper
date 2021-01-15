@@ -1,14 +1,14 @@
 //
-//  LikePaperUITests.swift
-//  LikePaperUITests
+//  PiecesOfPaperUITests.swift
+//  PiecesOfPaperUITests
 //
-//  Created by nakajima on 2020/10/07.
-//  Copyright © 2020 Tsuyoshi nakajima. All rights reserved.
+//  Created by nakajima on 2021/01/15.
+//  Copyright © 2021 Tsuyoshi nakajima. All rights reserved.
 //
 
 import XCTest
 
-class LikePaperUITests: XCTestCase {
+class PiecesOfPaperUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
