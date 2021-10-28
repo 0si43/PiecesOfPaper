@@ -247,7 +247,12 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
     private func shareAction(index: Int, point: CGPoint) {
         guard index <= drawings.endIndex else { return }
         let drawing = drawings[index]
-        let shareImage = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+        var shareImage = UIImage()
+        let trait = UITraitCollection(userInterfaceStyle: .light)
+        trait.performAsCurrent {
+            shareImage = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+        }
+
         let activityViewController = UIActivityViewController(activityItems: [shareImage], applicationActivities: nil)
         activityViewController.popoverPresentationController?.sourceView = collectionView
         activityViewController.popoverPresentationController?.sourceRect = CGRect(origin: point, size: .zero)
