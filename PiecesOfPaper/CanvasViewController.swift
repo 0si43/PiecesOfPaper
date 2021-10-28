@@ -182,7 +182,12 @@ final class CanvasViewController: UIViewController {
     
     @IBAction func shareAction(_ sender: UIBarButtonItem) {
         let drawing = canvasView.drawing
-        let image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+        var image = UIImage()
+        let trait = UITraitCollection(userInterfaceStyle: .light)
+        trait.performAsCurrent {
+            image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+        }
+        
         let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         activityViewController.popoverPresentationController?.barButtonItem = sender
         present(activityViewController, animated: true, completion: nil)
