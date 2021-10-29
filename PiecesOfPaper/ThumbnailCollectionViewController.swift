@@ -9,6 +9,7 @@
 import UIKit
 import PencilKit
 import StoreKit
+import SwiftUI
 
 final class ThumbnailCollectionViewController: UICollectionViewController, DocumentManagerDelegate {
     private let reuseIdentifier = "ThumbnailCollectionViewCell"
@@ -115,7 +116,10 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
             requestAppStoreReview()
             return
         }
-        performSegue(withIdentifier: "toCanvasView", sender: self)
+        
+        let canvas = UIHostingController(rootView: Canvas())
+        navigationController?.pushViewController(canvas, animated: true)
+//        performSegue(withIdentifier: "toCanvasView", sender: self)
         firstLunch = false
     }
     
