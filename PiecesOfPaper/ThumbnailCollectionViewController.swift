@@ -118,7 +118,7 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
         }
         
         let canvas = UIHostingController(rootView: Canvas())
-        navigationController?.pushViewController(canvas, animated: true)
+        navigationController?.pushViewController(canvas, animated: false)
 //        performSegue(withIdentifier: "toCanvasView", sender: self)
         firstLunch = false
     }
@@ -138,7 +138,9 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
     }
 
     @IBAction func newCanvas(_ sender: Any) {
-        performSegue(withIdentifier: "toCanvasView", sender: self)
+        let canvas = UIHostingController(rootView: Canvas())
+        navigationController?.pushViewController(canvas, animated: false)
+//        performSegue(withIdentifier: "toCanvasView", sender: self)
     }
     
     @IBAction func update(_ sender: Any) {
@@ -223,8 +225,10 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
     
     // MARK: UICollectionViewDelegate
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        selectedIndex = indexPath.row
-        performSegue(withIdentifier: "toCanvasView", sender: self)
+//        selectedIndex = indexPath.row
+        let canvas = UIHostingController(rootView: Canvas(drawing: drawings[indexPath.row]))
+        navigationController?.pushViewController(canvas, animated: false)
+//        performSegue(withIdentifier: "toCanvasView", sender: self)
     }
     
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
