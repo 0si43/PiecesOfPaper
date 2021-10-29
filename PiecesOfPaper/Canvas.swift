@@ -11,16 +11,35 @@ import PencilKit
 
 struct Canvas: View {
     @State private var canvasView = PKCanvasView()
-    @State var drawing = PKDrawing()
+    @State var hideExceptPaper = true
+    // TODO: OS update
+    var toolPicker: PKToolPicker = {
+        if #available(iOS 14.0, *) {
+            return PKToolPicker()
+        } else {
+            return PKToolPicker.shared(for: UIApplication.shared.windows.first!)!
+        }
+    }()
     
-    var body: some View {
-        PKCanvasViewWrapper(canvasView: withDrawing())
+    var tap: some Gesture {
+        TapGesture(count: 1)
+            .onEnded { _ in
+                hideExceptPaper.toggle()
+                toolPicker.addObserver(canvasView)
+                toolPicker.setVisible(!hideExceptPaper, forFirstResponder: canvasView)
+                canvasView.becomeFirstResponder()
+            }
     }
     
-    /// PKCanvasViewにPKDrawingをセットして、$canvasViewを返す
-    private func withDrawing() -> Binding<PKCanvasView> {
+    init(drawing: PKDrawing = PKDrawing()) {
         canvasView.drawing = drawing
-        return $canvasView
+    }
+    
+    var body: some View {
+        PKCanvasViewWrapper(canvasView: $canvasView)
+            .gesture(tap)
+            .statusBar(hidden: hideExceptPaper)
+            .navigationBarHidden(hideExceptPaper)
     }
 }
 
