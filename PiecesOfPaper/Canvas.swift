@@ -14,13 +14,7 @@ struct Canvas: View {
     @State var hideExceptPaper = true
     var delegateBridge: DelegateBridgeObject
     // TODO: OS update
-    var toolPicker: PKToolPicker = {
-        if #available(iOS 14.0, *) {
-            return PKToolPicker()
-        } else {
-            return PKToolPicker.shared(for: UIApplication.shared.windows.first!)!
-        }
-    }()
+    var toolPicker: PKToolPicker = PKToolPicker()
     
     var tap: some Gesture {
         TapGesture(count: 1)
