@@ -8,6 +8,7 @@
 
 import SwiftUI
 import PencilKit
+import LinkPresentation
 
 struct Canvas: View {
     @State private var canvasView = PKCanvasView()
@@ -29,7 +30,7 @@ struct Canvas: View {
             image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
         }
         
-        return UIActivityViewControllerWrapper(activityItems: [image])
+        return UIActivityViewControllerWrapper(activityItems: [image, delegateBridge])
     }
     
     var tap: some Gesture {
@@ -133,6 +134,22 @@ extension DelegateBridgeObject: PKCanvasViewDelegate {
     }
 }
 
+// MARK: - UIActivityItemSource
+extension DelegateBridgeObject: UIActivityItemSource {
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        return ""
+    }
+
+    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+        return nil
+    }
+    
+    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
+        let metadata = LPLinkMetadata()
+        metadata.title = "Share your note"
+        return metadata
+    }
+}
 
 // MARK: - PreviewProvider
 struct Canvas_Previews: PreviewProvider {
