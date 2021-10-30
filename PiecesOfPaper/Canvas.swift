@@ -12,9 +12,25 @@ import PencilKit
 struct Canvas: View {
     @State private var canvasView = PKCanvasView()
     @State var hideExceptPaper = true
+    @State var isShowActivityView = false {
+        didSet {
+            if isShowActivityView == true {
+                toolPicker.setVisible(false, forFirstResponder: canvasView)
+            }
+        }
+    }
     var delegateBridge: DelegateBridgeObject
-    // TODO: OS update
     var toolPicker: PKToolPicker = PKToolPicker()
+    var activityViewController: UIActivityViewControllerWrapper {
+        let drawing = canvasView.drawing
+        var image = UIImage()
+        let trait = UITraitCollection(userInterfaceStyle: .light)
+        trait.performAsCurrent {
+            image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+        }
+        
+        return UIActivityViewControllerWrapper(activityItems: [image])
+    }
     
     var tap: some Gesture {
         TapGesture(count: 1)
@@ -43,8 +59,20 @@ struct Canvas: View {
             .gesture(tap)
             .statusBar(hidden: hideExceptPaper)
             .navigationBarHidden(hideExceptPaper)
+            .toolbar {
+                ToolbarItemGroup {
+                    Button(action: { isShowActivityView.toggle() }) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                }
+            }
+            .sheet(isPresented: $isShowActivityView,
+                   onDismiss: { toolPicker.setVisible(true, forFirstResponder: canvasView) }) {
+                activityViewController
+            }
     }
 }
+
 
 // MARK: - PKToolPickerObserver
 ///  This class conform some protocol, becaluse SwfitUI Views cannot conform PencilKit delegates
