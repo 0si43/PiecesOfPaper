@@ -20,6 +20,9 @@ struct Canvas: View {
             }
         }
     }
+    
+    @Environment(\.presentationMode) var presentationMode
+
     var delegateBridge: DelegateBridgeObject
     var toolPicker: PKToolPicker = PKToolPicker()
     var activityViewController: UIActivityViewControllerWrapper {
@@ -60,10 +63,19 @@ struct Canvas: View {
             .gesture(tap)
             .statusBar(hidden: hideExceptPaper)
             .navigationBarHidden(hideExceptPaper)
+            .navigationBarBackButtonHidden(true)
+            .navigationBarItems(leading:
+                Button(action : delete){
+                    Image(systemName: "trash").foregroundColor(.red)
+                }
+            )
             .toolbar {
                 ToolbarItemGroup {
                     Button(action: { isShowActivityView.toggle() }) {
                         Image(systemName: "square.and.arrow.up")
+                    }
+                    Button(action: close) {
+                        Text("Done")
                     }
                 }
             }
@@ -71,6 +83,25 @@ struct Canvas: View {
                    onDismiss: { toolPicker.setVisible(true, forFirstResponder: canvasView) }) {
                 activityViewController
             }
+    }
+    
+    private func delete() {
+        // if autosave {
+        //   delete()
+        // ↓ is this equaled just do nothing?
+        // } else {
+        //    if isNoteNew {
+        //      not save
+        //    } else {
+        //      discard change
+        //    }
+        // }
+        presentationMode.wrappedValue.dismiss()
+    }
+    
+    private func close() {
+        // if !autosave { save action }
+        presentationMode.wrappedValue.dismiss()
     }
 }
 
