@@ -138,7 +138,7 @@ final class ThumbnailCollectionViewController: UICollectionViewController, Docum
     }
 
     @IBAction func newCanvas(_ sender: Any) {
-        let grid = NotesGrid(drawings: drawings)
+        let grid = NotesGrid()
         let view = UIHostingController(rootView: grid)
         navigationController?.pushViewController(view, animated: false)
 //        performSegue(withIdentifier: "toCanvasView", sender: self)

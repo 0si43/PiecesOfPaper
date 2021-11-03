@@ -10,7 +10,7 @@ import SwiftUI
 import PencilKit
 
 struct NotesGrid: View {
-    var drawings = [PKDrawing]()
+    @ObservedObject var viewModel = ViewModel()
     let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
     
     var body: some View {
@@ -18,9 +18,9 @@ struct NotesGrid: View {
             ScrollView {
                 Spacer(minLength: 30.0)
                 LazyVGrid(columns: [gridItem], spacing: 60.0) {
-                    ForEach((0..<drawings.count), id: \.self) { index in
-                        NavigationLink(destination: Canvas(drawing: drawings[index])) {
-                            Image(uiImage: drawings[index].image(from: drawings[index].bounds, scale: 1.0))
+                    ForEach((0..<viewModel.drawings.count), id: \.self) { index in
+                        NavigationLink(destination: Canvas(drawing: viewModel.drawings[index])) {
+                            Image(uiImage: viewModel.drawings[index].image(from: viewModel.drawings[index].bounds, scale: 1.0))
                                 .resizable()
                                 .frame(width: 250.0, height: 190.0)
                                 .scaledToFit()
@@ -60,8 +60,7 @@ struct NotesGrid: View {
     }
     
     func scrollToBottom(proxy: ScrollViewProxy) {
-        print(drawings.count)
-        proxy.scrollTo(drawings.count - 1, anchor: .bottom)
+        proxy.scrollTo(viewModel.drawings.count - 1, anchor: .bottom)
     }
 }
 
