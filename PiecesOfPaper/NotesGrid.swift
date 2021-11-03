@@ -14,31 +14,54 @@ struct NotesGrid: View {
     let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
     
     var body: some View {
-        ScrollView {
-            Spacer(minLength: 30.0)
-            LazyVGrid(columns: [gridItem], spacing: 60.0) {
-                ForEach((0..<drawings.count), id: \.self) { index in
-                    NavigationLink(destination: Canvas(drawing: drawings[index])) {
-                        Image(uiImage: drawings[index].image(from: drawings[index].bounds, scale: 1.0))
-                            .resizable()
-                            .frame(width: 250.0, height: 190.0)
-                            .scaledToFit()
-                            .background(Color(UIColor.secondarySystemBackground))
-                            .shadow(radius: 5.0)
+        ScrollViewReader { proxy in
+            ScrollView {
+                Spacer(minLength: 30.0)
+                LazyVGrid(columns: [gridItem], spacing: 60.0) {
+                    ForEach((0..<drawings.count), id: \.self) { index in
+                        NavigationLink(destination: Canvas(drawing: drawings[index])) {
+                            Image(uiImage: drawings[index].image(from: drawings[index].bounds, scale: 1.0))
+                                .resizable()
+                                .frame(width: 250.0, height: 190.0)
+                                .scaledToFit()
+                                .background(Color(UIColor.secondarySystemBackground))
+                                .shadow(radius: 5.0)
+                        }
                     }
                 }
             }
+            .padding([.leading, .trailing])
+            .navigationBarItems(trailing:
+                Button(action : new){
+                    Image(systemName: "plus")
+                }
+            )
+            .overlay(
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button(action: { scrollToBottom(proxy: proxy) }) {
+                            Image(systemName: "arrow.down.circle")
+                                .resizable()
+                                .foregroundColor(Color.blue.opacity(0.2))
+                                .frame(width: 100.0, height: 100.0)
+                                .padding()
+                                
+                        }
+                    }
+                }
+            )
         }
-        .padding([.leading, .trailing])
-        .navigationBarItems(trailing:
-            Button(action : new){
-                Image(systemName: "plus")
-            }
-        )
     }
     
     func new() {
         print("temp")
+    }
+    
+    func scrollToBottom(proxy: ScrollViewProxy) {
+        print(drawings.count)
+        proxy.scrollTo(drawings.count - 1, anchor: .bottom)
     }
 }
 
