@@ -15,18 +15,30 @@ struct NotesGrid: View {
     
     var body: some View {
         ScrollView {
-            LazyVGrid(columns: [gridItem], spacing: 80.0) {
-                ForEach((0..<drawings.count), id: \.self) {
-                    Image(uiImage: drawings[$0].image(from: drawings[$0].bounds, scale: 1.0))
-                        .resizable()
-                        .frame(width: 250.0, height: 180.0)
-                        .scaledToFit()
-                        .background(Color(UIColor.secondarySystemBackground))
-                        .shadow(radius: 5.0)
+            Spacer(minLength: 30.0)
+            LazyVGrid(columns: [gridItem], spacing: 60.0) {
+                ForEach((0..<drawings.count), id: \.self) { index in
+                    NavigationLink(destination: Canvas(drawing: drawings[index])) {
+                        Image(uiImage: drawings[index].image(from: drawings[index].bounds, scale: 1.0))
+                            .resizable()
+                            .frame(width: 250.0, height: 190.0)
+                            .scaledToFit()
+                            .background(Color(UIColor.secondarySystemBackground))
+                            .shadow(radius: 5.0)
+                    }
                 }
             }
         }
-        .padding()
+        .padding([.leading, .trailing])
+        .navigationBarItems(trailing:
+            Button(action : new){
+                Image(systemName: "plus")
+            }
+        )
+    }
+    
+    func new() {
+        print("temp")
     }
 }
 
