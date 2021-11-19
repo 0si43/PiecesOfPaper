@@ -7,12 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A6134B7E245AC61D00E5F0FB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6134B7D245AC61D00E5F0FB /* LaunchScreen.storyboard */; };
 		A6134B80245C09FC00E5F0FB /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6134B7F245C09FC00E5F0FB /* DataModel.swift */; };
-		A6134B82245CF40400E5F0FB /* ThumbnailCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6134B81245CF40400E5F0FB /* ThumbnailCollectionViewCell.swift */; };
 		A62EEAF2273248A300D513B8 /* PiecesOfPaperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62EEAF1273248A300D513B8 /* PiecesOfPaperApp.swift */; };
 		A62EEAF42732517600D513B8 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62EEAF32732517600D513B8 /* ViewModel.swift */; };
-		A63A37CA244BF3E400B16575 /* ThumbnailCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63A37C9244BF3E400B16575 /* ThumbnailCollectionViewController.swift */; };
 		A6484FCE272B923B00676ED8 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FCD272B923B00676ED8 /* Canvas.swift */; };
 		A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */; };
 		A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */; };
@@ -21,10 +18,7 @@
 		A66E8200252C0D5F007A24D9 /* Autosave.swift in Sources */ = {isa = PBXBuildFile; fileRef = A66E81FF252C0D5F007A24D9 /* Autosave.swift */; };
 		A6A16EC525B1673500DF323F /* PiecesOfPaperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A16EC425B1673500DF323F /* PiecesOfPaperTests.swift */; };
 		A6A16ED525B167A500DF323F /* PiecesOfPaperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A16ED425B167A500DF323F /* PiecesOfPaperUITests.swift */; };
-		A6DE5BBF2437167C006D3D47 /* CanvasViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */; };
-		A6DE5BC22437167C006D3D47 /* CanvasViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC02437167C006D3D47 /* CanvasViewController.storyboard */; };
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
-		A6DE5BEF24397A82006D3D47 /* ThumbnailCollectionViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BEE24397A82006D3D47 /* ThumbnailCollectionViewController.storyboard */; };
 		A6EE43272523271F000B203E /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE43262523271F000B203E /* Document.swift */; };
 		A6EE433125232DDE000B203E /* DocumentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE433025232DDE000B203E /* DocumentManager.swift */; };
 /* End PBXBuildFile section */
@@ -47,12 +41,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		A6134B7D245AC61D00E5F0FB /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A6134B7F245C09FC00E5F0FB /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
-		A6134B81245CF40400E5F0FB /* ThumbnailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCollectionViewCell.swift; sourceTree = "<group>"; };
 		A62EEAF1273248A300D513B8 /* PiecesOfPaperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesOfPaperApp.swift; sourceTree = "<group>"; };
 		A62EEAF32732517600D513B8 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
-		A63A37C9244BF3E400B16575 /* ThumbnailCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCollectionViewController.swift; sourceTree = "<group>"; };
 		A6484FCD272B923B00676ED8 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKCanvasViewWrapper.swift; sourceTree = "<group>"; };
 		A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
@@ -69,11 +60,8 @@
 		A6A16ED425B167A500DF323F /* PiecesOfPaperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesOfPaperUITests.swift; sourceTree = "<group>"; };
 		A6A16ED625B167A500DF323F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6DE5BB72437167C006D3D47 /* Pieces of Paper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Pieces of Paper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewController.swift; sourceTree = "<group>"; };
-		A6DE5BC12437167C006D3D47 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/CanvasViewController.storyboard; sourceTree = "<group>"; };
 		A6DE5BC32437167E006D3D47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A6DE5BC82437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A6DE5BEE24397A82006D3D47 /* ThumbnailCollectionViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ThumbnailCollectionViewController.storyboard; sourceTree = "<group>"; };
 		A6EE43262523271F000B203E /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		A6EE433025232DDE000B203E /* DocumentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -148,7 +136,6 @@
 			children = (
 				A62EEAF1273248A300D513B8 /* PiecesOfPaperApp.swift */,
 				A66E81FF252C0D5F007A24D9 /* Autosave.swift */,
-				A6DE5BBE2437167C006D3D47 /* CanvasViewController.swift */,
 				A6484FCD272B923B00676ED8 /* Canvas.swift */,
 				A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */,
 				A62EEAF32732517600D513B8 /* ViewModel.swift */,
@@ -157,13 +144,8 @@
 				A657B0752526A81800B7BE2D /* EventNames.swift */,
 				A6EE43262523271F000B203E /* Document.swift */,
 				A6EE433025232DDE000B203E /* DocumentManager.swift */,
-				A63A37C9244BF3E400B16575 /* ThumbnailCollectionViewController.swift */,
 				A6484FD5272E63B000676ED8 /* NotesGrid.swift */,
-				A6134B81245CF40400E5F0FB /* ThumbnailCollectionViewCell.swift */,
-				A6DE5BC02437167C006D3D47 /* CanvasViewController.storyboard */,
-				A6DE5BEE24397A82006D3D47 /* ThumbnailCollectionViewController.storyboard */,
 				A6DE5BC32437167E006D3D47 /* Assets.xcassets */,
-				A6134B7D245AC61D00E5F0FB /* LaunchScreen.storyboard */,
 				A6675A37251D89BA00343151 /* Like Paper.entitlements */,
 				A6DE5BC82437167E006D3D47 /* Info.plist */,
 			);
@@ -288,10 +270,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A6DE5BEF24397A82006D3D47 /* ThumbnailCollectionViewController.storyboard in Resources */,
-				A6134B7E245AC61D00E5F0FB /* LaunchScreen.storyboard in Resources */,
 				A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */,
-				A6DE5BC22437167C006D3D47 /* CanvasViewController.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -318,7 +297,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A6DE5BBF2437167C006D3D47 /* CanvasViewController.swift in Sources */,
 				A657B0762526A81800B7BE2D /* EventNames.swift in Sources */,
 				A6134B80245C09FC00E5F0FB /* DataModel.swift in Sources */,
 				A6484FCE272B923B00676ED8 /* Canvas.swift in Sources */,
@@ -329,9 +307,7 @@
 				A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */,
 				A6EE43272523271F000B203E /* Document.swift in Sources */,
 				A62EEAF2273248A300D513B8 /* PiecesOfPaperApp.swift in Sources */,
-				A6134B82245CF40400E5F0FB /* ThumbnailCollectionViewCell.swift in Sources */,
 				A6484FD6272E63B000676ED8 /* NotesGrid.swift in Sources */,
-				A63A37CA244BF3E400B16575 /* ThumbnailCollectionViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -349,17 +325,6 @@
 			targetProxy = A6A16ED725B167A500DF323F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		A6DE5BC02437167C006D3D47 /* CanvasViewController.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A6DE5BC12437167C006D3D47 /* Base */,
-			);
-			name = CanvasViewController.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		A6A16EC925B1673500DF323F /* Debug */ = {
