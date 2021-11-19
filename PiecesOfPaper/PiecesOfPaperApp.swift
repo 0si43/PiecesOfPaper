@@ -7,17 +7,20 @@
 //
 
 import SwiftUI
+import PencilKit
 
 @main
 struct PiecesOfPaperApp: App {
-    @State var isShown = false
+    @State var isAppLaunch = true
+    @State var isShowCanvas = false
+    @State var drawing = PKDrawing()
     
     var body: some Scene {
         WindowGroup {
             NavigationView {
                 List {
                     Section(header: Text("Folder")) {
-                        NavigationLink(destination: NotesGrid(), isActive: $isShown) {
+                        NavigationLink(destination: NotesGrid(), isActive: $isAppLaunch) {
                             Label("Home", systemImage: "tray")
                         }
                         NavigationLink(destination: EmptyView()) {
@@ -44,12 +47,21 @@ struct PiecesOfPaperApp: App {
                 .listStyle(SidebarListStyle())
                 .navigationTitle("Pieces of Paper")
             }
-//            .fullScreenCover(isPresented: $isShown) {
-//                Canvas()
-//            }
-//            .onAppear {
-//                isShown = false
-//            }
+            
+            .fullScreenCover(isPresented: $isShowCanvas)
+            {
+                NavigationView {
+                    Canvas(drawing: drawing)
+                }
+            }
+            .onAppear {
+                if (isAppLaunch) {
+                    Router.shared.setStateValue(isShowCanvas: $isShowCanvas)
+                    Router.shared.toggleStateValue()
+                    Router.shared.setDrawing(drawing: $drawing)
+                    isAppLaunch = false
+                }
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ struct NotesGrid: View {
                 Spacer(minLength: 30.0)
                 LazyVGrid(columns: [gridItem], spacing: 60.0) {
                     ForEach((0..<viewModel.drawings.count), id: \.self) { index in
-                        NavigationLink(destination: Canvas(drawing: viewModel.drawings[index])) {
+                        Button(action: { open(drawing: viewModel.drawings[index]) }) {
                             Image(uiImage: viewModel.drawings[index].image(from: viewModel.drawings[index].bounds, scale: 1.0))
                                 .resizable()
                                 .frame(width: 250.0, height: 190.0)
@@ -32,7 +32,7 @@ struct NotesGrid: View {
             }
             .padding([.leading, .trailing])
             .navigationBarItems(trailing:
-                Button(action : new){
+                Button(action: new){
                     Image(systemName: "plus")
                 }
             )
@@ -45,10 +45,9 @@ struct NotesGrid: View {
                         Button(action: { scrollToBottom(proxy: proxy) }) {
                             Image(systemName: "arrow.down.circle")
                                 .resizable()
-                                .foregroundColor(Color.blue.opacity(0.2))
-                                .frame(width: 100.0, height: 100.0)
+                                .foregroundColor(Color.blue.opacity(0.3))
+                                .frame(width: 60.0, height: 60.0)
                                 .padding()
-                                
                         }
                     }
                 }
@@ -57,7 +56,12 @@ struct NotesGrid: View {
     }
     
     func new() {
-        print("temp")
+        Router.shared.toggleStateValue()
+    }
+
+    func open(drawing: PKDrawing) {
+        Router.shared.toggleStateValue()
+        Router.shared.updateDrawing(drawing: drawing)
     }
     
     func scrollToBottom(proxy: ScrollViewProxy) {
