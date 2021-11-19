@@ -36,6 +36,7 @@ struct NotesGrid: View {
                     Image(systemName: "plus")
                 }
             )
+            .navigationBarTitleDisplayMode(.inline)
             .overlay(
                 VStack {
                     Spacer()
