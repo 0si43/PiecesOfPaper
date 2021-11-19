@@ -15,6 +15,7 @@
 		A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */; };
 		A6484FD6272E63B000676ED8 /* NotesGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD5272E63B000676ED8 /* NotesGrid.swift */; };
 		A657B0762526A81800B7BE2D /* EventNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = A657B0752526A81800B7BE2D /* EventNames.swift */; };
+		A6620E272747A66100C708A2 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E262747A66100C708A2 /* Router.swift */; };
 		A66E8200252C0D5F007A24D9 /* Autosave.swift in Sources */ = {isa = PBXBuildFile; fileRef = A66E81FF252C0D5F007A24D9 /* Autosave.swift */; };
 		A6A16EC525B1673500DF323F /* PiecesOfPaperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A16EC425B1673500DF323F /* PiecesOfPaperTests.swift */; };
 		A6A16ED525B167A500DF323F /* PiecesOfPaperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A16ED425B167A500DF323F /* PiecesOfPaperUITests.swift */; };
@@ -49,6 +50,7 @@
 		A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
 		A6484FD5272E63B000676ED8 /* NotesGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesGrid.swift; sourceTree = "<group>"; };
 		A657B0752526A81800B7BE2D /* EventNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventNames.swift; sourceTree = "<group>"; };
+		A6620E262747A66100C708A2 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		A6675A37251D89BA00343151 /* Like Paper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Like Paper.entitlements"; sourceTree = "<group>"; };
 		A66E7512253531440026B9A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A66E7513253538E00026B9A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 				A6484FCD272B923B00676ED8 /* Canvas.swift */,
 				A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */,
 				A62EEAF32732517600D513B8 /* ViewModel.swift */,
+				A6620E262747A66100C708A2 /* Router.swift */,
 				A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */,
 				A6134B7F245C09FC00E5F0FB /* DataModel.swift */,
 				A657B0752526A81800B7BE2D /* EventNames.swift */,
@@ -301,6 +304,7 @@
 				A6134B80245C09FC00E5F0FB /* DataModel.swift in Sources */,
 				A6484FCE272B923B00676ED8 /* Canvas.swift in Sources */,
 				A6EE433125232DDE000B203E /* DocumentManager.swift in Sources */,
+				A6620E272747A66100C708A2 /* Router.swift in Sources */,
 				A66E8200252C0D5F007A24D9 /* Autosave.swift in Sources */,
 				A62EEAF42732517600D513B8 /* ViewModel.swift in Sources */,
 				A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */,
