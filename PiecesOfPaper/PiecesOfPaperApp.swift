@@ -10,12 +10,14 @@ import SwiftUI
 
 @main
 struct PiecesOfPaperApp: App {
+    @State var isShown = false
+    
     var body: some Scene {
         WindowGroup {
             NavigationView {
                 List {
                     Section(header: Text("Folder")) {
-                        NavigationLink(destination: NotesGrid()) {
+                        NavigationLink(destination: NotesGrid(), isActive: $isShown) {
                             Label("Home", systemImage: "tray")
                         }
                         NavigationLink(destination: EmptyView()) {
@@ -39,8 +41,15 @@ struct PiecesOfPaperApp: App {
                         }
                     }
                 }
+                .listStyle(SidebarListStyle())
                 .navigationTitle("Pieces of Paper")
             }
+//            .fullScreenCover(isPresented: $isShown) {
+//                Canvas()
+//            }
+//            .onAppear {
+//                isShown = false
+//            }
         }
     }
 }
