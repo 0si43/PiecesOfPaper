@@ -3,20 +3,19 @@ name: CI
 on:
   push:
     branches:
-      - master
-      - develop
+      - main
     paths-ignore:
       - README.md
       - LICENSE
   pull_request:
     branches:
-      - develop
+      - main
     paths-ignore:
       - README.md
       - LICENSE
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode_12.app
+  DEVELOPER_DIR: /Applications/Xcode_13.app
 
 jobs:
   test:
