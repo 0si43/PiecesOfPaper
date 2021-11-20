@@ -28,7 +28,11 @@ If you have any complaints about this app, please [make an issue](https://github
 
 # Support
 
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="st43" data-color="#FFDD00" data-emoji="🍺"  data-font="Cookie" data-text="Buy me a beer" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
+- Pieces of Paper is free and open source project
+- If you favorite Pieces of Paper and generously give aid to individual developer, please buy me a 🍺🍺🍺 
+- 🍺 is my gasoline...
+
+<a href="https://www.buymeacoffee.com/st43"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a beer&emoji=🍺&slug=st43&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
 # License
 
