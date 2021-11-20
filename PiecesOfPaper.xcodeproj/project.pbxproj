@@ -18,7 +18,6 @@
 		A6620E272747A66100C708A2 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E262747A66100C708A2 /* Router.swift */; };
 		A66E8200252C0D5F007A24D9 /* Autosave.swift in Sources */ = {isa = PBXBuildFile; fileRef = A66E81FF252C0D5F007A24D9 /* Autosave.swift */; };
 		A6A16EC525B1673500DF323F /* PiecesOfPaperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A16EC425B1673500DF323F /* PiecesOfPaperTests.swift */; };
-		A6A16ED525B167A500DF323F /* PiecesOfPaperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A16ED425B167A500DF323F /* PiecesOfPaperUITests.swift */; };
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
 		A6EE43272523271F000B203E /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE43262523271F000B203E /* Document.swift */; };
 		A6EE433125232DDE000B203E /* DocumentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE433025232DDE000B203E /* DocumentManager.swift */; };
@@ -59,8 +58,6 @@
 		A6A16EC425B1673500DF323F /* PiecesOfPaperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesOfPaperTests.swift; sourceTree = "<group>"; };
 		A6A16EC625B1673500DF323F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6A16ED225B167A500DF323F /* PiecesOfPaperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PiecesOfPaperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A6A16ED425B167A500DF323F /* PiecesOfPaperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesOfPaperUITests.swift; sourceTree = "<group>"; };
-		A6A16ED625B167A500DF323F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6DE5BB72437167C006D3D47 /* Pieces of Paper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Pieces of Paper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BC32437167E006D3D47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A6DE5BC82437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -93,6 +90,37 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A6620E282748A01F00C708A2 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				A6484FCD272B923B00676ED8 /* Canvas.swift */,
+				A6484FD5272E63B000676ED8 /* NotesGrid.swift */,
+				A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */,
+				A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		A6620E292748A04D00C708A2 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				A62EEAF32732517600D513B8 /* ViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		A6620E2A2748A05B00C708A2 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				A66E81FF252C0D5F007A24D9 /* Autosave.swift */,
+				A6134B7F245C09FC00E5F0FB /* DataModel.swift */,
+				A6EE43262523271F000B203E /* Document.swift */,
+				A6EE433025232DDE000B203E /* DocumentManager.swift */,
+				A657B0752526A81800B7BE2D /* EventNames.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		A6A16EC325B1673500DF323F /* PiecesOfPaperTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -102,21 +130,11 @@
 			path = PiecesOfPaperTests;
 			sourceTree = "<group>";
 		};
-		A6A16ED325B167A500DF323F /* PiecesOfPaperUITests */ = {
-			isa = PBXGroup;
-			children = (
-				A6A16ED425B167A500DF323F /* PiecesOfPaperUITests.swift */,
-				A6A16ED625B167A500DF323F /* Info.plist */,
-			);
-			path = PiecesOfPaperUITests;
-			sourceTree = "<group>";
-		};
 		A6DE5BAE2437167C006D3D47 = {
 			isa = PBXGroup;
 			children = (
 				A6DE5BB92437167C006D3D47 /* PiecesOfPaper */,
 				A6A16EC325B1673500DF323F /* PiecesOfPaperTests */,
-				A6A16ED325B167A500DF323F /* PiecesOfPaperUITests */,
 				A6DE5BB82437167C006D3D47 /* Products */,
 				A66E7512253531440026B9A8 /* README.md */,
 				A66E7513253538E00026B9A8 /* LICENSE.md */,
@@ -137,17 +155,10 @@
 			isa = PBXGroup;
 			children = (
 				A62EEAF1273248A300D513B8 /* PiecesOfPaperApp.swift */,
-				A66E81FF252C0D5F007A24D9 /* Autosave.swift */,
-				A6484FCD272B923B00676ED8 /* Canvas.swift */,
-				A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */,
-				A62EEAF32732517600D513B8 /* ViewModel.swift */,
 				A6620E262747A66100C708A2 /* Router.swift */,
-				A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */,
-				A6134B7F245C09FC00E5F0FB /* DataModel.swift */,
-				A657B0752526A81800B7BE2D /* EventNames.swift */,
-				A6EE43262523271F000B203E /* Document.swift */,
-				A6EE433025232DDE000B203E /* DocumentManager.swift */,
-				A6484FD5272E63B000676ED8 /* NotesGrid.swift */,
+				A6620E282748A01F00C708A2 /* View */,
+				A6620E292748A04D00C708A2 /* ViewModel */,
+				A6620E2A2748A05B00C708A2 /* Model */,
 				A6DE5BC32437167E006D3D47 /* Assets.xcassets */,
 				A6675A37251D89BA00343151 /* Like Paper.entitlements */,
 				A6DE5BC82437167E006D3D47 /* Info.plist */,
@@ -292,7 +303,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A6A16ED525B167A500DF323F /* PiecesOfPaperUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
