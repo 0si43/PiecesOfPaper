@@ -36,10 +36,10 @@ struct PiecesOfPaperApp: App {
                         }
                     }
                     Section(header: Text("About")) {
-                        NavigationLink(destination: EmptyView()) {
+                        Link(destination: URL(string: "https://github.com/0si43/PiecesOfPaper")!) {
                             Label("Github Repository", systemImage: "wrench")
                         }
-                        NavigationLink(destination: EmptyView()) {
+                        Link(destination: URL(string: "https://www.shetommy.com/")!) {
                             Label("Developer Site", systemImage: "wrench")
                         }
                     }
