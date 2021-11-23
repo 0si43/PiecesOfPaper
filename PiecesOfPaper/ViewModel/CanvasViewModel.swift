@@ -13,13 +13,12 @@ final class CanvasViewModel: ObservableObject {
     var document: NoteDocument?
     
     func save(drawing: PKDrawing) {
-        let data = drawing.dataRepresentation()
-        document?.drawingData = data
+        document?.drawing = drawing
         if let document = document {
             document.save(to: document.fileURL, for: .forOverwriting)
         } else {
             let path = FilePath.iCloudURL.appendingPathComponent(FilePath.fileName)
-            document = NoteDocument(fileURL: path)
+            document = NoteDocument(fileURL: path, drawing: drawing)
             document?.save(to: path, for: .forCreating)
         }
     }
