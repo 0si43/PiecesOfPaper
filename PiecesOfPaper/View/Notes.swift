@@ -30,6 +30,10 @@ struct Notes: View {
                     Spacer()
                     HStack {
                         Spacer()
+                        Button(action: { viewModel.update() }) {
+                            Image(systemName: "plus")
+                        }
+                        Spacer()
                         ScrollButton(action: { scrollToBottom(proxy: proxy) },
                                      image: Image(systemName: "arrow.down.circle"))
                     }

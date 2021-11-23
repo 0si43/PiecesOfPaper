@@ -9,29 +9,64 @@
 import Foundation
 import PencilKit
 
-final class NotesViewModel: ObservableObject, DocumentManagerDelegate {
-    var didDocumentOpen = false
+final class NotesViewModel: ObservableObject {
     @Published var drawings = [PKDrawing]()
-    private var documentManager: DocumentManager!
-    private var didSet = false
     
     init() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(setDrawings),
-                                               name: UIDocument.stateChangedNotification,
-                                               object: nil)
-        documentManager = DocumentManager(delegate: self)
+        let allFileNames = try! FileManager.default.contentsOfDirectory(atPath: FilePath.iCloudURL.path)
+        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".drawing") }
+        
+        let dispatchGroup = DispatchGroup()
+        let dispatchQueue = DispatchQueue(label: "queue", attributes: .concurrent)
+        
+        drawingFileNames.forEach { filename in
+            dispatchGroup.enter()
+            dispatchQueue.async(group: dispatchGroup) { [weak self] in
+                self?.asyncTemp(filename: filename) { drawing in
+                    defer { dispatchGroup.leave() }
+                    DispatchQueue.main.async {
+                        self?.drawings.append(drawing)
+                    }
+                }
+            }
+        }
     }
     
-    @objc func setDrawings() {
-        guard !didSet else { return }
-        self.drawings = documentManager.drawings
-        didSet = true
+    func asyncTemp(filename: String, comp: @escaping (PKDrawing) -> Void) {
+        DispatchQueue.global().async {
+            let url = FilePath.iCloudURL.appendingPathComponent(filename)
+            guard FileManager.default.fileExists(atPath: url.path) else { return }
+            let document = NoteDocument(fileURL: url)
+            document.open() { success in
+                if success {
+                    guard let data = document.drawingData,
+                          let drawing = try? PKDrawing(data: data) else { return }
+                    comp(drawing)
+                } else {
+                    fatalError("could not open document")
+                }
+            }
+        }
     }
     
-    func appendDrawing(drawing: PKDrawing) {
-        guard didDocumentOpen else { return }
-        documentManager.drawings.append(drawing)
-        documentManager.save()
+    func update() {
+        drawings.removeAll()
+        let allFileNames = try! FileManager.default.contentsOfDirectory(atPath: FilePath.iCloudURL.path)
+        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".drawing") }
+        
+        let dispatchGroup = DispatchGroup()
+        let dispatchQueue = DispatchQueue(label: "queue", attributes: .concurrent)
+        
+        drawingFileNames.forEach { filename in
+            dispatchGroup.enter()
+            dispatchQueue.async(group: dispatchGroup) { [weak self] in
+                self?.asyncTemp(filename: filename) { drawing in
+                    defer { dispatchGroup.leave() }
+                    DispatchQueue.main.async {
+                        self?.drawings.append(drawing)
+                    }
+                }
+            }
+        }
     }
 }
