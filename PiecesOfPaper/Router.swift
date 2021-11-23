@@ -3,7 +3,7 @@
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/11/19.
-//  Copyright © 2021 Tsuyoshi nakajima. All rights reserved.
+//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
 //
 
 import Foundation
@@ -17,19 +17,25 @@ final public class Router {
     
     private init() { }
     
-    public func setStateValue(isShowCanvas: Binding<Bool>) {
+    /// This procedure should been done by initializer, but a singleton instance couldn't have arguments
+    public func bind(isShowCanvas: Binding<Bool>, drawing: Binding<PKDrawing>) {
         self.isShowCanvas = isShowCanvas
-    }
-    
-    public func toggleStateValue() {
-        isShowCanvas?.wrappedValue.toggle()
-    }
-    
-    public func setDrawing(drawing: Binding<PKDrawing>) {
         self.drawing = drawing
     }
+
+    /// open a full screen canvas and make new drawing data
+    public func openNewCanvas() {
+        self.drawing.wrappedValue = PKDrawing()
+        toggleStateValue()
+    }
     
-    public func updateDrawing(drawing: PKDrawing) {
+    /// open a full screen canvas with drawing data
+    public func openCanvas(drawing: PKDrawing) {
         self.drawing.wrappedValue = drawing
+        toggleStateValue()
+    }
+    
+    private func toggleStateValue() {
+        isShowCanvas?.wrappedValue.toggle()
     }
 }
