@@ -2,8 +2,8 @@
 //  Canvas.swift
 //  PiecesOfPaper
 //
-//  Created by nakajima on 2021/10/29.
-//  Copyright © 2021 Tsuyoshi nakajima. All rights reserved.
+//  Created by Nakajima on 2021/10/29.
+//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
 //
 
 import SwiftUI
@@ -11,6 +11,7 @@ import PencilKit
 import LinkPresentation
 
 struct Canvas: View {
+    @ObservedObject var viewModel = CanvasViewModel()
     @State private var canvasView = PKCanvasView()
     @State var hideExceptPaper = true
     @State var isShowActivityView = false {
@@ -23,7 +24,7 @@ struct Canvas: View {
     
     @Environment(\.presentationMode) var presentationMode
 
-    var delegateBridge: DelegateBridgeObject
+    var delegateBridge: CanvasDelegateBridgeObject
     var toolPicker: PKToolPicker = PKToolPicker()
     var activityViewController: UIActivityViewControllerWrapper {
         let drawing = canvasView.drawing
@@ -46,9 +47,15 @@ struct Canvas: View {
             }
     }
     
-    init(drawing: PKDrawing = PKDrawing()) {
-        delegateBridge = DelegateBridgeObject(toolPicker: toolPicker)
-        canvasView.drawing = drawing
+    init(noteDocument: NoteDocument?) {
+        delegateBridge = CanvasDelegateBridgeObject(toolPicker: toolPicker)
+        if let noteDocument = noteDocument {
+            viewModel.document = noteDocument
+            canvasView.drawing = noteDocument.drawing
+        }
+
+        delegateBridge.canvas = self
+        canvasView.delegate = delegateBridge
         addPencilInteraction()
     }
     
@@ -105,86 +112,9 @@ struct Canvas: View {
     }
 }
 
-
-// MARK: - PKToolPickerObserver
-///  This class conform some protocol, becaluse SwfitUI Views cannot conform PencilKit delegates
-class DelegateBridgeObject: NSObject, PKToolPickerObserver {
-    let toolPicker: PKToolPicker
-    private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
-    private var previousTool: PKTool!
-    private var currentTool: PKTool!
-    
-    init(toolPicker: PKToolPicker) {
-        self.toolPicker = toolPicker
-        super.init()
-        
-        toolPicker.addObserver(self)
-        toolPicker.selectedTool = defaultTool
-        previousTool = defaultTool
-        currentTool = defaultTool
-    }
-    
-    func toolPickerSelectedToolDidChange(_ toolPicker: PKToolPicker) {
-        previousTool = currentTool
-        currentTool = toolPicker.selectedTool
-    }
-}
-
-// MARK: - UIPencilInteractionDelegate
-extension DelegateBridgeObject: UIPencilInteractionDelegate {
-    /// Double tap action on Appel Pencil when PKToolPicker is invisble(When it's visible, iOS handles its action)
-    func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
-        guard !toolPicker.isVisible else { return }
-        let action = UIPencilInteraction.preferredTapAction
-        switch action {
-        case .switchPrevious:   switchPreviousTool()
-        case .switchEraser:     switchEraser()
-//        case .showColorPalette: hideExceptPaper.toggle()
-        case .ignore:           return
-        default:                return
-        }
-    }
-
-    private func switchPreviousTool() {
-        toolPicker.selectedTool = previousTool
-    }
-
-    private func switchEraser() {
-        if currentTool is PKEraserTool {
-            toolPicker.selectedTool = previousTool
-        } else {
-            toolPicker.selectedTool = PKEraserTool(.vector)
-        }
-    }
-}
-
-// MARK: - PKCanvasViewDelegate
-extension DelegateBridgeObject: PKCanvasViewDelegate {
-    func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-        // save action
-    }
-}
-
-// MARK: - UIActivityItemSource
-extension DelegateBridgeObject: UIActivityItemSource {
-    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
-        return ""
-    }
-
-    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
-        return nil
-    }
-    
-    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
-        let metadata = LPLinkMetadata()
-        metadata.title = "Share your note"
-        return metadata
-    }
-}
-
 // MARK: - PreviewProvider
-struct Canvas_Previews: PreviewProvider {
-    static var previews: some View {
-        Canvas()
-    }
-}
+//struct Canvas_Previews: PreviewProvider {
+//    static var previews: some View {
+//        
+//    }
+//}
