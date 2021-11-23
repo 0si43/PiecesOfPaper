@@ -22,6 +22,7 @@
 		A6620E36274C7A3D00C708A2 /* Notes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E35274C7A3D00C708A2 /* Notes.swift */; };
 		A6620E38274C819300C708A2 /* CanvasDelegateBridgeObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E37274C819300C708A2 /* CanvasDelegateBridgeObject.swift */; };
 		A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E39274C8FA400C708A2 /* NoteDocument.swift */; };
+		A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E3B274CD88000C708A2 /* FilePath.swift */; };
 		A66E8200252C0D5F007A24D9 /* Autosave.swift in Sources */ = {isa = PBXBuildFile; fileRef = A66E81FF252C0D5F007A24D9 /* Autosave.swift */; };
 		A6A16EC525B1673500DF323F /* PiecesOfPaperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A16EC425B1673500DF323F /* PiecesOfPaperTests.swift */; };
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
@@ -55,6 +56,7 @@
 		A6620E35274C7A3D00C708A2 /* Notes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notes.swift; sourceTree = "<group>"; };
 		A6620E37274C819300C708A2 /* CanvasDelegateBridgeObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasDelegateBridgeObject.swift; sourceTree = "<group>"; };
 		A6620E39274C8FA400C708A2 /* NoteDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocument.swift; sourceTree = "<group>"; };
+		A6620E3B274CD88000C708A2 /* FilePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePath.swift; sourceTree = "<group>"; };
 		A6675A37251D89BA00343151 /* Like Paper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Like Paper.entitlements"; sourceTree = "<group>"; };
 		A66E7512253531440026B9A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A66E7513253538E00026B9A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
@@ -115,6 +117,7 @@
 			children = (
 				A66E81FF252C0D5F007A24D9 /* Autosave.swift */,
 				A6134B7F245C09FC00E5F0FB /* DataModel.swift */,
+				A6620E3B274CD88000C708A2 /* FilePath.swift */,
 				A6620E39274C8FA400C708A2 /* NoteDocument.swift */,
 				A6EE43262523271F000B203E /* Document.swift */,
 				A6EE433025232DDE000B203E /* DocumentManager.swift */,
@@ -280,6 +283,7 @@
 				A6484FCE272B923B00676ED8 /* Canvas.swift in Sources */,
 				A6620E2C2748ABE400C708A2 /* CanvasViewModel.swift in Sources */,
 				A6EE433125232DDE000B203E /* DocumentManager.swift in Sources */,
+				A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */,
 				A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */,
 				A6620E38274C819300C708A2 /* CanvasDelegateBridgeObject.swift in Sources */,
 				A6620E34274C774D00C708A2 /* ScrollButton.swift in Sources */,

@@ -9,19 +9,19 @@
 import UIKit
 
 final class NoteDocument: UIDocument {
-    var pngNote: Data?
+    var drawingData: Data?
     
     enum NoteDocumentError: Error {
         case noContent
     }
     
     override func contents(forType typeName: String) throws -> Any {
-        guard let pngNote = pngNote else { throw NoteDocumentError.noContent }
-        return pngNote
+        guard let drawingData = drawingData else { throw NoteDocumentError.noContent }
+        return drawingData
     }
 
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
         guard let contents = contents as? Data else { return }
-        self.pngNote = contents
+        self.drawingData = contents
     }
 }
