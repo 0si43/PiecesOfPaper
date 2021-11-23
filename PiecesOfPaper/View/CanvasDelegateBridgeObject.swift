@@ -66,7 +66,7 @@ extension CanvasDelegateBridgeObject: UIPencilInteractionDelegate {
 // MARK: - PKCanvasViewDelegate
 extension CanvasDelegateBridgeObject: PKCanvasViewDelegate {
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-        canvas.viewModel.appendDrawing(drawing: canvasView.drawing)
+        canvas.viewModel.save(drawing: canvasView.drawing)
     }
 }
 

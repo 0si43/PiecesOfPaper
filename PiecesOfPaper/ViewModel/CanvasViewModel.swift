@@ -15,16 +15,24 @@ final class CanvasViewModel: ObservableObject, DocumentManagerDelegate {
     var iCloudURL: URL {
         let url = FileManager.default.url(forUbiquityContainerIdentifier: nil)!
             .appendingPathComponent("Documents")
-            .appendingPathComponent("a.png")
         return url
+    }
+    
+    func save(drawing: PKDrawing) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ssSSSS"
+        let string = dateFormatter.string(from: Date())
+        print(string)
+        let path = iCloudURL.appendingPathComponent(string + ".png")
+        let png = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale).pngData()
+        try! png?.write(to: path)
     }
     
     func appendDrawing(drawing: PKDrawing) {
         let png = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale).pngData()
-        try! png?.write(to: iCloudURL)
+        try! png?.write(to: iCloudURL)        
         
-        
-        let result = try! FileManager.default.contentsOfDirectory(atPath: FileManager.default.url(forUbiquityContainerIdentifier: nil)!.appendingPathComponent("Documents").path)
-        print(result)
+//        let result = try! FileManager.default.contentsOfDirectory(atPath: FileManager.default.url(forUbiquityContainerIdentifier: nil)!.appendingPathComponent("Documents").path)
+//        print(result)
     }
 }
