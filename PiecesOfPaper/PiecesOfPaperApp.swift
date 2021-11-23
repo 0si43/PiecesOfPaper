@@ -13,7 +13,7 @@ import PencilKit
 struct PiecesOfPaperApp: App {
     @State var isAppLaunch = true
     @State var isShowCanvas = false
-    @State var drawing = PKDrawing()
+    @State var noteDocument: NoteDocument?
     
     var body: some Scene {
         WindowGroup {
@@ -24,12 +24,12 @@ struct PiecesOfPaperApp: App {
             .fullScreenCover(isPresented: $isShowCanvas)
             {
                 NavigationView {
-                    Canvas(drawing: drawing)
+                    Canvas(noteDocument: noteDocument)
                 }
             }
             .onAppear {
                 guard isAppLaunch else { return }
-                Router.shared.bind(isShowCanvas: $isShowCanvas, drawing: $drawing)
+                Router.shared.bind(isShowCanvas: $isShowCanvas, noteDocument: $noteDocument)
                 Router.shared.openNewCanvas()
                 isAppLaunch = false
             }

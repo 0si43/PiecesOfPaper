@@ -47,13 +47,15 @@ struct Canvas: View {
             }
     }
     
-    init(drawing: PKDrawing) {
+    init(noteDocument: NoteDocument?) {
         delegateBridge = CanvasDelegateBridgeObject(toolPicker: toolPicker)
+        if let noteDocument = noteDocument {
+            viewModel.document = noteDocument
+            canvasView.drawing = noteDocument.drawing
+        }
+
         delegateBridge.canvas = self
         canvasView.delegate = delegateBridge
-        if !drawing.strokes.isEmpty {
-            canvasView.drawing = drawing
-        }
         addPencilInteraction()
     }
     
@@ -111,8 +113,8 @@ struct Canvas: View {
 }
 
 // MARK: - PreviewProvider
-struct Canvas_Previews: PreviewProvider {
-    static var previews: some View {
-        Canvas(drawing: PKDrawing())
-    }
-}
+//struct Canvas_Previews: PreviewProvider {
+//    static var previews: some View {
+//        
+//    }
+//}
