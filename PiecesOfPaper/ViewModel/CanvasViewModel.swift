@@ -9,28 +9,36 @@
 import Foundation
 import PencilKit
 
-final class CanvasViewModel: ObservableObject, DocumentManagerDelegate {
-    var didDocumentOpen = false
-    private var documentManager: DocumentManager!
+final class CanvasViewModel: ObservableObject {
+    var document: NoteDocument?
+    
     var iCloudURL: URL {
         let url = FileManager.default.url(forUbiquityContainerIdentifier: nil)!
             .appendingPathComponent("Documents")
         return url
     }
     
-    func save(drawing: PKDrawing) {
+    var fileName: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ssSSSS"
-        let string = dateFormatter.string(from: Date())
-        print(string)
-        let path = iCloudURL.appendingPathComponent(string + ".png")
+        return dateFormatter.string(from: Date()) + ".png"
+    }
+    
+    func save(drawing: PKDrawing) {
         let png = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale).pngData()
-        try! png?.write(to: path)
+        document?.pngNote = png
+        if let document = document {
+            document.save(to: document.fileURL, for: .forOverwriting)
+        } else {
+            let path = iCloudURL.appendingPathComponent(fileName)
+            document = NoteDocument(fileURL: path)
+            document?.save(to: path, for: .forCreating)
+        }
     }
     
     func appendDrawing(drawing: PKDrawing) {
         let png = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale).pngData()
-        try! png?.write(to: iCloudURL)        
+        try! png?.write(to: iCloudURL)
         
 //        let result = try! FileManager.default.contentsOfDirectory(atPath: FileManager.default.url(forUbiquityContainerIdentifier: nil)!.appendingPathComponent("Documents").path)
 //        print(result)
