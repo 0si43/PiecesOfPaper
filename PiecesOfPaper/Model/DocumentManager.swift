@@ -2,8 +2,8 @@
 //  DocumentManager.swift
 //  LikePaper
 //
-//  Created by nakajima on 2020/09/29.
-//  Copyright © 2020 Tsuyoshi nakajima. All rights reserved.
+//  Created by Nakajima on 2020/09/29.
+//  Copyright © 2020 Tsuyoshi Nakajima. All rights reserved.
 //
 
 import Foundation

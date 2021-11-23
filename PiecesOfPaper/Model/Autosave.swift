@@ -2,8 +2,8 @@
 //  AutoSave.swift
 //  LikePaper
 //
-//  Created by nakajima on 2020/10/06.
-//  Copyright © 2020 Tsuyoshi nakajima. All rights reserved.
+//  Created by Nakajima on 2020/10/06.
+//  Copyright © 2020 Tsuyoshi Nakajima. All rights reserved.
 //
 
 import Foundation
@@ -15,7 +15,7 @@ struct Autosave {
         return "Autosave: " + state
     }
     
-    // UserDefaults retrun flase if the specified key doesn‘t exist, so this proerty is "isDisabled"
+    // UserDefaults return false if the specified key doesn‘t exist, so this property is "isDisabled"
     // (I want it to be autosave enabled first time)
     static var isDisabled: Bool {
         get {
