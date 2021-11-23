@@ -13,25 +13,25 @@ import PencilKit
 final public class Router {
     public static let shared = Router()
     private var isShowCanvas: Binding<Bool>!
-    private var drawing: Binding<PKDrawing>!
+    private var noteDocument: Binding<NoteDocument?>!
     
     private init() { }
     
     /// This procedure should been done by initializer, but a singleton instance couldn't have arguments
-    public func bind(isShowCanvas: Binding<Bool>, drawing: Binding<PKDrawing>) {
+    func bind(isShowCanvas: Binding<Bool>, noteDocument: Binding<NoteDocument?>) {
         self.isShowCanvas = isShowCanvas
-        self.drawing = drawing
+        self.noteDocument = noteDocument
     }
 
     /// open a full screen canvas and make new drawing data
-    public func openNewCanvas() {
-        self.drawing.wrappedValue = PKDrawing()
+    func openNewCanvas() {
+        self.noteDocument.wrappedValue = nil
         toggleStateValue()
     }
     
     /// open a full screen canvas with drawing data
-    public func openCanvas(drawing: PKDrawing) {
-        self.drawing.wrappedValue = drawing
+    func openCanvas(noteDocument: NoteDocument) {
+        self.noteDocument.wrappedValue = noteDocument
         toggleStateValue()
     }
     

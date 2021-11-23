@@ -10,14 +10,14 @@ import SwiftUI
 import PencilKit
 
 struct NotesGrid: View {
-    @Binding var drawings: [PKDrawing]
+    @Binding var noteDocuments: [NoteDocument]
     let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
     
     var body: some View {
         LazyVGrid(columns: [gridItem], spacing: 60.0) {
-            ForEach((0..<drawings.count), id: \.self) { index in
-                Button(action: { open(drawing: drawings[index]) }) {
-                    Image(uiImage: drawings[index].image(from: drawings[index].bounds, scale: 1.0))
+            ForEach((0..<noteDocuments.count), id: \.self) { index in
+                Button(action: { open(noteDocument: noteDocuments[index]) }) {
+                    Image(uiImage: noteDocuments[index].drawing.image(from: noteDocuments[index].drawing.bounds, scale: 1.0))
                         .resizable()
                         .frame(width: 250.0, height: 190.0)
                         .scaledToFit()
@@ -28,8 +28,8 @@ struct NotesGrid: View {
         }
     }
     
-    func open(drawing: PKDrawing) {
-        Router.shared.openCanvas(drawing: drawing)
+    func open(noteDocument: NoteDocument) {
+        Router.shared.openCanvas(noteDocument: noteDocument)
     }
 }
 
