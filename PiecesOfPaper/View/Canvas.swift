@@ -51,7 +51,9 @@ struct Canvas: View {
         delegateBridge = CanvasDelegateBridgeObject(toolPicker: toolPicker)
         delegateBridge.canvas = self
         canvasView.delegate = delegateBridge
-        canvasView.drawing = drawing
+        if !drawing.strokes.isEmpty {
+            canvasView.drawing = drawing
+        }
         addPencilInteraction()
     }
     

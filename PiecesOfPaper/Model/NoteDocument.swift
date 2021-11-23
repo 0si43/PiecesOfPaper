@@ -7,21 +7,23 @@
 //
 
 import UIKit
+import PencilKit
 
 final class NoteDocument: UIDocument {
-    var drawingData: Data?
+    var drawing: PKDrawing
     
-    enum NoteDocumentError: Error {
-        case noContent
+    init(fileURL: URL, drawing: PKDrawing = PKDrawing()) {
+        self.drawing = drawing
+        super.init(fileURL: fileURL)
     }
     
     override func contents(forType typeName: String) throws -> Any {
-        guard let drawingData = drawingData else { throw NoteDocumentError.noContent }
-        return drawingData
+        return drawing.dataRepresentation()
     }
 
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
-        guard let contents = contents as? Data else { return }
-        self.drawingData = contents
+        guard let contents = contents as? Data,
+              let drawing = try? PKDrawing(data: contents) else { return }
+        self.drawing = drawing
     }
 }

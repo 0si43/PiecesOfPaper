@@ -11,6 +11,7 @@ import PencilKit
 
 final class NotesViewModel: ObservableObject {
     @Published var drawings = [PKDrawing]()
+    private var localDrawings = [PKDrawing]()
     
     init() {
         let allFileNames = try! FileManager.default.contentsOfDirectory(atPath: FilePath.iCloudURL.path)
@@ -24,11 +25,13 @@ final class NotesViewModel: ObservableObject {
             dispatchQueue.async(group: dispatchGroup) { [weak self] in
                 self?.asyncTemp(filename: filename) { drawing in
                     defer { dispatchGroup.leave() }
-                    DispatchQueue.main.async {
-                        self?.drawings.append(drawing)
-                    }
+                    self?.localDrawings.append(drawing)
                 }
             }
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            self.drawings = self.localDrawings
         }
     }
     
@@ -39,9 +42,7 @@ final class NotesViewModel: ObservableObject {
             let document = NoteDocument(fileURL: url)
             document.open() { success in
                 if success {
-                    guard let data = document.drawingData,
-                          let drawing = try? PKDrawing(data: data) else { return }
-                    comp(drawing)
+                    comp(document.drawing)
                 } else {
                     fatalError("could not open document")
                 }
@@ -50,7 +51,7 @@ final class NotesViewModel: ObservableObject {
     }
     
     func update() {
-        drawings.removeAll()
+        localDrawings.removeAll()
         let allFileNames = try! FileManager.default.contentsOfDirectory(atPath: FilePath.iCloudURL.path)
         let drawingFileNames = allFileNames.filter { $0.hasSuffix(".drawing") }
         
@@ -62,11 +63,13 @@ final class NotesViewModel: ObservableObject {
             dispatchQueue.async(group: dispatchGroup) { [weak self] in
                 self?.asyncTemp(filename: filename) { drawing in
                     defer { dispatchGroup.leave() }
-                    DispatchQueue.main.async {
-                        self?.drawings.append(drawing)
-                    }
+                    self?.localDrawings.append(drawing)
                 }
             }
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            self.drawings = self.localDrawings
         }
     }
 }
