@@ -14,8 +14,7 @@ struct ScrollButton: View {
     
     var body: some View {
         Button(action: action) {
-            image
-                .resizable()
+            image.resizable()
                 .foregroundColor(Color.blue.opacity(0.3))
                 .frame(width: 60.0, height: 60.0)
                 .padding()
