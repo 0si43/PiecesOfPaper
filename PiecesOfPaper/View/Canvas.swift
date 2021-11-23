@@ -24,7 +24,7 @@ struct Canvas: View {
     
     @Environment(\.presentationMode) var presentationMode
 
-    var delegateBridge: DelegateBridgeObject
+    var delegateBridge: CanvasDelegateBridgeObject
     var toolPicker: PKToolPicker = PKToolPicker()
     var activityViewController: UIActivityViewControllerWrapper {
         let drawing = canvasView.drawing
@@ -48,7 +48,7 @@ struct Canvas: View {
     }
     
     init(drawing: PKDrawing) {
-        delegateBridge = DelegateBridgeObject(toolPicker: toolPicker)
+        delegateBridge = CanvasDelegateBridgeObject(toolPicker: toolPicker)
         delegateBridge.canvas = self
         canvasView.delegate = delegateBridge
         canvasView.drawing = drawing
@@ -105,84 +105,6 @@ struct Canvas: View {
     private func close() {
         // if !autosave { save action }
         presentationMode.wrappedValue.dismiss()
-    }
-}
-
-
-// MARK: - PKToolPickerObserver
-///  This class conform some protocol, becaluse SwfitUI Views cannot conform PencilKit delegates
-class DelegateBridgeObject: NSObject, PKToolPickerObserver {
-    let toolPicker: PKToolPicker
-    private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
-    private var previousTool: PKTool!
-    private var currentTool: PKTool!
-    var canvas: Canvas!
-    
-    init(toolPicker: PKToolPicker) {
-        self.toolPicker = toolPicker
-        super.init()
-        
-        toolPicker.addObserver(self)
-        toolPicker.selectedTool = defaultTool
-        previousTool = defaultTool
-        currentTool = defaultTool
-    }
-    
-    func toolPickerSelectedToolDidChange(_ toolPicker: PKToolPicker) {
-        previousTool = currentTool
-        currentTool = toolPicker.selectedTool
-    }
-}
-
-// MARK: - UIPencilInteractionDelegate
-extension DelegateBridgeObject: UIPencilInteractionDelegate {
-    /// Double tap action on Appel Pencil when PKToolPicker is invisble(When it's visible, iOS handles its action)
-    func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
-        guard !toolPicker.isVisible else { return }
-        let action = UIPencilInteraction.preferredTapAction
-        switch action {
-        case .switchPrevious:   switchPreviousTool()
-        case .switchEraser:     switchEraser()
-        case .showColorPalette: canvas.hideExceptPaper.toggle()
-        case .ignore:           return
-        default:                return
-        }
-    }
-
-    private func switchPreviousTool() {
-        toolPicker.selectedTool = previousTool
-    }
-
-    private func switchEraser() {
-        if currentTool is PKEraserTool {
-            toolPicker.selectedTool = previousTool
-        } else {
-            toolPicker.selectedTool = PKEraserTool(.vector)
-        }
-    }
-}
-
-// MARK: - PKCanvasViewDelegate
-extension DelegateBridgeObject: PKCanvasViewDelegate {
-    func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-        canvas.viewModel.appendDrawing(drawing: canvasView.drawing)
-    }
-}
-
-// MARK: - UIActivityItemSource
-extension DelegateBridgeObject: UIActivityItemSource {
-    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
-        return ""
-    }
-
-    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
-        return nil
-    }
-    
-    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
-        let metadata = LPLinkMetadata()
-        metadata.title = "Share your note"
-        return metadata
     }
 }
 
