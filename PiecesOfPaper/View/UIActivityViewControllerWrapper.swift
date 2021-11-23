@@ -2,8 +2,8 @@
 //  UIActivityViewControllerWrapper.swift
 //  PiecesOfPaper
 //
-//  Created by nakajima on 2021/10/30.
-//  Copyright © 2021 Tsuyoshi nakajima. All rights reserved.
+//  Created by Nakajima on 2021/10/30.
+//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
 //
 
 import UIKit

@@ -2,8 +2,8 @@
 //  PiecesOfPaperTests.swift
 //  PiecesOfPaperTests
 //
-//  Created by nakajima on 2021/01/15.
-//  Copyright © 2021 Tsuyoshi nakajima. All rights reserved.
+//  Created by Nakajima on 2021/01/15.
+//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
 //
 
 import XCTest

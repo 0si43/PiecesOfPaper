@@ -2,8 +2,8 @@
 //  Canvas.swift
 //  PiecesOfPaper
 //
-//  Created by nakajima on 2021/10/29.
-//  Copyright © 2021 Tsuyoshi nakajima. All rights reserved.
+//  Created by Nakajima on 2021/10/29.
+//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
 //
 
 import SwiftUI
@@ -11,6 +11,7 @@ import PencilKit
 import LinkPresentation
 
 struct Canvas: View {
+    @ObservedObject var viewModel = CanvasViewModel()
     @State private var canvasView = PKCanvasView()
     @State var hideExceptPaper = true
     @State var isShowActivityView = false {
@@ -46,8 +47,10 @@ struct Canvas: View {
             }
     }
     
-    init(drawing: PKDrawing = PKDrawing()) {
+    init(drawing: PKDrawing) {
         delegateBridge = DelegateBridgeObject(toolPicker: toolPicker)
+        delegateBridge.canvas = self
+        canvasView.delegate = delegateBridge
         canvasView.drawing = drawing
         addPencilInteraction()
     }
@@ -113,6 +116,7 @@ class DelegateBridgeObject: NSObject, PKToolPickerObserver {
     private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
     private var previousTool: PKTool!
     private var currentTool: PKTool!
+    var canvas: Canvas!
     
     init(toolPicker: PKToolPicker) {
         self.toolPicker = toolPicker
@@ -139,7 +143,7 @@ extension DelegateBridgeObject: UIPencilInteractionDelegate {
         switch action {
         case .switchPrevious:   switchPreviousTool()
         case .switchEraser:     switchEraser()
-//        case .showColorPalette: hideExceptPaper.toggle()
+        case .showColorPalette: canvas.hideExceptPaper.toggle()
         case .ignore:           return
         default:                return
         }
@@ -161,7 +165,7 @@ extension DelegateBridgeObject: UIPencilInteractionDelegate {
 // MARK: - PKCanvasViewDelegate
 extension DelegateBridgeObject: PKCanvasViewDelegate {
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-        // save action
+        canvas.viewModel.appendDrawing(drawing: canvasView.drawing)
     }
 }
 
@@ -185,6 +189,6 @@ extension DelegateBridgeObject: UIActivityItemSource {
 // MARK: - PreviewProvider
 struct Canvas_Previews: PreviewProvider {
     static var previews: some View {
-        Canvas()
+        Canvas(drawing: PKDrawing())
     }
 }
