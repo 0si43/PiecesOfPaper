@@ -41,7 +41,7 @@ final class NotesViewModel: ObservableObject {
     // TODO: ちゃんとやる
     private func temp() {
         let allFileNames = try! FileManager.default.contentsOfDirectory(atPath: FilePath.iCloudURL.path)
-        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".drawing") }
+        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".pkdrawing") }
         
         let dispatchGroup = DispatchGroup()
         let dispatchQueue = DispatchQueue(label: "queue", attributes: .concurrent)
@@ -57,7 +57,7 @@ final class NotesViewModel: ObservableObject {
         }
         
         dispatchGroup.notify(queue: .main) {
-            self.noteDocuments = self.localNoteDocuments
+            self.noteDocuments = self.localNoteDocuments.sorted { $0.fileModificationDate ?? Date() > $1.fileModificationDate ?? Date() }
         }
     }
 

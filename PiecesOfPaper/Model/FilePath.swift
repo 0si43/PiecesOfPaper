@@ -24,6 +24,6 @@ struct FilePath {
     static var fileName: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ssSSSS"
-        return dateFormatter.string(from: Date()) + ".drawing"
+        return dateFormatter.string(from: Date()) + ".pkdrawing"
     }
 }
