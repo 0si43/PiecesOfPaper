@@ -24,6 +24,25 @@ struct NotesGrid: View {
                         .background(Color(UIColor.secondarySystemBackground))
                         .shadow(radius: 5.0)
                 }
+                .contextMenu {
+                    Button(action: { print("temp") }) {
+                        Label("Duplicate", systemImage: "doc.on.doc")
+                    }
+                    if #available(iOS 15.0, *) {
+                        Button(role: .destructive) {
+                            print("temp")
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    } else {
+                        Button(action: { print("temp") }) {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
+                    Button(action: { print("temp") }) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                }
             }
         }
     }
