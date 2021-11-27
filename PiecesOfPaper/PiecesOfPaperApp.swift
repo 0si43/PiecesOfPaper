@@ -31,6 +31,7 @@ struct PiecesOfPaperApp: App {
                 guard isAppLaunch else { return }
                 Router.shared.bind(isShowCanvas: $isShowCanvas, noteDocument: $noteDocument)
                 Router.shared.openNewCanvas()
+                DrawingsPlistConverter.convert()
                 isAppLaunch = false
             }
         }
