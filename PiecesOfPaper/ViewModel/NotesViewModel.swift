@@ -57,7 +57,7 @@ final class NotesViewModel: ObservableObject {
         }
         
         dispatchGroup.notify(queue: .main) {
-            self.noteDocuments = self.localNoteDocuments
+            self.noteDocuments = self.localNoteDocuments.sorted { $0.fileModificationDate ?? Date() > $1.fileModificationDate ?? Date() }
         }
     }
 
