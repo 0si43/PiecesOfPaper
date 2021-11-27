@@ -41,7 +41,7 @@ final class NotesViewModel: ObservableObject {
     // TODO: ちゃんとやる
     private func temp() {
         let allFileNames = try! FileManager.default.contentsOfDirectory(atPath: FilePath.iCloudURL.path)
-        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".drawing") }
+        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".pkdrawing") }
         
         let dispatchGroup = DispatchGroup()
         let dispatchQueue = DispatchQueue(label: "queue", attributes: .concurrent)
