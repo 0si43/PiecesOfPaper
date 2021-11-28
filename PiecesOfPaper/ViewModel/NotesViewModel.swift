@@ -26,6 +26,7 @@ final class NotesViewModel: ObservableObject {
             document.open() { success in
                 if success {
                     comp(document)
+                    document.close()
                 } else {
                     fatalError("could not open document")
                 }
