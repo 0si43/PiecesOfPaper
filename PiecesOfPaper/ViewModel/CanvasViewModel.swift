@@ -17,7 +17,8 @@ final class CanvasViewModel: ObservableObject {
         if let document = document {
             document.save(to: document.fileURL, for: .forOverwriting)
         } else {
-            let path = FilePath.iCloudURL.appendingPathComponent(FilePath.fileName)
+            guard let iCloudUrl = FilePath.iCloudUrl else { return }
+            let path = iCloudUrl.appendingPathComponent(FilePath.fileName)
             document = NoteDocument(fileURL: path, drawing: drawing)
             document?.save(to: path, for: .forCreating)
         }

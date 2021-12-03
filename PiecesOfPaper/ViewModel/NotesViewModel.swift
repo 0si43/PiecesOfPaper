@@ -27,7 +27,8 @@ final class NotesViewModel: ObservableObject {
     }
     
     private func openAllDocuments() {
-        let allFileNames = try! FileManager.default.contentsOfDirectory(atPath: FilePath.iCloudURL.path)
+        guard let iCloudUrl = FilePath.iCloudUrl else { return }
+        let allFileNames = try! FileManager.default.contentsOfDirectory(atPath: iCloudUrl.path)
         let drawingFileNames = allFileNames.filter { $0.hasSuffix(".pkdrawing") }.sorted(by: <)
         counter = drawingFileNames.count
         
@@ -41,7 +42,8 @@ final class NotesViewModel: ObservableObject {
     }
     
     private func open(filename: String, comp: @escaping (NoteDocument) -> Void) {
-        let url = FilePath.iCloudURL.appendingPathComponent(filename)
+        guard let iCloudUrl = FilePath.iCloudUrl else { return }
+        let url = iCloudUrl.appendingPathComponent(filename)
         guard FileManager.default.fileExists(atPath: url.path) else { return }
         let document = NoteDocument(fileURL: url)
         
