@@ -29,14 +29,7 @@ struct NotesGrid: View {
     var body: some View {
         LazyVGrid(columns: [gridItem], spacing: 60.0) {
             ForEach((0..<noteDocuments.count), id: \.self) { index in
-                Button(action: { open(noteDocument: noteDocuments[index]) }) {
-                    Image(uiImage: noteDocuments[index].drawing.image(from: noteDocuments[index].drawing.bounds, scale: 1.0))
-                        .resizable()
-                        .frame(width: 250.0, height: 190.0)
-                        .scaledToFit()
-                        .background(Color(UIColor.secondarySystemBackground))
-                        .shadow(radius: 5.0)
-                }
+                NoteImage(noteDocument: $noteDocuments[index])
                 .contextMenu {
                     Button(action: {
                         duplicate(noteDocument: noteDocuments[index])
@@ -67,10 +60,6 @@ struct NotesGrid: View {
         .sheet(isPresented: $isShowActivityView) {
             activityViewController
         }
-    }
-    
-    func open(noteDocument: NoteDocument) {
-        Router.shared.openCanvas(noteDocument: noteDocument)
     }
     
     func duplicate(noteDocument: NoteDocument) {
