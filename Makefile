@@ -9,7 +9,7 @@ TEST_SDK := iphonesimulator
 TEST_CONFIGURATION := Debug
 TEST_PLATFORM := iOS Simulator
 TEST_DEVICE ?= iPad Pro (11-inch) (2nd generation)
-TEST_OS ?= 14.0
+TEST_OS ?= 15.0
 TEST_DESTINATION := 'platform=${TEST_PLATFORM},name=${TEST_DEVICE},OS=${TEST_OS}'
 
 .DEFAULT_GOAL := help

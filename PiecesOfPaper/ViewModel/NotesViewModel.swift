@@ -10,55 +10,54 @@ import Foundation
 import PencilKit
 
 final class NotesViewModel: ObservableObject {
-    @Published var noteDocuments = [NoteDocument]()
-    private var localNoteDocuments = [NoteDocument]()
-    
-    init() {
-        temp()
+    @Published var publishedNoteDocuments = [NoteDocument]()
+    private var noteDocuments = [NoteDocument]() {
+        didSet {
+            if counter <= noteDocuments.count {
+                publishedNoteDocuments = noteDocuments.sorted { $0.fileModificationDate ?? Date() < $1.fileModificationDate ?? Date() }
+                noteDocuments.removeAll()
+            }
+        }
     }
     
-    // TODO: ちゃんとやる
-    func asyncTemp(filename: String, comp: @escaping (NoteDocument) -> Void) {
-        DispatchQueue.global().async {
-            let url = FilePath.iCloudURL.appendingPathComponent(filename)
-            guard FileManager.default.fileExists(atPath: url.path) else { return }
-            let document = NoteDocument(fileURL: url)
-            document.open() { success in
-                if success {
-                    comp(document)
-                } else {
-                    fatalError("could not open document")
+    private var counter = 0
+    
+    init() {
+        openAllDocuments()
+    }
+    
+    private func openAllDocuments() {
+        guard let iCloudUrl = FilePath.iCloudUrl else { return }
+        let allFileNames = try! FileManager.default.contentsOfDirectory(atPath: iCloudUrl.path)
+        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".pkdrawing") }.sorted(by: <)
+        counter = drawingFileNames.count
+        
+        drawingFileNames.forEach { [weak self] filename in
+            open(filename: filename) { drawing in
+                DispatchQueue.main.async {
+                    self?.noteDocuments.append(drawing)
                 }
+            }
+        }
+    }
+    
+    private func open(filename: String, comp: @escaping (NoteDocument) -> Void) {
+        guard let iCloudUrl = FilePath.iCloudUrl else { return }
+        let url = iCloudUrl.appendingPathComponent(filename)
+        guard FileManager.default.fileExists(atPath: url.path) else { return }
+        let document = NoteDocument(fileURL: url)
+        
+        document.open() { success in
+            if success {
+                comp(document)
+                document.close()
+            } else {
+                fatalError("could not open document")
             }
         }
     }
     
     func update() {
-        localNoteDocuments.removeAll()
-        temp()
+        openAllDocuments()
     }
-    
-    // TODO: ちゃんとやる
-    private func temp() {
-        let allFileNames = try! FileManager.default.contentsOfDirectory(atPath: FilePath.iCloudURL.path)
-        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".pkdrawing") }
-        
-        let dispatchGroup = DispatchGroup()
-        let dispatchQueue = DispatchQueue(label: "queue", attributes: .concurrent)
-        
-        drawingFileNames.forEach { filename in
-            dispatchGroup.enter()
-            dispatchQueue.async(group: dispatchGroup) { [weak self] in
-                self?.asyncTemp(filename: filename) { drawing in
-                    defer { dispatchGroup.leave() }
-                    self?.localNoteDocuments.append(drawing)
-                }
-            }
-        }
-        
-        dispatchGroup.notify(queue: .main) {
-            self.noteDocuments = self.localNoteDocuments.sorted { $0.fileModificationDate ?? Date() > $1.fileModificationDate ?? Date() }
-        }
-    }
-
 }

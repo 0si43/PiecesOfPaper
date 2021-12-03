@@ -16,7 +16,7 @@ struct Notes: View {
         ScrollViewReader { proxy in
             ScrollView {
                 Spacer(minLength: 30.0)
-                NotesGrid(noteDocuments: $viewModel.noteDocuments)
+                NotesGrid(noteDocuments: $viewModel.publishedNoteDocuments)
             }
             .padding([.leading, .trailing])
             .navigationBarItems(trailing:
@@ -47,7 +47,7 @@ struct Notes: View {
     }
     
     func scrollToBottom(proxy: ScrollViewProxy) {
-        proxy.scrollTo(viewModel.noteDocuments.count - 1, anchor: .bottom)
+        proxy.scrollTo(viewModel.publishedNoteDocuments.count - 1, anchor: .bottom)
     }
 }
 
