@@ -15,10 +15,10 @@ struct SideBarList: View {
         List {
             Section(header: Text("Folder")) {
                 NavigationLink(destination: Notes(), isActive: $isAppLaunch) {
-                    Label("Home", systemImage: "tray")
+                    Label("Inbox", systemImage: "tray")
                 }
                 NavigationLink(destination: EmptyView()) {
-                    Label("All Notes", systemImage: "tray.full")
+                    Label("All", systemImage: "note.text")
                 }
                 NavigationLink(destination: EmptyView()) {
                     Label("Archived", systemImage: "archivebox")
