@@ -16,8 +16,8 @@ struct NoteImage: View {
         Button(action: { open(noteDocument: noteDocument) }) {
             Image(uiImage: noteDocument.drawing.image(from: noteDocument.drawing.bounds, scale: 1.0))
                 .resizable()
-                .frame(width: 250.0, height: 190.0)
                 .scaledToFit()
+                .frame(width: 250.0, height: 190.0)
                 .background(Color(UIColor.secondarySystemBackground))
                 .shadow(radius: 5.0)
         }
