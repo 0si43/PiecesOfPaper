@@ -13,32 +13,36 @@ struct Notes: View {
     @ObservedObject var viewModel = NotesViewModel()
     
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                Spacer(minLength: 30.0)
-                NotesGrid(noteDocuments: $viewModel.publishedNoteDocuments)
-            }
-            .padding([.leading, .trailing])
-            .navigationBarItems(trailing:
-                Button(action: new){
-                    Image(systemName: "plus")
+        if !viewModel.isLoaded {
+            ProgressView()
+        } else {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    Spacer(minLength: 30.0)
+                    NotesGrid(noteDocuments: $viewModel.publishedNoteDocuments)
                 }
-            )
-            .navigationBarTitleDisplayMode(.inline)
-            .overlay(
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        Button(action: { viewModel.update() }) {
-                            Image(systemName: "plus")
-                        }
-                        Spacer()
-                        ScrollButton(action: { scrollToBottom(proxy: proxy) },
-                                     image: Image(systemName: "arrow.down.circle"))
+                .padding([.leading, .trailing])
+                .navigationBarItems(trailing:
+                    Button(action: new){
+                        Image(systemName: "plus")
                     }
-                }
-            )
+                )
+                .navigationBarTitleDisplayMode(.inline)
+                .overlay(
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Button(action: { viewModel.update() }) {
+                                Image(systemName: "plus")
+                            }
+                            Spacer()
+                            ScrollButton(action: { scrollToBottom(proxy: proxy) },
+                                         image: Image(systemName: "arrow.down.circle"))
+                        }
+                    }
+                )
+            }
         }
     }
     
