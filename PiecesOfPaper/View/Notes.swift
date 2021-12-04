@@ -19,6 +19,9 @@ struct Notes: View {
     var body: some View {
         if !viewModel.isLoaded {
             ProgressView()
+                .onAppear {
+                    viewModel.fetch()
+                }
         } else {
             ScrollViewReader { proxy in
                 ScrollView {
