@@ -6,15 +6,16 @@
 //  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
 //
 
-import Foundation
 import PencilKit
 
 final class NotesViewModel: ObservableObject {
     @Published var publishedNoteDocuments = [NoteDocument]()
+    @Published var isLoaded = false
     private var noteDocuments = [NoteDocument]() {
         didSet {
             if counter <= noteDocuments.count {
                 publishedNoteDocuments = noteDocuments.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
+                isLoaded = true
                 noteDocuments.removeAll()
             }
         }
@@ -58,6 +59,7 @@ final class NotesViewModel: ObservableObject {
     }
     
     func update() {
+        isLoaded = false
         openAllDocuments()
     }
 }
