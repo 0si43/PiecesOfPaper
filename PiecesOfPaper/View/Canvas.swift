@@ -72,8 +72,8 @@ struct Canvas: View {
             .navigationBarHidden(hideExceptPaper)
             .navigationBarBackButtonHidden(true)
             .navigationBarItems(leading:
-                Button(action : delete){
-                    Image(systemName: "trash").foregroundColor(.red)
+                Button(action : archive){
+                    Image(systemName: "clear").foregroundColor(.red)
                 }
             )
             .toolbar {
@@ -82,7 +82,7 @@ struct Canvas: View {
                         Image(systemName: "square.and.arrow.up")
                     }
                     Button(action: close) {
-                        Text("Done")
+                        Image(systemName: "tray.and.arrow.down")
                     }
                 }
             }
@@ -92,17 +92,8 @@ struct Canvas: View {
             }
     }
     
-    private func delete() {
-        // if autosave {
-        //   delete()
-        // ↓ is this equaled just do nothing?
-        // } else {
-        //    if isNoteNew {
-        //      not save
-        //    } else {
-        //      discard change
-        //    }
-        // }
+    private func archive() {
+        viewModel.archive()
         presentationMode.wrappedValue.dismiss()
     }
     
