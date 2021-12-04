@@ -14,6 +14,14 @@ struct FilePath {
         return url.appendingPathComponent("Documents")
     }
     
+    static var iCloudInboxUrl: URL? {
+        return iCloudUrl?.appendingPathComponent("Inbox")
+    }
+    
+    static var iCloudArchivedUrl: URL? {
+        return iCloudUrl?.appendingPathComponent("Archived")
+    }
+    
     static var documentDirectory: URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths.first!
