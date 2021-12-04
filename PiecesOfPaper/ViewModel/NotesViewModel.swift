@@ -27,9 +27,9 @@ final class NotesViewModel: ObservableObject {
     }
     
     private func openAllDocuments() {
-        guard let iCloudUrl = FilePath.iCloudUrl else { return }
-        let allFileNames = try! FileManager.default.contentsOfDirectory(atPath: iCloudUrl.path)
-        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".pkdrawing") }.sorted(by: <)
+        guard let iCloudInboxUrl = FilePath.iCloudInboxUrl,
+              let allFileNames = try? FileManager.default.contentsOfDirectory(atPath: iCloudInboxUrl.path) else { return }
+        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".plist") }.sorted(by: <)
         counter = drawingFileNames.count
         
         drawingFileNames.forEach { [weak self] filename in
@@ -42,8 +42,8 @@ final class NotesViewModel: ObservableObject {
     }
     
     private func open(filename: String, comp: @escaping (NoteDocument) -> Void) {
-        guard let iCloudUrl = FilePath.iCloudUrl else { return }
-        let url = iCloudUrl.appendingPathComponent(filename)
+        guard let iCloudInboxUrl = FilePath.iCloudInboxUrl else { return }
+        let url = iCloudInboxUrl.appendingPathComponent(filename)
         guard FileManager.default.fileExists(atPath: url.path) else { return }
         let document = NoteDocument(fileURL: url)
         

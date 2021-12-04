@@ -51,7 +51,7 @@ struct Canvas: View {
         delegateBridge = CanvasDelegateBridgeObject(toolPicker: toolPicker)
         if let noteDocument = noteDocument {
             viewModel.document = noteDocument
-            canvasView.drawing = noteDocument.drawing
+            canvasView.drawing = noteDocument.entity.drawing
         }
 
         delegateBridge.canvas = self
