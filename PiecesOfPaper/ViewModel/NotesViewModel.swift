@@ -6,46 +6,74 @@
 //  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
 //
 
-import Foundation
 import PencilKit
 
 final class NotesViewModel: ObservableObject {
     @Published var publishedNoteDocuments = [NoteDocument]()
+    @Published var isLoaded = false
     private var noteDocuments = [NoteDocument]() {
         didSet {
             if counter <= noteDocuments.count {
-                publishedNoteDocuments = noteDocuments.sorted { $0.fileModificationDate ?? Date() < $1.fileModificationDate ?? Date() }
+                publishedNoteDocuments = noteDocuments.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
+                isLoaded = true
                 noteDocuments.removeAll()
             }
         }
     }
     
-    private var counter = 0
-    
-    init() {
-        openAllDocuments()
+    enum TargetDirectory: String {
+        case inbox, archived, all
     }
     
-    private func openAllDocuments() {
-        guard let iCloudUrl = FilePath.iCloudUrl else { return }
-        let allFileNames = try! FileManager.default.contentsOfDirectory(atPath: iCloudUrl.path)
-        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".pkdrawing") }.sorted(by: <)
-        counter = drawingFileNames.count
-        
-        drawingFileNames.forEach { [weak self] filename in
-            open(filename: filename) { drawing in
+    private var directory: TargetDirectory
+    private var counter = 0
+    
+    init(targetDirectory: TargetDirectory) {
+        self.directory = targetDirectory
+    }
+    
+    func fetch() {
+        openDocuments()
+    }
+    
+    private func openDocuments() {
+        let urls = getFileUrl()
+        urls.forEach { [weak self] url in
+            open(fileUrl: url) { document in
                 DispatchQueue.main.async {
-                    self?.noteDocuments.append(drawing)
+                    self?.noteDocuments.append(document)
                 }
             }
         }
     }
     
-    private func open(filename: String, comp: @escaping (NoteDocument) -> Void) {
-        guard let iCloudUrl = FilePath.iCloudUrl else { return }
-        let url = iCloudUrl.appendingPathComponent(filename)
-        guard FileManager.default.fileExists(atPath: url.path) else { return }
-        let document = NoteDocument(fileURL: url)
+    private func getFileUrl() -> [URL] {
+        guard let iCloudInboxUrl = FilePath.iCloudInboxUrl,
+              var inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: iCloudInboxUrl.path),
+              let iCloudArchivedUrl = FilePath.iCloudArchivedUrl,
+              var archivedFileNames = try? FileManager.default.contentsOfDirectory(atPath: iCloudArchivedUrl.path) else { return [] }
+        
+        inboxFileNames = inboxFileNames.filter { $0.hasSuffix(".plist") }
+        archivedFileNames = archivedFileNames.filter { $0.hasSuffix(".plist") }
+        
+        switch directory {
+        case .inbox:
+            counter = inboxFileNames.count
+            return inboxFileNames.map { iCloudInboxUrl.appendingPathComponent($0) }
+        case .archived:
+            counter = archivedFileNames.count
+            return archivedFileNames.map { iCloudArchivedUrl.appendingPathComponent($0) }
+        case .all:
+            counter = inboxFileNames.count + archivedFileNames.count
+            let inboxUrls = inboxFileNames.map { iCloudInboxUrl.appendingPathComponent($0) }
+            let archivedUrls = archivedFileNames.map { iCloudArchivedUrl.appendingPathComponent($0) }
+            return inboxUrls + archivedUrls
+        }
+    }
+    
+    private func open(fileUrl: URL, comp: @escaping (NoteDocument) -> Void) {
+        guard FileManager.default.fileExists(atPath: fileUrl.path) else { return }
+        let document = NoteDocument(fileURL: fileUrl)
         
         document.open() { success in
             if success {
@@ -58,6 +86,7 @@ final class NotesViewModel: ObservableObject {
     }
     
     func update() {
-        openAllDocuments()
+        isLoaded = false
+        openDocuments()
     }
 }

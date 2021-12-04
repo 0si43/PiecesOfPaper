@@ -16,7 +16,7 @@ struct NotesGrid: View {
     let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
     var activityViewController: UIActivityViewControllerWrapper? {
         guard let document = documentToShare else { return nil }
-        let drawing = document.drawing
+        let drawing = document.entity.drawing
         var image = UIImage()
         let trait = UITraitCollection(userInterfaceStyle: .light)
         trait.performAsCurrent {

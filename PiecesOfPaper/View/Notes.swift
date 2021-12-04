@@ -10,35 +10,46 @@ import SwiftUI
 import PencilKit
 
 struct Notes: View {
-    @ObservedObject var viewModel = NotesViewModel()
+    @ObservedObject var viewModel: NotesViewModel
+    
+    init(viewModel: NotesViewModel) {
+        self.viewModel = viewModel
+    }
     
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                Spacer(minLength: 30.0)
-                NotesGrid(noteDocuments: $viewModel.publishedNoteDocuments)
-            }
-            .padding([.leading, .trailing])
-            .navigationBarItems(trailing:
-                Button(action: new){
-                    Image(systemName: "plus")
+        if !viewModel.isLoaded {
+            ProgressView()
+                .onAppear {
+                    viewModel.fetch()
                 }
-            )
-            .navigationBarTitleDisplayMode(.inline)
-            .overlay(
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        Button(action: { viewModel.update() }) {
-                            Image(systemName: "plus")
-                        }
-                        Spacer()
-                        ScrollButton(action: { scrollToBottom(proxy: proxy) },
-                                     image: Image(systemName: "arrow.down.circle"))
+        } else {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    Spacer(minLength: 30.0)
+                    NotesGrid(noteDocuments: $viewModel.publishedNoteDocuments)
+                }
+                .padding([.leading, .trailing])
+                .navigationBarItems(trailing:
+                    Button(action: new){
+                        Image(systemName: "plus")
                     }
-                }
-            )
+                )
+                .navigationBarTitleDisplayMode(.inline)
+                .overlay(
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Button(action: { viewModel.update() }) {
+                                Image(systemName: "plus")
+                            }
+                            Spacer()
+                            ScrollButton(action: { scrollToBottom(proxy: proxy) },
+                                         image: Image(systemName: "arrow.down.circle"))
+                        }
+                    }
+                )
+            }
         }
     }
     
@@ -53,6 +64,6 @@ struct Notes: View {
 
 struct Notes_Previews: PreviewProvider {
     static var previews: some View {
-        Notes()
+        Notes(viewModel: NotesViewModel(targetDirectory: .inbox))
     }
 }
