@@ -24,4 +24,15 @@ final class CanvasViewModel: ObservableObject {
             document?.save(to: path, for: .forCreating)
         }
     }
+    
+    func archive() {
+        guard let document = document,
+              let iCloudArchivedUrl = FilePath.iCloudArchivedUrl else { return }
+        let toUrl = iCloudArchivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
+        do {
+            try FileManager.default.moveItem(at: document.fileURL, to: toUrl)
+        } catch(let error) {
+            print("Could not archive: ", error.localizedDescription)
+        }
+    }
 }
