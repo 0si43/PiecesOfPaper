@@ -30,6 +30,9 @@ final class NotesViewModel: ObservableObject {
     
     init(targetDirectory: TargetDirectory) {
         self.directory = targetDirectory
+    }
+    
+    func fetch() {
         openDocuments()
     }
     
