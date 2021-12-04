@@ -14,7 +14,7 @@ struct NoteImage: View {
     
     var body: some View {
         Button(action: { open(noteDocument: noteDocument) }) {
-            Image(uiImage: noteDocument.drawing.image(from: noteDocument.drawing.bounds, scale: 1.0))
+            Image(uiImage: noteDocument.entity.drawing.image(from: noteDocument.entity.drawing.bounds, scale: 1.0))
                 .resizable()
                 .scaledToFit()
                 .frame(width: 250.0, height: 190.0)

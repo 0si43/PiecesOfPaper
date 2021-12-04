@@ -9,10 +9,17 @@
 import Foundation
 
 struct FilePath {
-    // TODO: CIがコケるのでなんか考える
     static var iCloudUrl: URL? {
         guard let url = FileManager.default.url(forUbiquityContainerIdentifier: nil) else { return nil }
         return url.appendingPathComponent("Documents")
+    }
+    
+    static var iCloudInboxUrl: URL? {
+        return iCloudUrl?.appendingPathComponent("Inbox")
+    }
+    
+    static var iCloudArchivedUrl: URL? {
+        return iCloudUrl?.appendingPathComponent("Archived")
     }
     
     static var documentDirectory: URL {
@@ -23,6 +30,6 @@ struct FilePath {
     static var fileName: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ssSSSS"
-        return dateFormatter.string(from: Date()) + ".pkdrawing"
+        return dateFormatter.string(from: Date()) + ".plist"
     }
 }

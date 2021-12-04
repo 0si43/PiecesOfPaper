@@ -10,20 +10,31 @@ import UIKit
 import PencilKit
 
 final class NoteDocument: UIDocument {
-    var drawing: PKDrawing
+    var entity: NoteEntity
+
+    override init(fileURL: URL) {
+        self.entity = NoteEntity(drawing: PKDrawing())
+        super.init(fileURL: fileURL)
+    }
     
-    init(fileURL: URL, drawing: PKDrawing = PKDrawing()) {
-        self.drawing = drawing
+    init(fileURL: URL, entity: NoteEntity) {
+        self.entity = entity
         super.init(fileURL: fileURL)
     }
     
     override func contents(forType typeName: String) throws -> Any {
-        return drawing.dataRepresentation()
+        let encoder = PropertyListEncoder()
+        let data = (try? encoder.encode(entity)) ?? Data()
+        return data
     }
 
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
-        guard let contents = contents as? Data,
-              let drawing = try? PKDrawing(data: contents) else { return }
-        self.drawing = drawing
+        guard let content = contents as? Data else { return }
+        let decoder = PropertyListDecoder()
+        do {
+            entity = try decoder.decode(NoteEntity.self, from: content)
+        } catch(let error) {
+            print("Data file format error: ", error.localizedDescription)
+        }
     }
 }
