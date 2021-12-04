@@ -21,32 +21,56 @@ final class NotesViewModel: ObservableObject {
         }
     }
     
-    private var counter = 0
-    
-    init() {
-        openAllDocuments()
+    enum TargetDirectory: String {
+        case inbox, archived, all
     }
     
-    private func openAllDocuments() {
-        guard let iCloudInboxUrl = FilePath.iCloudInboxUrl,
-              let allFileNames = try? FileManager.default.contentsOfDirectory(atPath: iCloudInboxUrl.path) else { return }
-        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".plist") }
-        counter = drawingFileNames.count
-        
-        drawingFileNames.forEach { [weak self] filename in
-            open(filename: filename) { drawing in
+    private var directory: TargetDirectory
+    private var counter = 0
+    
+    init(targetDirectory: TargetDirectory) {
+        self.directory = targetDirectory
+        openDocuments()
+    }
+    
+    private func openDocuments() {
+        let urls = getFileUrl()
+        urls.forEach { [weak self] url in
+            open(fileUrl: url) { document in
                 DispatchQueue.main.async {
-                    self?.noteDocuments.append(drawing)
+                    self?.noteDocuments.append(document)
                 }
             }
         }
     }
     
-    private func open(filename: String, comp: @escaping (NoteDocument) -> Void) {
-        guard let iCloudInboxUrl = FilePath.iCloudInboxUrl else { return }
-        let url = iCloudInboxUrl.appendingPathComponent(filename)
-        guard FileManager.default.fileExists(atPath: url.path) else { return }
-        let document = NoteDocument(fileURL: url)
+    private func getFileUrl() -> [URL] {
+        guard let iCloudInboxUrl = FilePath.iCloudInboxUrl,
+              var inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: iCloudInboxUrl.path),
+              let iCloudArchivedUrl = FilePath.iCloudArchivedUrl,
+              var archivedFileNames = try? FileManager.default.contentsOfDirectory(atPath: iCloudArchivedUrl.path) else { return [] }
+        
+        inboxFileNames = inboxFileNames.filter { $0.hasSuffix(".plist") }
+        archivedFileNames = archivedFileNames.filter { $0.hasSuffix(".plist") }
+        
+        switch directory {
+        case .inbox:
+            counter = inboxFileNames.count
+            return inboxFileNames.map { iCloudInboxUrl.appendingPathComponent($0) }
+        case .archived:
+            counter = archivedFileNames.count
+            return archivedFileNames.map { iCloudArchivedUrl.appendingPathComponent($0) }
+        case .all:
+            counter = inboxFileNames.count + archivedFileNames.count
+            let inboxUrls = inboxFileNames.map { iCloudInboxUrl.appendingPathComponent($0) }
+            let archivedUrls = archivedFileNames.map { iCloudArchivedUrl.appendingPathComponent($0) }
+            return inboxUrls + archivedUrls
+        }
+    }
+    
+    private func open(fileUrl: URL, comp: @escaping (NoteDocument) -> Void) {
+        guard FileManager.default.fileExists(atPath: fileUrl.path) else { return }
+        let document = NoteDocument(fileURL: fileUrl)
         
         document.open() { success in
             if success {
@@ -60,6 +84,6 @@ final class NotesViewModel: ObservableObject {
     
     func update() {
         isLoaded = false
-        openAllDocuments()
+        openDocuments()
     }
 }

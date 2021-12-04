@@ -10,7 +10,11 @@ import SwiftUI
 import PencilKit
 
 struct Notes: View {
-    @ObservedObject var viewModel = NotesViewModel()
+    @ObservedObject var viewModel: NotesViewModel
+    
+    init(viewModel: NotesViewModel) {
+        self.viewModel = viewModel
+    }
     
     var body: some View {
         if !viewModel.isLoaded {
@@ -57,6 +61,6 @@ struct Notes: View {
 
 struct Notes_Previews: PreviewProvider {
     static var previews: some View {
-        Notes()
+        Notes(viewModel: NotesViewModel(targetDirectory: .inbox))
     }
 }
