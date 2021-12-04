@@ -14,7 +14,7 @@ final class NotesViewModel: ObservableObject {
     private var noteDocuments = [NoteDocument]() {
         didSet {
             if counter <= noteDocuments.count {
-                publishedNoteDocuments = noteDocuments.sorted { $0.fileModificationDate ?? Date() < $1.fileModificationDate ?? Date() }
+                publishedNoteDocuments = noteDocuments.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
                 noteDocuments.removeAll()
             }
         }
@@ -29,7 +29,7 @@ final class NotesViewModel: ObservableObject {
     private func openAllDocuments() {
         guard let iCloudInboxUrl = FilePath.iCloudInboxUrl,
               let allFileNames = try? FileManager.default.contentsOfDirectory(atPath: iCloudInboxUrl.path) else { return }
-        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".plist") }.sorted(by: <)
+        let drawingFileNames = allFileNames.filter { $0.hasSuffix(".plist") }
         counter = drawingFileNames.count
         
         drawingFileNames.forEach { [weak self] filename in
