@@ -9,7 +9,6 @@
 import Foundation
 
 struct FilePath {
-    // TODO: CIがコケるのでなんか考える
     static var iCloudUrl: URL? {
         guard let url = FileManager.default.url(forUbiquityContainerIdentifier: nil) else { return nil }
         return url.appendingPathComponent("Documents")
