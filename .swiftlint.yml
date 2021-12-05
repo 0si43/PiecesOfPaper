@@ -89,7 +89,7 @@ opt_in_rules:
   - closure_end_indentation
   - closure_spacing
   - collection_alignment
-  - conditional_returns_on_newline
+#  - conditional_returns_on_newline # ガード文などは簡潔に一行で記述したいため
   - contains_over_first_not_nil
   - convenience_type
   #- discouraged_object_literal # オブジェクトリテラルを使いたいため
@@ -106,7 +106,7 @@ opt_in_rules:
   #- explicit_type_interface # できる限り型推論したいため
   #- extension_access_modifier # このルールの意味を理解していないため
   - fallthrough
-  - fatal_error_message
+  # - fatal_error_message # メッセージは不要なため
   #- file_header # このルールの意味を理解していないため
   - file_name
   - first_where
@@ -131,7 +131,7 @@ opt_in_rules:
   #- multiline_parameters_brackets # 括弧で行を増やしたくないため
   - nimble_operator
   #- no_extension_access_modifier # エクステンションにACLを設定したいことがあるため
-  - no_grouping_extension # グループ化するためにエクステンションを使わないため
+  # - no_grouping_extension # グルーピングにextensionを利用したいため
   - nslocalizedstring_key
   #- number_separator # 数字を `_` で区切りたくないため
   #- object_literal # リテラルで生成したくないこともあるため
@@ -157,14 +157,13 @@ opt_in_rules:
   - static_operator
   - strict_fileprivate
   #- strong_iboutlet # `@IBOutlet` を `weak` で定義したいこともあるため
-  - switch_case_on_newline
+  # - switch_case_on_newline caseと同じ行に記述したいため
   - toggle_bool
   - trailing_closure
   - unavailable_function
   - unneeded_parentheses_in_closure_argument
   - untyped_error_in_catch
   - unused_import
-  - unused_private_declaration
   - vertical_parameter_alignment_on_call
   #- vertical_whitespace_between_cases # Switch文のケース間に空白行を設けたくないこともあるため
   #- vertical_whitespace_closing_braces # 中括弧を閉じる前に空白行を設けたいことがあるため
