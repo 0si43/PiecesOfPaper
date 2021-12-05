@@ -31,45 +31,49 @@ struct NotesGrid: View {
     }
 
     var body: some View {
-        LazyVGrid(columns: [gridItem], spacing: 60.0) {
+        LazyVGrid(columns: [gridItem]) {
             ForEach((0..<noteDocuments.count), id: \.self) { index in
-                NoteImage(noteDocument: noteDocuments[index])
-                .contextMenu {
-                    Button(action: {
-                        duplicate(noteDocument: noteDocuments[index])
-                    }) {
-                        Label("Duplicate", systemImage: "doc.on.doc")
-                    }
-                    if noteDocuments[index].isArchived {
-                            Button(action: {
-                                unarchive(noteDocument: noteDocuments[index])
-                            }) {
-                                Label("Unarchive", systemImage: "arrow.up.square")
-                            }
-                            if #available(iOS 15.0, *) {
-                                Button(role: .destructive) {
-                                    delete(noteDocument: noteDocuments[index])
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            }
-                    } else {
+                VStack {
+                    NoteImage(noteDocument: noteDocuments[index])
+                    .contextMenu {
                         Button(action: {
-                            archive(noteDocument: noteDocuments[index])
+                            duplicate(noteDocument: noteDocuments[index])
                         }) {
-                            Label("Archive", systemImage: "arrow.down.square")
+                            Label("Duplicate", systemImage: "doc.on.doc")
+                        }
+                        if noteDocuments[index].isArchived {
+                                Button(action: {
+                                    unarchive(noteDocument: noteDocuments[index])
+                                }) {
+                                    Label("Unarchive", systemImage: "arrow.up.square")
+                                }
+                                if #available(iOS 15.0, *) {
+                                    Button(role: .destructive) {
+                                        delete(noteDocument: noteDocuments[index])
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                        } else {
+                            Button(action: {
+                                archive(noteDocument: noteDocuments[index])
+                            }) {
+                                Label("Archive", systemImage: "arrow.down.square")
+                            }
+                        }
+                        Button(action: {
+                            share(noteDocument: noteDocuments[index])
+                        }) {
+                            Label("Share", systemImage: "square.and.arrow.up")
+                        }
+                        Button(action: {
+                            TagListRouter.shared.showTagList(noteDocument: noteDocuments[index])
+                        }) {
+                            Label("Tag", systemImage: "tag")
                         }
                     }
-                    Button(action: {
-                        share(noteDocument: noteDocuments[index])
-                    }) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                    Button(action: {
-                        TagListRouter.shared.showTagList(noteDocument: noteDocuments[index])
-                    }) {
-                        Label("Tag", systemImage: "tag")
-                    }
+                    TagHStack(noteDocument: noteDocuments[index])
+                        .padding()
                 }
             }
         }

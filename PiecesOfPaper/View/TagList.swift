@@ -14,18 +14,7 @@ struct TagList: View {
     var body: some View {
         List {
             if let noteDocument = TagListRouter.shared.documentForPass {
-                ScrollView(.horizontal) {
-                    HStack {
-                        ForEach(tagListViewModel.tags, id: \.id) { tag in
-                            if noteDocument.entity.tags.contains(tag.name) {
-                                Tag(entity: tag)
-                                    .onTapGesture {
-                                        remove(tagName: tag.name, noteDocument: noteDocument)
-                                    }
-                            }
-                        }
-                    }
-                }
+                TagHStack(noteDocument: noteDocument)
                 Section(header: Text("Select tag which you want to add")) {
                     ForEach(tagListViewModel.tags, id: \.id) { tag in
                         if !noteDocument.entity.tags.contains(tag.name) {
@@ -42,11 +31,6 @@ struct TagList: View {
 
     func add(tagName: String, noteDocument: NoteDocument) {
         noteDocument.entity.tags.append(tagName)
-        save(noteDocument: noteDocument)
-    }
-
-    func remove(tagName: String, noteDocument: NoteDocument) {
-        noteDocument.entity.tags = noteDocument.entity.tags.filter { $0 != tagName }
         save(noteDocument: noteDocument)
     }
 
