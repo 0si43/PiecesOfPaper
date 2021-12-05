@@ -65,6 +65,16 @@ struct NotesGrid: View {
                     }) {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
+                    Button(action: {
+                        share(noteDocument: noteDocuments[index])
+                    }) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    Button(action: {
+                        share(noteDocument: noteDocuments[index])
+                    }) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
                 }
             }
         }

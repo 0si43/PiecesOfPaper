@@ -24,7 +24,7 @@ struct NoteImage: View {
     }
 
     func open(noteDocument: NoteDocument) {
-        Router.shared.openCanvas(noteDocument: noteDocument)
+        CanvasRouter.shared.openCanvas(noteDocument: noteDocument)
     }
 }
 
