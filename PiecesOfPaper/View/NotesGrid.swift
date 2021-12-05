@@ -40,9 +40,9 @@ struct NotesGrid: View {
                     }) {
                         Label("Duplicate", systemImage: "doc.on.doc")
                     }
-                    if noteDocuments[index].entity.isArchived {
+                    if noteDocuments[index].isArchived {
                             Button(action: {
-                                delete(noteDocument: noteDocuments[index])
+                                unarchive(noteDocument: noteDocuments[index])
                             }) {
                                 Label("Unarchive", systemImage: "arrow.up.square")
                             }
@@ -55,7 +55,7 @@ struct NotesGrid: View {
                             }
                     } else {
                         Button(action: {
-                            delete(noteDocument: noteDocuments[index])
+                            archive(noteDocument: noteDocuments[index])
                         }) {
                             Label("Archive", systemImage: "arrow.down.square")
                         }
@@ -80,7 +80,11 @@ struct NotesGrid: View {
     }
 
     func archive(noteDocument: NoteDocument) {
-        try? FileManager.default.removeItem(at: noteDocument.fileURL)
+        noteViewModel.archive(document: noteDocument)
+    }
+
+    func unarchive(noteDocument: NoteDocument) {
+        noteViewModel.unarchive(document: noteDocument)
     }
 
     func delete(noteDocument: NoteDocument) {

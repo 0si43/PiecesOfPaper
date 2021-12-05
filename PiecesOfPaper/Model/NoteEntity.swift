@@ -10,6 +10,7 @@ import Foundation
 import PencilKit
 
 struct NoteEntity: Codable {
+    var id = UUID()
     var drawing: PKDrawing
     var tags: [String]
     var createdDate: Date

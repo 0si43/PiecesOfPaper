@@ -12,6 +12,11 @@ import PencilKit
 final class NoteDocument: UIDocument {
     var entity: NoteEntity
 
+    var isArchived: Bool {
+        guard let iCloudArchivedUrl = FilePath.iCloudArchivedUrl else { return false }
+        return fileURL.path.hasPrefix(iCloudArchivedUrl.path)
+    }
+
     override init(fileURL: URL) {
         self.entity = NoteEntity(drawing: PKDrawing())
         super.init(fileURL: fileURL)

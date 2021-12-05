@@ -25,7 +25,6 @@ final class NotesViewModel: ObservableObject {
                     guard let self = self else { return }
                     self.publishedNoteDocuments = self.noteDocuments.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
                     self.isLoaded = true
-                    self.noteDocuments.removeAll()
                     self.counter = 0
                 }
             }
@@ -96,6 +95,31 @@ final class NotesViewModel: ObservableObject {
 
     func update() {
         isLoaded = false
+        noteDocuments.removeAll()
         openDocuments()
+    }
+
+    func archive(document: NoteDocument) {
+        guard let iCloudArchivedUrl = FilePath.iCloudArchivedUrl else { return }
+        let toUrl = iCloudArchivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
+        do {
+            try FileManager.default.moveItem(at: document.fileURL, to: toUrl)
+        } catch {
+            print("Could not archive: ", error.localizedDescription)
+        }
+
+        publishedNoteDocuments = Array(noteDocuments.drop { $0.entity.id == document.entity.id })
+    }
+
+    func unarchive(document: NoteDocument) {
+        guard let iCloudInboxUrl = FilePath.iCloudInboxUrl else { return }
+        let toUrl = iCloudInboxUrl.appendingPathComponent(document.fileURL.lastPathComponent)
+        do {
+            try FileManager.default.moveItem(at: document.fileURL, to: toUrl)
+        } catch {
+            print("Could not unarchive: ", error.localizedDescription)
+        }
+
+        publishedNoteDocuments = Array(noteDocuments.drop { $0.entity.id == document.entity.id })
     }
 }
