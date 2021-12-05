@@ -11,22 +11,26 @@ import PencilKit
 final class NotesViewModel: ObservableObject {
     @Published var publishedNoteDocuments = [NoteDocument]()
     @Published var isLoaded = false
-    private var noteDocuments = [NoteDocument]() {
-        didSet {
-            if counter <= noteDocuments.count {
-                publishedNoteDocuments = noteDocuments.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
-                isLoaded = true
-                noteDocuments.removeAll()
-            }
-        }
-    }
-    
+    var didFirstFetchRequest = false
     enum TargetDirectory: String {
         case inbox, archived, all
     }
     
     private var directory: TargetDirectory
     private var counter = 0
+    private var noteDocuments = [NoteDocument]() {
+        didSet {
+            if counter <= noteDocuments.count {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.publishedNoteDocuments = self.noteDocuments.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
+                    self.isLoaded = true
+                    self.noteDocuments.removeAll()
+                    self.counter = 0
+                }
+            }
+        }
+    }
     
     init(targetDirectory: TargetDirectory) {
         self.directory = targetDirectory
@@ -40,9 +44,7 @@ final class NotesViewModel: ObservableObject {
         let urls = getFileUrl()
         urls.forEach { [weak self] url in
             open(fileUrl: url) { document in
-                DispatchQueue.main.async {
-                    self?.noteDocuments.append(document)
-                }
+                self?.noteDocuments.append(document)
             }
         }
     }
@@ -58,7 +60,9 @@ final class NotesViewModel: ObservableObject {
         
         switch directory {
         case .inbox:
-            counter = inboxFileNames.count
+            DispatchQueue.main.async { [weak self] in
+                self?.counter = inboxFileNames.count
+            }
             return inboxFileNames.map { iCloudInboxUrl.appendingPathComponent($0) }
         case .archived:
             counter = archivedFileNames.count
