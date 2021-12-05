@@ -10,37 +10,64 @@ import SwiftUI
 
 struct TagList: View {
     @ObservedObject var tagListViewModel = TagListViewModel()
-    @Environment(\.editMode) var editMode
 
     var body: some View {
         List {
-            ForEach(tagListViewModel.tags, id: \.id) { tag in
-                Text(tag.name)
-                    .padding(.vertical, 4)
-                    .padding(.horizontal, 8)
-                    .background(tag.color.swiftUIColor)
-                    .cornerRadius(4)
-                    .onTapGesture {
-                        guard let noteDocument = TagListRouter.shared.documentForPass else { return }
-                        if noteDocument.entity.tags.contains(tag.name) {
-                            noteDocument.entity.tags = Array(noteDocument.entity.tags.drop { $0 == tag.name })
-                        } else {
-                            noteDocument.entity.tags.append(tag.name)
-                        }
-                        noteDocument.save(to: noteDocument.fileURL, for: .forOverwriting) { success in
-                            if !success {
-                                print("save failed")
+            if let noteDocument = TagListRouter.shared.documentForPass {
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach(tagListViewModel.tags, id: \.id) { tag in
+                            if noteDocument.entity.tags.contains(tag.name) {
+                                Tag(entity: tag)
+                                    .onTapGesture {
+                                        remove(tagName: tag.name, noteDocument: noteDocument)
+                                    }
                             }
                         }
                     }
+                }
+                Section(header: Text("Select tag which you want to add")) {
+                    ForEach(tagListViewModel.tags, id: \.id) { tag in
+                        if !noteDocument.entity.tags.contains(tag.name) {
+                            Tag(entity: tag)
+                                .onTapGesture {
+                                    add(tagName: tag.name, noteDocument: noteDocument)
+                                }
+                        }
+                    }
+                }
             }
-            .onDelete { _ in print("delete") }
         }
-        .navigationBarItems(trailing: EditButton())
     }
 
-    private func addTag(to document: NoteDocument) {
+    func add(tagName: String, noteDocument: NoteDocument) {
+        noteDocument.entity.tags.append(tagName)
+        save(noteDocument: noteDocument)
+    }
 
+    func remove(tagName: String, noteDocument: NoteDocument) {
+        noteDocument.entity.tags = noteDocument.entity.tags.filter { $0 != tagName }
+        save(noteDocument: noteDocument)
+    }
+
+    private func save(noteDocument: NoteDocument) {
+        noteDocument.save(to: noteDocument.fileURL, for: .forOverwriting) { success in
+            if !success {
+                print("save failed")
+            }
+        }
+    }
+}
+
+struct Tag: View {
+    var entity: TagEntity
+
+    var body: some View {
+        Text(entity.name)
+            .padding(.vertical, 4)
+            .padding(.horizontal, 8)
+            .background(entity.color.swiftUIColor)
+            .cornerRadius(4)
     }
 }
 
