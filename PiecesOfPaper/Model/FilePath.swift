@@ -22,12 +22,12 @@ struct FilePath {
         iCloudUrl?.appendingPathComponent("Archived")
     }
 
-    static var documentDirectory: URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    static var iCloudLibraryUrl: URL? {
+        iCloudUrl?.appendingPathComponent(".Library")
     }
 
-    static var applicationSupportDir: URL {
-        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+    static var documentDirectory: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
 
     static var fileName: String {
