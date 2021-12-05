@@ -23,42 +23,9 @@ struct Notes: View {
                     viewModel.fetch()
                 }
         } else {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    Spacer(minLength: 30.0)
-                    NotesGrid(noteDocuments: $viewModel.publishedNoteDocuments)
-                }
-                .padding([.leading, .trailing])
-                .navigationBarItems(trailing:
-                    Button(action: new){
-                        Image(systemName: "plus")
-                    }
-                )
-                .navigationBarTitleDisplayMode(.inline)
-                .overlay(
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            Button(action: { viewModel.update() }) {
-                                Image(systemName: "plus")
-                            }
-                            Spacer()
-                            ScrollButton(action: { scrollToBottom(proxy: proxy) },
-                                         image: Image(systemName: "arrow.down.circle"))
-                        }
-                    }
-                )
-            }
+            NotesScrollViewReader(documents: $viewModel.publishedNoteDocuments,
+                                  reloadAction: viewModel.update)
         }
-    }
-    
-    func new() {
-        Router.shared.openNewCanvas()
-    }
-    
-    func scrollToBottom(proxy: ScrollViewProxy) {
-        proxy.scrollTo(viewModel.publishedNoteDocuments.count - 1, anchor: .bottom)
     }
 }
 
