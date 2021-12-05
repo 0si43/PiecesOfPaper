@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import PencilKit
 
 struct Notes: View {
     @ObservedObject var viewModel: NotesViewModel
@@ -20,7 +19,9 @@ struct Notes: View {
         if !viewModel.isLoaded {
             ProgressView()
                 .onAppear {
+                    guard !viewModel.didFirstFetchRequest else { return }
                     viewModel.fetch()
+                    viewModel.didFirstFetchRequest = true
                 }
         } else {
             NotesScrollViewReader(documents: $viewModel.publishedNoteDocuments,
