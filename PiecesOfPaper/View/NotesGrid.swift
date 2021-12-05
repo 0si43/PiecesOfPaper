@@ -66,14 +66,9 @@ struct NotesGrid: View {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
                     Button(action: {
-                        share(noteDocument: noteDocuments[index])
+                        TagListRouter.shared.showTagList(noteDocument: noteDocuments[index])
                     }) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                    Button(action: {
-                        share(noteDocument: noteDocuments[index])
-                    }) {
-                        Label("Share", systemImage: "square.and.arrow.up")
+                        Label("Tag", systemImage: "tag")
                     }
                 }
             }
