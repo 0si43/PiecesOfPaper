@@ -18,15 +18,29 @@ struct Notes: View {
     var body: some View {
         if !viewModel.isLoaded {
             ProgressView()
+                .navigationBarItems(trailing:
+                    HStack {
+                        Button(action: viewModel.update) { Image(systemName: "arrow.triangle.2.circlepath") }
+                        Button(action: new) { Image(systemName: "plus") }
+                    })
                 .onAppear {
                     guard !viewModel.didFirstFetchRequest else { return }
                     viewModel.fetch()
                     viewModel.didFirstFetchRequest = true
                 }
         } else {
-            NotesScrollViewReader(documents: $viewModel.publishedNoteDocuments,
-                                  reloadAction: viewModel.update)
+            NotesScrollViewReader()
+                .environmentObject(viewModel)
+                .navigationBarItems(trailing:
+                    HStack {
+                        Button(action: viewModel.update) { Image(systemName: "arrow.triangle.2.circlepath") }
+                        Button(action: new) { Image(systemName: "plus") }
+                    })
         }
+    }
+
+    func new() {
+        Router.shared.openNewCanvas()
     }
 }
 
