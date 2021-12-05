@@ -11,7 +11,7 @@ import SwiftUI
 struct ScrollButton: View {
     var action: () -> Void
     var image: Image
-    
+
     var body: some View {
         Button(action: action) {
             image.resizable()

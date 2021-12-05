@@ -11,9 +11,9 @@ import PencilKit
 
 final class Document: UIDocument {
     var dataModel = DataModel()
-    
+
     override func contents(forType typeName: String) throws -> Any {
-        return dataModel.data() ?? Data()
+        dataModel.data() ?? Data()
     }
 
     override func load(fromContents contents: Any, ofType typeName: String?) throws {

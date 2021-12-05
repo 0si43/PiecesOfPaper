@@ -14,7 +14,7 @@ struct Autosave {
         let state = Autosave.isDisabled ? "Off" :  "On"
         return "Autosave: " + state
     }
-    
+
     // UserDefaults return false if the specified key doesn‘t exist, so this property is "isDisabled"
     // (I want it to be autosave enabled first time)
     static var isDisabled: Bool {

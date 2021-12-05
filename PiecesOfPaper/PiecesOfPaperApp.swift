@@ -14,15 +14,14 @@ struct PiecesOfPaperApp: App {
     @State var isAppLaunch = true
     @State var isShowCanvas = false
     @State var noteDocument: NoteDocument?
-    
+
     var body: some Scene {
         WindowGroup {
             NavigationView {
                 SideBarList(isAppLaunch: $isAppLaunch)
             }
-            
-            .fullScreenCover(isPresented: $isShowCanvas)
-            {
+
+            .fullScreenCover(isPresented: $isShowCanvas) {
                 NavigationView {
                     Canvas(noteDocument: noteDocument)
                 }

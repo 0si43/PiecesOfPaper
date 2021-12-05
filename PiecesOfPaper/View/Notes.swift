@@ -10,11 +10,11 @@ import SwiftUI
 
 struct Notes: View {
     @ObservedObject var viewModel: NotesViewModel
-    
+
     init(viewModel: NotesViewModel) {
         self.viewModel = viewModel
     }
-    
+
     var body: some View {
         if !viewModel.isLoaded {
             ProgressView()

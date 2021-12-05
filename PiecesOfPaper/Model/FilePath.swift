@@ -13,20 +13,20 @@ struct FilePath {
         guard let url = FileManager.default.url(forUbiquityContainerIdentifier: nil) else { return nil }
         return url.appendingPathComponent("Documents")
     }
-    
+
     static var iCloudInboxUrl: URL? {
-        return iCloudUrl?.appendingPathComponent("Inbox")
+        iCloudUrl?.appendingPathComponent("Inbox")
     }
-    
+
     static var iCloudArchivedUrl: URL? {
-        return iCloudUrl?.appendingPathComponent("Archived")
+        iCloudUrl?.appendingPathComponent("Archived")
     }
-    
+
     static var documentDirectory: URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths.first!
     }
-    
+
     static var fileName: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ssSSSS"

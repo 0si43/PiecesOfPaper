@@ -11,7 +11,7 @@ import PencilKit
 
 final class CanvasViewModel: ObservableObject {
     var document: NoteDocument?
-    
+
     func save(drawing: PKDrawing) {
         document?.entity.drawing = drawing
         document?.entity.updatedDate = Date()
@@ -24,14 +24,14 @@ final class CanvasViewModel: ObservableObject {
             document?.save(to: path, for: .forCreating)
         }
     }
-    
+
     func archive() {
         guard let document = document,
               let iCloudArchivedUrl = FilePath.iCloudArchivedUrl else { return }
         let toUrl = iCloudArchivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
         do {
             try FileManager.default.moveItem(at: document.fileURL, to: toUrl)
-        } catch(let error) {
+        } catch {
             print("Could not archive: ", error.localizedDescription)
         }
     }

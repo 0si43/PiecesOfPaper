@@ -15,25 +15,25 @@ protocol DocumentManagerDelegate: AnyObject {
 
 struct DocumentManager {
     weak var delegate: DocumentManagerDelegate?
-    
+
     var documentDirectory: URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths.first!
     }
-    
+
     // formmat in ver 1.0.0 ~ 1.2.0
     var oldURL: URL {
         documentDirectory.appendingPathComponent("Like_a_Paper.data")
     }
-    
+
     var renamedOldURL: URL {
         documentDirectory.appendingPathComponent("Like_Paper_v1format.plist")
     }
-    
+
     var saveURL: URL {
         isiCloudEnabled ? iCloudURL : deviceURL
     }
-    
+
     var deviceURL: URL {
         documentDirectory.appendingPathComponent("drawings.plist")
     }
@@ -44,21 +44,21 @@ struct DocumentManager {
             .appendingPathComponent("drawings.plist")
         return url
     }
-    
+
     private var isiCloudEnabled: Bool {
         (FileManager.default.ubiquityIdentityToken != nil)
     }
-    
+
     var document: Document!
     var drawings: [PKDrawing] {
         get { document.dataModel.drawings }
         set { document.dataModel.drawings = newValue }
     }
-    
+
     init(delegate: DocumentManagerDelegate) {
         self.delegate = delegate
         document = Document(fileURL: saveURL)
-        
+
         if FileManager.default.fileExists(atPath: saveURL.path) {
             openDocument()
         } else {
@@ -69,7 +69,7 @@ struct DocumentManager {
             }
         }
     }
-    
+
     private mutating func migrateFileIfNeeded() {
         guard FileManager.default.fileExists(atPath: oldURL.path),
               !FileManager.default.fileExists(atPath: saveURL.path) else { return }
@@ -86,7 +86,7 @@ struct DocumentManager {
             }
         }
     }
-    
+
     private mutating func createNewDocument() {
         guard !FileManager.default.fileExists(atPath: saveURL.path) else { return }
         document.dataModel = DataModel()
@@ -100,7 +100,7 @@ struct DocumentManager {
             }
         }
     }
-    
+
     private func openDocument() {
         guard FileManager.default.fileExists(atPath: saveURL.path) else { return }
         document.open { [self] success in
@@ -113,7 +113,7 @@ struct DocumentManager {
             }
         }
     }
-    
+
     func save() {
         guard FileManager.default.fileExists(atPath: saveURL.path) else { return }
         guard let didDocumentOpen = delegate?.didDocumentOpen, didDocumentOpen else { return }
@@ -122,13 +122,13 @@ struct DocumentManager {
             print("save: " + result)
         }
     }
-    
+
     func autosave() {
         guard let didDocumentOpen = delegate?.didDocumentOpen, didDocumentOpen else { return }
         document.updateChangeCount(.done)
         print("autosave")
     }
-    
+
     // The winner choose by iCloud will be winner.
     // Maybe simply based on modificationDate. A later saved is a winner.
     func resolveConflict() {

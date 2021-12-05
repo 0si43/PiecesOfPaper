@@ -11,7 +11,7 @@ import SwiftUI
 
 struct UIActivityViewControllerWrapper: UIViewControllerRepresentable {
     var activityItems: [Any]
-    var applicationActivities: [UIActivity]? = nil
+    var applicationActivities: [UIActivity]?
 
     func makeUIViewController(context: UIViewControllerRepresentableContext<UIActivityViewControllerWrapper>) -> UIActivityViewController {
         let controller = UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
