@@ -10,8 +10,8 @@ import Foundation
 import SwiftUI
 import PencilKit
 
-public final class Router {
-    public static let shared = Router()
+final class Router {
+    static let shared = Router()
     private var isShowCanvas: Binding<Bool>!
     private var noteDocument: Binding<NoteDocument?>!
 
