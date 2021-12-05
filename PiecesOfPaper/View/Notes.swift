@@ -16,27 +16,30 @@ struct Notes: View {
     }
 
     var body: some View {
-        if !viewModel.isLoaded {
-            ProgressView()
-                .navigationBarItems(trailing:
-                    HStack {
-                        Button(action: viewModel.update) { Image(systemName: "arrow.triangle.2.circlepath") }
-                        Button(action: new) { Image(systemName: "plus") }
-                    })
-                .onAppear {
-                    guard !viewModel.didFirstFetchRequest else { return }
-                    viewModel.fetch()
-                    viewModel.didFirstFetchRequest = true
+        Group {
+            if !viewModel.isLoaded {
+                ProgressView()
+                    .onAppear {
+                        guard !viewModel.didFirstFetchRequest else { return }
+                        viewModel.fetch()
+                        viewModel.didFirstFetchRequest = true
+                    }
+            } else {
+                if viewModel.publishedNoteDocuments.isEmpty {
+                    Text("No Data")
+                        .font(.largeTitle)
+                } else {
+                    NotesScrollViewReader()
+                        .environmentObject(viewModel)
                 }
-        } else {
-            NotesScrollViewReader()
-                .environmentObject(viewModel)
-                .navigationBarItems(trailing:
-                    HStack {
-                        Button(action: viewModel.update) { Image(systemName: "arrow.triangle.2.circlepath") }
-                        Button(action: new) { Image(systemName: "plus") }
-                    })
+            }
+
         }
+        .navigationBarItems(trailing:
+            HStack {
+                Button(action: viewModel.update) { Image(systemName: "arrow.triangle.2.circlepath") }
+                Button(action: new) { Image(systemName: "plus") }
+            })
     }
 
     func new() {
