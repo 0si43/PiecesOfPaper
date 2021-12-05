@@ -36,17 +36,24 @@ struct NotesGrid: View {
                     }) {
                         Label("Duplicate", systemImage: "doc.on.doc")
                     }
-                    if #available(iOS 15.0, *) {
-                        Button(role: .destructive) {
-                            delete(noteDocument: noteDocuments[index])
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
+                    if noteDocuments[index].entity.isArchived {
+                            Button(action: {
+                                delete(noteDocument: noteDocuments[index])
+                            }) {
+                                Label("Unarchive", systemImage: "arrow.up.square")
+                            }
+                            if #available(iOS 15.0, *) {
+                                Button(role: .destructive) {
+                                    delete(noteDocument: noteDocuments[index])
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                     } else {
                         Button(action: {
                             delete(noteDocument: noteDocuments[index])
                         }) {
-                            Label("Delete", systemImage: "trash")
+                            Label("Archive", systemImage: "arrow.down.square")
                         }
                     }
                     Button(action: {
@@ -66,6 +73,10 @@ struct NotesGrid: View {
         guard let iCloudUrl = FilePath.iCloudUrl else { return }
         let newUrl = iCloudUrl.appendingPathComponent(FilePath.fileName)
         try? FileManager.default.copyItem(at: noteDocument.fileURL, to: newUrl)
+    }
+
+    func archive(noteDocument: NoteDocument) {
+        try? FileManager.default.removeItem(at: noteDocument.fileURL)
     }
 
     func delete(noteDocument: NoteDocument) {

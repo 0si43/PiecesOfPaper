@@ -22,7 +22,7 @@ struct DrawingsPlistConverter {
             if success {
                 document.dataModel.drawings.forEach { drawing in
                     let path = inboxUrl.appendingPathComponent(FilePath.fileName)
-                    let newDocument = NoteDocument(fileURL: path, entity: NoteEntity(drawing: drawing   ))
+                    let newDocument = NoteDocument(fileURL: path, entity: NoteEntity(drawing: drawing))
                     newDocument.save(to: path, for: .forCreating) { result in
                         print(result)
                         // need some error handling

@@ -26,6 +26,7 @@ final class CanvasViewModel: ObservableObject {
     }
 
     func archive() {
+        document?.entity.isArchived = true
         guard let document = document,
               let iCloudArchivedUrl = FilePath.iCloudArchivedUrl else { return }
         let toUrl = iCloudArchivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
