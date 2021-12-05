@@ -9,7 +9,18 @@
 import Foundation
 
 struct TagModel {
-    var tags = [TagEntity]()
+    var tags: [TagEntity] {
+        guard let iCloudLibraryUrl = FilePath.iCloudLibraryUrl?.appendingPathComponent("taglist.plist"),
+                FileManager.default.fileExists(atPath: iCloudLibraryUrl.path),
+              let content = FileManager.default.contents(atPath: iCloudLibraryUrl.path) else { return [] }
+        let decoder = PropertyListDecoder()
+        do {
+            return try decoder.decode([TagEntity].self, from: content)
+        } catch {
+            print("Data file format error: ", error.localizedDescription)
+            return []
+        }
+    }
 
     private var defaultTags = [
         TagEntity(name: "idea", color: CodableUIColor(uiColor: .systemYellow)),
@@ -18,27 +29,27 @@ struct TagModel {
         TagEntity(name: "doodle", color: CodableUIColor(uiColor: .systemOrange))
     ]
 
-    mutating func fetch() {
-        guard let tagListFileName = FilePath.tagListFileName else { return }
+    func fetch() -> [TagEntity] {
+        guard let tagListFileName = FilePath.tagListFileName else { return [] }
         if !FileManager.default.fileExists(atPath: tagListFileName.path) {
             makeFileIfNeeded()
+            return defaultTags
         } else {
-            load()
+            return tags
         }
     }
 
-    private mutating func makeFileIfNeeded() {
+    private func makeFileIfNeeded() {
         guard let libraryUrl = FilePath.iCloudLibraryUrl else { return }
 
         if !FileManager.default.fileExists(atPath: libraryUrl.path) {
             try? FileManager.default.createDirectory(at: libraryUrl, withIntermediateDirectories: false)
         }
 
-        tags = defaultTags
-        save()
+        save(tags: defaultTags)
     }
 
-    func save() {
+    func save(tags: [TagEntity]) {
         guard let iCloudLibraryUrl = FilePath.iCloudLibraryUrl else { return }
         let url = iCloudLibraryUrl.appendingPathComponent("taglist.plist")
         let encoder = PropertyListEncoder()
@@ -47,20 +58,6 @@ struct TagModel {
             try data.write(to: url)
         } catch {
             print(error.localizedDescription)
-        }
-    }
-
-    mutating func load() {
-        guard let iCloudLibraryUrl = FilePath.iCloudLibraryUrl else { return }
-        let url = iCloudLibraryUrl.appendingPathComponent("taglist.plist")
-        guard FileManager.default.fileExists(atPath: url.path) else { return }
-        let content = FileManager.default.contents(atPath: url.path)
-        guard let content = content else { return }
-        let decoder = PropertyListDecoder()
-        do {
-            tags = try decoder.decode([TagEntity].self, from: content)
-        } catch {
-            print("Data file format error: ", error.localizedDescription)
         }
     }
 }

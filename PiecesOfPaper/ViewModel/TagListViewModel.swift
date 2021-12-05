@@ -9,9 +9,10 @@
 import Foundation
 
 final class TagListViewModel: ObservableObject {
-    var model = TagModel()
+    let tagModel = TagModel()
+    var tags: [TagEntity]
 
     init() {
-        model.fetch()
+        tags = tagModel.fetch()
     }
 }
