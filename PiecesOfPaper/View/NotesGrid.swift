@@ -12,7 +12,11 @@ import PencilKit
 struct NotesGrid: View {
     @State var isShowActivityView = false
     @State var documentToShare: NoteDocument?
-    @Binding var noteDocuments: [NoteDocument]
+    @EnvironmentObject var noteViewModel: NotesViewModel
+    var noteDocuments: [NoteDocument] {
+        noteViewModel.publishedNoteDocuments
+    }
+
     let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
     var activityViewController: UIActivityViewControllerWrapper? {
         guard let document = documentToShare else { return nil }
@@ -29,7 +33,7 @@ struct NotesGrid: View {
     var body: some View {
         LazyVGrid(columns: [gridItem], spacing: 60.0) {
             ForEach((0..<noteDocuments.count), id: \.self) { index in
-                NoteImage(noteDocument: $noteDocuments[index])
+                NoteImage(noteDocument: noteDocuments[index])
                 .contextMenu {
                     Button(action: {
                         duplicate(noteDocument: noteDocuments[index])
