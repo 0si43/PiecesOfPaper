@@ -14,7 +14,8 @@ struct DrawingsPlistConverter {
 
         guard let iCloudUrl = FilePath.iCloudUrl, let inboxUrl = FilePath.iCloudInboxUrl else { return }
         let url = iCloudUrl.appendingPathComponent("drawings.plist")
-        guard FileManager.default.fileExists(atPath: url.path), FileManager.default.fileExists(atPath: inboxUrl.path) else { return }
+        guard FileManager.default.fileExists(atPath: url.path),
+                FileManager.default.fileExists(atPath: inboxUrl.path) else { return }
 
         let document = Document(fileURL: url)
         document.open { success in

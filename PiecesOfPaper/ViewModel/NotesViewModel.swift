@@ -53,7 +53,8 @@ final class NotesViewModel: ObservableObject {
         guard let iCloudInboxUrl = FilePath.iCloudInboxUrl,
               var inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: iCloudInboxUrl.path),
               let iCloudArchivedUrl = FilePath.iCloudArchivedUrl,
-              var archivedFileNames = try? FileManager.default.contentsOfDirectory(atPath: iCloudArchivedUrl.path) else { return [] }
+              var archivedFileNames =
+                try? FileManager.default.contentsOfDirectory(atPath: iCloudArchivedUrl.path) else { return [] }
 
         inboxFileNames = inboxFileNames.filter { $0.hasSuffix(".plist") }
         archivedFileNames = archivedFileNames.filter { $0.hasSuffix(".plist") }
