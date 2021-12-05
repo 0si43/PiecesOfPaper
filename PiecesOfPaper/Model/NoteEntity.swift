@@ -14,7 +14,7 @@ struct NoteEntity: Codable {
     var tags: [String]
     var createdDate: Date
     var updatedDate: Date
-    
+
     init(drawing: PKDrawing, tags: [String] = [], createdDate: Date = Date(), updatedDate: Date = Date()) {
         self.drawing = drawing
         self.tags = tags

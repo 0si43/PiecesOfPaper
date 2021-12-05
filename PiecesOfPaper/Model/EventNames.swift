@@ -10,8 +10,8 @@ import Foundation
 
 enum EventNames: String {
     case oepnedDocument
-    
+
     func eventName() -> Notification.Name {
-        return Notification.Name(rawValue)
+        Notification.Name(rawValue)
     }
 }

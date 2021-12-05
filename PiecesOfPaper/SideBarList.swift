@@ -13,7 +13,7 @@ struct SideBarList: View {
     let inboxNoteViewModel = NotesViewModel(targetDirectory: .inbox)
     let allNoteViewModel = NotesViewModel(targetDirectory: .all)
     let archivedNoteViewModel = NotesViewModel(targetDirectory: .archived)
-    
+
     var body: some View {
         List {
             Section(header: Text("Folder")) {

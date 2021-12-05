@@ -19,7 +19,7 @@ class PiecesOfPaperTests: XCTestCase {
     //            XCTFail("ThumbnailCollectionViewController is nil")
     //            return
     //        }
-            
+
             // Okay, autosaveButton would be nil. I never call the initializer of collectionView
     //        let viewController = ThumbnailCollectionViewController()
     //        XCTAssertFalse(viewController.autosaveButton.isEnabled,
