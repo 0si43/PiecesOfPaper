@@ -13,7 +13,7 @@ struct TagList: View {
 //    var noteDocument: NoteDocument?
 
     var body: some View {
-        List(tagListViewModel.tags) { tag in
+        List(tagListViewModel.model.tags) { tag in
             Text(tag.name)
                 .padding(.vertical, 4)
                 .padding(.horizontal, 8)
