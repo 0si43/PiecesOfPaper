@@ -10,13 +10,13 @@ import Foundation
 import SwiftUI
 import PencilKit
 
-final public class Router {
+public final class Router {
     public static let shared = Router()
     private var isShowCanvas: Binding<Bool>!
     private var noteDocument: Binding<NoteDocument?>!
-    
+
     private init() { }
-    
+
     /// This procedure should been done by initializer, but a singleton instance couldn't have arguments
     func bind(isShowCanvas: Binding<Bool>, noteDocument: Binding<NoteDocument?>) {
         self.isShowCanvas = isShowCanvas
@@ -28,13 +28,13 @@ final public class Router {
         self.noteDocument.wrappedValue = nil
         toggleStateValue()
     }
-    
+
     /// open a full screen canvas with drawing data
     func openCanvas(noteDocument: NoteDocument) {
         self.noteDocument.wrappedValue = noteDocument
         toggleStateValue()
     }
-    
+
     private func toggleStateValue() {
         isShowCanvas?.wrappedValue.toggle()
     }

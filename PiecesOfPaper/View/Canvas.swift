@@ -21,11 +21,11 @@ struct Canvas: View {
             }
         }
     }
-    
+
     @Environment(\.presentationMode) var presentationMode
 
     var delegateBridge: CanvasDelegateBridgeObject
-    var toolPicker: PKToolPicker = PKToolPicker()
+    var toolPicker = PKToolPicker()
     var activityViewController: UIActivityViewControllerWrapper {
         let drawing = canvasView.drawing
         var image = UIImage()
@@ -33,10 +33,10 @@ struct Canvas: View {
         trait.performAsCurrent {
             image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
         }
-        
+
         return UIActivityViewControllerWrapper(activityItems: [image, delegateBridge])
     }
-    
+
     var tap: some Gesture {
         TapGesture(count: 1)
             .onEnded { _ in
@@ -46,7 +46,7 @@ struct Canvas: View {
                 canvasView.becomeFirstResponder()
             }
     }
-    
+
     init(noteDocument: NoteDocument?) {
         delegateBridge = CanvasDelegateBridgeObject(toolPicker: toolPicker)
         if let noteDocument = noteDocument {
@@ -58,13 +58,13 @@ struct Canvas: View {
         canvasView.delegate = delegateBridge
         addPencilInteraction()
     }
-    
+
     private func addPencilInteraction() {
         let pencilInteraction = UIPencilInteraction()
         pencilInteraction.delegate = delegateBridge
         canvasView.addInteraction(pencilInteraction)
     }
-    
+
     var body: some View {
         PKCanvasViewWrapper(canvasView: $canvasView)
             .gesture(tap)
@@ -72,7 +72,7 @@ struct Canvas: View {
             .navigationBarHidden(hideExceptPaper)
             .navigationBarBackButtonHidden(true)
             .navigationBarItems(leading:
-                Button(action : archive){
+                Button(action: archive) {
                     Image(systemName: "clear").foregroundColor(.red)
                 }
             )
@@ -91,12 +91,12 @@ struct Canvas: View {
                 activityViewController
             }
     }
-    
+
     private func archive() {
         viewModel.archive()
         presentationMode.wrappedValue.dismiss()
     }
-    
+
     private func close() {
         // if !autosave { save action }
         presentationMode.wrappedValue.dismiss()
@@ -104,8 +104,8 @@ struct Canvas: View {
 }
 
 // MARK: - PreviewProvider
-//struct Canvas_Previews: PreviewProvider {
+// struct Canvas_Previews: PreviewProvider {
 //    static var previews: some View {
 //        
 //    }
-//}
+// }

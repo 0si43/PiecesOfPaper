@@ -15,7 +15,7 @@ final class NotesViewModel: ObservableObject {
     enum TargetDirectory: String {
         case inbox, archived, all
     }
-    
+
     private var directory: TargetDirectory
     private var counter = 0
     private var noteDocuments = [NoteDocument]() {
@@ -31,15 +31,15 @@ final class NotesViewModel: ObservableObject {
             }
         }
     }
-    
+
     init(targetDirectory: TargetDirectory) {
         self.directory = targetDirectory
     }
-    
+
     func fetch() {
         openDocuments()
     }
-    
+
     private func openDocuments() {
         let urls = getFileUrl()
         urls.forEach { [weak self] url in
@@ -48,16 +48,16 @@ final class NotesViewModel: ObservableObject {
             }
         }
     }
-    
+
     private func getFileUrl() -> [URL] {
         guard let iCloudInboxUrl = FilePath.iCloudInboxUrl,
               var inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: iCloudInboxUrl.path),
               let iCloudArchivedUrl = FilePath.iCloudArchivedUrl,
               var archivedFileNames = try? FileManager.default.contentsOfDirectory(atPath: iCloudArchivedUrl.path) else { return [] }
-        
+
         inboxFileNames = inboxFileNames.filter { $0.hasSuffix(".plist") }
         archivedFileNames = archivedFileNames.filter { $0.hasSuffix(".plist") }
-        
+
         switch directory {
         case .inbox:
             DispatchQueue.main.async { [weak self] in
@@ -74,12 +74,12 @@ final class NotesViewModel: ObservableObject {
             return inboxUrls + archivedUrls
         }
     }
-    
+
     private func open(fileUrl: URL, comp: @escaping (NoteDocument) -> Void) {
         guard FileManager.default.fileExists(atPath: fileUrl.path) else { return }
         let document = NoteDocument(fileURL: fileUrl)
-        
-        document.open() { success in
+
+        document.open { success in
             if success {
                 comp(document)
                 document.close()
@@ -88,7 +88,7 @@ final class NotesViewModel: ObservableObject {
             }
         }
     }
-    
+
     func update() {
         isLoaded = false
         openDocuments()

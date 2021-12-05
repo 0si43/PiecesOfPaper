@@ -11,7 +11,7 @@ import SwiftUI
 struct NotesScrollViewReader: View {
     @Binding var documents: [NoteDocument]
     var reloadAction: () -> Void
-    
+
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
@@ -21,9 +21,9 @@ struct NotesScrollViewReader: View {
             .padding([.leading, .trailing])
             .navigationBarItems(trailing:
                 HStack {
-                    Button(action: reloadAction) { Image(systemName: "arrow.triangle.2.circlepath")}
-                    Button(action: new) { Image(systemName: "plus")}
-            })
+                    Button(action: reloadAction) { Image(systemName: "arrow.triangle.2.circlepath") }
+                    Button(action: new) { Image(systemName: "plus") }
+                })
             .navigationBarTitleDisplayMode(.inline)
             .overlay(
                 VStack {
@@ -37,19 +37,18 @@ struct NotesScrollViewReader: View {
             )
         }
     }
-    
+
     func new() {
         Router.shared.openNewCanvas()
     }
-    
+
     func scrollToBottom(proxy: ScrollViewProxy) {
         proxy.scrollTo(documents.count - 1, anchor: .bottom)
     }
 }
 
-
-//struct NotesScrollViewReader_Previews: PreviewProvider {
+// struct NotesScrollViewReader_Previews: PreviewProvider {
 //    static var previews: some View {
 //        NotesScrollViewReader(documents: [NoteDocument()])
 //    }
-//}
+// }

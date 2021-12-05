@@ -18,17 +18,17 @@ class CanvasDelegateBridgeObject: NSObject, PKToolPickerObserver {
     private var previousTool: PKTool!
     private var currentTool: PKTool!
     var canvas: Canvas!
-    
+
     init(toolPicker: PKToolPicker) {
         self.toolPicker = toolPicker
         super.init()
-        
+
         toolPicker.addObserver(self)
         toolPicker.selectedTool = defaultTool
         previousTool = defaultTool
         currentTool = defaultTool
     }
-    
+
     func toolPickerSelectedToolDidChange(_ toolPicker: PKToolPicker) {
         previousTool = currentTool
         currentTool = toolPicker.selectedTool
@@ -73,13 +73,13 @@ extension CanvasDelegateBridgeObject: PKCanvasViewDelegate {
 // MARK: - UIActivityItemSource
 extension CanvasDelegateBridgeObject: UIActivityItemSource {
     func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
-        return ""
+        ""
     }
 
     func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
-        return nil
+        nil
     }
-    
+
     func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
         let metadata = LPLinkMetadata()
         metadata.title = "Share your note"

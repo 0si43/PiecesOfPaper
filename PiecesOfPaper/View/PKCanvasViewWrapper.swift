@@ -11,7 +11,7 @@ import PencilKit
 
 struct PKCanvasViewWrapper: UIViewRepresentable {
     @Binding var canvasView: PKCanvasView
-    
+
     func makeUIView(context: Context) -> PKCanvasView {
         canvasView.tool = PKInkingTool(.pen, color: .black, width: 1)
         return canvasView
@@ -23,7 +23,7 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
 // MARK: - PreviewProvider
 struct PKCanvasViewWrapper_Previews: PreviewProvider {
     @State static var canvas = PKCanvasView()
-    
+
     static var previews: some View {
         PKCanvasViewWrapper(canvasView: $canvas)
     }
