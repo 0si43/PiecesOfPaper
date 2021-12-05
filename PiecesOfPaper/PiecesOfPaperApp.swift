@@ -13,26 +13,36 @@ import PencilKit
 struct PiecesOfPaperApp: App {
     @State var isAppLaunch = true
     @State var isShowCanvas = false
+    @State var isShowTagList = false
     @State var noteDocument: NoteDocument?
+    @State var taggingNoteDocument: NoteDocument?
+    var isPresented: Bool {
+        taggingNoteDocument != nil
+    }
 
     var body: some Scene {
         WindowGroup {
-            NavigationView {
-                SideBarList(isAppLaunch: $isAppLaunch)
-            }
-
-            .fullScreenCover(isPresented: $isShowCanvas) {
                 NavigationView {
-                    Canvas(noteDocument: noteDocument)
+                    SideBarList(isAppLaunch: $isAppLaunch)
                 }
-            }
-            .onAppear {
-                guard isAppLaunch else { return }
-                CanvasRouter.shared.bind(isShowCanvas: $isShowCanvas, noteDocument: $noteDocument)
-                CanvasRouter.shared.openNewCanvas()
-                DrawingsPlistConverter.convert()
-                isAppLaunch = false
-            }
+                .fullScreenCover(isPresented: $isShowCanvas) {
+                    NavigationView {
+                        Canvas(noteDocument: noteDocument)
+                    }
+                }
+                .sheet(isPresented: $isShowTagList) {
+                    TagList()
+                }
+                .onAppear {
+                    guard isAppLaunch else { return }
+                    CanvasRouter.shared.bind(isShowCanvas: $isShowCanvas, noteDocument: $noteDocument)
+                    CanvasRouter.shared.openNewCanvas()
+                    // I thought this can work, but SwiftUI cannot pass the document data...
+                    TagListRouter.shared.bind(isShowTagList: $isShowTagList, taggingNoteDocument: $taggingNoteDocument)
+                    DrawingsPlistConverter.convert()
+                    isAppLaunch = false
+                }
         }
+//        }
     }
 }

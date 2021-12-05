@@ -6,7 +6,6 @@
 //  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
 //
 
-import Foundation
 import SwiftUI
 import PencilKit
 
