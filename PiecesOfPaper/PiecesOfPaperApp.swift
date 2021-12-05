@@ -15,10 +15,6 @@ struct PiecesOfPaperApp: App {
     @State var isShowCanvas = false
     @State var isShowTagList = false
     @State var noteDocument: NoteDocument?
-    @State var taggingNoteDocument: NoteDocument?
-    var isPresented: Bool {
-        taggingNoteDocument != nil
-    }
 
     var body: some Scene {
         WindowGroup {
@@ -30,7 +26,9 @@ struct PiecesOfPaperApp: App {
                         Canvas(noteDocument: noteDocument)
                     }
                 }
-                .sheet(isPresented: $isShowTagList) {
+                .sheet(isPresented: $isShowTagList, onDismiss: {
+                    TagListRouter.shared.documentForPass = nil
+                }) {
                     TagList()
                 }
                 .onAppear {
@@ -38,7 +36,7 @@ struct PiecesOfPaperApp: App {
                     CanvasRouter.shared.bind(isShowCanvas: $isShowCanvas, noteDocument: $noteDocument)
                     CanvasRouter.shared.openNewCanvas()
                     // I thought this can work, but SwiftUI cannot pass the document data...
-                    TagListRouter.shared.bind(isShowTagList: $isShowTagList, taggingNoteDocument: $taggingNoteDocument)
+                    TagListRouter.shared.bind(isShowTagList: $isShowTagList)
                     DrawingsPlistConverter.convert()
                     isAppLaunch = false
                 }

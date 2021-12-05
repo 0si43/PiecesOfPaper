@@ -11,18 +11,15 @@ import SwiftUI
 final class TagListRouter {
     static let shared = TagListRouter()
     private var isShowTagList: Binding<Bool>!
-    private var taggingNoteDocument: Binding<NoteDocument?>!
     var documentForPass: NoteDocument?
 
     private init() { }
 
-    func bind(isShowTagList: Binding<Bool>, taggingNoteDocument: Binding<NoteDocument?>) {
+    func bind(isShowTagList: Binding<Bool>) {
         self.isShowTagList = isShowTagList
-        self.taggingNoteDocument = taggingNoteDocument
     }
 
     func showTagList(noteDocument: NoteDocument) {
-//        self.taggingNoteDocument.wrappedValue = noteDocument
         documentForPass = noteDocument
         isShowTagList?.wrappedValue.toggle()
     }
