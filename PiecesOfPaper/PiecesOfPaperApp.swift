@@ -28,8 +28,8 @@ struct PiecesOfPaperApp: App {
             }
             .onAppear {
                 guard isAppLaunch else { return }
-                Router.shared.bind(isShowCanvas: $isShowCanvas, noteDocument: $noteDocument)
-                Router.shared.openNewCanvas()
+                CanvasRouter.shared.bind(isShowCanvas: $isShowCanvas, noteDocument: $noteDocument)
+                CanvasRouter.shared.openNewCanvas()
                 DrawingsPlistConverter.convert()
                 isAppLaunch = false
             }

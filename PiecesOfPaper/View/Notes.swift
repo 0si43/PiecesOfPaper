@@ -43,7 +43,7 @@ struct Notes: View {
     }
 
     func new() {
-        Router.shared.openNewCanvas()
+        CanvasRouter.shared.openNewCanvas()
     }
 }
 
