@@ -13,14 +13,15 @@ struct NoteImage: View {
     @State var state = false
 
     var body: some View {
-        Button(action: { open(noteDocument: noteDocument) }) {
-            Image(uiImage: noteDocument.entity.drawing.image(from: noteDocument.entity.drawing.bounds, scale: 1.0))
-                .resizable()
-                .scaledToFit()
-                .frame(width: 250.0, height: 190.0)
-                .background(Color(UIColor.secondarySystemBackground))
-                .shadow(radius: 5.0)
-        }
+        Button(action: { open(noteDocument: noteDocument) },
+               label: {
+                Image(uiImage: noteDocument.entity.drawing.image(from: noteDocument.entity.drawing.bounds, scale: 1.0))
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 250.0, height: 190.0)
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .shadow(radius: 5.0)
+        })
     }
 
     func open(noteDocument: NoteDocument) {
