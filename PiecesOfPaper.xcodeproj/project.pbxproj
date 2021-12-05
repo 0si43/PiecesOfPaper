@@ -14,6 +14,7 @@
 		A63C9578275C8F4A00822461 /* TagList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9577275C8F4A00822461 /* TagList.swift */; };
 		A63C957C275C8FD900822461 /* TagListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C957B275C8FD900822461 /* TagListViewModel.swift */; };
 		A63C957E275CC3C300822461 /* TagListRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C957D275CC3C300822461 /* TagListRouter.swift */; };
+		A63C9580275CFF7900822461 /* TagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C957F275CFF7900822461 /* TagModel.swift */; };
 		A6484FCE272B923B00676ED8 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FCD272B923B00676ED8 /* Canvas.swift */; };
 		A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */; };
 		A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */; };
@@ -56,6 +57,7 @@
 		A63C9577275C8F4A00822461 /* TagList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagList.swift; sourceTree = "<group>"; };
 		A63C957B275C8FD900822461 /* TagListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListViewModel.swift; sourceTree = "<group>"; };
 		A63C957D275CC3C300822461 /* TagListRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListRouter.swift; sourceTree = "<group>"; };
+		A63C957F275CFF7900822461 /* TagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagModel.swift; sourceTree = "<group>"; };
 		A6484FCD272B923B00676ED8 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKCanvasViewWrapper.swift; sourceTree = "<group>"; };
 		A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 				A6620E39274C8FA400C708A2 /* NoteDocument.swift */,
 				A64AE9F3275B203A002C66F7 /* NoteEntity.swift */,
 				A63C956C275C7CF300822461 /* TagEntity.swift */,
+				A63C957F275CFF7900822461 /* TagModel.swift */,
 				A6EE43262523271F000B203E /* Document.swift */,
 				A6EE433025232DDE000B203E /* DocumentManager.swift */,
 				A657B0752526A81800B7BE2D /* EventNames.swift */,
@@ -345,6 +348,7 @@
 				A6EE43272523271F000B203E /* Document.swift in Sources */,
 				A62EEAF2273248A300D513B8 /* PiecesOfPaperApp.swift in Sources */,
 				A63C957E275CC3C300822461 /* TagListRouter.swift in Sources */,
+				A63C9580275CFF7900822461 /* TagModel.swift in Sources */,
 				A6620E2E274C6E8E00C708A2 /* SideBarList.swift in Sources */,
 				A6484FD6272E63B000676ED8 /* NotesGrid.swift in Sources */,
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,
