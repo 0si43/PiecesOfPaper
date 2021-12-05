@@ -11,7 +11,7 @@ import SwiftUI
 struct NoteImage: View {
     @Binding var noteDocument: NoteDocument
     @State var state = false
-    
+
     var body: some View {
         Button(action: { open(noteDocument: noteDocument) }) {
             Image(uiImage: noteDocument.entity.drawing.image(from: noteDocument.entity.drawing.bounds, scale: 1.0))
@@ -22,14 +22,14 @@ struct NoteImage: View {
                 .shadow(radius: 5.0)
         }
     }
-    
+
     func open(noteDocument: NoteDocument) {
         Router.shared.openCanvas(noteDocument: noteDocument)
     }
 }
 
-//struct NoteImage_Previews: PreviewProvider {
+// struct NoteImage_Previews: PreviewProvider {
 //    static var previews: some View {
 //        NoteImage()
 //    }
-//}
+// }

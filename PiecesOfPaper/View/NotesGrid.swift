@@ -22,10 +22,10 @@ struct NotesGrid: View {
         trait.performAsCurrent {
             image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
         }
-        
+
         return UIActivityViewControllerWrapper(activityItems: [image])
     }
-    
+
     var body: some View {
         LazyVGrid(columns: [gridItem], spacing: 60.0) {
             ForEach((0..<noteDocuments.count), id: \.self) { index in
@@ -61,25 +61,25 @@ struct NotesGrid: View {
             activityViewController
         }
     }
-    
+
     func duplicate(noteDocument: NoteDocument) {
         guard let iCloudUrl = FilePath.iCloudUrl else { return }
         let newUrl = iCloudUrl.appendingPathComponent(FilePath.fileName)
         try? FileManager.default.copyItem(at: noteDocument.fileURL, to: newUrl)
     }
-    
+
     func delete(noteDocument: NoteDocument) {
         try? FileManager.default.removeItem(at: noteDocument.fileURL)
     }
-    
+
     func share(noteDocument: NoteDocument) {
         documentToShare = noteDocument
         isShowActivityView = true
     }
 }
 
-//struct NotesGrid_Previews: PreviewProvider {
+// struct NotesGrid_Previews: PreviewProvider {
 //    static var previews: some View {
 //        NotesGrid()
 //    }
-//}
+// }

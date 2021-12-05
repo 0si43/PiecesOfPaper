@@ -16,12 +16,12 @@ final class NoteDocument: UIDocument {
         self.entity = NoteEntity(drawing: PKDrawing())
         super.init(fileURL: fileURL)
     }
-    
+
     init(fileURL: URL, entity: NoteEntity) {
         self.entity = entity
         super.init(fileURL: fileURL)
     }
-    
+
     override func contents(forType typeName: String) throws -> Any {
         let encoder = PropertyListEncoder()
         let data = (try? encoder.encode(entity)) ?? Data()
@@ -33,7 +33,7 @@ final class NoteDocument: UIDocument {
         let decoder = PropertyListDecoder()
         do {
             entity = try decoder.decode(NoteEntity.self, from: content)
-        } catch(let error) {
+        } catch {
             print("Data file format error: ", error.localizedDescription)
         }
     }
