@@ -23,8 +23,11 @@ struct FilePath {
     }
 
     static var documentDirectory: URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return paths.first!
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+
+    static var applicationSupportDir: URL {
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
     }
 
     static var fileName: String {

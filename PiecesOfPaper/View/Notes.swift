@@ -11,8 +11,8 @@ import SwiftUI
 struct Notes: View {
     @ObservedObject var viewModel: NotesViewModel
 
-    init(viewModel: NotesViewModel) {
-        self.viewModel = viewModel
+    init(targetDirectory: NotesViewModel.TargetDirectory) {
+        self.viewModel = NotesViewModel(targetDirectory: targetDirectory)
     }
 
     var body: some View {
@@ -32,6 +32,6 @@ struct Notes: View {
 
 struct Notes_Previews: PreviewProvider {
     static var previews: some View {
-        Notes(viewModel: NotesViewModel(targetDirectory: .inbox))
+        Notes(targetDirectory: .inbox)
     }
 }
