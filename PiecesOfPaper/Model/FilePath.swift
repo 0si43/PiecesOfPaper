@@ -35,4 +35,8 @@ struct FilePath {
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ssSSSS"
         return dateFormatter.string(from: Date()) + ".plist"
     }
+
+    static var tagListFileName: URL? {
+        iCloudLibraryUrl?.appendingPathComponent("taglist.plist")
+    }
 }

@@ -42,6 +42,15 @@ final class NotesViewModel: ObservableObject {
 
     private func openDocuments() {
         let urls = getFileUrl()
+        guard !urls.isEmpty else {
+            publishedNoteDocuments = [NoteDocument]()
+            isLoaded = true
+            return
+        }
+
+        DispatchQueue.main.async { [weak self] in
+            self?.counter = urls.count
+        }
         urls.forEach { [weak self] url in
             open(fileUrl: url) { document in
                 self?.noteDocuments.append(document)
@@ -61,15 +70,10 @@ final class NotesViewModel: ObservableObject {
 
         switch directory {
         case .inbox:
-            DispatchQueue.main.async { [weak self] in
-                self?.counter = inboxFileNames.count
-            }
             return inboxFileNames.map { iCloudInboxUrl.appendingPathComponent($0) }
         case .archived:
-            counter = archivedFileNames.count
             return archivedFileNames.map { iCloudArchivedUrl.appendingPathComponent($0) }
         case .all:
-            counter = inboxFileNames.count + archivedFileNames.count
             let inboxUrls = inboxFileNames.map { iCloudInboxUrl.appendingPathComponent($0) }
             let archivedUrls = archivedFileNames.map { iCloudArchivedUrl.appendingPathComponent($0) }
             return inboxUrls + archivedUrls

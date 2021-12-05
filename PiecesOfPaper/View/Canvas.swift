@@ -73,7 +73,7 @@ struct Canvas: View {
             .navigationBarBackButtonHidden(true)
             .navigationBarItems(leading:
                 Button(action: archive) {
-                    Image(systemName: "clear").foregroundColor(.red)
+                    Image(systemName: "arrow.down.square").foregroundColor(.red)
                 }
             )
             .toolbar {
@@ -82,7 +82,7 @@ struct Canvas: View {
                         Image(systemName: "square.and.arrow.up")
                     }
                     Button(action: close) {
-                        Image(systemName: "tray.and.arrow.down")
+                        Image(systemName: "tray.full")
                     }
                 }
             }

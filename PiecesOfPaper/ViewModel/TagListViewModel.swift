@@ -19,12 +19,26 @@ final class TagListViewModel: ObservableObject {
     ]
 
     init() {
-        makeDirectoryIfNeeded()
-        load()
+        guard let tagListFileName = FilePath.tagListFileName else { return }
+        if !FileManager.default.fileExists(atPath: tagListFileName.path) {
+            makeFileIfNeeded()
+        } else {
+            load()
+        }
+    }
+
+    private func makeFileIfNeeded() {
+        guard let libraryUrl = FilePath.iCloudLibraryUrl else { return }
+
+        if !FileManager.default.fileExists(atPath: libraryUrl.path) {
+            try? FileManager.default.createDirectory(at: libraryUrl, withIntermediateDirectories: false)
+        }
+
+        tags = defaultTags
+        save()
     }
 
     func save() {
-        tags = defaultTags
         guard let iCloudLibraryUrl = FilePath.iCloudLibraryUrl else { return }
         let url = iCloudLibraryUrl.appendingPathComponent("taglist.plist")
         let encoder = PropertyListEncoder()
@@ -47,13 +61,6 @@ final class TagListViewModel: ObservableObject {
             tags = try decoder.decode([TagEntity].self, from: content)
         } catch {
             print("Data file format error: ", error.localizedDescription)
-        }
-    }
-
-    private func makeDirectoryIfNeeded() {
-        guard let libraryUrl = FilePath.iCloudLibraryUrl else { return }
-        if !FileManager.default.fileExists(atPath: libraryUrl.path) {
-            try? FileManager.default.createDirectory(at: libraryUrl, withIntermediateDirectories: false)
         }
     }
 }

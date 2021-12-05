@@ -14,7 +14,8 @@ struct TagList: View {
     var body: some View {
         List(tagListViewModel.tags) { tag in
             Text(tag.name)
-                .padding(.all, 8)
+                .padding(.vertical, 4)
+                .padding(.horizontal, 8)
                 .background(tag.color.swiftUIColor)
                 .cornerRadius(4)
         }
