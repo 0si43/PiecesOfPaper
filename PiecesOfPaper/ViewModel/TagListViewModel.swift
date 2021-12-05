@@ -1,5 +1,5 @@
 //
-//  TagList.swift
+//  TagListViewModel.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/12/05.
@@ -8,8 +8,8 @@
 
 import Foundation
 
-struct TagList {
-    var tags: [TagEntity]
+final class TagListViewModel: ObservableObject {
+    var tags = [TagEntity]()
 
     var defaultTags = [
         TagEntity(name: "idea", color: CodableUIColor(uiColor: .systemYellow)),
@@ -18,7 +18,11 @@ struct TagList {
         TagEntity(name: "doodle", color: CodableUIColor(uiColor: .systemOrange))
     ]
 
-    mutating func save() {
+    init() {
+        save()
+    }
+
+    func save() {
         tags = defaultTags
         let dir = FilePath.applicationSupportDir
         let encoder = PropertyListEncoder()

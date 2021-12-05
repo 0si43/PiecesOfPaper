@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import UIKit
+import SwiftUI
 
-struct TagEntity: Codable {
-    let id = UUID()
+struct TagEntity: Codable, Identifiable {
+    var id = UUID()
     let name: String
     let color: CodableUIColor
 }
@@ -21,8 +21,8 @@ struct CodableUIColor: Codable {
     var blue: CGFloat = 0.0
     var alpha: CGFloat = 0.0
 
-    var uiColor: UIColor {
-        UIColor(red: red, green: green, blue: blue, alpha: alpha)
+    var swiftUIColor: Color {
+        .init(red: red, green: green, blue: blue, opacity: alpha)
     }
 
     init(uiColor: UIColor) {

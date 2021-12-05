@@ -25,8 +25,8 @@ struct SideBarList: View {
                 }
             }
             Section(header: Text("Tag")) {
-                NavigationLink(destination: EmptyView()) {
-                    Label("Tag", systemImage: "tag")
+                NavigationLink(destination: TagList()) {
+                    Label("Tag List", systemImage: "tag")
                 }
             }
             Section(header: Text("Setting")) {
