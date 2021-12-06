@@ -18,10 +18,14 @@ struct TagListToNote: View {
                     .environmentObject(viewModel)
                 Section(header: Text("Select tag which you want to add")) {
                     ForEach(viewModel.tagsNotToNote, id: \.id) { tag in
-                        Tag(entity: tag)
-                            .onTapGesture {
-                                viewModel.add(tagName: tag.name)
-                            }
+                        HStack {
+                            Tag(entity: tag)
+                            Spacer()
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            viewModel.add(tagName: tag.name)
+                        }
                     }
                 }
             }

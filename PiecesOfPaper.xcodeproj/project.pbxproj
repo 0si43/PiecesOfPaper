@@ -20,7 +20,6 @@
 		A63C9586275DB86600822461 /* TagListToNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9585275DB86600822461 /* TagListToNote.swift */; };
 		A63C9588275DB97900822461 /* DeletableTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9587275DB97900822461 /* DeletableTag.swift */; };
 		A63C958A275DDA9E00822461 /* TagListToNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */; };
-		A63C958C275DE20600822461 /* TagHStackViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C958B275DE20600822461 /* TagHStackViewModel.swift */; };
 		A63C958E275E026000822461 /* DeletableTagHStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C958D275E026000822461 /* DeletableTagHStack.swift */; };
 		A6484FCE272B923B00676ED8 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FCD272B923B00676ED8 /* Canvas.swift */; };
 		A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */; };
@@ -70,7 +69,6 @@
 		A63C9585275DB86600822461 /* TagListToNote.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagListToNote.swift; sourceTree = "<group>"; };
 		A63C9587275DB97900822461 /* DeletableTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletableTag.swift; sourceTree = "<group>"; };
 		A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListToNoteViewModel.swift; sourceTree = "<group>"; };
-		A63C958B275DE20600822461 /* TagHStackViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagHStackViewModel.swift; sourceTree = "<group>"; };
 		A63C958D275E026000822461 /* DeletableTagHStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeletableTagHStack.swift; sourceTree = "<group>"; };
 		A6484FCD272B923B00676ED8 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKCanvasViewWrapper.swift; sourceTree = "<group>"; };
@@ -150,7 +148,6 @@
 				A62EEAF32732517600D513B8 /* NotesViewModel.swift */,
 				A63C957B275C8FD900822461 /* TagListViewModel.swift */,
 				A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */,
-				A63C958B275DE20600822461 /* TagHStackViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -370,7 +367,6 @@
 				A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */,
 				A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */,
 				A6EE43272523271F000B203E /* Document.swift in Sources */,
-				A63C958C275DE20600822461 /* TagHStackViewModel.swift in Sources */,
 				A62EEAF2273248A300D513B8 /* PiecesOfPaperApp.swift in Sources */,
 				A63C957E275CC3C300822461 /* TagListRouter.swift in Sources */,
 				A63C9582275D1C2E00822461 /* TagHStack.swift in Sources */,
