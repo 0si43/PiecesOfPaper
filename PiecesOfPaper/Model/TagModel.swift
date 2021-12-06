@@ -23,10 +23,10 @@ struct TagModel {
     }
 
     private var defaultTags = [
-        TagEntity(name: "idea", color: CodableUIColor(uiColor: .systemYellow)),
-        TagEntity(name: "memo", color: CodableUIColor(uiColor: .systemBlue)),
-        TagEntity(name: "note", color: CodableUIColor(uiColor: .systemGreen)),
-        TagEntity(name: "doodle", color: CodableUIColor(uiColor: .systemOrange))
+        TagEntity(name: "💡idea", color: CodableUIColor(uiColor: .systemYellow)),
+        TagEntity(name: "🗒memo", color: CodableUIColor(uiColor: .systemBlue)),
+        TagEntity(name: "📓note", color: CodableUIColor(uiColor: .systemGreen)),
+        TagEntity(name: "🎨doodle", color: CodableUIColor(uiColor: .systemOrange))
     ]
 
     func fetch() -> [TagEntity] {
