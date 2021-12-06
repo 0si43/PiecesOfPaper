@@ -122,4 +122,12 @@ final class NotesViewModel: ObservableObject {
 
         publishedNoteDocuments = Array(noteDocuments.drop { $0.entity.id == document.entity.id })
     }
+
+    func getTagToNote(document: NoteDocument) -> [TagEntity] {
+        let tagModel = TagModel()
+        let tags = tagModel.tags
+        return tags.filter {
+            document.entity.tags.contains($0.name)
+        }
+    }
 }
