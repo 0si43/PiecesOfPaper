@@ -19,12 +19,6 @@ final class TagHStackViewModel: ObservableObject {
         self.tags = tags
     }
 
-    func remove(tag: TagEntity) {
-        noteDocument.entity.tags = noteDocument.entity.tags.filter { $0 != tag.name }
-        tags = tags.filter { $0.id != tag.id }
-        save()
-    }
-
     private func save() {
         noteDocument.save(to: noteDocument.fileURL, for: .forOverwriting) { [weak self] success in
             if success {
