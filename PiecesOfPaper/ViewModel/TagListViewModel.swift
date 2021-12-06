@@ -10,9 +10,13 @@ import Foundation
 
 final class TagListViewModel: ObservableObject {
     let tagModel = TagModel()
-    var tags: [TagEntity]
+    @Published var tags: [TagEntity]
 
     init() {
         tags = tagModel.fetch()
+    }
+
+    func remove(indexSet: IndexSet) {
+        tags.remove(atOffsets: indexSet)
     }
 }

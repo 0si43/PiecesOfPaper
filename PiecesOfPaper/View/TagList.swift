@@ -9,12 +9,15 @@
 import SwiftUI
 
 struct TagList: View {
-    @ObservedObject var tagListViewModel = TagListViewModel()
+    @ObservedObject var viewModel = TagListViewModel()
 
     var body: some View {
         List {
-            ForEach(tagListViewModel.tags, id: \.id) { tag in
+            ForEach(viewModel.tags, id: \.id) { tag in
                 Tag(entity: tag)
+            }
+            .onDelete { indexSet in
+                viewModel.remove(indexSet: indexSet)
             }
         }
     }
