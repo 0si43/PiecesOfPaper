@@ -25,7 +25,6 @@ final class NotesViewModel: ObservableObject {
                     guard let self = self else { return }
                     self.publishedNoteDocuments = self.noteDocuments.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
                     self.isLoaded = true
-                    self.noteDocuments.removeAll()
                     self.counter = 0
                 }
             }
@@ -42,6 +41,15 @@ final class NotesViewModel: ObservableObject {
 
     private func openDocuments() {
         let urls = getFileUrl()
+        guard !urls.isEmpty else {
+            publishedNoteDocuments = [NoteDocument]()
+            isLoaded = true
+            return
+        }
+
+        DispatchQueue.main.async { [weak self] in
+            self?.counter = urls.count
+        }
         urls.forEach { [weak self] url in
             open(fileUrl: url) { document in
                 self?.noteDocuments.append(document)
@@ -61,15 +69,10 @@ final class NotesViewModel: ObservableObject {
 
         switch directory {
         case .inbox:
-            DispatchQueue.main.async { [weak self] in
-                self?.counter = inboxFileNames.count
-            }
             return inboxFileNames.map { iCloudInboxUrl.appendingPathComponent($0) }
         case .archived:
-            counter = archivedFileNames.count
             return archivedFileNames.map { iCloudArchivedUrl.appendingPathComponent($0) }
         case .all:
-            counter = inboxFileNames.count + archivedFileNames.count
             let inboxUrls = inboxFileNames.map { iCloudInboxUrl.appendingPathComponent($0) }
             let archivedUrls = archivedFileNames.map { iCloudArchivedUrl.appendingPathComponent($0) }
             return inboxUrls + archivedUrls
@@ -92,6 +95,39 @@ final class NotesViewModel: ObservableObject {
 
     func update() {
         isLoaded = false
+        noteDocuments.removeAll()
         openDocuments()
+    }
+
+    func archive(document: NoteDocument) {
+        guard let iCloudArchivedUrl = FilePath.iCloudArchivedUrl else { return }
+        let toUrl = iCloudArchivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
+        do {
+            try FileManager.default.moveItem(at: document.fileURL, to: toUrl)
+        } catch {
+            print("Could not archive: ", error.localizedDescription)
+        }
+
+        publishedNoteDocuments = Array(noteDocuments.drop { $0.entity.id == document.entity.id })
+    }
+
+    func unarchive(document: NoteDocument) {
+        guard let iCloudInboxUrl = FilePath.iCloudInboxUrl else { return }
+        let toUrl = iCloudInboxUrl.appendingPathComponent(document.fileURL.lastPathComponent)
+        do {
+            try FileManager.default.moveItem(at: document.fileURL, to: toUrl)
+        } catch {
+            print("Could not unarchive: ", error.localizedDescription)
+        }
+
+        publishedNoteDocuments = Array(noteDocuments.drop { $0.entity.id == document.entity.id })
+    }
+
+    func getTagToNote(document: NoteDocument) -> [TagEntity] {
+        let tagModel = TagModel()
+        let tags = tagModel.tags
+        return tags.filter {
+            document.entity.tags.contains($0.name)
+        }
     }
 }

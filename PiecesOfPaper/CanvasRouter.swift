@@ -1,17 +1,16 @@
 //
-//  Router.swift
+//  CanvasRouter.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/11/19.
 //  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
 //
 
-import Foundation
 import SwiftUI
 import PencilKit
 
-final class Router {
-    static let shared = Router()
+final class CanvasRouter {
+    static let shared = CanvasRouter()
     private var isShowCanvas: Binding<Bool>!
     private var noteDocument: Binding<NoteDocument?>!
 

@@ -22,14 +22,21 @@ struct FilePath {
         iCloudUrl?.appendingPathComponent("Archived")
     }
 
+    static var iCloudLibraryUrl: URL? {
+        iCloudUrl?.appendingPathComponent(".Library")
+    }
+
     static var documentDirectory: URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return paths.first!
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
 
     static var fileName: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ssSSSS"
         return dateFormatter.string(from: Date()) + ".plist"
+    }
+
+    static var tagListFileName: URL? {
+        iCloudLibraryUrl?.appendingPathComponent("taglist.plist")
     }
 }

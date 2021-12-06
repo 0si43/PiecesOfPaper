@@ -11,27 +11,44 @@ import SwiftUI
 struct Notes: View {
     @ObservedObject var viewModel: NotesViewModel
 
-    init(viewModel: NotesViewModel) {
-        self.viewModel = viewModel
+    init(targetDirectory: NotesViewModel.TargetDirectory) {
+        self.viewModel = NotesViewModel(targetDirectory: targetDirectory)
     }
 
     var body: some View {
-        if !viewModel.isLoaded {
-            ProgressView()
-                .onAppear {
-                    guard !viewModel.didFirstFetchRequest else { return }
-                    viewModel.fetch()
-                    viewModel.didFirstFetchRequest = true
+        Group {
+            if !viewModel.isLoaded {
+                ProgressView()
+                    .onAppear {
+                        guard !viewModel.didFirstFetchRequest else { return }
+                        viewModel.fetch()
+                        viewModel.didFirstFetchRequest = true
+                    }
+            } else {
+                if viewModel.publishedNoteDocuments.isEmpty {
+                    Text("No Data")
+                        .font(.largeTitle)
+                } else {
+                    NotesScrollViewReader()
+                        .environmentObject(viewModel)
                 }
-        } else {
-            NotesScrollViewReader(documents: $viewModel.publishedNoteDocuments,
-                                  reloadAction: viewModel.update)
+            }
+
         }
+        .navigationBarItems(trailing:
+            HStack {
+                Button(action: viewModel.update) { Image(systemName: "arrow.triangle.2.circlepath") }
+                Button(action: new) { Image(systemName: "plus") }
+            })
+    }
+
+    func new() {
+        CanvasRouter.shared.openNewCanvas()
     }
 }
 
 struct Notes_Previews: PreviewProvider {
     static var previews: some View {
-        Notes(viewModel: NotesViewModel(targetDirectory: .inbox))
+        Notes(targetDirectory: .inbox)
     }
 }
