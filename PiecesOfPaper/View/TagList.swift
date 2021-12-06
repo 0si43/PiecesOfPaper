@@ -13,45 +13,10 @@ struct TagList: View {
 
     var body: some View {
         List {
-            if let noteDocument = TagListRouter.shared.documentForPass {
-                TagHStack(noteDocument: noteDocument)
-                Section(header: Text("Select tag which you want to add")) {
-                    ForEach(tagListViewModel.tags, id: \.id) { tag in
-                        if !noteDocument.entity.tags.contains(tag.name) {
-                            Tag(entity: tag)
-                                .onTapGesture {
-                                    add(tagName: tag.name, noteDocument: noteDocument)
-                                }
-                        }
-                    }
-                }
+            ForEach(tagListViewModel.tags, id: \.id) { tag in
+                Tag(entity: tag)
             }
         }
-    }
-
-    func add(tagName: String, noteDocument: NoteDocument) {
-        noteDocument.entity.tags.append(tagName)
-        save(noteDocument: noteDocument)
-    }
-
-    private func save(noteDocument: NoteDocument) {
-        noteDocument.save(to: noteDocument.fileURL, for: .forOverwriting) { success in
-            if !success {
-                print("save failed")
-            }
-        }
-    }
-}
-
-struct Tag: View {
-    var entity: TagEntity
-
-    var body: some View {
-        Text(entity.name)
-            .padding(.vertical, 4)
-            .padding(.horizontal, 8)
-            .background(entity.color.swiftUIColor)
-            .cornerRadius(4)
     }
 }
 

@@ -22,7 +22,7 @@ struct CodableUIColor: Codable {
     var alpha: CGFloat = 0.0
 
     var swiftUIColor: Color {
-        .init(red: red, green: green, blue: blue, opacity: alpha)
+        .init(red: red, green: green, blue: blue, opacity: 0.7)
     }
 
     init(uiColor: UIColor) {
