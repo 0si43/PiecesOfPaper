@@ -72,7 +72,7 @@ struct NotesGrid: View {
                             Label("Tag", systemImage: "tag")
                         }
                     }
-                    TagHStack(noteDocument: noteDocuments[index])
+                    TagHStack(noteDocument: noteDocuments[index], isDeletable: false)
                         .padding(.horizontal)
                 }
             }
