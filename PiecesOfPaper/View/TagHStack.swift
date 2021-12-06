@@ -11,34 +11,23 @@ import SwiftUI
 struct TagHStack: View {
     var tags = TagModel().tags
     var noteDocument: NoteDocument
+    var isDeletable: Bool
 
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
                 ForEach(tags, id: \.id) { tag in
                     if noteDocument.entity.tags.contains(tag.name) {
-                        Tag(entity: tag)
-                            .onTapGesture {
-                                remove(tagName: tag.name, noteDocument: noteDocument)
-                            }
+                        if isDeletable {
+                            DeletableTag(entity: tag, noteDocument: noteDocument)
+                        } else {
+                            Tag(entity: tag)
+                        }
                     }
                 }
             }
         }
         .frame(minHeight: 60)
-    }
-
-    func remove(tagName: String, noteDocument: NoteDocument) {
-        noteDocument.entity.tags = noteDocument.entity.tags.filter { $0 != tagName }
-        save(noteDocument: noteDocument)
-    }
-
-    private func save(noteDocument: NoteDocument) {
-        noteDocument.save(to: noteDocument.fileURL, for: .forOverwriting) { success in
-            if !success {
-                print("save failed")
-            }
-        }
     }
 }
 

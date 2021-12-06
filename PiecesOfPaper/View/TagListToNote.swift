@@ -14,7 +14,7 @@ struct TagListToNote: View {
     var body: some View {
         List {
             if let noteDocument = TagListRouter.shared.documentForPass {
-                TagHStack(noteDocument: noteDocument)
+                TagHStack(noteDocument: noteDocument, isDeletable: true)
                 Section(header: Text("Select tag which you want to add")) {
                     ForEach(tagListViewModel.tags, id: \.id) { tag in
                         if !noteDocument.entity.tags.contains(tag.name) {
