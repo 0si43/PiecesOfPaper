@@ -34,12 +34,20 @@ final class TagListToNoteViewModel: ObservableObject {
         noteDocument = TagListRouter.shared.documentForPass
     }
 
-    func add(tagName: String, noteDocument: NoteDocument) {
+    func add(tagName: String) {
+        guard let noteDocument = noteDocument else { return }
         noteDocument.entity.tags.append(tagName)
-        save(noteDocument: noteDocument)
+        save()
     }
 
-    private func save(noteDocument: NoteDocument) {
+    func remove(tag: TagEntity) {
+        guard let noteDocument = noteDocument else { return }
+        noteDocument.entity.tags = noteDocument.entity.tags.filter { $0 != tag.name }
+        save()
+    }
+
+    private func save() {
+        guard let noteDocument = noteDocument else { return }
         noteDocument.save(to: noteDocument.fileURL, for: .forOverwriting) { [weak self] success in
             if success {
                 self?.objectWillChange.send()

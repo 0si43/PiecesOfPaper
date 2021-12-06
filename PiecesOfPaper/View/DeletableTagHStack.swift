@@ -1,5 +1,5 @@
 //
-//  TagHStack.swift
+//  DeletableTagHStack.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/12/06.
@@ -8,14 +8,17 @@
 
 import SwiftUI
 
-struct TagHStack: View {
-    var tags: [TagEntity]
+struct DeletableTagHStack: View {
+    @EnvironmentObject var viewModel: TagListToNoteViewModel
 
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
-                ForEach(tags, id: \.id) { tag in
-                    Tag(entity: tag)
+                ForEach(viewModel.tagsToNote, id: \.id) { tag in
+                    DeletableTag(entity: tag)
+                        .onTapGesture {
+                            viewModel.remove(tag: tag)
+                        }
                 }
             }
         }

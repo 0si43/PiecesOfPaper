@@ -12,16 +12,15 @@ struct TagListToNote: View {
     @ObservedObject var viewModel = TagListToNoteViewModel()
 
     var body: some View {
-        if let noteDocument = viewModel.noteDocument {
+        if viewModel.noteDocument != nil {
             List {
-                TagHStack(noteDocument: noteDocument,
-                          tags: viewModel.tagsToNote,
-                          isDeletable: true)
+                DeletableTagHStack()
+                    .environmentObject(viewModel)
                 Section(header: Text("Select tag which you want to add")) {
                     ForEach(viewModel.tagsNotToNote, id: \.id) { tag in
                         Tag(entity: tag)
                             .onTapGesture {
-                                viewModel.add(tagName: tag.name, noteDocument: noteDocument)
+                                viewModel.add(tagName: tag.name)
                             }
                     }
                 }

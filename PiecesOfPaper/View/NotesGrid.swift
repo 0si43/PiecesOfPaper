@@ -72,9 +72,7 @@ struct NotesGrid: View {
                             Label("Tag", systemImage: "tag")
                         }
                     }
-                    TagHStack(noteDocument: noteDocuments[index],
-                              tags: noteViewModel.getTagToNote(document: noteDocuments[index]),
-                              isDeletable: false)
+                    TagHStack(tags: noteViewModel.getTagToNote(document: noteDocuments[index]))
                         .padding(.horizontal)
                 }
             }
