@@ -15,6 +15,13 @@ final class TagListToNoteViewModel: ObservableObject {
     var noteDocument: NoteDocument?
     var objectWillChange = ObjectWillChangePublisher()
 
+    var tagsToNote: [TagEntity] {
+        guard let noteDocument = noteDocument else { return [] }
+        return tags.filter {
+            noteDocument.entity.tags.contains($0.name)
+        }
+    }
+
     var tagsNotToNote: [TagEntity] {
         guard let noteDocument = noteDocument else { return [] }
         return tags.filter {

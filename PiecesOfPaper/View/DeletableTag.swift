@@ -10,33 +10,16 @@ import SwiftUI
 
 struct DeletableTag: View {
     var entity: TagEntity
-    var noteDocument: NoteDocument
 
     var body: some View {
         HStack {
             Text(entity.name)
             Image(systemName: "multiply.square")
-                .onTapGesture {
-                    remove(tagName: entity.name, noteDocument: noteDocument)
-                }
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
         .background(entity.color.swiftUIColor)
         .cornerRadius(4)
-    }
-
-    func remove(tagName: String, noteDocument: NoteDocument) {
-        noteDocument.entity.tags = noteDocument.entity.tags.filter { $0 != tagName }
-        save(noteDocument: noteDocument)
-    }
-
-    private func save(noteDocument: NoteDocument) {
-        noteDocument.save(to: noteDocument.fileURL, for: .forOverwriting) { success in
-            if !success {
-                print("save failed")
-            }
-        }
     }
 }
 

@@ -9,20 +9,25 @@
 import SwiftUI
 
 struct TagHStack: View {
-    var tags = TagModel().tags
-    var noteDocument: NoteDocument
+    @ObservedObject var viewModel: TagHStackViewModel
     var isDeletable: Bool
+
+    init(noteDocument: NoteDocument, tags: [TagEntity], isDeletable: Bool) {
+        self.viewModel = TagHStackViewModel(noteDocument: noteDocument, tags: tags)
+        self.isDeletable = isDeletable
+    }
 
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
-                ForEach(tags, id: \.id) { tag in
-                    if noteDocument.entity.tags.contains(tag.name) {
-                        if isDeletable {
-                            DeletableTag(entity: tag, noteDocument: noteDocument)
-                        } else {
-                            Tag(entity: tag)
-                        }
+                ForEach(viewModel.tags, id: \.id) { tag in
+                    if isDeletable {
+                        DeletableTag(entity: tag)
+                            .onTapGesture {
+                                viewModel.remove(tag: tag)
+                            }
+                    } else {
+                        Tag(entity: tag)
                     }
                 }
             }

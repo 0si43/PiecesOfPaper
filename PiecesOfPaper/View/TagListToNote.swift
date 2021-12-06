@@ -15,6 +15,7 @@ struct TagListToNote: View {
         if let noteDocument = viewModel.noteDocument {
             List {
                 TagHStack(noteDocument: noteDocument,
+                          tags: viewModel.tagsToNote,
                           isDeletable: true)
                 Section(header: Text("Select tag which you want to add")) {
                     ForEach(viewModel.tagsNotToNote, id: \.id) { tag in
