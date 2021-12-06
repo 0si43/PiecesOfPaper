@@ -42,7 +42,6 @@ struct AddTagFooter: View {
                         Text("Tag Name: ")
                         TextField("", text: $tagName)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
-//                            .border(.gray, width: 1.0)
                     }
                     .padding()
                     ColorPicker("Tag Color", selection: $color, supportsOpacity: false)
