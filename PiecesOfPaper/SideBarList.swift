@@ -10,21 +10,23 @@ import SwiftUI
 
 struct SideBarList: View {
     @Binding var isAppLaunch: Bool
-    let inboxNoteViewModel = NotesViewModel(targetDirectory: .inbox)
-    let allNoteViewModel = NotesViewModel(targetDirectory: .all)
-    let archivedNoteViewModel = NotesViewModel(targetDirectory: .archived)
 
     var body: some View {
         List {
             Section(header: Text("Folder")) {
-                NavigationLink(destination: Notes(viewModel: inboxNoteViewModel), isActive: $isAppLaunch) {
+                NavigationLink(destination: Notes(targetDirectory: .inbox), isActive: $isAppLaunch) {
                     Label("Inbox", systemImage: "tray")
                 }
-                NavigationLink(destination: Notes(viewModel: allNoteViewModel)) {
+                NavigationLink(destination: Notes(targetDirectory: .all)) {
                     Label("All", systemImage: "note.text")
                 }
-                NavigationLink(destination: Notes(viewModel: archivedNoteViewModel)) {
+                NavigationLink(destination: Notes(targetDirectory: .archived)) {
                     Label("Archived", systemImage: "archivebox")
+                }
+            }
+            Section(header: Text("Tag")) {
+                NavigationLink(destination: TagList()) {
+                    Label("Tag List", systemImage: "tag")
                 }
             }
             Section(header: Text("Setting")) {
