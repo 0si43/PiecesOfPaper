@@ -13,11 +13,13 @@ struct TagList: View {
 
     var body: some View {
         List {
-            ForEach(viewModel.tags, id: \.id) { tag in
-                Tag(entity: tag)
-            }
-            .onDelete { indexSet in
-                viewModel.remove(indexSet: indexSet)
+            Section(footer: AddTagFooter(tags: $viewModel.tags)) {
+                ForEach(viewModel.tags, id: \.id) { tag in
+                    Tag(entity: tag)
+                }
+                .onDelete { indexSet in
+                    viewModel.remove(indexSet: indexSet)
+                }
             }
         }
     }
