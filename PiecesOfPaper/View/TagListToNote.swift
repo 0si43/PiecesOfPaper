@@ -9,36 +9,24 @@
 import SwiftUI
 
 struct TagListToNote: View {
-    @ObservedObject var tagListViewModel = TagListViewModel()
+    @ObservedObject var viewModel = TagListToNoteViewModel()
 
     var body: some View {
-        List {
-            if let noteDocument = TagListRouter.shared.documentForPass {
-                TagHStack(noteDocument: noteDocument, isDeletable: true)
+        if let noteDocument = viewModel.noteDocument {
+            List {
+                TagHStack(noteDocument: noteDocument,
+                          isDeletable: true)
                 Section(header: Text("Select tag which you want to add")) {
-                    ForEach(tagListViewModel.tags, id: \.id) { tag in
-                        if !noteDocument.entity.tags.contains(tag.name) {
-                            Tag(entity: tag)
-                                .onTapGesture {
-                                    add(tagName: tag.name, noteDocument: noteDocument)
-                                }
-                        }
+                    ForEach(viewModel.tagsNotToNote, id: \.id) { tag in
+                        Tag(entity: tag)
+                            .onTapGesture {
+                                viewModel.add(tagName: tag.name, noteDocument: noteDocument)
+                            }
                     }
                 }
             }
-        }
-    }
-
-    func add(tagName: String, noteDocument: NoteDocument) {
-        noteDocument.entity.tags.append(tagName)
-        save(noteDocument: noteDocument)
-    }
-
-    private func save(noteDocument: NoteDocument) {
-        noteDocument.save(to: noteDocument.fileURL, for: .forOverwriting) { success in
-            if !success {
-                print("save failed")
-            }
+        } else {
+            Text("Couldn't found note data")
         }
     }
 }
