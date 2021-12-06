@@ -23,9 +23,9 @@ struct TagHStack: View {
                             }
                     }
                 }
-
             }
         }
+        .frame(minHeight: 60)
     }
 
     func remove(tagName: String, noteDocument: NoteDocument) {

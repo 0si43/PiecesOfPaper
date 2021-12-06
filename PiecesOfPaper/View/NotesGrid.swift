@@ -73,7 +73,7 @@ struct NotesGrid: View {
                         }
                     }
                     TagHStack(noteDocument: noteDocuments[index])
-                        .padding()
+                        .padding(.horizontal)
                 }
             }
         }

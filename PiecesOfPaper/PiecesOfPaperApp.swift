@@ -29,7 +29,7 @@ struct PiecesOfPaperApp: App {
                 .sheet(isPresented: $isShowTagList, onDismiss: {
                     TagListRouter.shared.documentForPass = nil
                 }) {
-                    TagList()
+                    TagListToNote()
                 }
                 .onAppear {
                     guard isAppLaunch else { return }
