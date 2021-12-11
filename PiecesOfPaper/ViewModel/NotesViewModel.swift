@@ -33,27 +33,27 @@ final class NotesViewModel: ObservableObject {
     }
 
     private var documentsAppliedConditions: [NoteDocument] {
-        var noteDocument = noteDocuments
+        var notes = noteDocuments
         listCondition.filterBy.forEach { filteringTag in
-            noteDocument = noteDocument.filter { $0.entity.tags.contains(filteringTag.name) }
+            notes = notes.filter { $0.entity.tags.contains(filteringTag.name) }
         }
         switch listCondition.sortOrder {
         case .ascending:
             switch listCondition.sortBy {
             case .updatedDate:
-                noteDocument = noteDocuments.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
+                notes = notes.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
             case .createdDate:
-                noteDocument = noteDocuments.sorted { $0.entity.createdDate < $1.entity.createdDate }
+                notes = notes.sorted { $0.entity.createdDate < $1.entity.createdDate }
             }
         case .descending:
             switch listCondition.sortBy {
             case .updatedDate:
-                noteDocument = noteDocuments.sorted { $0.entity.updatedDate > $1.entity.updatedDate }
+                notes = notes.sorted { $0.entity.updatedDate > $1.entity.updatedDate }
             case .createdDate:
-                noteDocument = noteDocuments.sorted { $0.entity.createdDate > $1.entity.createdDate }
+                notes = notes.sorted { $0.entity.createdDate > $1.entity.createdDate }
             }
         }
-        return noteDocument
+        return notes
     }
 
     var listCondition = ListCondition()
