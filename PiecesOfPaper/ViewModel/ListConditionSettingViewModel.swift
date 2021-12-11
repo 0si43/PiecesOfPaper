@@ -9,7 +9,7 @@
 import Foundation
 
 class ListConditionSettingViewModel: ObservableObject {
-    @Published var listCondition = ListCondition()
+    @Published var listCondition: ListCondition
     var tags = TagModel().tags
     var filteringTag: [TagEntity] {
         tags.filter {
@@ -23,8 +23,8 @@ class ListConditionSettingViewModel: ObservableObject {
         }
     }
 
-    init() {
-//        listCondition.filterBy = tags
+    init(listCondition: ListCondition) {
+        self.listCondition = listCondition
     }
 
     func add(tag: TagEntity) {

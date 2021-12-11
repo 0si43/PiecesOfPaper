@@ -44,7 +44,7 @@ struct Notes: View {
             })
         .sheet(isPresented: $viewModel.isListConditionSheet) {
             NavigationView {
-                ListConditionSetting()
+                ListConditionSetting(listCondition: ListCondition())
             }
         }
     }
