@@ -10,12 +10,14 @@ import SwiftUI
 
 struct TagHStack: View {
     var tags: [TagEntity]
+    var action: ((TagEntity) -> Void)?
 
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
                 ForEach(tags, id: \.id) { tag in
                     Tag(entity: tag)
+                        .onTapGesture { action?(tag) }
                 }
             }
         }
