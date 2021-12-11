@@ -20,7 +20,6 @@
 		A63C9586275DB86600822461 /* TagListToNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9585275DB86600822461 /* TagListToNote.swift */; };
 		A63C9588275DB97900822461 /* DeletableTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9587275DB97900822461 /* DeletableTag.swift */; };
 		A63C958A275DDA9E00822461 /* TagListToNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */; };
-		A63C958E275E026000822461 /* DeletableTagHStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C958D275E026000822461 /* DeletableTagHStack.swift */; };
 		A63C9590275E111500822461 /* AddTagFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C958F275E111500822461 /* AddTagFooter.swift */; };
 		A63C9593276444CF00822461 /* ListCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9592276444CF00822461 /* ListCondition.swift */; };
 		A63C9595276447BD00822461 /* ListConditionSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9594276447BD00822461 /* ListConditionSetting.swift */; };
@@ -73,7 +72,6 @@
 		A63C9585275DB86600822461 /* TagListToNote.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagListToNote.swift; sourceTree = "<group>"; };
 		A63C9587275DB97900822461 /* DeletableTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletableTag.swift; sourceTree = "<group>"; };
 		A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListToNoteViewModel.swift; sourceTree = "<group>"; };
-		A63C958D275E026000822461 /* DeletableTagHStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeletableTagHStack.swift; sourceTree = "<group>"; };
 		A63C958F275E111500822461 /* AddTagFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTagFooter.swift; sourceTree = "<group>"; };
 		A63C9592276444CF00822461 /* ListCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCondition.swift; sourceTree = "<group>"; };
 		A63C9594276447BD00822461 /* ListConditionSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListConditionSetting.swift; sourceTree = "<group>"; };
@@ -157,7 +155,6 @@
 				A63C9585275DB86600822461 /* TagListToNote.swift */,
 				A63C9581275D1C2E00822461 /* TagHStack.swift */,
 				A63C9583275DB67700822461 /* Tag.swift */,
-				A63C958D275E026000822461 /* DeletableTagHStack.swift */,
 				A63C9587275DB97900822461 /* DeletableTag.swift */,
 			);
 			path = View;
@@ -399,7 +396,6 @@
 				A6484FD6272E63B000676ED8 /* NotesGrid.swift in Sources */,
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,
 				A6620E36274C7A3D00C708A2 /* Notes.swift in Sources */,
-				A63C958E275E026000822461 /* DeletableTagHStack.swift in Sources */,
 				A63C957C275C8FD900822461 /* TagListViewModel.swift in Sources */,
 				A63C958A275DDA9E00822461 /* TagListToNoteViewModel.swift in Sources */,
 			);
