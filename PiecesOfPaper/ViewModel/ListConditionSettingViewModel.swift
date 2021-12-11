@@ -7,31 +7,38 @@
 //
 
 import Foundation
+import SwiftUI
 
 class ListConditionSettingViewModel: ObservableObject {
-    @Published var listCondition: ListCondition
+    var bindingListCondition: Binding<ListCondition>
+    @Published var editableListCondition: ListCondition
     var tags = TagModel().tags
     var filteringTag: [TagEntity] {
         tags.filter {
-            listCondition.filterBy.contains($0)
+            editableListCondition.filterBy.contains($0)
         }
+    }
+
+    init(listCondition: Binding<ListCondition>) {
+        self.bindingListCondition = listCondition
+        self.editableListCondition = listCondition.wrappedValue
     }
 
     var nonFilteringTag: [TagEntity] {
         tags.filter {
-            !listCondition.filterBy.contains($0)
+            !editableListCondition.filterBy.contains($0)
         }
     }
 
-    init(listCondition: ListCondition) {
-        self.listCondition = listCondition
-    }
-
     func add(tag: TagEntity) {
-        listCondition.filterBy.append(tag)
+        editableListCondition.filterBy.append(tag)
     }
 
     func remove(tag: TagEntity) {
-        listCondition.filterBy = listCondition.filterBy.filter { $0 != tag }
+        editableListCondition.filterBy = editableListCondition.filterBy.filter { $0 != tag }
+    }
+
+    func bind() {
+        bindingListCondition.wrappedValue = editableListCondition
     }
 }

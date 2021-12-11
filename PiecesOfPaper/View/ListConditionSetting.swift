@@ -10,8 +10,9 @@ import SwiftUI
 
 struct ListConditionSetting: View {
     @ObservedObject var viewModel: ListConditionSettingViewModel
+    @Environment(\.presentationMode) var presentationMode
 
-    init(listCondition: ListCondition) {
+    init(listCondition: Binding<ListCondition>) {
         self.viewModel = ListConditionSettingViewModel(listCondition: listCondition)
     }
 
@@ -23,7 +24,7 @@ struct ListConditionSetting: View {
                 Spacer()
             }
             .padding(.horizontal)
-            Picker("", selection: $viewModel.listCondition.sortBy) {
+            Picker("", selection: $viewModel.editableListCondition.sortBy) {
                 ForEach(ListCondition.SortBy.allCases) { sortBy in
                     Text(sortBy.rawValue)
                         .tag(sortBy)
@@ -37,7 +38,7 @@ struct ListConditionSetting: View {
                 Spacer()
             }
             .padding(.horizontal)
-            Picker("", selection: $viewModel.listCondition.sortOrder) {
+            Picker("", selection: $viewModel.editableListCondition.sortOrder) {
                 ForEach(ListCondition.SortOrder.allCases) { sortOrder in
                     Text(sortOrder.rawValue)
                         .tag(sortOrder)
@@ -65,7 +66,7 @@ struct ListConditionSetting: View {
 
         }
         .navigationBarItems(leading:
-            Button(action: {}) {
+            Button(action: cancel) {
                 Text("Cancel")
                 .foregroundColor(.red)
             }
@@ -80,16 +81,18 @@ struct ListConditionSetting: View {
     }
 
     func cancel() {
-
+        presentationMode.wrappedValue.dismiss()
     }
 
     func apply() {
-
+        viewModel.bind()
+        presentationMode.wrappedValue.dismiss()
     }
 }
 
 struct ListConditionSetting_Previews: PreviewProvider {
+    @State static var listCondition = ListCondition()
     static var previews: some View {
-        ListConditionSetting(listCondition: ListCondition())
+        ListConditionSetting(listCondition: $listCondition)
     }
 }
