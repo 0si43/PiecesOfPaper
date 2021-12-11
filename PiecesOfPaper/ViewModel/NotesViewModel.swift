@@ -11,6 +11,7 @@ import PencilKit
 final class NotesViewModel: ObservableObject {
     @Published var publishedNoteDocuments = [NoteDocument]()
     @Published var isLoaded = false
+    @Published var isListConditionSheet = false
     var didFirstFetchRequest = false
     enum TargetDirectory: String {
         case inbox, archived, all
@@ -129,5 +130,9 @@ final class NotesViewModel: ObservableObject {
         return tags.filter {
             document.entity.tags.contains($0.name)
         }
+    }
+
+    func toggleIsListConditionPopover() {
+        isListConditionSheet.toggle()
     }
 }
