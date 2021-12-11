@@ -24,13 +24,39 @@ final class NotesViewModel: ObservableObject {
             if counter <= noteDocuments.count {
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    self.publishedNoteDocuments = self.noteDocuments.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
+                    self.publishedNoteDocuments = self.documentsAppliedConditions
                     self.isLoaded = true
                     self.counter = 0
                 }
             }
         }
     }
+
+    private var documentsAppliedConditions: [NoteDocument] {
+        var noteDocument = noteDocuments
+        listCondition.filterBy.forEach { filteringTag in
+            noteDocument = noteDocument.filter { $0.entity.tags.contains(filteringTag.name) }
+        }
+        switch listCondition.sortOrder {
+        case .ascending:
+            switch listCondition.sortBy {
+            case .updatedDate:
+                noteDocument = noteDocuments.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
+            case .createdDate:
+                noteDocument = noteDocuments.sorted { $0.entity.createdDate < $1.entity.createdDate }
+            }
+        case .descending:
+            switch listCondition.sortBy {
+            case .updatedDate:
+                noteDocument = noteDocuments.sorted { $0.entity.updatedDate > $1.entity.updatedDate }
+            case .createdDate:
+                noteDocument = noteDocuments.sorted { $0.entity.createdDate > $1.entity.createdDate }
+            }
+        }
+        return noteDocument
+    }
+
+    var listCondition = ListCondition()
 
     init(targetDirectory: TargetDirectory) {
         self.directory = targetDirectory

@@ -9,7 +9,11 @@
 import SwiftUI
 
 struct ListConditionSetting: View {
-    @ObservedObject var viewModel = ListConditionSettingViewModel()
+    @ObservedObject var viewModel: ListConditionSettingViewModel
+
+    init(listCondition: ListCondition) {
+        self.viewModel = ListConditionSettingViewModel(listCondition: listCondition)
+    }
 
     var body: some View {
         VStack {
@@ -86,6 +90,6 @@ struct ListConditionSetting: View {
 
 struct ListConditionSetting_Previews: PreviewProvider {
     static var previews: some View {
-        ListConditionSetting()
+        ListConditionSetting(listCondition: ListCondition())
     }
 }
