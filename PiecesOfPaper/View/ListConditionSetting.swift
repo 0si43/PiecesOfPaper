@@ -47,7 +47,7 @@ struct ListConditionSetting: View {
                 Spacer()
             }
             .padding(.horizontal)
-            TagHStack(tags: viewModel.filteringTag)
+            TagHStack(tags: viewModel.filteringTag, action: viewModel.remove, deletable: true)
                 .padding(.horizontal)
             HStack {
                 Image(systemName: "plus.circle")

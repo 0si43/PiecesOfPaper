@@ -30,4 +30,8 @@ class ListConditionSettingViewModel: ObservableObject {
     func add(tag: TagEntity) {
         listCondition.filterBy.append(tag)
     }
+
+    func remove(tag: TagEntity) {
+        listCondition.filterBy = listCondition.filterBy.filter { $0 != tag }
+    }
 }
