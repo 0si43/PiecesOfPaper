@@ -9,10 +9,14 @@
 import Foundation
 import SwiftUI
 
-struct TagEntity: Codable, Identifiable {
+struct TagEntity: Codable, Identifiable, Equatable {
     var id = UUID()
     let name: String
     let color: CodableUIColor
+
+    static func == (lhs: TagEntity, rhs: TagEntity) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 
 struct CodableUIColor: Codable {

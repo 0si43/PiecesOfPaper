@@ -40,10 +40,12 @@ struct Notes: View {
                 Button(action: viewModel.toggleIsListConditionPopover ) { Image(systemName: "line.3.horizontal.decrease.circle")
                 }
                 Button(action: viewModel.update) { Image(systemName: "arrow.triangle.2.circlepath") }
-                Button(action: new) { Image(systemName: "plus") }
+                Button(action: new) { Image(systemName: "plus.circle") }
             })
         .sheet(isPresented: $viewModel.isListConditionSheet) {
-            Text("Hi")
+            NavigationView {
+                ListConditionSetting()
+            }
         }
     }
 
