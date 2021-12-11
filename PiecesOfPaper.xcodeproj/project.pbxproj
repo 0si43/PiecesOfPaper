@@ -121,6 +121,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A63C95912764435200822461 /* Deperecated */ = {
+			isa = PBXGroup;
+			children = (
+				A66E81FF252C0D5F007A24D9 /* Autosave.swift */,
+				A6134B7F245C09FC00E5F0FB /* DataModel.swift */,
+				A6EE43262523271F000B203E /* Document.swift */,
+				A6EE433025232DDE000B203E /* DocumentManager.swift */,
+				A657B0752526A81800B7BE2D /* EventNames.swift */,
+			);
+			path = Deperecated;
+			sourceTree = "<group>";
+		};
 		A6620E282748A01F00C708A2 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -158,17 +170,13 @@
 		A6620E2A2748A05B00C708A2 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				A66E81FF252C0D5F007A24D9 /* Autosave.swift */,
 				A64F971B2751CB68001E46B0 /* DrawingsPlistConverter.swift */,
-				A6134B7F245C09FC00E5F0FB /* DataModel.swift */,
 				A6620E3B274CD88000C708A2 /* FilePath.swift */,
 				A6620E39274C8FA400C708A2 /* NoteDocument.swift */,
 				A64AE9F3275B203A002C66F7 /* NoteEntity.swift */,
-				A63C956C275C7CF300822461 /* TagEntity.swift */,
 				A63C957F275CFF7900822461 /* TagModel.swift */,
-				A6EE43262523271F000B203E /* Document.swift */,
-				A6EE433025232DDE000B203E /* DocumentManager.swift */,
-				A657B0752526A81800B7BE2D /* EventNames.swift */,
+				A63C956C275C7CF300822461 /* TagEntity.swift */,
+				A63C95912764435200822461 /* Deperecated */,
 			);
 			path = Model;
 			sourceTree = "<group>";
