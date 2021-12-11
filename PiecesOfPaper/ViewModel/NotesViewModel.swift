@@ -11,6 +11,7 @@ import PencilKit
 final class NotesViewModel: ObservableObject {
     @Published var publishedNoteDocuments = [NoteDocument]()
     @Published var isLoaded = false
+    @Published var isListConditionSheet = false
     var didFirstFetchRequest = false
     enum TargetDirectory: String {
         case inbox, archived, all
@@ -23,13 +24,39 @@ final class NotesViewModel: ObservableObject {
             if counter <= noteDocuments.count {
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    self.publishedNoteDocuments = self.noteDocuments.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
+                    self.publishedNoteDocuments = self.documentsAppliedConditions
                     self.isLoaded = true
                     self.counter = 0
                 }
             }
         }
     }
+
+    private var documentsAppliedConditions: [NoteDocument] {
+        var notes = noteDocuments
+        listCondition.filterBy.forEach { filteringTag in
+            notes = notes.filter { $0.entity.tags.contains(filteringTag.name) }
+        }
+        switch listCondition.sortOrder {
+        case .ascending:
+            switch listCondition.sortBy {
+            case .updatedDate:
+                notes = notes.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
+            case .createdDate:
+                notes = notes.sorted { $0.entity.createdDate < $1.entity.createdDate }
+            }
+        case .descending:
+            switch listCondition.sortBy {
+            case .updatedDate:
+                notes = notes.sorted { $0.entity.updatedDate > $1.entity.updatedDate }
+            case .createdDate:
+                notes = notes.sorted { $0.entity.createdDate > $1.entity.createdDate }
+            }
+        }
+        return notes
+    }
+
+    var listCondition = ListCondition()
 
     init(targetDirectory: TargetDirectory) {
         self.directory = targetDirectory
@@ -129,5 +156,9 @@ final class NotesViewModel: ObservableObject {
         return tags.filter {
             document.entity.tags.contains($0.name)
         }
+    }
+
+    func toggleIsListConditionPopover() {
+        isListConditionSheet.toggle()
     }
 }
