@@ -20,8 +20,10 @@
 		A63C9586275DB86600822461 /* TagListToNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9585275DB86600822461 /* TagListToNote.swift */; };
 		A63C9588275DB97900822461 /* DeletableTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9587275DB97900822461 /* DeletableTag.swift */; };
 		A63C958A275DDA9E00822461 /* TagListToNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */; };
-		A63C958E275E026000822461 /* DeletableTagHStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C958D275E026000822461 /* DeletableTagHStack.swift */; };
 		A63C9590275E111500822461 /* AddTagFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C958F275E111500822461 /* AddTagFooter.swift */; };
+		A63C9593276444CF00822461 /* ListCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9592276444CF00822461 /* ListCondition.swift */; };
+		A63C9595276447BD00822461 /* ListConditionSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9594276447BD00822461 /* ListConditionSetting.swift */; };
+		A63C95972764589F00822461 /* ListConditionSettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C95962764589F00822461 /* ListConditionSettingViewModel.swift */; };
 		A6484FCE272B923B00676ED8 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FCD272B923B00676ED8 /* Canvas.swift */; };
 		A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */; };
 		A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */; };
@@ -70,8 +72,10 @@
 		A63C9585275DB86600822461 /* TagListToNote.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagListToNote.swift; sourceTree = "<group>"; };
 		A63C9587275DB97900822461 /* DeletableTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletableTag.swift; sourceTree = "<group>"; };
 		A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListToNoteViewModel.swift; sourceTree = "<group>"; };
-		A63C958D275E026000822461 /* DeletableTagHStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeletableTagHStack.swift; sourceTree = "<group>"; };
 		A63C958F275E111500822461 /* AddTagFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTagFooter.swift; sourceTree = "<group>"; };
+		A63C9592276444CF00822461 /* ListCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCondition.swift; sourceTree = "<group>"; };
+		A63C9594276447BD00822461 /* ListConditionSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListConditionSetting.swift; sourceTree = "<group>"; };
+		A63C95962764589F00822461 /* ListConditionSettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListConditionSettingViewModel.swift; sourceTree = "<group>"; };
 		A6484FCD272B923B00676ED8 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKCanvasViewWrapper.swift; sourceTree = "<group>"; };
 		A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
@@ -121,6 +125,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A63C95912764435200822461 /* Deperecated */ = {
+			isa = PBXGroup;
+			children = (
+				A66E81FF252C0D5F007A24D9 /* Autosave.swift */,
+				A6134B7F245C09FC00E5F0FB /* DataModel.swift */,
+				A6EE43262523271F000B203E /* Document.swift */,
+				A6EE433025232DDE000B203E /* DocumentManager.swift */,
+				A657B0752526A81800B7BE2D /* EventNames.swift */,
+			);
+			path = Deperecated;
+			sourceTree = "<group>";
+		};
 		A6620E282748A01F00C708A2 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -133,12 +149,12 @@
 				A6484FD5272E63B000676ED8 /* NotesGrid.swift */,
 				A64AE9F12759A963002C66F7 /* NoteImage.swift */,
 				A6620E33274C774D00C708A2 /* ScrollButton.swift */,
+				A63C9594276447BD00822461 /* ListConditionSetting.swift */,
 				A63C9577275C8F4A00822461 /* TagList.swift */,
 				A63C958F275E111500822461 /* AddTagFooter.swift */,
 				A63C9585275DB86600822461 /* TagListToNote.swift */,
 				A63C9581275D1C2E00822461 /* TagHStack.swift */,
 				A63C9583275DB67700822461 /* Tag.swift */,
-				A63C958D275E026000822461 /* DeletableTagHStack.swift */,
 				A63C9587275DB97900822461 /* DeletableTag.swift */,
 			);
 			path = View;
@@ -151,6 +167,7 @@
 				A62EEAF32732517600D513B8 /* NotesViewModel.swift */,
 				A63C957B275C8FD900822461 /* TagListViewModel.swift */,
 				A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */,
+				A63C95962764589F00822461 /* ListConditionSettingViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -158,17 +175,14 @@
 		A6620E2A2748A05B00C708A2 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				A66E81FF252C0D5F007A24D9 /* Autosave.swift */,
 				A64F971B2751CB68001E46B0 /* DrawingsPlistConverter.swift */,
-				A6134B7F245C09FC00E5F0FB /* DataModel.swift */,
 				A6620E3B274CD88000C708A2 /* FilePath.swift */,
+				A63C9592276444CF00822461 /* ListCondition.swift */,
 				A6620E39274C8FA400C708A2 /* NoteDocument.swift */,
 				A64AE9F3275B203A002C66F7 /* NoteEntity.swift */,
-				A63C956C275C7CF300822461 /* TagEntity.swift */,
 				A63C957F275CFF7900822461 /* TagModel.swift */,
-				A6EE43262523271F000B203E /* Document.swift */,
-				A6EE433025232DDE000B203E /* DocumentManager.swift */,
-				A657B0752526A81800B7BE2D /* EventNames.swift */,
+				A63C956C275C7CF300822461 /* TagEntity.swift */,
+				A63C95912764435200822461 /* Deperecated */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -360,7 +374,9 @@
 				A64F971C2751CB68001E46B0 /* DrawingsPlistConverter.swift in Sources */,
 				A63C9588275DB97900822461 /* DeletableTag.swift in Sources */,
 				A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */,
+				A63C9593276444CF00822461 /* ListCondition.swift in Sources */,
 				A6620E38274C819300C708A2 /* CanvasDelegateBridgeObject.swift in Sources */,
+				A63C95972764589F00822461 /* ListConditionSettingViewModel.swift in Sources */,
 				A63C9590275E111500822461 /* AddTagFooter.swift in Sources */,
 				A63C9584275DB67700822461 /* Tag.swift in Sources */,
 				A6620E34274C774D00C708A2 /* ScrollButton.swift in Sources */,
@@ -375,11 +391,11 @@
 				A63C957E275CC3C300822461 /* TagListRouter.swift in Sources */,
 				A63C9582275D1C2E00822461 /* TagHStack.swift in Sources */,
 				A63C9580275CFF7900822461 /* TagModel.swift in Sources */,
+				A63C9595276447BD00822461 /* ListConditionSetting.swift in Sources */,
 				A6620E2E274C6E8E00C708A2 /* SideBarList.swift in Sources */,
 				A6484FD6272E63B000676ED8 /* NotesGrid.swift in Sources */,
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,
 				A6620E36274C7A3D00C708A2 /* Notes.swift in Sources */,
-				A63C958E275E026000822461 /* DeletableTagHStack.swift in Sources */,
 				A63C957C275C8FD900822461 /* TagListViewModel.swift in Sources */,
 				A63C958A275DDA9E00822461 /* TagListToNoteViewModel.swift in Sources */,
 			);
