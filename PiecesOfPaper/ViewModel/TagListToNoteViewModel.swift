@@ -29,9 +29,13 @@ final class TagListToNoteViewModel: ObservableObject {
         }
     }
 
-    init() {
+    init(noteDocument: NoteDocument? = nil) {
         tags = tagModel.fetch()
-        noteDocument = TagListRouter.shared.documentForPass
+        if let document = noteDocument {
+            self.noteDocument = document
+        } else {
+            self.noteDocument = TagListRouter.shared.documentForPass
+        }
     }
 
     func add(tagName: String) {
