@@ -11,6 +11,8 @@ import PencilKit
 
 final class CanvasViewModel: ObservableObject {
     var document: NoteDocument?
+    @Published var hideExceptPaper = true
+    @Published var showDrawingInformation = false
 
     func save(drawing: PKDrawing) {
         document?.entity.drawing = drawing
