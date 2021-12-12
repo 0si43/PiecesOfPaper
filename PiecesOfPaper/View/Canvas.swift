@@ -67,6 +67,7 @@ struct Canvas: View {
     var body: some View {
         PKCanvasViewWrapper(canvasView: $canvasView)
             .gesture(tap)
+            .navigationBarTitleDisplayMode(.inline)
             .statusBar(hidden: viewModel.hideExceptPaper)
             .navigationBarHidden(viewModel.hideExceptPaper)
             .navigationBarBackButtonHidden(true)
