@@ -24,6 +24,7 @@
 		A63C9593276444CF00822461 /* ListCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9592276444CF00822461 /* ListCondition.swift */; };
 		A63C9595276447BD00822461 /* ListConditionSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9594276447BD00822461 /* ListConditionSetting.swift */; };
 		A63C95972764589F00822461 /* ListConditionSettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C95962764589F00822461 /* ListConditionSettingViewModel.swift */; };
+		A63C959B2765A5D500822461 /* NoteInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C959A2765A5D500822461 /* NoteInformation.swift */; };
 		A6484FCE272B923B00676ED8 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FCD272B923B00676ED8 /* Canvas.swift */; };
 		A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */; };
 		A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */; };
@@ -76,6 +77,7 @@
 		A63C9592276444CF00822461 /* ListCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCondition.swift; sourceTree = "<group>"; };
 		A63C9594276447BD00822461 /* ListConditionSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListConditionSetting.swift; sourceTree = "<group>"; };
 		A63C95962764589F00822461 /* ListConditionSettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListConditionSettingViewModel.swift; sourceTree = "<group>"; };
+		A63C959A2765A5D500822461 /* NoteInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteInformation.swift; sourceTree = "<group>"; };
 		A6484FCD272B923B00676ED8 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKCanvasViewWrapper.swift; sourceTree = "<group>"; };
 		A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 				A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */,
 				A6620E37274C819300C708A2 /* CanvasDelegateBridgeObject.swift */,
 				A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */,
+				A63C959A2765A5D500822461 /* NoteInformation.swift */,
 				A6620E35274C7A3D00C708A2 /* Notes.swift */,
 				A64AE9F5275C5A1A002C66F7 /* NotesScrollViewReader.swift */,
 				A6484FD5272E63B000676ED8 /* NotesGrid.swift */,
@@ -369,6 +372,7 @@
 				A6620E2C2748ABE400C708A2 /* CanvasViewModel.swift in Sources */,
 				A63C9586275DB86600822461 /* TagListToNote.swift in Sources */,
 				A6EE433125232DDE000B203E /* DocumentManager.swift in Sources */,
+				A63C959B2765A5D500822461 /* NoteInformation.swift in Sources */,
 				A64AE9F22759A963002C66F7 /* NoteImage.swift in Sources */,
 				A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */,
 				A64F971C2751CB68001E46B0 /* DrawingsPlistConverter.swift in Sources */,
