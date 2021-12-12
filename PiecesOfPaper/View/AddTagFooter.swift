@@ -48,17 +48,19 @@ struct AddTagFooter: View {
                     .padding()
                     Spacer()
                 }
-                .navigationBarItems(leading:
-                    Button(action: cancel) {
-                        Text("Cancel")
-                        .foregroundColor(.red)
+                .toolbar {
+                    ToolbarItemGroup(placement: .navigationBarLeading) {
+                        Button(action: cancel) {
+                            Text("Cancel")
+                            .foregroundColor(.red)
+                        }
                     }
-                )
-                .navigationBarItems(trailing:
-                    Button(action: save) {
-                        Text("Done")
+                    ToolbarItemGroup(placement: .navigationBarTrailing) {
+                        Button(action: save) {
+                            Text("Done")
+                        }
                     }
-                )
+                }
             }
         }
     }
