@@ -13,6 +13,7 @@ final class CanvasViewModel: ObservableObject {
     var document: NoteDocument?
     @Published var hideExceptPaper = true
     @Published var showDrawingInformation = false
+    @Published var showTagList = false
 
     func save(drawing: PKDrawing) {
         document?.entity.drawing = drawing

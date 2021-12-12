@@ -142,23 +142,9 @@
 		A6620E282748A01F00C708A2 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				A6484FCD272B923B00676ED8 /* Canvas.swift */,
-				A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */,
-				A6620E37274C819300C708A2 /* CanvasDelegateBridgeObject.swift */,
-				A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */,
-				A63C959A2765A5D500822461 /* NoteInformation.swift */,
-				A6620E35274C7A3D00C708A2 /* Notes.swift */,
-				A64AE9F5275C5A1A002C66F7 /* NotesScrollViewReader.swift */,
-				A6484FD5272E63B000676ED8 /* NotesGrid.swift */,
-				A64AE9F12759A963002C66F7 /* NoteImage.swift */,
-				A6620E33274C774D00C708A2 /* ScrollButton.swift */,
-				A63C9594276447BD00822461 /* ListConditionSetting.swift */,
-				A63C9577275C8F4A00822461 /* TagList.swift */,
-				A63C958F275E111500822461 /* AddTagFooter.swift */,
-				A63C9585275DB86600822461 /* TagListToNote.swift */,
-				A63C9581275D1C2E00822461 /* TagHStack.swift */,
-				A63C9583275DB67700822461 /* Tag.swift */,
-				A63C9587275DB97900822461 /* DeletableTag.swift */,
+				A6743E682765B8310075F138 /* Canvas */,
+				A6743E692765B8410075F138 /* NoteList */,
+				A6743E6A2765B8660075F138 /* Tag */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -188,6 +174,53 @@
 				A63C95912764435200822461 /* Deperecated */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		A6743E682765B8310075F138 /* Canvas */ = {
+			isa = PBXGroup;
+			children = (
+				A6484FCD272B923B00676ED8 /* Canvas.swift */,
+				A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */,
+				A6620E37274C819300C708A2 /* CanvasDelegateBridgeObject.swift */,
+				A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */,
+				A63C959A2765A5D500822461 /* NoteInformation.swift */,
+			);
+			path = Canvas;
+			sourceTree = "<group>";
+		};
+		A6743E692765B8410075F138 /* NoteList */ = {
+			isa = PBXGroup;
+			children = (
+				A6620E35274C7A3D00C708A2 /* Notes.swift */,
+				A64AE9F5275C5A1A002C66F7 /* NotesScrollViewReader.swift */,
+				A6484FD5272E63B000676ED8 /* NotesGrid.swift */,
+				A64AE9F12759A963002C66F7 /* NoteImage.swift */,
+				A6620E33274C774D00C708A2 /* ScrollButton.swift */,
+				A63C9594276447BD00822461 /* ListConditionSetting.swift */,
+			);
+			path = NoteList;
+			sourceTree = "<group>";
+		};
+		A6743E6A2765B8660075F138 /* Tag */ = {
+			isa = PBXGroup;
+			children = (
+				A63C9577275C8F4A00822461 /* TagList.swift */,
+				A63C958F275E111500822461 /* AddTagFooter.swift */,
+				A63C9585275DB86600822461 /* TagListToNote.swift */,
+				A63C9581275D1C2E00822461 /* TagHStack.swift */,
+				A63C9583275DB67700822461 /* Tag.swift */,
+				A63C9587275DB97900822461 /* DeletableTag.swift */,
+			);
+			path = Tag;
+			sourceTree = "<group>";
+		};
+		A6743E6B2765B88F0075F138 /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				A6620E262747A66100C708A2 /* CanvasRouter.swift */,
+				A63C957D275CC3C300822461 /* TagListRouter.swift */,
+			);
+			path = Router;
 			sourceTree = "<group>";
 		};
 		A6A16EC325B1673500DF323F /* PiecesOfPaperTests */ = {
@@ -224,8 +257,7 @@
 			children = (
 				A62EEAF1273248A300D513B8 /* PiecesOfPaperApp.swift */,
 				A6620E2D274C6E8E00C708A2 /* SideBarList.swift */,
-				A6620E262747A66100C708A2 /* CanvasRouter.swift */,
-				A63C957D275CC3C300822461 /* TagListRouter.swift */,
+				A6743E6B2765B88F0075F138 /* Router */,
 				A6620E282748A01F00C708A2 /* View */,
 				A6620E292748A04D00C708A2 /* ViewModel */,
 				A6620E2A2748A05B00C708A2 /* Model */,
