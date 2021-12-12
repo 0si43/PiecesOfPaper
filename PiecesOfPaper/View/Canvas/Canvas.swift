@@ -78,6 +78,14 @@ struct Canvas: View {
                     }
                 }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    if let document = viewModel.document {
+                        Button(action: {
+                            toolPicker.setVisible(false, forFirstResponder: canvasView)
+                            viewModel.showTagList.toggle()
+                        }) {
+                                Image(systemName: "tag.circle")
+                        }
+                    }
                     Button(action: { viewModel.showDrawingInformation.toggle() }) {
                             Image(systemName: "info.circle")
                     }
@@ -95,6 +103,9 @@ struct Canvas: View {
             .sheet(isPresented: $isShowActivityView,
                    onDismiss: { toolPicker.setVisible(true, forFirstResponder: canvasView) }) {
                 activityViewController
+            }
+            .sheet(isPresented: $viewModel.showTagList) {
+                TagListToNote(viewModel: TagListToNoteViewModel(noteDocument: viewModel.document))
             }
     }
 
