@@ -54,14 +54,18 @@ struct ListConditionSetting: View {
             .padding(.horizontal)
             TagHStack(tags: viewModel.filteringTag, action: viewModel.remove, deletable: true)
                 .padding(.horizontal)
-            HStack {
-                Image(systemName: "plus.circle")
-                Text("Add a tag")
-                Spacer()
-            }
-            .padding(.horizontal)
-            TagHStack(tags: viewModel.nonFilteringTag, action: viewModel.add)
+            VStack {
+                HStack {
+                    Image(systemName: "plus.circle")
+                    Text("Add a tag")
+                    Spacer()
+                }
                 .padding(.horizontal)
+                TagHStack(tags: viewModel.nonFilteringTag, action: viewModel.add)
+                    .padding(.horizontal)
+            }
+            .background(Color.gray.opacity(0.2))
+            .padding()
             Spacer()
 
         }
