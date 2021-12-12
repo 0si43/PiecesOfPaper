@@ -22,6 +22,8 @@ struct Canvas: View {
         }
     }
 
+    @State var temp = false
+
     @Environment(\.presentationMode) var presentationMode
 
     var delegateBridge: CanvasDelegateBridgeObject
@@ -71,13 +73,19 @@ struct Canvas: View {
             .statusBar(hidden: hideExceptPaper)
             .navigationBarHidden(hideExceptPaper)
             .navigationBarBackButtonHidden(true)
-            .navigationBarItems(leading:
-                Button(action: archive) {
-                    Image(systemName: "arrow.down.square").foregroundColor(.red)
-                }
-            )
             .toolbar {
-                ToolbarItemGroup {
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    Button(action: archive) {
+                        Image(systemName: "arrow.down.square").foregroundColor(.red)
+                    }
+                }
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button(action: { temp.toggle() }) {
+                            Image(systemName: "info.circle")
+                    }
+                    .popover(isPresented: $temp) {
+                        Text("Hi")
+                    }
                     Button(action: { isShowActivityView.toggle() }) {
                         Image(systemName: "square.and.arrow.up")
                     }
