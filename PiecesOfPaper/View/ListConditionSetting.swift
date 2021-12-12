@@ -69,17 +69,19 @@ struct ListConditionSetting: View {
             Spacer()
 
         }
-        .navigationBarItems(leading:
-            Button(action: cancel) {
-                Text("Cancel")
-                .foregroundColor(.red)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Button(action: cancel) {
+                    Text("Cancel")
+                    .foregroundColor(.red)
+                }
             }
-        )
-        .navigationBarItems(trailing:
-            Button(action: apply) {
-                Text("Apply")
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button(action: apply) {
+                    Text("Apply")
+                }
             }
-        )
+        }
         .navigationTitle("Sort & filter condition")
         .navigationBarTitleDisplayMode(.inline)
     }
