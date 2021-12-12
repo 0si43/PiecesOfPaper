@@ -13,7 +13,6 @@ import LinkPresentation
 struct Canvas: View {
     @ObservedObject var viewModel = CanvasViewModel()
     @State private var canvasView = PKCanvasView()
-    @State var hideExceptPaper = true
     @State var isShowActivityView = false {
         didSet {
             if isShowActivityView == true {
@@ -21,8 +20,6 @@ struct Canvas: View {
             }
         }
     }
-
-    @State var temp = false
 
     @Environment(\.presentationMode) var presentationMode
 
@@ -42,9 +39,9 @@ struct Canvas: View {
     var tap: some Gesture {
         TapGesture(count: 1)
             .onEnded { _ in
-                hideExceptPaper.toggle()
+                viewModel.hideExceptPaper.toggle()
                 toolPicker.addObserver(canvasView)
-                toolPicker.setVisible(!hideExceptPaper, forFirstResponder: canvasView)
+                toolPicker.setVisible(!viewModel.hideExceptPaper, forFirstResponder: canvasView)
                 canvasView.becomeFirstResponder()
             }
     }
@@ -70,8 +67,8 @@ struct Canvas: View {
     var body: some View {
         PKCanvasViewWrapper(canvasView: $canvasView)
             .gesture(tap)
-            .statusBar(hidden: hideExceptPaper)
-            .navigationBarHidden(hideExceptPaper)
+            .statusBar(hidden: viewModel.hideExceptPaper)
+            .navigationBarHidden(viewModel.hideExceptPaper)
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarLeading) {
@@ -80,10 +77,10 @@ struct Canvas: View {
                     }
                 }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    Button(action: { temp.toggle() }) {
+                    Button(action: { viewModel.showDrawingInformation.toggle() }) {
                             Image(systemName: "info.circle")
                     }
-                    .popover(isPresented: $temp) {
+                    .popover(isPresented: $viewModel.showDrawingInformation) {
                         Text("Hi")
                     }
                     Button(action: { isShowActivityView.toggle() }) {
