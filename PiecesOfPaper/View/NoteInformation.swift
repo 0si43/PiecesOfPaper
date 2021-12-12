@@ -21,36 +21,61 @@ struct NoteInformation: View {
         if let document = document {
             HStack {
                 VStack {
-                    Text("File Name")
-                    Divider()
-                    Text("Created Date")
-                    Divider()
-                    Text("Updated Date")
-                    Divider()
-                    Text("Archive Status")
-                    Divider()
-                    Text("Tags")
+                    Group {
+                        #if DEBUG
+                        HStack {
+                            Text("🛠")
+                            Text("ID")
+                        }
+                        Divider()
+                        #endif
+                    }
+
+                    Group {
+                        Text("File Name")
+                        Divider()
+                        Text("Created Date")
+                        Divider()
+                        Text("Updated Date")
+                        Divider()
+                        Text("Archive Status")
+                        Divider()
+                        Text("Tags")
+                    }
                 }
                 Divider()
                 VStack {
-                    ScrollView(.horizontal) {
-                        Text(document.fileURL.lastPathComponent)
-                    }
-                    Divider()
-                    Text(dataFormatter.string(from: document.entity.createdDate))
-                    Divider()
-                    Text(dataFormatter.string(from: document.entity.updatedDate))
-                    Divider()
-                    Text(document.isArchived ? "Archived" : "Inbox")
-                    Divider()
-                    if document.entity.tags.isEmpty {
-                        Text("No tag")
-                    } else {
-                        ScrollView(.horizontal) {
-                            Text(document.entity.tags.reduce("") { $0 + $1 })
-                        }
+                    Group {
+                        #if DEBUG
+                            ScrollView(.horizontal) {
+                                HStack {
+                                    Text("🛠")
+                                    Text(document.entity.id.uuidString)
+                                }
+                            }
+                            Divider()
+                        #endif
                     }
 
+                    Group {
+                        ScrollView(.horizontal) {
+                            Text(document.fileURL.lastPathComponent)
+                        }
+                        Divider()
+                        Text(dataFormatter.string(from: document.entity.createdDate))
+                        Divider()
+                        Text(dataFormatter.string(from: document.entity.updatedDate))
+                        Divider()
+                        Text(document.isArchived ? "Archived" : "Inbox")
+                        Divider()
+                        if document.entity.tags.isEmpty {
+                            Text("No tag")
+                        } else {
+                            ScrollView(.horizontal) {
+                                Text(document.entity.tags.reduce("") { $0 + $1 })
+                            }
+                        }
+                    }
                 }
             }
             .padding()
