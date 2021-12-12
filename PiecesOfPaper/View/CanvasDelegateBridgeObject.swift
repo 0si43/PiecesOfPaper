@@ -44,7 +44,7 @@ extension CanvasDelegateBridgeObject: UIPencilInteractionDelegate {
         switch action {
         case .switchPrevious:   switchPreviousTool()
         case .switchEraser:     switchEraser()
-        case .showColorPalette: canvas.hideExceptPaper.toggle()
+        case .showColorPalette: canvas.viewModel.hideExceptPaper.toggle()
         case .ignore:           return
         default:                return
         }

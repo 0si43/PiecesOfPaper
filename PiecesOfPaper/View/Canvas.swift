@@ -13,7 +13,6 @@ import LinkPresentation
 struct Canvas: View {
     @ObservedObject var viewModel = CanvasViewModel()
     @State private var canvasView = PKCanvasView()
-    @State var hideExceptPaper = true
     @State var isShowActivityView = false {
         didSet {
             if isShowActivityView == true {
@@ -40,9 +39,9 @@ struct Canvas: View {
     var tap: some Gesture {
         TapGesture(count: 1)
             .onEnded { _ in
-                hideExceptPaper.toggle()
+                viewModel.hideExceptPaper.toggle()
                 toolPicker.addObserver(canvasView)
-                toolPicker.setVisible(!hideExceptPaper, forFirstResponder: canvasView)
+                toolPicker.setVisible(!viewModel.hideExceptPaper, forFirstResponder: canvasView)
                 canvasView.becomeFirstResponder()
             }
     }
@@ -68,16 +67,22 @@ struct Canvas: View {
     var body: some View {
         PKCanvasViewWrapper(canvasView: $canvasView)
             .gesture(tap)
-            .statusBar(hidden: hideExceptPaper)
-            .navigationBarHidden(hideExceptPaper)
+            .statusBar(hidden: viewModel.hideExceptPaper)
+            .navigationBarHidden(viewModel.hideExceptPaper)
             .navigationBarBackButtonHidden(true)
-            .navigationBarItems(leading:
-                Button(action: archive) {
-                    Image(systemName: "arrow.down.square").foregroundColor(.red)
-                }
-            )
             .toolbar {
-                ToolbarItemGroup {
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    Button(action: archive) {
+                        Image(systemName: "arrow.down.square").foregroundColor(.red)
+                    }
+                }
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button(action: { viewModel.showDrawingInformation.toggle() }) {
+                            Image(systemName: "info.circle")
+                    }
+                    .popover(isPresented: $viewModel.showDrawingInformation) {
+                        NoteInformation(document: viewModel.document)
+                    }
                     Button(action: { isShowActivityView.toggle() }) {
                         Image(systemName: "square.and.arrow.up")
                     }
