@@ -30,16 +30,8 @@ struct SideBarList: View {
                 }
             }
             Section(header: Text("Setting")) {
-                NavigationLink(destination: EmptyView()) {
+                NavigationLink(destination: SettingView()) {
                     Label("Setting", systemImage: "gearshape")
-                }
-            }
-            Section(header: Text("About")) {
-                Link(destination: URL(string: "https://github.com/0si43/PiecesOfPaper")!) {
-                    Label("Github Repository", systemImage: "wrench")
-                }
-                Link(destination: URL(string: "https://www.shetommy.com/")!) {
-                    Label("Developer Site", systemImage: "wrench")
                 }
             }
         }

@@ -83,8 +83,8 @@ struct NotesGrid: View {
     }
 
     func duplicate(noteDocument: NoteDocument) {
-        guard let iCloudUrl = FilePath.iCloudUrl else { return }
-        let newUrl = iCloudUrl.appendingPathComponent(FilePath.fileName)
+        guard let savingUrl = FilePath.savingUrl else { return }
+        let newUrl = savingUrl.appendingPathComponent(FilePath.fileName)
         try? FileManager.default.copyItem(at: noteDocument.fileURL, to: newUrl)
     }
 
