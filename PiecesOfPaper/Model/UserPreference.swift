@@ -26,7 +26,7 @@ struct UserPreference {
             !UserDefaults.standard.bool(forKey: autoSaveDisabledKey)
         }
         set {
-            UserDefaults.standard.set(!enabledAutoSave, forKey: autoSaveDisabledKey)
+            UserDefaults.standard.set(!newValue, forKey: autoSaveDisabledKey)
         }
     }
 }
