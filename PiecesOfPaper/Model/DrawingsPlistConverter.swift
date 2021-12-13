@@ -10,10 +10,10 @@ import Foundation
 
 struct DrawingsPlistConverter {
     static func convert() {
-        makeDirectoryIfNeeded()
+        FilePath.makeDirectoryIfNeeded()
 
-        guard let iCloudUrl = FilePath.iCloudUrl, let inboxUrl = FilePath.iCloudInboxUrl else { return }
-        let url = iCloudUrl.appendingPathComponent("drawings.plist")
+        guard let savingUrl = FilePath.savingUrl, let inboxUrl = FilePath.inboxUrl else { return }
+        let url = savingUrl.appendingPathComponent("drawings.plist")
         guard FileManager.default.fileExists(atPath: url.path),
                 FileManager.default.fileExists(atPath: inboxUrl.path) else { return }
 
@@ -28,22 +28,11 @@ struct DrawingsPlistConverter {
                         // need some error handling
                     }
                 }
-                let newUrl = iCloudUrl.appendingPathComponent("converted_drawings.plist")
+                let newUrl = savingUrl.appendingPathComponent("converted_drawings.plist")
                 try? FileManager.default.moveItem(atPath: url.path, toPath: newUrl.path)
             } else {
                 fatalError("could not open document")
             }
-        }
-    }
-
-    private static func makeDirectoryIfNeeded() {
-        guard let inboxUrl = FilePath.iCloudInboxUrl, let iCloudArchivedUrl = FilePath.iCloudArchivedUrl else { return }
-        if !FileManager.default.fileExists(atPath: inboxUrl.path) {
-            try? FileManager.default.createDirectory(at: inboxUrl, withIntermediateDirectories: false)
-        }
-
-        if !FileManager.default.fileExists(atPath: iCloudArchivedUrl.path) {
-            try? FileManager.default.createDirectory(at: iCloudArchivedUrl, withIntermediateDirectories: false)
         }
     }
 }

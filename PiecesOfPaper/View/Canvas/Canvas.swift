@@ -46,6 +46,13 @@ struct Canvas: View {
             }
     }
 
+    var discardButton: Alert.Button {
+        .destructive(
+            Text("Discard"), action: { presentationMode.wrappedValue.dismiss() }
+        )
+    }
+    var cancelButton: Alert.Button { .default(Text("Cancel")) }
+
     init(noteDocument: NoteDocument?) {
         delegateBridge = CanvasDelegateBridgeObject(toolPicker: toolPicker)
         if let noteDocument = noteDocument {
@@ -107,15 +114,31 @@ struct Canvas: View {
             .sheet(isPresented: $viewModel.showTagList) {
                 TagListToNote(viewModel: TagListToNoteViewModel(noteDocument: viewModel.document))
             }
+            .alert(isPresented: $viewModel.showUnsavedAlert) { () -> Alert in
+                Alert(title: Text("Are you sure you want to discard the changes you made?"),
+                      primaryButton: discardButton,
+                      secondaryButton: cancelButton)
+            }
     }
 
     private func archive() {
+        if !UserPreference().enabledAutoSave {
+            guard !canvasView.drawing.strokes.isEmpty else {
+                presentationMode.wrappedValue.dismiss()
+                return
+            }
+            toolPicker.setVisible(false, forFirstResponder: canvasView)
+            viewModel.showUnsavedAlert.toggle()
+            return
+        }
         viewModel.archive()
         presentationMode.wrappedValue.dismiss()
     }
 
     private func close() {
-        // if !autosave { save action }
+        if !UserPreference().enabledAutoSave {
+            viewModel.save(drawing: canvasView.drawing)
+        }
         presentationMode.wrappedValue.dismiss()
     }
 }
