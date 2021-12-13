@@ -15,10 +15,15 @@ struct SettingView: View {
         List {
             Section(header: Text("Preference")) {
                 Toggle(isOn: $viewModel.enablediCloud) {
-                    Label("Enable iCloud", systemImage: "icloud")
+                    Label("Enable iCloud", systemImage: viewModel.enablediCloud ? "icloud.fill" : "icloud")
                 }
                 Toggle(isOn: $viewModel.enabledAutoSave) {
                     Label("Auto Save", systemImage: "gearshape")
+                }
+            }
+            Section(header: Text("Converter")) {
+                Button(action: DrawingsPlistConverter.convert) {
+                    Label("Convert drawings.plist", systemImage: "square.3.stack.3d")
                 }
             }
             Section(header: Text("About")) {
