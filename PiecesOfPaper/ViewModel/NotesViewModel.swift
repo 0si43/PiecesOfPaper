@@ -85,23 +85,23 @@ final class NotesViewModel: ObservableObject {
     }
 
     private func getFileUrl() -> [URL] {
-        guard let iCloudInboxUrl = FilePath.iCloudInboxUrl,
-              var inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: iCloudInboxUrl.path),
-              let iCloudArchivedUrl = FilePath.iCloudArchivedUrl,
+        guard let inboxUrl = FilePath.inboxUrl,
+              var inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: inboxUrl.path),
+              let archivedUrl = FilePath.archivedUrl,
               var archivedFileNames =
-                try? FileManager.default.contentsOfDirectory(atPath: iCloudArchivedUrl.path) else { return [] }
+                try? FileManager.default.contentsOfDirectory(atPath: archivedUrl.path) else { return [] }
 
         inboxFileNames = inboxFileNames.filter { $0.hasSuffix(".plist") }
         archivedFileNames = archivedFileNames.filter { $0.hasSuffix(".plist") }
 
         switch directory {
         case .inbox:
-            return inboxFileNames.map { iCloudInboxUrl.appendingPathComponent($0) }
+            return inboxFileNames.map { inboxUrl.appendingPathComponent($0) }
         case .archived:
-            return archivedFileNames.map { iCloudArchivedUrl.appendingPathComponent($0) }
+            return archivedFileNames.map { archivedUrl.appendingPathComponent($0) }
         case .all:
-            let inboxUrls = inboxFileNames.map { iCloudInboxUrl.appendingPathComponent($0) }
-            let archivedUrls = archivedFileNames.map { iCloudArchivedUrl.appendingPathComponent($0) }
+            let inboxUrls = inboxFileNames.map { inboxUrl.appendingPathComponent($0) }
+            let archivedUrls = archivedFileNames.map { archivedUrl.appendingPathComponent($0) }
             return inboxUrls + archivedUrls
         }
     }
@@ -127,8 +127,8 @@ final class NotesViewModel: ObservableObject {
     }
 
     func archive(document: NoteDocument) {
-        guard let iCloudArchivedUrl = FilePath.iCloudArchivedUrl else { return }
-        let toUrl = iCloudArchivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
+        guard let archivedUrl = FilePath.archivedUrl else { return }
+        let toUrl = archivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
         do {
             try FileManager.default.moveItem(at: document.fileURL, to: toUrl)
         } catch {
@@ -139,8 +139,8 @@ final class NotesViewModel: ObservableObject {
     }
 
     func unarchive(document: NoteDocument) {
-        guard let iCloudInboxUrl = FilePath.iCloudInboxUrl else { return }
-        let toUrl = iCloudInboxUrl.appendingPathComponent(document.fileURL.lastPathComponent)
+        guard let inboxUrl = FilePath.inboxUrl else { return }
+        let toUrl = inboxUrl.appendingPathComponent(document.fileURL.lastPathComponent)
         do {
             try FileManager.default.moveItem(at: document.fileURL, to: toUrl)
         } catch {

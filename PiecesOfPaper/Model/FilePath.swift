@@ -9,25 +9,30 @@
 import Foundation
 
 struct FilePath {
+    static var savingUrl: URL? {
+        UserPreference().enablediCloud ? iCloudUrl : documentDirectoryUrl
+    }
+
     static var iCloudUrl: URL? {
         guard let url = FileManager.default.url(forUbiquityContainerIdentifier: nil) else { return nil }
         return url.appendingPathComponent("Documents")
     }
 
-    static var iCloudInboxUrl: URL? {
-        iCloudUrl?.appendingPathComponent("Inbox")
+    static var documentDirectoryUrl: URL? {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     }
 
-    static var iCloudArchivedUrl: URL? {
-        iCloudUrl?.appendingPathComponent("Archived")
+    // avoided to conflict the name of "Documents/Inbox/"
+    static var inboxUrl: URL? {
+        savingUrl?.appendingPathComponent("InboxFolder")
     }
 
-    static var iCloudLibraryUrl: URL? {
-        iCloudUrl?.appendingPathComponent(".Library")
+    static var archivedUrl: URL? {
+        savingUrl?.appendingPathComponent("Archived")
     }
 
-    static var documentDirectory: URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    static var libraryUrl: URL? {
+        savingUrl?.appendingPathComponent(".Library")
     }
 
     static var fileName: String {
@@ -37,6 +42,17 @@ struct FilePath {
     }
 
     static var tagListFileName: URL? {
-        iCloudLibraryUrl?.appendingPathComponent("taglist.plist")
+        libraryUrl?.appendingPathComponent("taglist.plist")
+    }
+
+    static func makeDirectoryIfNeeded() {
+        guard let inboxUrl = FilePath.inboxUrl, let archivedUrl = FilePath.archivedUrl else { return }
+        if !FileManager.default.fileExists(atPath: inboxUrl.path) {
+            try? FileManager.default.createDirectory(at: inboxUrl, withIntermediateDirectories: false)
+        }
+
+        if !FileManager.default.fileExists(atPath: archivedUrl.path) {
+            try? FileManager.default.createDirectory(at: archivedUrl, withIntermediateDirectories: false)
+        }
     }
 }

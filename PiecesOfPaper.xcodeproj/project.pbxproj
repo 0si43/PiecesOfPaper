@@ -46,6 +46,7 @@
 		A6A16EC525B1673500DF323F /* PiecesOfPaperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A16EC425B1673500DF323F /* PiecesOfPaperTests.swift */; };
 		A6CADA51276752E600657E9E /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA50276752E600657E9E /* SettingView.swift */; };
 		A6CADA532767581700657E9E /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA522767581700657E9E /* SettingViewModel.swift */; };
+		A6CADA5527675D8500657E9E /* UserPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA5427675D8500657E9E /* UserPreference.swift */; };
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
 		A6EE43272523271F000B203E /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE43262523271F000B203E /* Document.swift */; };
 		A6EE433125232DDE000B203E /* DocumentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE433025232DDE000B203E /* DocumentManager.swift */; };
@@ -106,6 +107,7 @@
 		A6A16EC625B1673500DF323F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6CADA50276752E600657E9E /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		A6CADA522767581700657E9E /* SettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewModel.swift; sourceTree = "<group>"; };
+		A6CADA5427675D8500657E9E /* UserPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreference.swift; sourceTree = "<group>"; };
 		A6DE5BB72437167C006D3D47 /* Pieces of Paper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Pieces of Paper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BC32437167E006D3D47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A6DE5BC82437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 				A64AE9F3275B203A002C66F7 /* NoteEntity.swift */,
 				A63C957F275CFF7900822461 /* TagModel.swift */,
 				A63C956C275C7CF300822461 /* TagEntity.swift */,
+				A6CADA5427675D8500657E9E /* UserPreference.swift */,
 				A63C95912764435200822461 /* Deperecated */,
 			);
 			path = Model;
@@ -447,6 +450,7 @@
 				A6484FD6272E63B000676ED8 /* NotesGrid.swift in Sources */,
 				A6CADA532767581700657E9E /* SettingViewModel.swift in Sources */,
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,
+				A6CADA5527675D8500657E9E /* UserPreference.swift in Sources */,
 				A6620E36274C7A3D00C708A2 /* Notes.swift in Sources */,
 				A63C957C275C8FD900822461 /* TagListViewModel.swift in Sources */,
 				A63C958A275DDA9E00822461 /* TagListToNoteViewModel.swift in Sources */,
