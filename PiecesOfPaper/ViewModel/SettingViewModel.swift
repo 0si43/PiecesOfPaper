@@ -9,23 +9,23 @@
 import Foundation
 
 final class SettingViewModel: ObservableObject {
-    private let iCloudDisabledKey = "iCloud_disabled"
-    private let autoSaveDisabledKey = "autosave_disabled"
+    var userPreference = UserPreference()
 
     @Published var enablediCloud: Bool {
         didSet {
-            UserDefaults.standard.set(!enablediCloud, forKey: iCloudDisabledKey)
+            userPreference.enablediCloud = enablediCloud
+            FilePath.makeDirectoryIfNeeded()
         }
     }
 
     @Published var enabledAutoSave: Bool {
         didSet {
-            UserDefaults.standard.set(!enabledAutoSave, forKey: autoSaveDisabledKey)
+            userPreference.enabledAutoSave = enabledAutoSave
         }
     }
 
     init() {
-        enablediCloud = !UserDefaults.standard.bool(forKey: iCloudDisabledKey)
-        enabledAutoSave = !UserDefaults.standard.bool(forKey: autoSaveDisabledKey)
+        enablediCloud = userPreference.enablediCloud
+        enabledAutoSave = userPreference.enabledAutoSave
     }
 }

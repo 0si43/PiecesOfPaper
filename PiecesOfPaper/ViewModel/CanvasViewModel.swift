@@ -21,8 +21,8 @@ final class CanvasViewModel: ObservableObject {
         if let document = document {
             document.save(to: document.fileURL, for: .forOverwriting)
         } else {
-            guard let iCloudInboxUrl = FilePath.iCloudInboxUrl else { return }
-            let path = iCloudInboxUrl.appendingPathComponent(FilePath.fileName)
+            guard let inboxUrl = FilePath.inboxUrl else { return }
+            let path = inboxUrl.appendingPathComponent(FilePath.fileName)
             document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: drawing))
             document?.save(to: path, for: .forCreating)
         }
@@ -30,8 +30,8 @@ final class CanvasViewModel: ObservableObject {
 
     func archive() {
         guard let document = document,
-              let iCloudArchivedUrl = FilePath.iCloudArchivedUrl else { return }
-        let toUrl = iCloudArchivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
+              let archivedUrl = FilePath.archivedUrl else { return }
+        let toUrl = archivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
         do {
             try FileManager.default.moveItem(at: document.fileURL, to: toUrl)
         } catch {

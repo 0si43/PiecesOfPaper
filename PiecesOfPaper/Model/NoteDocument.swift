@@ -13,8 +13,8 @@ final class NoteDocument: UIDocument {
     var entity: NoteEntity
 
     var isArchived: Bool {
-        guard let iCloudArchivedUrl = FilePath.iCloudArchivedUrl else { return false }
-        return fileURL.path.hasPrefix(iCloudArchivedUrl.path)
+        guard let archivedUrl = FilePath.archivedUrl else { return false }
+        return fileURL.path.hasPrefix(archivedUrl.path)
     }
 
     override init(fileURL: URL) {

@@ -10,9 +10,9 @@ import Foundation
 
 struct TagModel {
     var tags: [TagEntity] {
-        guard let iCloudLibraryUrl = FilePath.iCloudLibraryUrl?.appendingPathComponent("taglist.plist"),
-                FileManager.default.fileExists(atPath: iCloudLibraryUrl.path),
-              let content = FileManager.default.contents(atPath: iCloudLibraryUrl.path) else { return [] }
+        guard let libraryUrl = FilePath.libraryUrl?.appendingPathComponent("taglist.plist"),
+                FileManager.default.fileExists(atPath: libraryUrl.path),
+              let content = FileManager.default.contents(atPath: libraryUrl.path) else { return [] }
         let decoder = PropertyListDecoder()
         do {
             return try decoder.decode([TagEntity].self, from: content)
@@ -40,7 +40,7 @@ struct TagModel {
     }
 
     private func makeFileIfNeeded() {
-        guard let libraryUrl = FilePath.iCloudLibraryUrl else { return }
+        guard let libraryUrl = FilePath.libraryUrl else { return }
 
         if !FileManager.default.fileExists(atPath: libraryUrl.path) {
             try? FileManager.default.createDirectory(at: libraryUrl, withIntermediateDirectories: false)
@@ -50,8 +50,8 @@ struct TagModel {
     }
 
     func save(tags: [TagEntity]) {
-        guard let iCloudLibraryUrl = FilePath.iCloudLibraryUrl else { return }
-        let url = iCloudLibraryUrl.appendingPathComponent("taglist.plist")
+        guard let libraryUrl = FilePath.libraryUrl else { return }
+        let url = libraryUrl.appendingPathComponent("taglist.plist")
         let encoder = PropertyListEncoder()
         let data = (try? encoder.encode(tags)) ?? Data()
         do {
