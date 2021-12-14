@@ -15,6 +15,11 @@ final class CanvasViewModel: ObservableObject {
     @Published var showDrawingInformation = false
     @Published var showTagList = false
     @Published var showUnsavedAlert = false
+    var canReviewRequest: Bool {
+        guard let inboxUrl = FilePath.inboxUrl,
+              let inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: inboxUrl.path)  else { return false }
+        return inboxFileNames.count >= 5
+    }
 
     func save(drawing: PKDrawing) {
         document?.entity.drawing = drawing
