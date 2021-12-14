@@ -8,6 +8,7 @@
 
 import SwiftUI
 import PencilKit
+import StoreKit
 import LinkPresentation
 
 struct Canvas: View {
@@ -22,6 +23,7 @@ struct Canvas: View {
     }
 
     @Environment(\.presentationMode) var presentationMode
+    @AppStorage("review_requested") var reviewRequested = false
 
     var delegateBridge: CanvasDelegateBridgeObject
     var toolPicker = PKToolPicker()
@@ -133,6 +135,7 @@ struct Canvas: View {
         }
         viewModel.archive()
         presentationMode.wrappedValue.dismiss()
+        reviewRequest()
     }
 
     private func close() {
@@ -140,6 +143,16 @@ struct Canvas: View {
             viewModel.save(drawing: canvasView.drawing)
         }
         presentationMode.wrappedValue.dismiss()
+        reviewRequest()
+    }
+
+    private func reviewRequest() {
+        if let windowScene = UIApplication.shared.windows.first?.windowScene,
+           viewModel.canReviewRequest,
+           !reviewRequested {
+            SKStoreReviewController.requestReview(in: windowScene)
+            reviewRequested = true
+        }
     }
 }
 
