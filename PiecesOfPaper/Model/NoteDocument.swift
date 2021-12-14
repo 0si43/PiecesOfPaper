@@ -20,6 +20,10 @@ final class NoteDocument: UIDocument {
     override init(fileURL: URL) {
         self.entity = NoteEntity(drawing: PKDrawing())
         super.init(fileURL: fileURL)
+
+        if self.documentState == .inConflict {
+            resolveConflict(url: fileURL)
+        }
     }
 
     init(fileURL: URL, entity: NoteEntity) {
@@ -41,5 +45,16 @@ final class NoteDocument: UIDocument {
         } catch {
             print("Data file format error: ", error.localizedDescription)
         }
+    }
+
+    // The later is the winner
+    private func resolveConflict(url: URL) {
+        let currentVersion = NSFileVersion.currentVersionOfItem(at: url)
+        do {
+            try NSFileVersion.removeOtherVersionsOfItem(at: url)
+        } catch {
+            print("failed delete conflict files")
+        }
+        currentVersion?.isResolved = true
     }
 }
