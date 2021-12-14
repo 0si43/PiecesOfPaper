@@ -32,6 +32,14 @@ final class NotesViewModel: ObservableObject {
         }
     }
 
+    var listCondition: ListCondition {
+        didSet {
+            let encoder = JSONEncoder()
+            guard let data = try? encoder.encode(listCondition) else { return }
+            UserDefaults.standard.set(data, forKey: "listCondition(" + directory.rawValue + ")")
+        }
+    }
+
     private var documentsAppliedConditions: [NoteDocument] {
         var notes = noteDocuments
         listCondition.filterBy.forEach { filteringTag in
@@ -56,10 +64,15 @@ final class NotesViewModel: ObservableObject {
         return notes
     }
 
-    var listCondition = ListCondition()
-
     init(targetDirectory: TargetDirectory) {
         self.directory = targetDirectory
+        let decoder = JSONDecoder()
+        guard let data = UserDefaults.standard.data(forKey: "listCondition(" + directory.rawValue + ")"),
+              let condition = try? decoder.decode(ListCondition.self, from: data) else {
+                  self.listCondition = ListCondition()
+                  return
+              }
+        self.listCondition = condition
     }
 
     func fetch() {
