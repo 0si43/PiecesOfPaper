@@ -41,7 +41,7 @@ struct FilePath {
         return dateFormatter.string(from: Date()) + ".plist"
     }
 
-    static var tagListFileName: URL? {
+    static var tagListFileUrl: URL? {
         libraryUrl?.appendingPathComponent("taglist.plist")
     }
 
