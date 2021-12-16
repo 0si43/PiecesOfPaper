@@ -87,7 +87,7 @@ struct Canvas: View {
                     }
                 }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    if let document = viewModel.document {
+                    if viewModel.document != nil {
                         Button(action: {
                             toolPicker.setVisible(false, forFirstResponder: canvasView)
                             viewModel.showTagList.toggle()
@@ -134,6 +134,7 @@ struct Canvas: View {
             return
         }
         viewModel.archive()
+        NotificationCenter.default.post(name: .addedNewNote, object: viewModel.document)
         presentationMode.wrappedValue.dismiss()
         reviewRequest()
     }
@@ -142,6 +143,7 @@ struct Canvas: View {
         if !UserPreference().enabledAutoSave {
             viewModel.save(drawing: canvasView.drawing)
         }
+        NotificationCenter.default.post(name: .addedNewNote, object: viewModel.document)
         presentationMode.wrappedValue.dismiss()
         reviewRequest()
     }

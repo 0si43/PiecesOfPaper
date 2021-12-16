@@ -32,7 +32,8 @@ struct FilePath {
     }
 
     static var libraryUrl: URL? {
-        savingUrl?.appendingPathComponent(".Library")
+        savingUrl?.appendingPathComponent("Library")
+//        FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first?.appendingPathComponent("Tag")
     }
 
     static var fileName: String {
@@ -41,8 +42,8 @@ struct FilePath {
         return dateFormatter.string(from: Date()) + ".plist"
     }
 
-    static var tagListFileName: URL? {
-        libraryUrl?.appendingPathComponent("taglist.plist")
+    static var tagListFileUrl: URL? {
+        libraryUrl?.appendingPathComponent("taglist.json")
     }
 
     static func makeDirectoryIfNeeded() {

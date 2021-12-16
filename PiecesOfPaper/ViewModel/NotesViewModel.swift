@@ -7,43 +7,47 @@
 //
 
 import PencilKit
+import Combine
 
 final class NotesViewModel: ObservableObject {
-    @Published var publishedNoteDocuments = [NoteDocument]()
-    @Published var isLoaded = false
-    @Published var isListConditionSheet = false
+    var objectWillChange = ObjectWillChangePublisher()
+    var publishedNoteDocuments = [NoteDocument]()
+    var isLoaded = false
+    var showArchiveAlert = false
+    var isListConditionSheet = false {
+        willSet {
+            objectWillChange.send()
+        }
+    }
+
     var didFirstFetchRequest = false
     enum TargetDirectory: String {
         case inbox, archived, all
     }
 
     private var directory: TargetDirectory
-    private var counter = 0
-    private var noteDocuments = [NoteDocument]() {
-        didSet {
-            if counter <= noteDocuments.count {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.publishedNoteDocuments = self.documentsAppliedConditions
-                    self.isLoaded = true
-                    self.counter = 0
-                }
-            }
-        }
+    var isTargetDirectoryInbox: Bool {
+        directory == .inbox
     }
+
+    var isTargetDirectoryArchived: Bool {
+        directory == .archived
+    }
+
+    private var counter = 0
+    private var noteDocuments = [NoteDocument]()
 
     var listCondition: ListCondition {
         didSet {
-            let encoder = JSONEncoder()
-            guard let data = try? encoder.encode(listCondition) else { return }
-            UserDefaults.standard.set(data, forKey: "listCondition(" + directory.rawValue + ")")
+            saveConditionInDevice()
+            publish()
         }
     }
 
     private var documentsAppliedConditions: [NoteDocument] {
         var notes = noteDocuments
         listCondition.filterBy.forEach { filteringTag in
-            notes = notes.filter { $0.entity.tags.contains(filteringTag.name) }
+            notes = notes.filter { $0.entity.tags.contains(filteringTag) }
         }
         switch listCondition.sortOrder {
         case .ascending:
@@ -65,14 +69,58 @@ final class NotesViewModel: ObservableObject {
     }
 
     init(targetDirectory: TargetDirectory) {
+        defer { subscribe() }
+
         self.directory = targetDirectory
         let decoder = JSONDecoder()
         guard let data = UserDefaults.standard.data(forKey: "listCondition(" + directory.rawValue + ")"),
               let condition = try? decoder.decode(ListCondition.self, from: data) else {
                   self.listCondition = ListCondition()
+                  saveConditionInDevice()
                   return
               }
         self.listCondition = condition
+    }
+
+    private func saveConditionInDevice() {
+        let encoder = JSONEncoder()
+        guard let data = try? encoder.encode(listCondition) else { return }
+        UserDefaults.standard.set(data, forKey: "listCondition(" + directory.rawValue + ")")
+    }
+
+    private var cancellable: Set<AnyCancellable> = []
+    private func subscribe() {
+        NotificationCenter.default.publisher(for: .addedNewNote, object: nil)
+            .map({ $0.object as? NoteDocument })
+            .sink { [weak self] document in
+                guard let document = document,
+                      self?.shouldInsertStoredArray(isArchived: document.isArchived) ?? false else { return }
+
+                self?.noteDocuments.append(document)
+                self?.publish()
+            }
+            .store(in: &cancellable)
+
+        NotificationCenter.default.publisher(for: .channgedTagToNote, object: nil)
+            .map({ $0.object as? NoteDocument })
+            .sink { [weak self] document in
+                guard let document = document,
+                      let documents = self?.noteDocuments, !documents.isEmpty else { return }
+
+                self?.noteDocuments = documents.map {
+                    $0.entity.id == document.entity.id ? document : $0
+                }
+                self?.publish()
+            }
+            .store(in: &cancellable)
+    }
+
+    private func shouldInsertStoredArray(isArchived: Bool) -> Bool {
+        if isArchived {
+            return isTargetDirectoryArchived
+        } else {
+            return isTargetDirectoryInbox
+        }
     }
 
     func fetch() {
@@ -84,16 +132,15 @@ final class NotesViewModel: ObservableObject {
         guard !urls.isEmpty else {
             publishedNoteDocuments = [NoteDocument]()
             isLoaded = true
+            objectWillChange.send()
             return
         }
 
         DispatchQueue.main.async { [weak self] in
             self?.counter = urls.count
         }
-        urls.forEach { [weak self] url in
-            open(fileUrl: url) { document in
-                self?.noteDocuments.append(document)
-            }
+        urls.forEach { url in
+            open(fileUrl: url)
         }
     }
 
@@ -119,23 +166,51 @@ final class NotesViewModel: ObservableObject {
         }
     }
 
-    private func open(fileUrl: URL, comp: @escaping (NoteDocument) -> Void) {
+    private func open(fileUrl: URL) {
         guard FileManager.default.fileExists(atPath: fileUrl.path) else { return }
         let document = NoteDocument(fileURL: fileUrl)
 
-        document.open { success in
+        document.open { [weak self] success in
             if success {
-                comp(document)
-                document.close()
+                defer {
+                    document.close()
+                }
+
+                self?.noteDocuments.append(document)
+                self?.publishIfLoadEnded()
             } else {
                 fatalError("could not open document")
             }
         }
     }
 
+    private func publishIfLoadEnded() {
+        if counter <= noteDocuments.count {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.publishedNoteDocuments = self.documentsAppliedConditions
+                self.isLoaded = true
+                self.counter = 0
+                self.objectWillChange.send()
+            }
+        }
+    }
+
+    private func publish() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.publishedNoteDocuments = self.documentsAppliedConditions
+            self.isLoaded = true
+            self.counter = 0
+            self.objectWillChange.send()
+        }
+    }
+
     func update() {
         isLoaded = false
         noteDocuments.removeAll()
+        self.publishedNoteDocuments.removeAll()
+        objectWillChange.send()
         openDocuments()
     }
 
@@ -148,7 +223,8 @@ final class NotesViewModel: ObservableObject {
             print("Could not archive: ", error.localizedDescription)
         }
 
-        publishedNoteDocuments = Array(noteDocuments.drop { $0.entity.id == document.entity.id })
+        noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
+        publish()
     }
 
     func unarchive(document: NoteDocument) {
@@ -160,18 +236,35 @@ final class NotesViewModel: ObservableObject {
             print("Could not unarchive: ", error.localizedDescription)
         }
 
-        publishedNoteDocuments = Array(noteDocuments.drop { $0.entity.id == document.entity.id })
+        noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
+        publish()
     }
 
     func getTagToNote(document: NoteDocument) -> [TagEntity] {
         let tagModel = TagModel()
         let tags = tagModel.tags
         return tags.filter {
-            document.entity.tags.contains($0.name)
+            document.entity.tags.contains($0)
         }
     }
 
     func toggleIsListConditionPopover() {
         isListConditionSheet.toggle()
+        objectWillChange.send()
+    }
+
+    func toggleArchiveOrUnarchiveAlert() {
+        showArchiveAlert.toggle()
+        objectWillChange.send()
+    }
+
+    func allArchive() {
+        noteDocuments.forEach { archive(document: $0) }
+        publish()
+    }
+
+    func allUnarchive() {
+        noteDocuments.forEach { unarchive(document: $0) }
+        publish()
     }
 }
