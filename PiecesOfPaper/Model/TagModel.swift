@@ -13,7 +13,9 @@ struct TagModel {
         guard let tagListFileUrl = FilePath.tagListFileUrl,
                 FileManager.default.fileExists(atPath: tagListFileUrl.path),
               let content = FileManager.default.contents(atPath: tagListFileUrl.path) else { return [] }
-        let decoder = PropertyListDecoder()
+        syncFile(url: tagListFileUrl)
+
+        let decoder = JSONDecoder()
         do {
             return try decoder.decode([TagEntity].self, from: content)
         } catch {
@@ -31,11 +33,21 @@ struct TagModel {
 
     func fetch() -> [TagEntity] {
         guard let tagListFileUrl = FilePath.tagListFileUrl else { return [] }
+        syncFile(url: tagListFileUrl)
+
         if !FileManager.default.fileExists(atPath: tagListFileUrl.path) {
             makeFileIfNeeded()
             return defaultTags
         } else {
             return tags
+        }
+    }
+
+    private func syncFile(url: URL) {
+        do {
+            try FileManager.default.startDownloadingUbiquitousItem(at: url)
+        } catch {
+            print(error.localizedDescription)
         }
     }
 
@@ -50,12 +62,13 @@ struct TagModel {
     }
 
     func save(tags: [TagEntity]) {
-        guard let libraryUrl = FilePath.libraryUrl else { return }
-        let url = libraryUrl.appendingPathComponent("taglist.plist")
-        let encoder = PropertyListEncoder()
-        let data = (try? encoder.encode(tags)) ?? Data()
+        guard let tagListFileUrl = FilePath.tagListFileUrl else { return }
+        syncFile(url: tagListFileUrl)
+
+        let encoder = JSONEncoder()
+        guard let data = try? encoder.encode(tags) else { return }
         do {
-            try data.write(to: url)
+            try data.write(to: tagListFileUrl)
         } catch {
             print(error.localizedDescription)
         }
