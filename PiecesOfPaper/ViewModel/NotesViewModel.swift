@@ -38,6 +38,8 @@ final class NotesViewModel: ObservableObject {
             let encoder = JSONEncoder()
             guard let data = try? encoder.encode(listCondition) else { return }
             UserDefaults.standard.set(data, forKey: "listCondition(" + directory.rawValue + ")")
+
+            publish()
         }
     }
 
@@ -149,6 +151,16 @@ final class NotesViewModel: ObservableObject {
         }
     }
 
+    private func publish() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.publishedNoteDocuments = self.documentsAppliedConditions
+            self.isLoaded = true
+            self.counter = 0
+            self.objectWillChange.send()
+        }
+    }
+
     func update() {
         isLoaded = false
         noteDocuments.removeAll()
@@ -166,8 +178,8 @@ final class NotesViewModel: ObservableObject {
             print("Could not archive: ", error.localizedDescription)
         }
 
-        publishedNoteDocuments = Array(noteDocuments.drop { $0.entity.id == document.entity.id })
-        objectWillChange.send()
+        noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
+        publish()
     }
 
     func unarchive(document: NoteDocument) {
@@ -179,8 +191,8 @@ final class NotesViewModel: ObservableObject {
             print("Could not unarchive: ", error.localizedDescription)
         }
 
-        publishedNoteDocuments = Array(noteDocuments.drop { $0.entity.id == document.entity.id })
-        objectWillChange.send()
+        noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
+        publish()
     }
 
     func getTagToNote(document: NoteDocument) -> [TagEntity] {
@@ -196,16 +208,18 @@ final class NotesViewModel: ObservableObject {
         objectWillChange.send()
     }
 
-    func toggleArchiveAlert() {
+    func toggleArchiveOrUnarchiveAlert() {
         showArchiveAlert.toggle()
         objectWillChange.send()
     }
 
     func allArchive() {
         noteDocuments.forEach { archive(document: $0) }
+        publish()
     }
 
     func allUnarchive() {
         noteDocuments.forEach { unarchive(document: $0) }
+        publish()
     }
 }
