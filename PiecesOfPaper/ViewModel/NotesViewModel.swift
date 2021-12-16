@@ -43,7 +43,7 @@ final class NotesViewModel: ObservableObject {
     private var documentsAppliedConditions: [NoteDocument] {
         var notes = noteDocuments
         listCondition.filterBy.forEach { filteringTag in
-            notes = notes.filter { $0.entity.tags.contains(filteringTag.name) }
+            notes = notes.filter { $0.entity.tags.contains(filteringTag) }
         }
         switch listCondition.sortOrder {
         case .ascending:
@@ -167,7 +167,7 @@ final class NotesViewModel: ObservableObject {
         let tagModel = TagModel()
         let tags = tagModel.tags
         return tags.filter {
-            document.entity.tags.contains($0.name)
+            document.entity.tags.contains($0)
         }
     }
 

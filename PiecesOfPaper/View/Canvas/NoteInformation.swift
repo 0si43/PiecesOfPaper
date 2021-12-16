@@ -72,7 +72,7 @@ struct NoteInformation: View {
                             Text("No tag")
                         } else {
                             ScrollView(.horizontal) {
-                                Text(document.entity.tags.reduce("") { $0 + $1 })
+                                TagHStack(tags: document.entity.tags)
                             }
                         }
                     }
