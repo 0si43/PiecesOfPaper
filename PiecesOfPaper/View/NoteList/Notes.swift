@@ -10,6 +10,13 @@ import SwiftUI
 
 struct Notes: View {
     @ObservedObject var viewModel: NotesViewModel
+    var actionButton: Alert.Button {
+        .destructive(
+            Text(viewModel.isTargetDirectoryArchived ?  "Unarchived" : "Archived"),
+            action: { viewModel.isTargetDirectoryArchived ? viewModel.allUnarchive() : viewModel.allArchive() }
+        )
+    }
+    var cancelButton: Alert.Button { .default(Text("Cancel")) }
 
     init(targetDirectory: NotesViewModel.TargetDirectory) {
         self.viewModel = NotesViewModel(targetDirectory: targetDirectory)
@@ -37,6 +44,9 @@ struct Notes: View {
         }
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button(action: { viewModel.toggleArchiveAlert() }) {
+                    Image(systemName: viewModel.isTargetDirectoryArchived ? "tray.circle" : "archivebox.circle")
+                }
                 Button(action: viewModel.toggleIsListConditionPopover ) { Image(systemName: "line.3.horizontal.decrease.circle") }
                 Button(action: viewModel.update) { Image(systemName: "arrow.triangle.2.circlepath") }
                     .disabled(!viewModel.isLoaded)
@@ -47,6 +57,13 @@ struct Notes: View {
             NavigationView {
                 ListConditionSetting(listCondition: $viewModel.listCondition)
             }
+        }
+        .alert(isPresented: $viewModel.showArchiveAlert) { () -> Alert in
+            Alert(title: Text("""
+                            Are you sure you want to \(viewModel.isTargetDirectoryArchived ? "unarchived" : "archived") \(viewModel.publishedNoteDocuments.count) notes ?
+                            """),
+                  primaryButton: actionButton,
+                  secondaryButton: cancelButton)
         }
     }
 
