@@ -23,7 +23,7 @@ struct TagListToNote: View {
                         }
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            viewModel.add(tagName: tag.name)
+                            viewModel.add(tagName: tag)
                         }
                     }
                 }

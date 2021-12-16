@@ -18,14 +18,14 @@ final class TagListToNoteViewModel: ObservableObject {
     var tagsToNote: [TagEntity] {
         guard let noteDocument = noteDocument else { return [] }
         return tags.filter {
-            noteDocument.entity.tags.contains($0.name)
+            noteDocument.entity.tags.contains($0)
         }
     }
 
     var tagsNotToNote: [TagEntity] {
         guard let noteDocument = noteDocument else { return [] }
         return tags.filter {
-            !noteDocument.entity.tags.contains($0.name)
+            !noteDocument.entity.tags.contains($0)
         }
     }
 
@@ -38,7 +38,7 @@ final class TagListToNoteViewModel: ObservableObject {
         }
     }
 
-    func add(tagName: String) {
+    func add(tagName: TagEntity) {
         guard let noteDocument = noteDocument else { return }
         noteDocument.entity.tags.append(tagName)
         save()
@@ -46,7 +46,7 @@ final class TagListToNoteViewModel: ObservableObject {
 
     func remove(tag: TagEntity) {
         guard let noteDocument = noteDocument else { return }
-        noteDocument.entity.tags = noteDocument.entity.tags.filter { $0 != tag.name }
+        noteDocument.entity.tags = noteDocument.entity.tags.filter { $0 != tag }
         save()
     }
 
