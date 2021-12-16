@@ -101,7 +101,7 @@ final class NotesViewModel: ObservableObject {
             }
             .store(in: &cancellable)
 
-        NotificationCenter.default.publisher(for: .channgedTagToNote, object: nil)
+        NotificationCenter.default.publisher(for: .changedTagToNote, object: nil)
             .map({ $0.object as? NoteDocument })
             .sink { [weak self] document in
                 guard let document = document,

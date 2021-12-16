@@ -10,5 +10,5 @@ import Foundation
 
 public extension Notification.Name {
     static let addedNewNote = Notification.Name("addedNewNote")
-    static let channgedTagToNote = Notification.Name("channgedTagToNote")
+    static let changedTagToNote = Notification.Name("changedTagToNote")
 }
