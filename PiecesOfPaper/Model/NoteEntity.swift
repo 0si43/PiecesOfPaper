@@ -12,12 +12,12 @@ import PencilKit
 struct NoteEntity: Codable {
     var id = UUID()
     var drawing: PKDrawing
-    var tags: [String]
+    var tags: [TagEntity]
     var createdDate: Date
     var updatedDate: Date
 
     init(drawing: PKDrawing,
-         tags: [String] = [],
+         tags: [TagEntity] = [],
          createdDate: Date = Date(),
          updatedDate: Date = Date()) {
         self.drawing = drawing
