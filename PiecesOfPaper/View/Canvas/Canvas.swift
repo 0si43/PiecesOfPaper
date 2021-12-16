@@ -87,7 +87,7 @@ struct Canvas: View {
                     }
                 }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    if let document = viewModel.document {
+                    if viewModel.document != nil {
                         Button(action: {
                             toolPicker.setVisible(false, forFirstResponder: canvasView)
                             viewModel.showTagList.toggle()
