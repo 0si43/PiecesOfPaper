@@ -13,6 +13,7 @@ final class NotesViewModel: ObservableObject {
     var objectWillChange = ObjectWillChangePublisher()
     var publishedNoteDocuments = [NoteDocument]()
     var isLoaded = false
+    var showArchiveAlert = false
     var isListConditionSheet = false {
         didSet {
             objectWillChange.send()
@@ -25,6 +26,10 @@ final class NotesViewModel: ObservableObject {
     }
 
     private var directory: TargetDirectory
+    var isTargetDirectoryArchived: Bool {
+        directory == .archived
+    }
+
     private var counter = 0
     private var noteDocuments = [NoteDocument]()
 
@@ -189,5 +194,18 @@ final class NotesViewModel: ObservableObject {
     func toggleIsListConditionPopover() {
         isListConditionSheet.toggle()
         objectWillChange.send()
+    }
+
+    func toggleArchiveAlert() {
+        showArchiveAlert.toggle()
+        objectWillChange.send()
+    }
+
+    func allArchive() {
+        noteDocuments.forEach { archive(document: $0) }
+    }
+
+    func allUnarchive() {
+        noteDocuments.forEach { unarchive(document: $0) }
     }
 }
