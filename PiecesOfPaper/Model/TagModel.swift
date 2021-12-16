@@ -10,9 +10,9 @@ import Foundation
 
 struct TagModel {
     var tags: [TagEntity] {
-        guard let libraryUrl = FilePath.libraryUrl?.appendingPathComponent("taglist.plist"),
-                FileManager.default.fileExists(atPath: libraryUrl.path),
-              let content = FileManager.default.contents(atPath: libraryUrl.path) else { return [] }
+        guard let tagListFileUrl = FilePath.tagListFileUrl,
+                FileManager.default.fileExists(atPath: tagListFileUrl.path),
+              let content = FileManager.default.contents(atPath: tagListFileUrl.path) else { return [] }
         let decoder = PropertyListDecoder()
         do {
             return try decoder.decode([TagEntity].self, from: content)
@@ -30,8 +30,8 @@ struct TagModel {
     ]
 
     func fetch() -> [TagEntity] {
-        guard let tagListFileName = FilePath.tagListFileName else { return [] }
-        if !FileManager.default.fileExists(atPath: tagListFileName.path) {
+        guard let tagListFileUrl = FilePath.tagListFileUrl else { return [] }
+        if !FileManager.default.fileExists(atPath: tagListFileUrl.path) {
             makeFileIfNeeded()
             return defaultTags
         } else {
