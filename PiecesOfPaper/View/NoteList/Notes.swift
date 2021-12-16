@@ -44,7 +44,7 @@ struct Notes: View {
         }
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button(action: { viewModel.toggleArchiveAlert() }) {
+                Button(action: { viewModel.toggleArchiveOrUnarchiveAlert() }) {
                     Image(systemName: viewModel.isTargetDirectoryArchived ? "tray.circle" : "archivebox.circle")
                 }
                 Button(action: viewModel.toggleIsListConditionPopover ) { Image(systemName: "line.3.horizontal.decrease.circle") }
