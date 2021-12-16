@@ -7,11 +7,18 @@
 //
 
 import PencilKit
+import Combine
 
 final class NotesViewModel: ObservableObject {
-    @Published var publishedNoteDocuments = [NoteDocument]()
-    @Published var isLoaded = false
-    @Published var isListConditionSheet = false
+    var objectWillChange = ObjectWillChangePublisher()
+    var publishedNoteDocuments = [NoteDocument]()
+    var isLoaded = false
+    var isListConditionSheet = false {
+        didSet {
+            objectWillChange.send()
+        }
+    }
+
     var didFirstFetchRequest = false
     enum TargetDirectory: String {
         case inbox, archived, all
@@ -19,18 +26,7 @@ final class NotesViewModel: ObservableObject {
 
     private var directory: TargetDirectory
     private var counter = 0
-    private var noteDocuments = [NoteDocument]() {
-        didSet {
-            if counter <= noteDocuments.count {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.publishedNoteDocuments = self.documentsAppliedConditions
-                    self.isLoaded = true
-                    self.counter = 0
-                }
-            }
-        }
-    }
+    private var noteDocuments = [NoteDocument]()
 
     var listCondition: ListCondition {
         didSet {
@@ -84,16 +80,15 @@ final class NotesViewModel: ObservableObject {
         guard !urls.isEmpty else {
             publishedNoteDocuments = [NoteDocument]()
             isLoaded = true
+            objectWillChange.send()
             return
         }
 
         DispatchQueue.main.async { [weak self] in
             self?.counter = urls.count
         }
-        urls.forEach { [weak self] url in
-            open(fileUrl: url) { document in
-                self?.noteDocuments.append(document)
-            }
+        urls.forEach { url in
+            open(fileUrl: url)
         }
     }
 
@@ -119,16 +114,32 @@ final class NotesViewModel: ObservableObject {
         }
     }
 
-    private func open(fileUrl: URL, comp: @escaping (NoteDocument) -> Void) {
+    private func open(fileUrl: URL) {
         guard FileManager.default.fileExists(atPath: fileUrl.path) else { return }
         let document = NoteDocument(fileURL: fileUrl)
 
-        document.open { success in
+        document.open { [weak self] success in
             if success {
-                comp(document)
-                document.close()
+                defer {
+                    document.close()
+                }
+
+                self?.noteDocuments.append(document)
+                self?.publishIfLoadEnded()
             } else {
                 fatalError("could not open document")
+            }
+        }
+    }
+
+    private func publishIfLoadEnded() {
+        if counter <= noteDocuments.count {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.publishedNoteDocuments = self.documentsAppliedConditions
+                self.isLoaded = true
+                self.counter = 0
+                self.objectWillChange.send()
             }
         }
     }
@@ -136,6 +147,8 @@ final class NotesViewModel: ObservableObject {
     func update() {
         isLoaded = false
         noteDocuments.removeAll()
+        self.publishedNoteDocuments.removeAll()
+        objectWillChange.send()
         openDocuments()
     }
 
@@ -149,6 +162,7 @@ final class NotesViewModel: ObservableObject {
         }
 
         publishedNoteDocuments = Array(noteDocuments.drop { $0.entity.id == document.entity.id })
+        objectWillChange.send()
     }
 
     func unarchive(document: NoteDocument) {
@@ -161,6 +175,7 @@ final class NotesViewModel: ObservableObject {
         }
 
         publishedNoteDocuments = Array(noteDocuments.drop { $0.entity.id == document.entity.id })
+        objectWillChange.send()
     }
 
     func getTagToNote(document: NoteDocument) -> [TagEntity] {
@@ -173,5 +188,6 @@ final class NotesViewModel: ObservableObject {
 
     func toggleIsListConditionPopover() {
         isListConditionSheet.toggle()
+        objectWillChange.send()
     }
 }

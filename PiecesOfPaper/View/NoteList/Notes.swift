@@ -39,6 +39,7 @@ struct Notes: View {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button(action: viewModel.toggleIsListConditionPopover ) { Image(systemName: "line.3.horizontal.decrease.circle") }
                 Button(action: viewModel.update) { Image(systemName: "arrow.triangle.2.circlepath") }
+                    .disabled(!viewModel.isLoaded)
                 Button(action: new) { Image(systemName: "plus.circle") }
             }
         }
