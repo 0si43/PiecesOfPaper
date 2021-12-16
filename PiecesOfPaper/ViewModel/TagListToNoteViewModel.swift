@@ -54,6 +54,7 @@ final class TagListToNoteViewModel: ObservableObject {
         guard let noteDocument = noteDocument else { return }
         noteDocument.save(to: noteDocument.fileURL, for: .forOverwriting) { [weak self] success in
             if success {
+                NotificationCenter.default.post(name: .channgedTagToNote, object: noteDocument)
                 self?.objectWillChange.send()
             } else {
                 print("save failed")

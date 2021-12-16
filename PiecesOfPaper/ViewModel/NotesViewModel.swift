@@ -39,10 +39,7 @@ final class NotesViewModel: ObservableObject {
 
     var listCondition: ListCondition {
         didSet {
-            let encoder = JSONEncoder()
-            guard let data = try? encoder.encode(listCondition) else { return }
-            UserDefaults.standard.set(data, forKey: "listCondition(" + directory.rawValue + ")")
-
+            saveConditionInDevice()
             publish()
         }
     }
@@ -72,20 +69,26 @@ final class NotesViewModel: ObservableObject {
     }
 
     init(targetDirectory: TargetDirectory) {
+        defer { subscribe() }
+
         self.directory = targetDirectory
         let decoder = JSONDecoder()
         guard let data = UserDefaults.standard.data(forKey: "listCondition(" + directory.rawValue + ")"),
               let condition = try? decoder.decode(ListCondition.self, from: data) else {
                   self.listCondition = ListCondition()
+                  saveConditionInDevice()
                   return
               }
         self.listCondition = condition
+    }
 
-        subscribe()
+    private func saveConditionInDevice() {
+        let encoder = JSONEncoder()
+        guard let data = try? encoder.encode(listCondition) else { return }
+        UserDefaults.standard.set(data, forKey: "listCondition(" + directory.rawValue + ")")
     }
 
     private var cancellable: Set<AnyCancellable> = []
-//    private var temp: NoteDocument?
     private func subscribe() {
         NotificationCenter.default.publisher(for: .addedNewNote, object: nil)
             .map({ $0.object as? NoteDocument })
@@ -94,6 +97,19 @@ final class NotesViewModel: ObservableObject {
                       self?.shouldInsertStoredArray(isArchived: document.isArchived) ?? false else { return }
 
                 self?.noteDocuments.append(document)
+                self?.publish()
+            }
+            .store(in: &cancellable)
+
+        NotificationCenter.default.publisher(for: .channgedTagToNote, object: nil)
+            .map({ $0.object as? NoteDocument })
+            .sink { [weak self] document in
+                guard let document = document,
+                      let documents = self?.noteDocuments, !documents.isEmpty else { return }
+
+                self?.noteDocuments = documents.map {
+                    $0.entity.id == document.entity.id ? document : $0
+                }
                 self?.publish()
             }
             .store(in: &cancellable)
