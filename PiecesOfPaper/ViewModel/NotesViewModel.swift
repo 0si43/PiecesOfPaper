@@ -15,7 +15,7 @@ final class NotesViewModel: ObservableObject {
     var isLoaded = false
     var showArchiveAlert = false
     var isListConditionSheet = false {
-        didSet {
+        willSet {
             objectWillChange.send()
         }
     }
@@ -26,6 +26,10 @@ final class NotesViewModel: ObservableObject {
     }
 
     private var directory: TargetDirectory
+    var isTargetDirectoryInbox: Bool {
+        directory == .inbox
+    }
+
     var isTargetDirectoryArchived: Bool {
         directory == .archived
     }
@@ -76,6 +80,31 @@ final class NotesViewModel: ObservableObject {
                   return
               }
         self.listCondition = condition
+
+        subscribe()
+    }
+
+    private var cancellable: Set<AnyCancellable> = []
+//    private var temp: NoteDocument?
+    private func subscribe() {
+        NotificationCenter.default.publisher(for: .addedNewNote, object: nil)
+            .map({ $0.object as? NoteDocument })
+            .sink { [weak self] document in
+                guard let document = document,
+                      self?.shouldInsertStoredArray(isArchived: document.isArchived) ?? false else { return }
+
+                self?.noteDocuments.append(document)
+                self?.publish()
+            }
+            .store(in: &cancellable)
+    }
+
+    private func shouldInsertStoredArray(isArchived: Bool) -> Bool {
+        if isArchived {
+            return isTargetDirectoryArchived
+        } else {
+            return isTargetDirectoryInbox
+        }
     }
 
     func fetch() {
