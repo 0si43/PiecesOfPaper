@@ -10,6 +10,11 @@ import SwiftUI
 import PencilKit
 import LinkPresentation
 
+protocol CanvasDelegateBridgeObjectDelegate: AnyObject {
+    var hideExceptPaper: Bool { get set }
+    func save(drawing: PKDrawing)
+}
+
 // MARK: - PKToolPickerObserver
 ///  This class conform some protocol, because SwiftUI Views cannot conform PencilKit delegates
 class CanvasDelegateBridgeObject: NSObject, PKToolPickerObserver {
@@ -17,7 +22,7 @@ class CanvasDelegateBridgeObject: NSObject, PKToolPickerObserver {
     private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
     private var previousTool: PKTool!
     private var currentTool: PKTool!
-    var canvas: Canvas!
+    weak var delegate: CanvasDelegateBridgeObjectDelegate?
 
     override init() {
         super.init()
@@ -43,7 +48,7 @@ extension CanvasDelegateBridgeObject: UIPencilInteractionDelegate {
         switch action {
         case .switchPrevious:   switchPreviousTool()
         case .switchEraser:     switchEraser()
-        case .showColorPalette: canvas.viewModel.hideExceptPaper.toggle()
+        case .showColorPalette: delegate?.hideExceptPaper.toggle()
         case .ignore:           return
         default:                return
         }
@@ -66,7 +71,7 @@ extension CanvasDelegateBridgeObject: UIPencilInteractionDelegate {
 extension CanvasDelegateBridgeObject: PKCanvasViewDelegate {
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
         guard UserPreference().enabledAutoSave else { return }
-        canvas.viewModel.save(drawing: canvasView.drawing)
+        delegate?.save(drawing: canvasView.drawing)
     }
 }
 
