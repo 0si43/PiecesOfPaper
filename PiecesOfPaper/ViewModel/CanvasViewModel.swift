@@ -50,6 +50,7 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         document?.entity.updatedDate = Date()
         if let document = document {
             document.save(to: document.fileURL, for: .forOverwriting)
+            self.document = document
         } else {
             guard let inboxUrl = FilePath.inboxUrl else { return }
             let path = inboxUrl.appendingPathComponent(FilePath.fileName)
