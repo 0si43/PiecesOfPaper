@@ -13,14 +13,13 @@ import LinkPresentation
 // MARK: - PKToolPickerObserver
 ///  This class conform some protocol, because SwiftUI Views cannot conform PencilKit delegates
 class CanvasDelegateBridgeObject: NSObject, PKToolPickerObserver {
-    let toolPicker: PKToolPicker
+    let toolPicker = PKToolPicker()
     private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
     private var previousTool: PKTool!
     private var currentTool: PKTool!
     var canvas: Canvas!
 
-    init(toolPicker: PKToolPicker) {
-        self.toolPicker = toolPicker
+    override init() {
         super.init()
 
         toolPicker.addObserver(self)
