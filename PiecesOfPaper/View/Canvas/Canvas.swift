@@ -49,8 +49,6 @@ struct Canvas: View {
             viewModel.document = noteDocument
             viewModel.canvasView.drawing = noteDocument.entity.drawing
         }
-
-        viewModel.delegateBridge.canvas = self
     }
 
     var body: some View {

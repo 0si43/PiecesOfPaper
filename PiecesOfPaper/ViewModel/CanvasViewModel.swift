@@ -9,7 +9,7 @@
 import Foundation
 import PencilKit
 
-final class CanvasViewModel: ObservableObject {
+final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegate {
     var document: NoteDocument?
     @Published var hideExceptPaper = true
     @Published var showDrawingInformation = false
@@ -33,6 +33,7 @@ final class CanvasViewModel: ObservableObject {
     }
 
     init() {
+        delegateBridge.delegate = self
         canvasView.delegate = delegateBridge
         delegateBridge.toolPicker.addObserver(canvasView)
         addPencilInteraction()
