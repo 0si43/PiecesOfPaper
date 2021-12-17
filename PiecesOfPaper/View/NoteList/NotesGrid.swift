@@ -13,9 +13,6 @@ struct NotesGrid: View {
     @State var isShowActivityView = false
     @State var documentToShare: NoteDocument?
     @EnvironmentObject var noteViewModel: NotesViewModel
-    var noteDocuments: [NoteDocument] {
-        noteViewModel.publishedNoteDocuments
-    }
 
     let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
     var activityViewController: UIActivityViewControllerWrapper? {
@@ -32,47 +29,47 @@ struct NotesGrid: View {
 
     var body: some View {
         LazyVGrid(columns: [gridItem]) {
-            ForEach((0..<noteDocuments.count), id: \.self) { index in
+            ForEach((0..<noteViewModel.publishedNoteDocuments.count), id: \.self) { index in
                 VStack {
-                    NoteImage(noteDocument: noteDocuments[index])
+                    NoteImage(noteDocument: $noteViewModel.publishedNoteDocuments[index])
                     .contextMenu {
                         Button(action: {
-                            duplicate(noteDocument: noteDocuments[index])
+                            duplicate(noteDocument: noteViewModel.publishedNoteDocuments[index])
                         }) {
                             Label("Duplicate", systemImage: "doc.on.doc")
                         }
-                        if noteDocuments[index].isArchived {
+                        if noteViewModel.publishedNoteDocuments[index].isArchived {
                                 Button(action: {
-                                    unarchive(noteDocument: noteDocuments[index])
+                                    unarchive(noteDocument: noteViewModel.publishedNoteDocuments[index])
                                 }) {
                                     Label("Unarchive", systemImage: "arrow.up.square")
                                 }
                                 if #available(iOS 15.0, *) {
                                     Button(role: .destructive) {
-                                        delete(noteDocument: noteDocuments[index])
+                                        delete(noteDocument: noteViewModel.publishedNoteDocuments[index])
                                     } label: {
                                         Label("Delete", systemImage: "trash")
                                     }
                                 }
                         } else {
                             Button(action: {
-                                archive(noteDocument: noteDocuments[index])
+                                archive(noteDocument: noteViewModel.publishedNoteDocuments[index])
                             }) {
                                 Label("Archive", systemImage: "arrow.down.square")
                             }
                         }
                         Button(action: {
-                            share(noteDocument: noteDocuments[index])
+                            share(noteDocument: noteViewModel.publishedNoteDocuments[index])
                         }) {
                             Label("Share", systemImage: "square.and.arrow.up")
                         }
                         Button(action: {
-                            TagListRouter.shared.showTagList(noteDocument: noteDocuments[index])
+                            TagListRouter.shared.showTagList(noteDocument: noteViewModel.publishedNoteDocuments[index])
                         }) {
                             Label("Tag", systemImage: "tag")
                         }
                     }
-                    TagHStack(tags: noteViewModel.getTagToNote(document: noteDocuments[index]))
+                    TagHStack(tags: noteViewModel.getTagToNote(document: noteViewModel.publishedNoteDocuments[index]))
                         .padding(.horizontal)
                 }
             }
