@@ -15,10 +15,33 @@ final class CanvasViewModel: ObservableObject {
     @Published var showDrawingInformation = false
     @Published var showTagList = false
     @Published var showUnsavedAlert = false
+    @Published var canvasView = PKCanvasView()
+    @Published var isShowActivityView = false {
+        didSet {
+            if isShowActivityView == true {
+                delegateBridge.toolPicker.setVisible(false, forFirstResponder: canvasView)
+            }
+        }
+    }
+
+    let delegateBridge = CanvasDelegateBridgeObject()
+
     var canReviewRequest: Bool {
         guard let inboxUrl = FilePath.inboxUrl,
               let inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: inboxUrl.path)  else { return false }
         return inboxFileNames.count >= 5
+    }
+
+    init() {
+        canvasView.delegate = delegateBridge
+        delegateBridge.toolPicker.addObserver(canvasView)
+        addPencilInteraction()
+    }
+
+    private func addPencilInteraction() {
+        let pencilInteraction = UIPencilInteraction()
+        pencilInteraction.delegate = delegateBridge
+        canvasView.addInteraction(pencilInteraction)
     }
 
     func save(drawing: PKDrawing) {
@@ -43,5 +66,9 @@ final class CanvasViewModel: ObservableObject {
         } catch {
             print("Could not archive: ", error.localizedDescription)
         }
+    }
+
+    func setVisibleToolPicker(_ isVisible: Bool) {
+        delegateBridge.toolPicker.setVisible(isVisible, forFirstResponder: canvasView)
     }
 }
