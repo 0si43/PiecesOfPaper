@@ -14,7 +14,7 @@ struct PiecesOfPaperApp: App {
     @State var isAppLaunch = true
     @State var isShowCanvas = false
     @State var isShowTagList = false
-    @State var noteDocument: NoteDocument?
+    @StateObject var canvasViewModel = CanvasViewModel()
 
     var body: some Scene {
         WindowGroup {
@@ -23,7 +23,7 @@ struct PiecesOfPaperApp: App {
                 }
                 .fullScreenCover(isPresented: $isShowCanvas) {
                     NavigationView {
-                        Canvas(noteDocument: noteDocument)
+                        Canvas(viewModel: canvasViewModel)
                     }
                 }
                 .sheet(isPresented: $isShowTagList, onDismiss: {
@@ -33,7 +33,7 @@ struct PiecesOfPaperApp: App {
                 }
                 .onAppear {
                     guard isAppLaunch else { return }
-                    CanvasRouter.shared.bind(isShowCanvas: $isShowCanvas, noteDocument: $noteDocument)
+                    CanvasRouter.shared.bind(isShowCanvas: $isShowCanvas, noteDocument: $canvasViewModel.document)
                     CanvasRouter.shared.openNewCanvas()
                     // I thought this can work, but SwiftUI cannot pass the document data...
                     TagListRouter.shared.bind(isShowTagList: $isShowTagList)
@@ -41,6 +41,5 @@ struct PiecesOfPaperApp: App {
                     isAppLaunch = false
                 }
         }
-//        }
     }
 }

@@ -12,7 +12,7 @@ import StoreKit
 import LinkPresentation
 
 struct Canvas: View {
-    @ObservedObject var viewModel = CanvasViewModel()
+    @ObservedObject var viewModel: CanvasViewModel
 
     @Environment(\.presentationMode) var presentationMode
     @AppStorage("review_requested") var reviewRequested = false
@@ -43,13 +43,6 @@ struct Canvas: View {
         )
     }
     var cancelButton: Alert.Button { .default(Text("Cancel")) }
-
-    init(noteDocument: NoteDocument?) {
-        if let noteDocument = noteDocument {
-            viewModel.document = noteDocument
-            viewModel.canvasView.drawing = noteDocument.entity.drawing
-        }
-    }
 
     var body: some View {
         PKCanvasViewWrapper(canvasView: $viewModel.canvasView)
