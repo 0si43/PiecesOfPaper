@@ -12,6 +12,10 @@ import PencilKit
 final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegate {
     var document: NoteDocument? {
         didSet {
+            if document == nil {
+                createNewDocument()
+            }
+
             canvasView.delegate = nil
             canvasView.drawing = document?.entity.drawing ?? PKDrawing()
             canvasView.delegate = delegateBridge
@@ -41,11 +45,7 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
     }
 
     init(noteDocument: NoteDocument? = nil) {
-        if let document = noteDocument {
-            self.document = document
-        } else {
-            createNewDocument()
-        }
+        self.document = noteDocument
 
         delegateBridge.delegate = self
         canvasView.delegate = delegateBridge
@@ -56,7 +56,7 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
     private func createNewDocument() {
         guard let inboxUrl = FilePath.inboxUrl else { fatalError() }
         let path = inboxUrl.appendingPathComponent(FilePath.fileName)
-        self.document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
+        document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
     }
 
     private func addPencilInteraction() {
