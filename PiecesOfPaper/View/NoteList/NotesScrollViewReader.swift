@@ -9,17 +9,16 @@
 import SwiftUI
 
 struct NotesScrollViewReader: View {
-    @EnvironmentObject var noteViewModel: NotesViewModel
+    @ObservedObject  var viewModel: NotesViewModel
     var noteDocuments: [NoteDocument] {
-        noteViewModel.publishedNoteDocuments
+        viewModel.publishedNoteDocuments
     }
 
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
                 Spacer(minLength: 30.0)
-                NotesGrid()
-                    .environmentObject(noteViewModel)
+                NotesGrid(viewModel: viewModel)
             }
             .padding([.leading, .trailing])
             .navigationBarTitleDisplayMode(.inline)
