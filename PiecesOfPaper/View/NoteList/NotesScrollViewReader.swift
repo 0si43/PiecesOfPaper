@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NotesScrollViewReader: View {
-    @ObservedObject  var viewModel: NotesViewModel
+    @ObservedObject var viewModel: NotesViewModel
     var noteDocuments: [NoteDocument] {
         viewModel.publishedNoteDocuments
     }

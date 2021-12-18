@@ -17,7 +17,7 @@ protocol CanvasDelegateBridgeObjectDelegate: AnyObject {
 
 // MARK: - PKToolPickerObserver
 ///  This class conform some protocol, because SwiftUI Views cannot conform PencilKit delegates
-class CanvasDelegateBridgeObject: NSObject, PKToolPickerObserver {
+final class CanvasDelegateBridgeObject: NSObject, PKToolPickerObserver {
     let toolPicker = PKToolPicker()
     private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
     private var previousTool: PKTool!
