@@ -17,12 +17,21 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
             }
 
             canvasView.delegate = nil
-            canvasView.drawing = document?.entity.drawing ?? PKDrawing()
+            if let drawing = document?.entity.drawing {
+                canvasView.drawing = drawing
+            }
+
             canvasView.delegate = delegateBridge
         }
     }
 
-    var canvasView = PKCanvasView()
+    var canvasView = PKCanvasView() {
+        didSet {
+            canvasView.delegate = delegateBridge
+            delegateBridge.toolPicker.addObserver(canvasView)
+            addPencilInteraction()
+        }
+    }
 
     @Published var hideExceptPaper = true
     @Published var showDrawingInformation = false
@@ -74,6 +83,7 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         guard let inboxUrl = FilePath.inboxUrl else { fatalError() }
         let path = inboxUrl.appendingPathComponent(FilePath.fileName)
         document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
+        canvasView = PKCanvasView()
     }
 
     private func addPencilInteraction() {
