@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NoteImage: View {
-    var noteDocument: NoteDocument
+    @Binding var noteDocument: NoteDocument
 
     var body: some View {
         Button(action: { open(noteDocument: noteDocument) },

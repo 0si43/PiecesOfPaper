@@ -71,8 +71,24 @@ extension CanvasDelegateBridgeObject: UIPencilInteractionDelegate {
 // MARK: - PKCanvasViewDelegate
 extension CanvasDelegateBridgeObject: PKCanvasViewDelegate {
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+        updateContentSizeIfNeeded(canvasView)
+
         guard UserPreference().enabledAutoSave else { return }
         delegate?.save(drawing: canvasView.drawing)
+    }
+
+    private func updateContentSizeIfNeeded(_ canvasView: PKCanvasView) {
+        guard !canvasView.drawing.bounds.isNull else { return }
+        let drawingWidth = canvasView.drawing.bounds.maxX
+        if canvasView.contentSize.width < drawingWidth * 2 {
+            canvasView.contentSize.width += canvasView.frame.width
+        }
+
+        let drawingHeight = canvasView.drawing.bounds.maxY
+        if canvasView.contentSize.height < drawingHeight * 2 {
+            canvasView.contentSize.height += canvasView.frame.height
+        }
+
     }
 }
 
