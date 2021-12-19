@@ -31,7 +31,7 @@ struct NotesGrid: View {
         LazyVGrid(columns: [gridItem]) {
             ForEach((0..<viewModel.publishedNoteDocuments.count), id: \.self) { index in
                 VStack {
-                    NoteImage(noteDocument: viewModel.publishedNoteDocuments[index])
+                    NoteImage(noteDocument: $viewModel.publishedNoteDocuments[index])
                     .contextMenu {
                         Button(action: {
                             duplicate(noteDocument: viewModel.publishedNoteDocuments[index])
