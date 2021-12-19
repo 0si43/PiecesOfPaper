@@ -24,8 +24,15 @@ final class SettingViewModel: ObservableObject {
         }
     }
 
+    @Published var enabledInfiniteScroll: Bool {
+        didSet {
+            userPreference.enabledInfiniteScroll = enabledInfiniteScroll
+        }
+    }
+
     init() {
         enablediCloud = userPreference.enablediCloud
         enabledAutoSave = userPreference.enabledAutoSave
+        enabledInfiniteScroll = userPreference.enabledInfiniteScroll
     }
 }

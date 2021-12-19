@@ -20,6 +20,9 @@ struct SettingView: View {
                 Toggle(isOn: $viewModel.enabledAutoSave) {
                     Label("Auto Save", systemImage: "gearshape")
                 }
+                Toggle(isOn: $viewModel.enabledInfiniteScroll) {
+                    Label("Infinite Scroll", systemImage: "scroll")
+                }
             }
             Section(header: Text("Converter")) {
                 Button(action: DrawingsPlistConverter.convert) {
