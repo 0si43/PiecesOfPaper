@@ -19,6 +19,7 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
             canvasView.delegate = nil
             if let drawing = document?.entity.drawing {
                 canvasView.drawing = drawing
+                initialContentSize()
             }
 
             canvasView.delegate = delegateBridge
@@ -90,6 +91,18 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         let pencilInteraction = UIPencilInteraction()
         pencilInteraction.delegate = delegateBridge
         canvasView.addInteraction(pencilInteraction)
+    }
+
+    func initialContentSize() {
+        guard !canvasView.drawing.bounds.isNull else { return }
+
+        if canvasView.frame.width < canvasView.drawing.bounds.maxX {
+            canvasView.contentSize.width = canvasView.drawing.bounds.maxX
+        }
+
+        if canvasView.frame.height < canvasView.drawing.bounds.maxY {
+            canvasView.contentSize.height = canvasView.drawing.bounds.maxY
+        }
     }
 
     func save(drawing: PKDrawing) {
