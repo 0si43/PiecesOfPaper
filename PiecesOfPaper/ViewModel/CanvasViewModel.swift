@@ -36,7 +36,7 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         }
     }
 
-    let delegateBridge = CanvasDelegateBridgeObject()
+    private let delegateBridge = CanvasDelegateBridgeObject()
 
     var canReviewRequest: Bool {
         guard let inboxUrl = FilePath.inboxUrl,
@@ -45,6 +45,17 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
     }
 
     var hasSavedDocument = false
+
+    var activityViewController: UIActivityViewControllerWrapper {
+        let drawing = canvasView.drawing
+        var image = UIImage()
+        let trait = UITraitCollection(userInterfaceStyle: .light)
+        trait.performAsCurrent {
+            image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+        }
+
+        return UIActivityViewControllerWrapper(activityItems: [image, delegateBridge])
+    }
 
     init(noteDocument: NoteDocument? = nil) {
         self.document = noteDocument
