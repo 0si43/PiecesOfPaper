@@ -17,17 +17,6 @@ struct Canvas: View {
     @Environment(\.presentationMode) var presentationMode
     @AppStorage("review_requested") var reviewRequested = false
 
-    var activityViewController: UIActivityViewControllerWrapper {
-        let drawing = viewModel.canvasView.drawing
-        var image = UIImage()
-        let trait = UITraitCollection(userInterfaceStyle: .light)
-        trait.performAsCurrent {
-            image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
-        }
-
-        return UIActivityViewControllerWrapper(activityItems: [image, viewModel.delegateBridge])
-    }
-
     var tap: some Gesture {
         TapGesture(count: 1)
             .onEnded { _ in
@@ -82,7 +71,7 @@ struct Canvas: View {
             }
             .sheet(isPresented: $viewModel.isShowActivityView,
                    onDismiss: { viewModel.setVisibleToolPicker(true) }) {
-                activityViewController
+                viewModel.activityViewController
             }
             .sheet(isPresented: $viewModel.showTagList,
                    onDismiss: { viewModel.setVisibleToolPicker(true) }) {
