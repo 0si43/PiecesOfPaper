@@ -106,7 +106,10 @@ struct Canvas: View {
             return
         }
         viewModel.archive()
-        NotificationCenter.default.post(name: .addedNewNote, object: viewModel.document)
+        if viewModel.hasSavedDocument {
+            NotificationCenter.default.post(name: .addedNewNote, object: viewModel.document)
+        }
+
         presentationMode.wrappedValue.dismiss()
         reviewRequest()
     }
@@ -115,7 +118,10 @@ struct Canvas: View {
         if !UserPreference().enabledAutoSave {
             viewModel.save(drawing: viewModel.canvasView.drawing)
         }
-        NotificationCenter.default.post(name: .addedNewNote, object: viewModel.document)
+
+        if viewModel.hasSavedDocument {
+            NotificationCenter.default.post(name: .addedNewNote, object: viewModel.document)
+        }
         presentationMode.wrappedValue.dismiss()
         reviewRequest()
     }

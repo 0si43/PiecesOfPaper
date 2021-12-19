@@ -44,6 +44,8 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         return inboxFileNames.count >= 5
     }
 
+    var hasSavedDocument = false
+
     init(noteDocument: NoteDocument? = nil) {
         self.document = noteDocument
 
@@ -54,6 +56,10 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
     }
 
     private func createNewDocument() {
+        defer {
+            hasSavedDocument = false
+        }
+
         guard let inboxUrl = FilePath.inboxUrl else { fatalError() }
         let path = inboxUrl.appendingPathComponent(FilePath.fileName)
         document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
@@ -66,6 +72,10 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
     }
 
     func save(drawing: PKDrawing) {
+        defer {
+            hasSavedDocument = true
+        }
+
         document?.entity.drawing = drawing
         document?.entity.updatedDate = Date()
         guard let document = document else { return }
