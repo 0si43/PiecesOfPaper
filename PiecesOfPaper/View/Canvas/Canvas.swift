@@ -93,6 +93,9 @@ struct Canvas: View {
                       primaryButton: discardButton,
                       secondaryButton: cancelButton)
             }
+            .onAppear {
+                viewModel.hideExceptPaper = true
+            }
     }
 
     private func archive() {
