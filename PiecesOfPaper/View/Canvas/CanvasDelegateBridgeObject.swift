@@ -78,7 +78,8 @@ extension CanvasDelegateBridgeObject: PKCanvasViewDelegate {
     }
 
     private func updateContentSizeIfNeeded(_ canvasView: PKCanvasView) {
-        guard !canvasView.drawing.bounds.isNull else { return }
+        guard !canvasView.drawing.bounds.isNull,
+              UserPreference().enabledInfiniteScroll else { return }
         let drawingWidth = canvasView.drawing.bounds.maxX
         if canvasView.contentSize.width < drawingWidth * 2 {
             canvasView.contentSize.width += canvasView.frame.width

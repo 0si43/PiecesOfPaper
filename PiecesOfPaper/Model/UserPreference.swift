@@ -11,6 +11,7 @@ import Foundation
 struct UserPreference {
     private let iCloudDisabledKey = "iCloud_disabled"
     private let autoSaveDisabledKey = "autosave_disabled"
+    private let infiniteScrollKey = "infinite_scroll_disabled"
 
     var enablediCloud: Bool {
         get {
@@ -27,6 +28,15 @@ struct UserPreference {
         }
         set {
             UserDefaults.standard.set(!newValue, forKey: autoSaveDisabledKey)
+        }
+    }
+
+    var enabledInfiniteScroll: Bool {
+        get {
+            !UserDefaults.standard.bool(forKey: infiniteScrollKey)
+        }
+        set {
+            UserDefaults.standard.set(!newValue, forKey: infiniteScrollKey)
         }
     }
 }
