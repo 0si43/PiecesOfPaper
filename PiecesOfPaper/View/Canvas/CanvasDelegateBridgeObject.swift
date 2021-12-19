@@ -31,6 +31,7 @@ final class CanvasDelegateBridgeObject: NSObject, PKToolPickerObserver {
         toolPicker.selectedTool = defaultTool
         previousTool = defaultTool
         currentTool = defaultTool
+        toolPicker.showsDrawingPolicyControls = false
     }
 
     func toolPickerSelectedToolDidChange(_ toolPicker: PKToolPicker) {

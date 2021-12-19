@@ -98,9 +98,7 @@ struct Canvas: View {
             return
         }
         viewModel.archive()
-        if viewModel.hasSavedDocument {
-            NotificationCenter.default.post(name: .addedNewNote, object: viewModel.document)
-        }
+        // do not send notification
 
         presentationMode.wrappedValue.dismiss()
         reviewRequest()
