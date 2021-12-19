@@ -10,23 +10,28 @@ import SwiftUI
 import PencilKit
 import LinkPresentation
 
+protocol CanvasDelegateBridgeObjectDelegate: AnyObject {
+    var hideExceptPaper: Bool { get set }
+    func save(drawing: PKDrawing)
+}
+
 // MARK: - PKToolPickerObserver
 ///  This class conform some protocol, because SwiftUI Views cannot conform PencilKit delegates
-class CanvasDelegateBridgeObject: NSObject, PKToolPickerObserver {
-    let toolPicker: PKToolPicker
+final class CanvasDelegateBridgeObject: NSObject, PKToolPickerObserver {
+    let toolPicker = PKToolPicker()
     private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
     private var previousTool: PKTool!
     private var currentTool: PKTool!
-    var canvas: Canvas!
+    weak var delegate: CanvasDelegateBridgeObjectDelegate?
 
-    init(toolPicker: PKToolPicker) {
-        self.toolPicker = toolPicker
+    override init() {
         super.init()
 
         toolPicker.addObserver(self)
         toolPicker.selectedTool = defaultTool
         previousTool = defaultTool
         currentTool = defaultTool
+        toolPicker.showsDrawingPolicyControls = false
     }
 
     func toolPickerSelectedToolDidChange(_ toolPicker: PKToolPicker) {
@@ -44,7 +49,7 @@ extension CanvasDelegateBridgeObject: UIPencilInteractionDelegate {
         switch action {
         case .switchPrevious:   switchPreviousTool()
         case .switchEraser:     switchEraser()
-        case .showColorPalette: canvas.viewModel.hideExceptPaper.toggle()
+        case .showColorPalette: delegate?.hideExceptPaper.toggle()
         case .ignore:           return
         default:                return
         }
@@ -66,8 +71,25 @@ extension CanvasDelegateBridgeObject: UIPencilInteractionDelegate {
 // MARK: - PKCanvasViewDelegate
 extension CanvasDelegateBridgeObject: PKCanvasViewDelegate {
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+        updateContentSizeIfNeeded(canvasView)
+
         guard UserPreference().enabledAutoSave else { return }
-        canvas.viewModel.save(drawing: canvasView.drawing)
+        delegate?.save(drawing: canvasView.drawing)
+    }
+
+    private func updateContentSizeIfNeeded(_ canvasView: PKCanvasView) {
+        guard !canvasView.drawing.bounds.isNull,
+              UserPreference().enabledInfiniteScroll else { return }
+        let drawingWidth = canvasView.drawing.bounds.maxX
+        if canvasView.contentSize.width < drawingWidth * 2 {
+            canvasView.contentSize.width += canvasView.frame.width
+        }
+
+        let drawingHeight = canvasView.drawing.bounds.maxY
+        if canvasView.contentSize.height < drawingHeight * 2 {
+            canvasView.contentSize.height += canvasView.frame.height
+        }
+
     }
 }
 

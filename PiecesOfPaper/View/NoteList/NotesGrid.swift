@@ -12,10 +12,7 @@ import PencilKit
 struct NotesGrid: View {
     @State var isShowActivityView = false
     @State var documentToShare: NoteDocument?
-    @EnvironmentObject var noteViewModel: NotesViewModel
-    var noteDocuments: [NoteDocument] {
-        noteViewModel.publishedNoteDocuments
-    }
+    @ObservedObject var viewModel: NotesViewModel
 
     let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
     var activityViewController: UIActivityViewControllerWrapper? {
@@ -32,47 +29,47 @@ struct NotesGrid: View {
 
     var body: some View {
         LazyVGrid(columns: [gridItem]) {
-            ForEach((0..<noteDocuments.count), id: \.self) { index in
+            ForEach((0..<viewModel.publishedNoteDocuments.count), id: \.self) { index in
                 VStack {
-                    NoteImage(noteDocument: noteDocuments[index])
+                    NoteImage(noteDocument: $viewModel.publishedNoteDocuments[index])
                     .contextMenu {
                         Button(action: {
-                            duplicate(noteDocument: noteDocuments[index])
+                            duplicate(noteDocument: viewModel.publishedNoteDocuments[index])
                         }) {
                             Label("Duplicate", systemImage: "doc.on.doc")
                         }
-                        if noteDocuments[index].isArchived {
+                        if viewModel.publishedNoteDocuments[index].isArchived {
                                 Button(action: {
-                                    unarchive(noteDocument: noteDocuments[index])
+                                    unarchive(noteDocument: viewModel.publishedNoteDocuments[index])
                                 }) {
                                     Label("Unarchive", systemImage: "arrow.up.square")
                                 }
                                 if #available(iOS 15.0, *) {
                                     Button(role: .destructive) {
-                                        delete(noteDocument: noteDocuments[index])
+                                        delete(noteDocument: viewModel.publishedNoteDocuments[index])
                                     } label: {
                                         Label("Delete", systemImage: "trash")
                                     }
                                 }
                         } else {
                             Button(action: {
-                                archive(noteDocument: noteDocuments[index])
+                                archive(noteDocument: viewModel.publishedNoteDocuments[index])
                             }) {
                                 Label("Archive", systemImage: "arrow.down.square")
                             }
                         }
                         Button(action: {
-                            share(noteDocument: noteDocuments[index])
+                            share(noteDocument: viewModel.publishedNoteDocuments[index])
                         }) {
                             Label("Share", systemImage: "square.and.arrow.up")
                         }
                         Button(action: {
-                            TagListRouter.shared.showTagList(noteDocument: noteDocuments[index])
+                            TagListRouter.shared.showTagList(noteDocument: viewModel.publishedNoteDocuments[index])
                         }) {
                             Label("Tag", systemImage: "tag")
                         }
                     }
-                    TagHStack(tags: noteViewModel.getTagToNote(document: noteDocuments[index]))
+                    TagHStack(tags: viewModel.getTagToNote(document: viewModel.publishedNoteDocuments[index]))
                         .padding(.horizontal)
                 }
             }
@@ -89,11 +86,11 @@ struct NotesGrid: View {
     }
 
     func archive(noteDocument: NoteDocument) {
-        noteViewModel.archive(document: noteDocument)
+        viewModel.archive(document: noteDocument)
     }
 
     func unarchive(noteDocument: NoteDocument) {
-        noteViewModel.unarchive(document: noteDocument)
+        viewModel.unarchive(document: noteDocument)
     }
 
     func delete(noteDocument: NoteDocument) {

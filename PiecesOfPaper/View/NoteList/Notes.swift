@@ -18,10 +18,6 @@ struct Notes: View {
     }
     var cancelButton: Alert.Button { .default(Text("Cancel")) }
 
-    init(targetDirectory: NotesViewModel.TargetDirectory) {
-        self.viewModel = NotesViewModel(targetDirectory: targetDirectory)
-    }
-
     var body: some View {
         Group {
             if !viewModel.isLoaded {
@@ -36,8 +32,7 @@ struct Notes: View {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {
-                    NotesScrollViewReader()
-                        .environmentObject(viewModel)
+                    NotesScrollViewReader(viewModel: viewModel)
                 }
             }
 
@@ -74,6 +69,6 @@ struct Notes: View {
 
 struct Notes_Previews: PreviewProvider {
     static var previews: some View {
-        Notes(targetDirectory: .inbox)
+        Notes(viewModel: NotesViewModel(targetDirectory: .inbox))
     }
 }

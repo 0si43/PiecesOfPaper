@@ -93,15 +93,20 @@ final class NotesViewModel: ObservableObject {
         NotificationCenter.default.publisher(for: .addedNewNote, object: nil)
             .map({ $0.object as? NoteDocument })
             .sink { [weak self] document in
-                guard let document = document,
-                      self?.shouldInsertStoredArray(isArchived: document.isArchived) ?? false else { return }
+                guard let self = self, let document = document,
+                      self.shouldInsertStoredArray(isArchived: document.isArchived) else { return }
 
-                self?.noteDocuments.append(document)
-                self?.publish()
+                if self.noteDocuments.contains(document) {
+                    self.noteDocuments = self.noteDocuments.map { $0 == document ? document : $0 }
+                } else {
+                    self.noteDocuments.append(document)
+                }
+
+                self.publish()
             }
             .store(in: &cancellable)
 
-        NotificationCenter.default.publisher(for: .channgedTagToNote, object: nil)
+        NotificationCenter.default.publisher(for: .changedTagToNote, object: nil)
             .map({ $0.object as? NoteDocument })
             .sink { [weak self] document in
                 guard let document = document,

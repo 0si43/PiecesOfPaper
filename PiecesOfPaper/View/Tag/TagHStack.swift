@@ -14,7 +14,7 @@ struct TagHStack: View {
     var deletable = false
 
     var body: some View {
-        ScrollView(.horizontal) {
+        ScrollView(.horizontal, showsIndicators: false) {
             HStack {
                 ForEach(tags, id: \.id) { tag in
                     if deletable {
