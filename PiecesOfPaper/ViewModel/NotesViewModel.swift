@@ -256,7 +256,8 @@ final class NotesViewModel: ObservableObject {
             return
         }
 
-        publish()
+        // publish() <- crash: Swift/ContiguousArrayBuffer.swift:580: Fatal error: Index out of range
+        update()
     }
 
     func unarchive(_ document: NoteDocument) {
