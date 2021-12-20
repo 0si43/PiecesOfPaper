@@ -80,21 +80,19 @@ struct NotesGrid: View {
     }
 
     func duplicate(noteDocument: NoteDocument) {
-        guard let savingUrl = FilePath.savingUrl else { return }
-        let newUrl = savingUrl.appendingPathComponent(FilePath.fileName)
-        try? FileManager.default.copyItem(at: noteDocument.fileURL, to: newUrl)
+        viewModel.duplicate(noteDocument)
     }
 
     func archive(noteDocument: NoteDocument) {
-        viewModel.archive(document: noteDocument)
+        viewModel.archive(noteDocument)
     }
 
     func unarchive(noteDocument: NoteDocument) {
-        viewModel.unarchive(document: noteDocument)
+        viewModel.unarchive(noteDocument)
     }
 
     func delete(noteDocument: NoteDocument) {
-        try? FileManager.default.removeItem(at: noteDocument.fileURL)
+        viewModel.delete(noteDocument)
     }
 
     func share(noteDocument: NoteDocument) {

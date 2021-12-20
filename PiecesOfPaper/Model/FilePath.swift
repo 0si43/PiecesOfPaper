@@ -33,7 +33,6 @@ struct FilePath {
 
     static var libraryUrl: URL? {
         savingUrl?.appendingPathComponent("Library")
-//        FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first?.appendingPathComponent("Tag")
     }
 
     static var fileName: String {
