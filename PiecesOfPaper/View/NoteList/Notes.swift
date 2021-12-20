@@ -28,7 +28,7 @@ struct Notes: View {
                         viewModel.didFirstFetchRequest = true
                     }
             } else {
-                if viewModel.publishedNoteDocuments.isEmpty {
+                if viewModel.isNoData {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {

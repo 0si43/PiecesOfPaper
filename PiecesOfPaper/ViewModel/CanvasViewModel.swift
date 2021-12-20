@@ -103,6 +103,8 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         if canvasView.frame.height < canvasView.drawing.bounds.maxY {
             canvasView.contentSize.height = canvasView.drawing.bounds.maxY
         }
+
+        canvasView.contentOffset = .zero
     }
 
     func save(drawing: PKDrawing) {
