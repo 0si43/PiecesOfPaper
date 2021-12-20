@@ -9,7 +9,6 @@
 import UIKit
 
 final class PiecesOfPaperAppViewModel: ObservableObject {
-    @Published var isAppLaunch = true
     @Published var isShowCanvas = false
     @Published var isShowTagList = false
     @Published var iCloudDenying = false

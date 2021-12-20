@@ -25,7 +25,7 @@ struct PiecesOfPaperApp: App {
     var body: some Scene {
         WindowGroup {
                 NavigationView {
-                    SideBarList(isAppLaunch: $viewModel.isAppLaunch)
+                    SideBarList()
                 }
                 .fullScreenCover(isPresented: $viewModel.isShowCanvas) {
                     NavigationView {
@@ -38,14 +38,11 @@ struct PiecesOfPaperApp: App {
                     TagListToNote()
                 }
                 .onAppear {
-                    guard viewModel.isAppLaunch else { return }
-
                     CanvasRouter.shared.bind(isShowCanvas: $viewModel.isShowCanvas, noteDocument: $canvasViewModel.document)
                     CanvasRouter.shared.openNewCanvas()
                     // I thought this can work, but SwiftUI cannot pass the document data...
                     TagListRouter.shared.bind(isShowTagList: $viewModel.isShowTagList)
                     DrawingsPlistConverter.convert()
-                    viewModel.isAppLaunch = false
 
                     if UserPreference().shouldGrantiCloud {
                         viewModel.iCloudDenying = true
