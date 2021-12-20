@@ -13,6 +13,8 @@ import PencilKit
 struct PiecesOfPaperApp: App {
     @StateObject var viewModel = PiecesOfPaperAppViewModel()
     @StateObject var canvasViewModel = CanvasViewModel()
+    @AppStorage("onboarding_v3.0.0") var didShowOnboarding = false
+    @State var showOnboarding = false
 
     private var useICloudButton: Alert.Button {
         .default(Text("Use iCloud"), action: viewModel.openSettingApp)
@@ -26,6 +28,12 @@ struct PiecesOfPaperApp: App {
         WindowGroup {
                 NavigationView {
                     SideBarList()
+                        .sheet(isPresented: $showOnboarding) {
+                            Onboarding()
+                                .onAppear {
+                                    didShowOnboarding = true
+                                }
+                        }
                 }
                 .fullScreenCover(isPresented: $viewModel.isShowCanvas) {
                     NavigationView {
@@ -39,14 +47,21 @@ struct PiecesOfPaperApp: App {
                 }
                 .onAppear {
                     CanvasRouter.shared.bind(isShowCanvas: $viewModel.isShowCanvas, noteDocument: $canvasViewModel.document)
-                    CanvasRouter.shared.openNewCanvas()
                     // I thought this can work, but SwiftUI cannot pass the document data...
                     TagListRouter.shared.bind(isShowTagList: $viewModel.isShowTagList)
+                    viewModel.hasDrawingPlist = DrawingsPlistConverter.hasDrawingsPlist
                     DrawingsPlistConverter.convert()
-
-                    if UserPreference().shouldGrantiCloud {
-                        viewModel.iCloudDenying = true
+                    guard didShowOnboarding else {
+                        showOnboarding = true
+                        return
                     }
+
+                    guard !UserPreference().shouldGrantiCloud else {
+                        viewModel.iCloudDenying = true
+                        return
+                    }
+
+                    CanvasRouter.shared.openNewCanvas()
                 }
                 .alert(isPresented: $viewModel.iCloudDenying) { () -> Alert in
                     Alert(title: Text(viewModel.iCloudDeniedWarningMessage),
