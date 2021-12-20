@@ -11,34 +11,50 @@ import PencilKit
 
 @main
 struct PiecesOfPaperApp: App {
-    @State var isAppLaunch = true
-    @State var isShowCanvas = false
-    @State var isShowTagList = false
+    @StateObject var viewModel = PiecesOfPaperAppViewModel()
     @StateObject var canvasViewModel = CanvasViewModel()
+
+    private var useICloudButton: Alert.Button {
+        .default(Text("Use iCloud"), action: viewModel.openSettingApp)
+    }
+
+    private var useDeviceButton: Alert.Button {
+        .default(Text("Use device storage"), action: viewModel.switchDeviceStorage)
+    }
 
     var body: some Scene {
         WindowGroup {
                 NavigationView {
-                    SideBarList(isAppLaunch: $isAppLaunch)
+                    SideBarList(isAppLaunch: $viewModel.isAppLaunch)
                 }
-                .fullScreenCover(isPresented: $isShowCanvas) {
+                .fullScreenCover(isPresented: $viewModel.isShowCanvas) {
                     NavigationView {
                         Canvas(viewModel: canvasViewModel)
                     }
                 }
-                .sheet(isPresented: $isShowTagList, onDismiss: {
+                .sheet(isPresented: $viewModel.isShowTagList, onDismiss: {
                     TagListRouter.shared.documentForPass = nil
                 }) {
                     TagListToNote()
                 }
                 .onAppear {
-                    guard isAppLaunch else { return }
-                    CanvasRouter.shared.bind(isShowCanvas: $isShowCanvas, noteDocument: $canvasViewModel.document)
+                    guard viewModel.isAppLaunch else { return }
+
+                    CanvasRouter.shared.bind(isShowCanvas: $viewModel.isShowCanvas, noteDocument: $canvasViewModel.document)
                     CanvasRouter.shared.openNewCanvas()
                     // I thought this can work, but SwiftUI cannot pass the document data...
-                    TagListRouter.shared.bind(isShowTagList: $isShowTagList)
+                    TagListRouter.shared.bind(isShowTagList: $viewModel.isShowTagList)
                     DrawingsPlistConverter.convert()
-                    isAppLaunch = false
+                    viewModel.isAppLaunch = false
+
+                    if UserPreference().shouldGrantiCloud {
+                        viewModel.iCloudDenying = true
+                    }
+                }
+                .alert(isPresented: $viewModel.iCloudDenying) { () -> Alert in
+                    Alert(title: Text(viewModel.iCloudDeniedWarningMessage),
+                          primaryButton: useICloudButton,
+                          secondaryButton: useDeviceButton)
                 }
         }
     }

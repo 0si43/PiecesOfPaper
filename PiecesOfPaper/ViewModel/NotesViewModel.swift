@@ -235,7 +235,7 @@ final class NotesViewModel: ObservableObject {
             self.objectWillChange.send()
             return
         }
-        
+
         publish()
     }
 
@@ -253,7 +253,7 @@ final class NotesViewModel: ObservableObject {
             self.objectWillChange.send()
             return
         }
-        
+
         publish()
     }
 
