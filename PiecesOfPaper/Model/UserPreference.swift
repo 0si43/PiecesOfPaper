@@ -39,4 +39,9 @@ struct UserPreference {
             UserDefaults.standard.set(!newValue, forKey: infiniteScrollKey)
         }
     }
+
+    var shouldGrantiCloud: Bool {
+        guard enablediCloud else { return false }
+        return FileManager.default.ubiquityIdentityToken == nil
+    }
 }
