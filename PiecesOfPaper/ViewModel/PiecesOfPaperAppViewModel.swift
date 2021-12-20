@@ -12,6 +12,7 @@ final class PiecesOfPaperAppViewModel: ObservableObject {
     @Published var isShowCanvas = false
     @Published var isShowTagList = false
     @Published var iCloudDenying = false
+    var hasDrawingPlist = false
     let iCloudDeniedWarningMessage = "The app could not access your iCloud Drive. You should change setting"
 
     func openSettingApp() {
