@@ -239,6 +239,9 @@ final class NotesViewModel: ObservableObject {
 
     func delete(_ document: NoteDocument) {
         try? FileManager.default.removeItem(at: document.fileURL)
+        noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
+
+        publish()
     }
 
     func archive(_ document: NoteDocument) {
@@ -291,8 +294,8 @@ final class NotesViewModel: ObservableObject {
         objectWillChange.send()
     }
 
-    func toggleArchiveOrUnarchiveAlert() {
-        showArchiveAlert.toggle()
+    func showArchiveOrUnarchiveAlert() {
+        showArchiveAlert = true
         objectWillChange.send()
     }
 
