@@ -10,13 +10,14 @@ import SwiftUI
 
 struct Notes: View {
     @ObservedObject var viewModel: NotesViewModel
+    var cancelButton: Alert.Button { .default(Text("Cancel")) }
+
     var actionButton: Alert.Button {
         .destructive(
             Text(viewModel.isTargetDirectoryArchived ?  "Unarchived" : "Archived"),
             action: { viewModel.isTargetDirectoryArchived ? viewModel.allUnarchive() : viewModel.allArchive() }
         )
     }
-    var cancelButton: Alert.Button { .default(Text("Cancel")) }
 
     var body: some View {
         Group {
@@ -57,8 +58,8 @@ struct Notes: View {
             Alert(title: Text("""
                             Are you sure you want to \(viewModel.isTargetDirectoryArchived ? "unarchived" : "archived") \(viewModel.publishedNoteDocuments.count) notes ?
                             """),
-                  primaryButton: actionButton,
-                  secondaryButton: cancelButton)
+                  primaryButton: cancelButton,
+                  secondaryButton: actionButton)
         }
     }
 
