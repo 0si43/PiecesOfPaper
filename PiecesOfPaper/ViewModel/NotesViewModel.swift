@@ -12,7 +12,13 @@ import Combine
 final class NotesViewModel: ObservableObject {
     var objectWillChange = ObjectWillChangePublisher()
     var publishedNoteDocuments = [NoteDocument]()
+    private var counter = 0
+    private var noteDocuments = [NoteDocument]()
     var isLoaded = false
+    var isNoData: Bool {
+        noteDocuments.isEmpty
+    }
+
     var showArchiveAlert = false
     var isListConditionSheet = false {
         willSet {
@@ -33,9 +39,6 @@ final class NotesViewModel: ObservableObject {
     var isTargetDirectoryArchived: Bool {
         directory == .archived
     }
-
-    private var counter = 0
-    private var noteDocuments = [NoteDocument]()
 
     var listCondition: ListCondition {
         didSet {
@@ -135,7 +138,7 @@ final class NotesViewModel: ObservableObject {
     private func openDocuments() {
         let urls = getFileUrl()
         guard !urls.isEmpty else {
-            publishedNoteDocuments = [NoteDocument]()
+            noteDocuments.removeAll()
             isLoaded = true
             objectWillChange.send()
             return
@@ -214,7 +217,6 @@ final class NotesViewModel: ObservableObject {
     func update() {
         isLoaded = false
         noteDocuments.removeAll()
-        self.publishedNoteDocuments.removeAll()
         objectWillChange.send()
         openDocuments()
     }
@@ -229,6 +231,11 @@ final class NotesViewModel: ObservableObject {
         }
 
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
+        guard !noteDocuments.isEmpty else {
+            self.objectWillChange.send()
+            return
+        }
+        
         publish()
     }
 
@@ -242,6 +249,11 @@ final class NotesViewModel: ObservableObject {
         }
 
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
+        guard !noteDocuments.isEmpty else {
+            self.objectWillChange.send()
+            return
+        }
+        
         publish()
     }
 
