@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct SideBarList: View {
-    @State var showInbox = true
+    @State private var showInbox = true
     @StateObject var inboxNoteViewModel = NotesViewModel(targetDirectory: .inbox)
     @StateObject var allNoteViewModel = NotesViewModel(targetDirectory: .all)
     @StateObject var archivedNoteViewModel = NotesViewModel(targetDirectory: .archived)
