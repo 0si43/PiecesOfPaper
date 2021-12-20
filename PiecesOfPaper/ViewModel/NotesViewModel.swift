@@ -221,7 +221,27 @@ final class NotesViewModel: ObservableObject {
         openDocuments()
     }
 
-    func archive(document: NoteDocument) {
+    func duplicate(_ document: NoteDocument) {
+        guard let inboxUrl = FilePath.inboxUrl,
+              let archivedUrl = FilePath.archivedUrl else { return }
+
+        let directory = isTargetDirectoryArchived ? archivedUrl : inboxUrl
+        let newUrl = directory.appendingPathComponent(FilePath.fileName)
+        let entity = NoteEntity(drawing: document.entity.drawing)
+        let newDocument = NoteDocument(fileURL: newUrl, entity: entity)
+        newDocument.save(to: newUrl, for: .forCreating) { [weak self] success in
+            if success {
+                self?.noteDocuments.append(newDocument)
+                self?.publish()
+            }
+        }
+    }
+
+    func delete(_ document: NoteDocument) {
+        try? FileManager.default.removeItem(at: document.fileURL)
+    }
+
+    func archive(_ document: NoteDocument) {
         guard let archivedUrl = FilePath.archivedUrl else { return }
         let toUrl = archivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
         do {
@@ -239,7 +259,7 @@ final class NotesViewModel: ObservableObject {
         publish()
     }
 
-    func unarchive(document: NoteDocument) {
+    func unarchive(_ document: NoteDocument) {
         guard let inboxUrl = FilePath.inboxUrl else { return }
         let toUrl = inboxUrl.appendingPathComponent(document.fileURL.lastPathComponent)
         do {
@@ -276,12 +296,12 @@ final class NotesViewModel: ObservableObject {
     }
 
     func allArchive() {
-        noteDocuments.forEach { archive(document: $0) }
+        noteDocuments.forEach { archive($0) }
         publish()
     }
 
     func allUnarchive() {
-        noteDocuments.forEach { unarchive(document: $0) }
+        noteDocuments.forEach { unarchive($0) }
         publish()
     }
 }
