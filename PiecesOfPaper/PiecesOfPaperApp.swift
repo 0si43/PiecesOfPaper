@@ -14,7 +14,6 @@ struct PiecesOfPaperApp: App {
     @StateObject var viewModel = PiecesOfPaperAppViewModel()
     @StateObject var canvasViewModel = CanvasViewModel()
     @AppStorage("onboarding_v3.0.0") var didShowOnboarding = false
-    @State var showOnboarding = false
 
     private var useICloudButton: Alert.Button {
         .default(Text("Use iCloud"), action: viewModel.openSettingApp)
@@ -28,17 +27,17 @@ struct PiecesOfPaperApp: App {
         WindowGroup {
                 NavigationView {
                     SideBarList()
-                        .sheet(isPresented: $showOnboarding) {
-                            Onboarding()
-                                .onAppear {
-                                    didShowOnboarding = true
-                                }
-                        }
                 }
                 .fullScreenCover(isPresented: $viewModel.isShowCanvas) {
                     NavigationView {
                         Canvas(viewModel: canvasViewModel)
                     }
+                }
+                .sheet(isPresented: $viewModel.showOnboarding) {
+                    Onboarding()
+                        .onAppear {
+                            didShowOnboarding = true
+                        }
                 }
                 .sheet(isPresented: $viewModel.isShowTagList, onDismiss: {
                     TagListRouter.shared.documentForPass = nil
@@ -51,8 +50,9 @@ struct PiecesOfPaperApp: App {
                     TagListRouter.shared.bind(isShowTagList: $viewModel.isShowTagList)
                     viewModel.hasDrawingPlist = DrawingsPlistConverter.hasDrawingsPlist
                     DrawingsPlistConverter.convert()
+
                     guard didShowOnboarding else {
-                        showOnboarding = true
+                        viewModel.showOnboarding = true
                         return
                     }
 
@@ -61,7 +61,9 @@ struct PiecesOfPaperApp: App {
                         return
                     }
 
-                    CanvasRouter.shared.openNewCanvas()
+                    if didShowOnboarding {
+                        CanvasRouter.shared.openNewCanvas()
+                    }
                 }
                 .alert(isPresented: $viewModel.iCloudDenying) { () -> Alert in
                     Alert(title: Text(viewModel.iCloudDeniedWarningMessage),
