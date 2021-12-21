@@ -49,34 +49,31 @@ struct Canvas: View {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     if viewModel.document != nil {
                         Button(action: {
-                            viewModel.setVisibleToolPicker(false)
-                            viewModel.showTagList.toggle()
-                        }) {
+                                viewModel.setVisibleToolPicker(false)
+                                viewModel.showTagList.toggle()
+                            },
+                            label: {
                                 Image(systemName: "tag.circle")
-                        }
+                            })
                     }
-                    Button(action: { viewModel.showDrawingInformation.toggle() }) {
-                            Image(systemName: "info.circle")
-                    }
+                    Button(action: { viewModel.showDrawingInformation.toggle() },
+                           label: { Image(systemName: "info.circle") })
                     .popover(isPresented: $viewModel.showDrawingInformation) {
                         NoteInformation(document: viewModel.document)
                     }
-                    Button(action: { viewModel.isShowActivityView.toggle() }) {
-                        Image(systemName: "square.and.arrow.up")
-                    }
+                    Button(action: { viewModel.isShowActivityView.toggle() },
+                           label: { Image(systemName: "square.and.arrow.up") })
                     Button(action: close) {
                         Image(systemName: "tray.full")
                     }
                 }
             }
             .sheet(isPresented: $viewModel.isShowActivityView,
-                   onDismiss: { viewModel.setVisibleToolPicker(true) }) {
-                viewModel.activityViewController
-            }
+                   onDismiss: { viewModel.setVisibleToolPicker(true) },
+                   content: { viewModel.activityViewController })
             .sheet(isPresented: $viewModel.showTagList,
-                   onDismiss: { viewModel.setVisibleToolPicker(true) }) {
-                TagListToNote(viewModel: TagListToNoteViewModel(noteDocument: viewModel.document))
-            }
+                   onDismiss: { viewModel.setVisibleToolPicker(true) },
+                   content: { TagListToNote(viewModel: TagListToNoteViewModel(noteDocument: viewModel.document)) })
             .alert(isPresented: $viewModel.showUnsavedAlert) { () -> Alert in
                 Alert(title: Text("Are you sure you want to discard the changes you made?"),
                       primaryButton: discardButton,

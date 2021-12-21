@@ -99,7 +99,8 @@ extension CanvasDelegateBridgeObject: UIActivityItemSource {
         ""
     }
 
-    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+    func activityViewController(_ activityViewController: UIActivityViewController,
+                                itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
         nil
     }
 

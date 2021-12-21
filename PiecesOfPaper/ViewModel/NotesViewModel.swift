@@ -93,7 +93,7 @@ final class NotesViewModel: ObservableObject {
 
     private var cancellable: Set<AnyCancellable> = []
     private func subscribe() {
-        NotificationCenter.default.publisher(for: .addedNewNote, object: nil)
+        NotificationCenter.default.publisher(for: .addedNewNote)
             .map({ $0.object as? NoteDocument })
             .sink { [weak self] document in
                 guard let self = self, let document = document,
@@ -109,7 +109,7 @@ final class NotesViewModel: ObservableObject {
             }
             .store(in: &cancellable)
 
-        NotificationCenter.default.publisher(for: .changedTagToNote, object: nil)
+        NotificationCenter.default.publisher(for: .changedTagToNote)
             .map({ $0.object as? NoteDocument })
             .sink { [weak self] document in
                 guard let document = document,

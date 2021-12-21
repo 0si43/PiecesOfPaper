@@ -40,11 +40,14 @@ struct Notes: View {
         }
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button(action: { viewModel.showArchiveOrUnarchiveAlert() }) {
-                    Image(systemName: viewModel.isTargetDirectoryArchived ? "tray.circle" : "archivebox.circle")
-                }
-                Button(action: viewModel.toggleIsListConditionPopover ) { Image(systemName: "line.3.horizontal.decrease.circle") }
-                Button(action: viewModel.update) { Image(systemName: "arrow.triangle.2.circlepath") }
+                Button(action: { viewModel.showArchiveOrUnarchiveAlert() },
+                       label: {
+                            Image(systemName: viewModel.isTargetDirectoryArchived ? "tray.circle" : "archivebox.circle")
+                        })
+                Button(action: viewModel.toggleIsListConditionPopover,
+                       label: { Image(systemName: "line.3.horizontal.decrease.circle") })
+                Button(action: viewModel.update,
+                       label: { Image(systemName: "arrow.triangle.2.circlepath") })
                     .disabled(!viewModel.isLoaded)
                 Button(action: new) { Image(systemName: "plus.circle") }
             }
@@ -55,9 +58,11 @@ struct Notes: View {
             }
         }
         .alert(isPresented: $viewModel.showArchiveAlert) { () -> Alert in
-            Alert(title: Text("""
-                            Are you sure you want to \(viewModel.isTargetDirectoryArchived ? "unarchived" : "archived") \(viewModel.publishedNoteDocuments.count) notes ?
-                            """),
+            Alert(title: Text(
+                            "Are you sure you want to " +
+                            "\(viewModel.isTargetDirectoryArchived ? "unarchived" : "archived")" + " " +
+                            "\(viewModel.publishedNoteDocuments.count) notes?"
+                            ),
                   primaryButton: cancelButton,
                   secondaryButton: actionButton)
         }

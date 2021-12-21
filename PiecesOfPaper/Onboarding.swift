@@ -58,14 +58,15 @@ struct Onboarding: View {
                         .padding(.horizontal)
                     Spacer()
             }
-            Button(action: { presentationMode.wrappedValue.dismiss() }) {
-                Text("Got it")
-                    .foregroundColor(.white)
-                    .frame(minWidth: 300, minHeight: 50)
-                    .background(Color.blue)
-                    .cornerRadius(5.0)
-                    .contentShape(RoundedRectangle(cornerRadius: 5.0))
-            }
+            Button(action: { presentationMode.wrappedValue.dismiss() },
+                   label: {
+                    Text("Got it")
+                        .foregroundColor(.white)
+                        .frame(minWidth: 300, minHeight: 50)
+                        .background(Color.blue)
+                        .cornerRadius(5.0)
+                        .contentShape(RoundedRectangle(cornerRadius: 5.0))
+                    })
         }
         .padding()
     }

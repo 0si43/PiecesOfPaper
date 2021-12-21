@@ -39,13 +39,15 @@ struct PiecesOfPaperApp: App {
                             didShowOnboarding = true
                         }
                 }
-                .sheet(isPresented: $viewModel.isShowTagList, onDismiss: {
-                    TagListRouter.shared.documentForPass = nil
-                }) {
-                    TagListToNote()
-                }
+                .sheet(isPresented: $viewModel.isShowTagList,
+                       onDismiss: {
+                       TagListRouter.shared.documentForPass = nil
+                       }, content: {
+                           TagListToNote()
+                       })
                 .onAppear {
-                    CanvasRouter.shared.bind(isShowCanvas: $viewModel.isShowCanvas, noteDocument: $canvasViewModel.document)
+                    CanvasRouter.shared.bind(isShowCanvas: $viewModel.isShowCanvas,
+                                             noteDocument: $canvasViewModel.document)
                     // I thought this can work, but SwiftUI cannot pass the document data...
                     TagListRouter.shared.bind(isShowTagList: $viewModel.isShowTagList)
                     viewModel.hasDrawingPlist = DrawingsPlistConverter.hasDrawingsPlist
