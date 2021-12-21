@@ -13,79 +13,51 @@ struct Onboarding: View {
 
     var body: some View {
         VStack {
-            Group {
-                Text("What's new")
-                    .font(.largeTitle)
-                    .padding()
-                Text("Pieces of Paper is now version 3.0.0")
-                    .padding()
-            }
-            HStack {
-                Image(systemName: "sparkles")
-                    .resizable()
-                    .frame(width: 36, height: 36)
-                    .padding()
-                    .foregroundColor(Color.yellow)
-                VStack(alignment: .leading) {
-                    Text("Totally Replace User Interface")
-                        .font(.title3)
-                    Text("Don't be surprised. Pieces of Paper changed up its look")
-                        .font(.body)
-                }
-                Spacer()
-            }
-            HStack {
-                Image(systemName: "tag")
-                    .resizable()
-                    .frame(width: 36, height: 36)
-                    .padding()
-                    .foregroundColor(Color.green)
-                VStack(alignment: .leading) {
-                    Text("New Feature: Tag")
-                        .font(.title3)
-                    Text("You can attach some tags to notes. It's will be helpful to arrange your data")
-                        .font(.body)
-                }
-                Spacer()
-            }
-            HStack {
-                Image(systemName: "arrow.up.arrow.down.circle")
-                    .resizable()
-                    .frame(width: 36, height: 36)
-                    .padding()
-                    .foregroundColor(Color.blue)
-                VStack(alignment: .leading) {
-                    Text("New Feature: Sort & Filter")
-                        .font(.title3)
-                    Text("Sort and filter is now available")
-                        .font(.body)
-                }
-                Spacer()
-            }
-            HStack {
-                Image(systemName: "folder")
-                    .resizable()
-                    .frame(width: 36, height: 36)
-                    .padding()
-                    .foregroundColor(Color.blue)
-                VStack(alignment: .leading) {
-                    Text("Data Format Change")
-                        .font(.title3)
-                    Text("Before now, notes data is saved as one file. It's inconvenient. From now on, one note is saved as one file")
-                        .font(.body)
-                }
-                Spacer()
-            }
-            Divider()
             ScrollView(.vertical) {
-                Text("""
-                ⚠️If you have old format file(named drawings.plist), convert will start automatically.
-                Your notes separated each file. Syncing with iCloud is sometimes unstable.
-                If you feel like weird behavior, please open Files app and manage file state.
-                """)
-                    .padding()
+                VStack {
+                    Group {
+                        Text("What's new")
+                            .font(.largeTitle)
+                            .bold()
+                            .padding()
+                        Text("Pieces of Paper is now version 3.0.0")
+                            .font(.caption)
+                    }
+                    VStack(alignment: .leading) {
+                        NewFeature(image: Image(systemName: "sparkles"),
+                                   imageColor: Color.yellow,
+                                   title: Text("Replace User Interface"),
+                                   message: Text("Don't be surprised. Pieces of Paper changed up its look"))
+                        NewFeature(image: Image(systemName: "archivebox"),
+                                   imageColor: Color.red,
+                                   title: Text("Archive"),
+                                   message: Text("(New Feature) You can attach some tags to notes"))
+                        NewFeature(image: Image(systemName: "tag"),
+                                   imageColor: Color.green,
+                                   title: Text("Tag"),
+                                   message: Text("(New Feature) You can attach some tags to notes"))
+                        NewFeature(image: Image(systemName: "arrow.up.arrow.down.circle"),
+                                   imageColor: Color.purple,
+                                   title: Text("Sort & Filter"),
+                                   message: Text("(New Feature) Sort and filter is now available"))
+                        NewFeature(image: Image(systemName: "doc"),
+                                   imageColor: Color.blue,
+                                   title: Text("File Format Change"),
+                                   message: Text("From now on, one note is saved as one file"))
+                    }
+                }
+                    .padding(.horizontal)
+
+                    Divider()
+                        Text(
+                        "⚠️If you have old format file(named drawings.plist), convert will start automatically. " +
+                        "Your notes will be split. (Note:) Syncing with iCloud is sometimes unstable. " +
+                        "If you see weird behavior, please open Files app and manage file state."
+                        )
+                        .font(.footnote)
+                        .padding(.horizontal)
+                    Spacer()
             }
-            Spacer()
             Button(action: { presentationMode.wrappedValue.dismiss() }) {
                 Text("Got it")
                     .foregroundColor(.white)
@@ -94,9 +66,33 @@ struct Onboarding: View {
                     .cornerRadius(5.0)
                     .contentShape(RoundedRectangle(cornerRadius: 5.0))
             }
-            Spacer()
         }
         .padding()
+    }
+}
+
+private struct NewFeature: View {
+    let image: Image
+    let imageColor: Color
+    let title: Text
+    let message: Text
+
+    var body: some View {
+        HStack(spacing: 8) {
+            image
+                .resizable()
+                .scaledToFit()
+                .frame(width: 36, height: 36)
+                .padding()
+                .foregroundColor(imageColor)
+            VStack(alignment: .leading, spacing: 4) {
+                title
+                    .font(.title3)
+                    .bold()
+                message
+                    .font(.footnote)
+            }
+        }
     }
 }
 
