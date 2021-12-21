@@ -37,7 +37,6 @@ struct Notes: View {
                                           parent: self)
                 }
             }
-
         }
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
