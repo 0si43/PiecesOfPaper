@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct FilePath {
+enum FilePath {
     static var savingUrl: URL? {
         UserPreference().enablediCloud ? iCloudUrl : documentDirectoryUrl
     }
