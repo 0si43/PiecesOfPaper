@@ -85,7 +85,7 @@ opt_in_rules:
   - anyobject_protocol
   - array_init
   - attributes
-  - closure_body_length
+# - closure_body_length # SwiftUIだと守れないため
   - closure_end_indentation
   - closure_spacing
   - collection_alignment
@@ -159,7 +159,7 @@ opt_in_rules:
   #- strong_iboutlet # `@IBOutlet` を `weak` で定義したいこともあるため
   # - switch_case_on_newline caseと同じ行に記述したいため
   - toggle_bool
-  - trailing_closure
+  # - trailing_closure # NotificationCenterのpublisherが守っていなかったため
   - unavailable_function
   - unneeded_parentheses_in_closure_argument
   - untyped_error_in_catch

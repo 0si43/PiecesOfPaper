@@ -10,6 +10,8 @@ import SwiftUI
 
 struct SettingView: View {
     @ObservedObject var viewModel = SettingViewModel()
+    let repositoryUrl = URL(string: "https://github.com/0si43/PiecesOfPaper")
+    let developerSiteUrl = URL(string: "https://www.shetommy.com/")
 
     var body: some View {
         List {
@@ -30,11 +32,16 @@ struct SettingView: View {
                 }
             }
             Section(header: Text("About")) {
-                Link(destination: URL(string: "https://github.com/0si43/PiecesOfPaper")!) {
-                    Label("Github Repository", systemImage: "wrench")
+                if let url = repositoryUrl {
+                    Link(destination: url) {
+                        Label("Github Repository", systemImage: "ellipsis.curlybraces")
+                    }
                 }
-                Link(destination: URL(string: "https://www.shetommy.com/")!) {
-                    Label("Developer Site", systemImage: "wrench")
+
+                if let url = developerSiteUrl {
+                    Link(destination: url) {
+                        Label("Developer Site", systemImage: "wrench")
+                    }
                 }
             }
         }

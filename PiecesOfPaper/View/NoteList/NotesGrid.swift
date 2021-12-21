@@ -33,17 +33,13 @@ struct NotesGrid: View {
                 VStack {
                     NoteImage(noteDocument: $viewModel.publishedNoteDocuments[index])
                     .contextMenu {
-                        Button(action: {
-                            duplicate(noteDocument: viewModel.publishedNoteDocuments[index])
-                        }) {
-                            Label("Duplicate", systemImage: "doc.on.doc")
-                        }
+                        Button(
+                            action: { duplicate(noteDocument: viewModel.publishedNoteDocuments[index]) },
+                            label: { Label("Duplicate", systemImage: "doc.on.doc") })
                         if viewModel.publishedNoteDocuments[index].isArchived {
-                                Button(action: {
-                                    unarchive(noteDocument: viewModel.publishedNoteDocuments[index])
-                                }) {
-                                    Label("Unarchive", systemImage: "arrow.up.square")
-                                }
+                                Button(
+                                    action: { unarchive(noteDocument: viewModel.publishedNoteDocuments[index]) },
+                                    label: { Label("Unarchive", systemImage: "arrow.up.square") })
                                 if #available(iOS 15.0, *) {
                                     Button(role: .destructive) {
                                         delete(noteDocument: viewModel.publishedNoteDocuments[index])
@@ -52,22 +48,16 @@ struct NotesGrid: View {
                                     }
                                 }
                         } else {
-                            Button(action: {
-                                archive(noteDocument: viewModel.publishedNoteDocuments[index])
-                            }) {
-                                Label("Archive", systemImage: "arrow.down.square")
-                            }
+                            Button(action: { archive(noteDocument: viewModel.publishedNoteDocuments[index]) },
+                                   label: { Label("Archive", systemImage: "arrow.down.square") })
                         }
-                        Button(action: {
-                            share(noteDocument: viewModel.publishedNoteDocuments[index])
-                        }) {
-                            Label("Share", systemImage: "square.and.arrow.up")
-                        }
-                        Button(action: {
-                            TagListRouter.shared.showTagList(noteDocument: viewModel.publishedNoteDocuments[index])
-                        }) {
-                            Label("Tag", systemImage: "tag")
-                        }
+                        Button(action: { share(noteDocument: viewModel.publishedNoteDocuments[index]) },
+                               label: { Label("Share", systemImage: "square.and.arrow.up") })
+                        Button(
+                            action: {
+                                TagListRouter.shared.showTagList(noteDocument: viewModel.publishedNoteDocuments[index])
+                            },
+                            label: { Label("Tag", systemImage: "tag") })
                     }
                     TagHStack(tags: viewModel.getTagToNote(document: viewModel.publishedNoteDocuments[index]))
                         .padding(.horizontal)

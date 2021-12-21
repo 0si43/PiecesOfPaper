@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct DrawingsPlistConverter {
+enum DrawingsPlistConverter {
     static var hasDrawingsPlist: Bool {
         guard let savingUrl = FilePath.savingUrl else { return false }
         let url = savingUrl.appendingPathComponent("drawings.plist")
