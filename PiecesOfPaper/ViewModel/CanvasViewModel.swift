@@ -50,7 +50,9 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
 
     var canReviewRequest: Bool {
         guard let inboxUrl = FilePath.inboxUrl,
-              let inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: inboxUrl.path)  else { return false }
+              let inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: inboxUrl.path) else {
+                  return false
+              }
         return inboxFileNames.count >= 5
     }
 
