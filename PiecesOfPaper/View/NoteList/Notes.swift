@@ -29,11 +29,11 @@ struct Notes: View {
                         viewModel.didFirstFetchRequest = true
                     }
             } else {
-                if viewModel.isNoData {
+                if viewModel.noteDocuments.isEmpty {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {
-                    NotesScrollViewReader(documents: viewModel.publishedNoteDocuments,
+                    NotesScrollViewReader(documents: viewModel.noteDocuments,
                                           parent: self)
                 }
             }
@@ -62,7 +62,7 @@ struct Notes: View {
             Alert(title: Text(
                             "Are you sure you want to " +
                             "\(viewModel.isTargetDirectoryArchived ? "unarchived" : "archived")" + " " +
-                            "\(viewModel.publishedNoteDocuments.count) notes?"
+                            "\(viewModel.noteDocuments.count) notes?"
                             ),
                   primaryButton: cancelButton,
                   secondaryButton: actionButton)

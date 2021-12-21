@@ -7,16 +7,18 @@
 //
 
 import SwiftUI
+import PencilKit
 
 struct NoteImage: View {
-    var noteDocument: NoteDocument
+    var drawing: PKDrawing
+    var action: () -> Void
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
     private var image: UIImage {
-        noteDocument.entity.drawing.image(from: noteDocument.entity.drawing.bounds, scale: 1.0)
+        drawing.image(from: drawing.bounds, scale: 1.0)
     }
 
     var body: some View {
-        Button(action: { open(noteDocument: noteDocument) },
+        Button(action: action,
                label: {
                 Image(uiImage: image)
                     .resizable()
@@ -25,10 +27,6 @@ struct NoteImage: View {
                     .background(Color(UIColor.secondarySystemBackground))
                     .shadow(radius: 5.0)
         })
-    }
-
-    func open(noteDocument: NoteDocument) {
-        CanvasRouter.shared.openCanvas(noteDocument: noteDocument)
     }
 }
 
