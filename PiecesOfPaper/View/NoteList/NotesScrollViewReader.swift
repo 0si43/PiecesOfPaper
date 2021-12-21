@@ -9,16 +9,14 @@
 import SwiftUI
 
 struct NotesScrollViewReader: View {
-    @ObservedObject var viewModel: NotesViewModel
-    var noteDocuments: [NoteDocument] {
-        viewModel.publishedNoteDocuments
-    }
+    var documents: [NoteDocument]
+    var parent: NotesGridParent
 
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
                 Spacer(minLength: 30.0)
-                NotesGrid(viewModel: viewModel)
+                NotesGrid(documents: documents, parent: parent)
             }
             .padding([.leading, .trailing])
             .navigationBarTitleDisplayMode(.inline)
@@ -36,7 +34,7 @@ struct NotesScrollViewReader: View {
     }
 
     func scrollToBottom(proxy: ScrollViewProxy) {
-        proxy.scrollTo(noteDocuments.count - 1, anchor: .bottom)
+        proxy.scrollTo(documents.endIndex - 1, anchor: .bottom)
     }
 }
 

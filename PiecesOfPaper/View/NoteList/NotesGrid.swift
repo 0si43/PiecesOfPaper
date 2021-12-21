@@ -9,10 +9,20 @@
 import SwiftUI
 import PencilKit
 
+protocol NotesGridParent {
+    func getTagToNote(document: NoteDocument) -> [TagEntity]
+    func duplicate(_ document: NoteDocument)
+    func archive(_ document: NoteDocument)
+    func unarchive(_ document: NoteDocument)
+    func delete(_ document: NoteDocument)
+
+}
+
 struct NotesGrid: View {
     @State var isShowActivityView = false
     @State var documentToShare: NoteDocument?
-    @ObservedObject var viewModel: NotesViewModel
+    var documents: [NoteDocument]
+    var parent: NotesGridParent
 
     let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
     var activityViewController: UIActivityViewControllerWrapper? {
@@ -29,37 +39,38 @@ struct NotesGrid: View {
 
     var body: some View {
         LazyVGrid(columns: [gridItem]) {
-            ForEach((0..<viewModel.publishedNoteDocuments.count), id: \.self) { index in
+            ForEach((0..<documents.endIndex), id: \.self) { index in
                 VStack {
-                    NoteImage(noteDocument: $viewModel.publishedNoteDocuments[index])
+                    NoteImage(drawing: documents[index].entity.drawing,
+                              action: { CanvasRouter.shared.openCanvas(noteDocument: documents[index]) })
                     .contextMenu {
                         Button(
-                            action: { duplicate(noteDocument: viewModel.publishedNoteDocuments[index]) },
+                            action: { duplicate(noteDocument: documents[index]) },
                             label: { Label("Duplicate", systemImage: "doc.on.doc") })
-                        if viewModel.publishedNoteDocuments[index].isArchived {
+                        if documents[index].isArchived {
                                 Button(
-                                    action: { unarchive(noteDocument: viewModel.publishedNoteDocuments[index]) },
+                                    action: { unarchive(noteDocument: documents[index]) },
                                     label: { Label("Unarchive", systemImage: "arrow.up.square") })
                                 if #available(iOS 15.0, *) {
                                     Button(role: .destructive) {
-                                        delete(noteDocument: viewModel.publishedNoteDocuments[index])
+                                        delete(noteDocument: documents[index])
                                     } label: {
                                         Label("Delete", systemImage: "trash")
                                     }
                                 }
                         } else {
-                            Button(action: { archive(noteDocument: viewModel.publishedNoteDocuments[index]) },
+                            Button(action: { archive(noteDocument: documents[index]) },
                                    label: { Label("Archive", systemImage: "arrow.down.square") })
                         }
-                        Button(action: { share(noteDocument: viewModel.publishedNoteDocuments[index]) },
+                        Button(action: { share(noteDocument: documents[index]) },
                                label: { Label("Share", systemImage: "square.and.arrow.up") })
                         Button(
                             action: {
-                                TagListRouter.shared.showTagList(noteDocument: viewModel.publishedNoteDocuments[index])
+                                TagListRouter.shared.showTagList(noteDocument: documents[index])
                             },
                             label: { Label("Tag", systemImage: "tag") })
                     }
-                    TagHStack(tags: viewModel.getTagToNote(document: viewModel.publishedNoteDocuments[index]))
+                    TagHStack(tags: parent.getTagToNote(document: documents[index]))
                         .padding(.horizontal)
                 }
             }
@@ -70,19 +81,19 @@ struct NotesGrid: View {
     }
 
     func duplicate(noteDocument: NoteDocument) {
-        viewModel.duplicate(noteDocument)
+        parent.duplicate(noteDocument)
     }
 
     func archive(noteDocument: NoteDocument) {
-        viewModel.archive(noteDocument)
+        parent.archive(noteDocument)
     }
 
     func unarchive(noteDocument: NoteDocument) {
-        viewModel.unarchive(noteDocument)
+        parent.unarchive(noteDocument)
     }
 
     func delete(noteDocument: NoteDocument) {
-        viewModel.delete(noteDocument)
+        parent.delete(noteDocument)
     }
 
     func share(noteDocument: NoteDocument) {

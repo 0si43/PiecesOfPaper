@@ -11,14 +11,10 @@ import Combine
 
 final class NotesViewModel: ObservableObject {
     var objectWillChange = ObjectWillChangePublisher()
-    var publishedNoteDocuments = [NoteDocument]()
+    var noteDocuments = [NoteDocument]()
     private var counter = 0
-    private var noteDocuments = [NoteDocument]()
-    var isLoaded = false
-    var isNoData: Bool {
-        noteDocuments.isEmpty
-    }
 
+    var isLoaded = false
     var showArchiveAlert = false
     var isListConditionSheet = false {
         willSet {
@@ -196,7 +192,7 @@ final class NotesViewModel: ObservableObject {
         if counter <= noteDocuments.count {
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
-                self.publishedNoteDocuments = self.documentsAppliedConditions
+                self.noteDocuments = self.documentsAppliedConditions
                 self.isLoaded = true
                 self.counter = 0
                 self.objectWillChange.send()
@@ -207,7 +203,7 @@ final class NotesViewModel: ObservableObject {
     private func publish() {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.publishedNoteDocuments = self.documentsAppliedConditions
+            self.noteDocuments = self.documentsAppliedConditions
             self.isLoaded = true
             self.counter = 0
             self.objectWillChange.send()
@@ -254,13 +250,7 @@ final class NotesViewModel: ObservableObject {
         }
 
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
-        guard !noteDocuments.isEmpty else {
-            self.objectWillChange.send()
-            return
-        }
-
-        // publish() <- crash: Swift/ContiguousArrayBuffer.swift:580: Fatal error: Index out of range
-        update()
+        publish()
     }
 
     func unarchive(_ document: NoteDocument) {
@@ -273,11 +263,6 @@ final class NotesViewModel: ObservableObject {
         }
 
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
-        guard !noteDocuments.isEmpty else {
-            self.objectWillChange.send()
-            return
-        }
-
         publish()
     }
 

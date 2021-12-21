@@ -29,14 +29,14 @@ struct Notes: View {
                         viewModel.didFirstFetchRequest = true
                     }
             } else {
-                if viewModel.isNoData {
+                if viewModel.noteDocuments.isEmpty {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {
-                    NotesScrollViewReader(viewModel: viewModel)
+                    NotesScrollViewReader(documents: viewModel.noteDocuments,
+                                          parent: self)
                 }
             }
-
         }
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -61,7 +61,7 @@ struct Notes: View {
             Alert(title: Text(
                             "Are you sure you want to " +
                             "\(viewModel.isTargetDirectoryArchived ? "unarchived" : "archived")" + " " +
-                            "\(viewModel.publishedNoteDocuments.count) notes?"
+                            "\(viewModel.noteDocuments.count) notes?"
                             ),
                   primaryButton: cancelButton,
                   secondaryButton: actionButton)
@@ -70,6 +70,28 @@ struct Notes: View {
 
     func new() {
         CanvasRouter.shared.openNewCanvas()
+    }
+}
+
+extension Notes: NotesGridParent {
+    func getTagToNote(document: NoteDocument) -> [TagEntity] {
+        viewModel.getTagToNote(document: document)
+    }
+
+    func duplicate(_ document: NoteDocument) {
+        viewModel.duplicate(document)
+    }
+
+    func archive(_ document: NoteDocument) {
+        viewModel.archive(document)
+    }
+
+    func unarchive(_ document: NoteDocument) {
+        viewModel.unarchive(document)
+    }
+
+    func delete(_ document: NoteDocument) {
+        viewModel.delete(document)
     }
 }
 
