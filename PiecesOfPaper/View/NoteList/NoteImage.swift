@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NoteImage: View {
-    @Binding var noteDocument: NoteDocument
+    var noteDocument: NoteDocument
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
     private var image: UIImage {
         noteDocument.entity.drawing.image(from: noteDocument.entity.drawing.bounds, scale: 1.0)

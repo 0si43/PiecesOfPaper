@@ -33,7 +33,8 @@ struct Notes: View {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {
-                    NotesScrollViewReader(viewModel: viewModel)
+                    NotesScrollViewReader(documents: viewModel.publishedNoteDocuments,
+                                          parent: self)
                 }
             }
 
@@ -70,6 +71,28 @@ struct Notes: View {
 
     func new() {
         CanvasRouter.shared.openNewCanvas()
+    }
+}
+
+extension Notes: NotesGridParent {
+    func getTagToNote(document: NoteDocument) -> [TagEntity] {
+        viewModel.getTagToNote(document: document)
+    }
+
+    func duplicate(_ document: NoteDocument) {
+        viewModel.duplicate(document)
+    }
+
+    func archive(_ document: NoteDocument) {
+        viewModel.archive(document)
+    }
+
+    func unarchive(_ document: NoteDocument) {
+        viewModel.unarchive(document)
+    }
+
+    func delete(_ document: NoteDocument) {
+        viewModel.delete(document)
     }
 }
 
