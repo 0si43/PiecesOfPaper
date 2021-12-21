@@ -10,11 +10,15 @@ import SwiftUI
 
 struct NoteImage: View {
     @Binding var noteDocument: NoteDocument
+    @Environment(\.colorScheme) private var colorScheme: ColorScheme
+    private var image: UIImage {
+        noteDocument.entity.drawing.image(from: noteDocument.entity.drawing.bounds, scale: 1.0)
+    }
 
     var body: some View {
         Button(action: { open(noteDocument: noteDocument) },
                label: {
-                Image(uiImage: noteDocument.entity.drawing.image(from: noteDocument.entity.drawing.bounds, scale: 1.0))
+                Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 250.0, height: 190.0)
