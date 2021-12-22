@@ -11,7 +11,8 @@ import Combine
 
 final class NotesViewModel: ObservableObject {
     var objectWillChange = ObjectWillChangePublisher()
-    var noteDocuments = [NoteDocument]()
+    var publishedNoteDocuments = [NoteDocument]()
+    private var noteDocuments = [NoteDocument]()
     private var counter = 0
 
     var isLoaded = false
@@ -190,20 +191,14 @@ final class NotesViewModel: ObservableObject {
 
     private func publishIfLoadEnded() {
         if counter <= noteDocuments.count {
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.noteDocuments = self.documentsAppliedConditions
-                self.isLoaded = true
-                self.counter = 0
-                self.objectWillChange.send()
-            }
+            publish()
         }
     }
 
     private func publish() {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.noteDocuments = self.documentsAppliedConditions
+            self.publishedNoteDocuments = self.documentsAppliedConditions
             self.isLoaded = true
             self.counter = 0
             self.objectWillChange.send()

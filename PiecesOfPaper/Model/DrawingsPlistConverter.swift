@@ -29,8 +29,7 @@ enum DrawingsPlistConverter {
                 document.dataModel.drawings.forEach { drawing in
                     let path = inboxUrl.appendingPathComponent(FilePath.fileName)
                     let newDocument = NoteDocument(fileURL: path, entity: NoteEntity(drawing: drawing))
-                    newDocument.save(to: path, for: .forCreating) { result in
-                        print(result)
+                    newDocument.save(to: path, for: .forCreating) { _ in
                         // need some error handling
                     }
                 }
