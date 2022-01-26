@@ -22,10 +22,10 @@ struct SideBarList: View {
                     Label("Inbox", systemImage: "tray")
                 }
                 NavigationLink(destination: Notes(viewModel: allNoteViewModel)) {
-                    Label("All", systemImage: "note.text")
+                    Label("All", systemImage: "tray.full")
                 }
                 NavigationLink(destination: Notes(viewModel: archivedNoteViewModel)) {
-                    Label("Archived", systemImage: "archivebox")
+                    Label("Trash", systemImage: "trash")
                 }
             }
             Section(header: Text("Tag")) {
