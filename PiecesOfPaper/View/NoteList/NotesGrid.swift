@@ -50,7 +50,7 @@ struct NotesGrid: View {
                         if documents[index].isArchived {
                                 Button(
                                     action: { unarchive(noteDocument: documents[index]) },
-                                    label: { Label("Unarchive", systemImage: "arrow.up.square") })
+                                    label: { Label("Move to Inbox", systemImage: "tray") })
                                 if #available(iOS 15.0, *) {
                                     Button(role: .destructive) {
                                         delete(noteDocument: documents[index])
@@ -60,7 +60,7 @@ struct NotesGrid: View {
                                 }
                         } else {
                             Button(action: { archive(noteDocument: documents[index]) },
-                                   label: { Label("Archive", systemImage: "arrow.down.square") })
+                                   label: { Label("Move to Trash", systemImage: "trash") })
                         }
                         Button(action: { share(noteDocument: documents[index]) },
                                label: { Label("Share", systemImage: "square.and.arrow.up") })
