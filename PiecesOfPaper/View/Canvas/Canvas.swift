@@ -41,12 +41,10 @@ struct Canvas: View {
             .navigationBarHidden(viewModel.hideExceptPaper)
             .navigationBarBackButtonHidden(true)
             .toolbar {
-                ToolbarItemGroup(placement: .navigationBarLeading) {
-                    Button(action: archive) {
-                        Image(systemName: "arrow.down.square").foregroundColor(.red)
-                    }
-                }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button(action: archive) {
+                        Image(systemName: "trash").foregroundColor(.red)
+                    }
                     if viewModel.document != nil {
                         Button(action: {
                                 viewModel.setVisibleToolPicker(false)
