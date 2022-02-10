@@ -1,5 +1,5 @@
 //
-//  PreviewDevice.swift
+//  TargetPreviewDevice.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2022/02/10.

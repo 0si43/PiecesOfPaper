@@ -122,8 +122,15 @@ struct Canvas: View {
 }
 
 // MARK: - PreviewProvider
-// struct Canvas_Previews: PreviewProvider {
-//    static var previews: some View {
-//        
-//    }
-// }
+
+struct Canvas_Previews: PreviewProvider {
+    static var viewModel = CanvasViewModel(noteDocument: NoteDocument.preview)
+    
+    static var previews: some View {
+        ForEach(TargetPreviewDevice.allCases) { deviceName in
+            Canvas(viewModel: viewModel)
+                .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
+                .previewDisplayName(deviceName.rawValue)
+        }
+    }
+}
