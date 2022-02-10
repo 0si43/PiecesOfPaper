@@ -97,8 +97,6 @@ private struct NewFeature: View {
     }
 }
 
-// MARK: - PreviewProvider
-
 struct Onboarding_Previews: PreviewProvider {
     static var previews: some View {
         ForEach(TargetPreviewDevice.allCases) { deviceName in

@@ -44,8 +44,6 @@ struct SideBarList: View {
     }
 }
 
-// MARK: - PreviewProvider
-
 struct SideBarList_Previews: PreviewProvider {
     static var previews: some View {
         ForEach(TargetPreviewDevice.allCases) { deviceName in
