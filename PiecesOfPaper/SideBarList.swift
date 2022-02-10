@@ -43,3 +43,13 @@ struct SideBarList: View {
         .navigationTitle("Pieces of Paper")
     }
 }
+
+struct SideBarList_Previews: PreviewProvider {
+    static var previews: some View {
+        ForEach(TargetPreviewDevice.allCases) { deviceName in
+            SideBarList()
+                .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
+                .previewDisplayName(deviceName.rawValue)
+        }
+    }
+}
