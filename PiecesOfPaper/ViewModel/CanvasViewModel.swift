@@ -95,15 +95,26 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         canvasView.addInteraction(pencilInteraction)
     }
 
+    private var isDrawingWiderThanWindow: Bool {
+        canvasView.frame.width < canvasView.drawing.bounds.maxX
+    }
+
+    private var isDrawingHigherThanWindow: Bool {
+        canvasView.frame.height < canvasView.drawing.bounds.maxY
+    }
+
     func initialContentSize() {
         guard !canvasView.drawing.bounds.isNull else { return }
 
-        if canvasView.frame.width < canvasView.drawing.bounds.maxX {
-            canvasView.contentSize.width = canvasView.drawing.bounds.maxX
-        }
-
-        if canvasView.frame.height < canvasView.drawing.bounds.maxY {
-            canvasView.contentSize.height = canvasView.drawing.bounds.maxY
+        if isDrawingWiderThanWindow, isDrawingHigherThanWindow {
+            canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
+                                           height: canvasView.drawing.bounds.maxY)
+        } else if isDrawingWiderThanWindow, !isDrawingHigherThanWindow {
+            canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
+                                           height: canvasView.frame.height)
+        } else if !isDrawingWiderThanWindow, isDrawingHigherThanWindow {
+            canvasView.contentSize = .init(width: canvasView.frame.width,
+                                           height: canvasView.drawing.bounds.maxY)
         }
 
         canvasView.contentOffset = .zero

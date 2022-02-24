@@ -81,12 +81,12 @@ extension CanvasDelegateBridgeObject: PKCanvasViewDelegate {
         guard !canvasView.drawing.bounds.isNull,
               UserPreference().enabledInfiniteScroll else { return }
         let drawingWidth = canvasView.drawing.bounds.maxX
-        if canvasView.contentSize.width < drawingWidth * 2 {
+        if canvasView.contentSize.width * 9 / 10 < drawingWidth {
             canvasView.contentSize.width += canvasView.frame.width
         }
 
         let drawingHeight = canvasView.drawing.bounds.maxY
-        if canvasView.contentSize.height < drawingHeight * 2 {
+        if canvasView.contentSize.height * 9 / 10 < drawingHeight {
             canvasView.contentSize.height += canvasView.frame.height
         }
 
