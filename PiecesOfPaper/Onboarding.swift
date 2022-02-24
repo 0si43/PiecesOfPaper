@@ -99,6 +99,10 @@ private struct NewFeature: View {
 
 struct Onboarding_Previews: PreviewProvider {
     static var previews: some View {
-        Onboarding()
+        ForEach(TargetPreviewDevice.allCases) { deviceName in
+            Onboarding()
+                .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
+                .previewDisplayName(deviceName.rawValue)
+        }
     }
 }
