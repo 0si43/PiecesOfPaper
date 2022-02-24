@@ -51,6 +51,7 @@
 		A6CADA5527675D8500657E9E /* UserPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA5427675D8500657E9E /* UserPreference.swift */; };
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
 		A6EE43272523271F000B203E /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE43262523271F000B203E /* Document.swift */; };
+		A6F6ED4B27C77A7500DD3296 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F6ED4A27C77A7500DD3296 /* RootView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,6 +116,7 @@
 		A6DE5BC32437167E006D3D47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A6DE5BC82437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6EE43262523271F000B203E /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
+		A6F6ED4A27C77A7500DD3296 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -275,6 +277,7 @@
 			isa = PBXGroup;
 			children = (
 				A62EEAF1273248A300D513B8 /* PiecesOfPaperApp.swift */,
+				A6F6ED4A27C77A7500DD3296 /* RootView.swift */,
 				A6620E2D274C6E8E00C708A2 /* SideBarList.swift */,
 				A6A229C0277095A4009ED7D4 /* Onboarding.swift */,
 				A6743E6B2765B88F0075F138 /* Router */,
@@ -436,6 +439,7 @@
 				A63C9590275E111500822461 /* AddTagFooter.swift in Sources */,
 				A63C9584275DB67700822461 /* Tag.swift in Sources */,
 				A6620E34274C774D00C708A2 /* ScrollButton.swift in Sources */,
+				A6F6ED4B27C77A7500DD3296 /* RootView.swift in Sources */,
 				A63C9578275C8F4A00822461 /* TagList.swift in Sources */,
 				A6620E272747A66100C708A2 /* CanvasRouter.swift in Sources */,
 				A62EEAF42732517600D513B8 /* NotesViewModel.swift in Sources */,
