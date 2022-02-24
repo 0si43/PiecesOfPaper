@@ -6,6 +6,7 @@
 //  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
 //
 
+import PencilKit
 import SwiftUI
 
 struct NoteInformation: View {
@@ -86,8 +87,12 @@ struct NoteInformation: View {
     }
 }
 
-// struct NoteInformation_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NoteInformation()
-//    }
-// }
+ struct NoteInformation_Previews: PreviewProvider {
+    static var previews: some View {
+        ForEach(TargetPreviewDevice.allCases) { deviceName in
+            NoteInformation(document: nil)
+                .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
+                .previewDisplayName(deviceName.rawValue)
+        }
+    }
+ }
