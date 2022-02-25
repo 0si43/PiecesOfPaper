@@ -29,6 +29,7 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
     var canvasView = PKCanvasView() {
         didSet {
             canvasView.delegate = delegateBridge
+            canvasView.maximumZoomScale = 8.0
             delegateBridge.toolPicker.addObserver(canvasView)
             addPencilInteraction()
         }
