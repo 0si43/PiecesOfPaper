@@ -12,6 +12,7 @@ import LinkPresentation
 
 protocol CanvasDelegateBridgeObjectDelegate: AnyObject {
     var hideExceptPaper: Bool { get set }
+    var canvasView: PKCanvasView { get }
     func save(drawing: PKDrawing)
 }
 
@@ -108,5 +109,12 @@ extension CanvasDelegateBridgeObject: UIActivityItemSource {
         let metadata = LPLinkMetadata()
         metadata.title = "Share your note"
         return metadata
+    }
+}
+
+// MARK: - UIScrollViewDelegate
+extension CanvasDelegateBridgeObject: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        delegate?.canvasView
     }
 }
