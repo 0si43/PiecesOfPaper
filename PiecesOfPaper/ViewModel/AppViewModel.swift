@@ -1,5 +1,5 @@
 //
-//  PiecesOfPaperAppViewModel.swift
+//  AppViewModel.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/12/20.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class PiecesOfPaperAppViewModel: ObservableObject {
+final class AppViewModel: ObservableObject {
     @Published var isShowCanvas = false
     @Published var isShowTagList = false
     @Published var iCloudDenying = false
