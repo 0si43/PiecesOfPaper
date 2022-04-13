@@ -30,8 +30,8 @@ struct NoteImage: View {
     }
 }
 
-// struct NoteImage_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NoteImage()
-//    }
-// }
+ struct NoteImage_Previews: PreviewProvider {
+    static var previews: some View {
+        NoteImage(drawing: PKDrawing(), action: {})
+    }
+ }
