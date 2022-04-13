@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct RootView: View {
-    @StateObject var viewModel = PiecesOfPaperAppViewModel()
+    @StateObject var viewModel = AppViewModel()
     @StateObject var canvasViewModel = CanvasViewModel()
     @AppStorage("onboarding_v3.0.0") var didShowOnboarding = false
 
