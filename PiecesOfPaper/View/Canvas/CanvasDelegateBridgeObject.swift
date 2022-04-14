@@ -69,31 +69,6 @@ extension CanvasDelegateBridgeObject: UIPencilInteractionDelegate {
     }
 }
 
-// MARK: - PKCanvasViewDelegate
-extension CanvasDelegateBridgeObject: PKCanvasViewDelegate {
-    func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-        updateContentSizeIfNeeded(canvasView)
-
-        guard UserPreference().enabledAutoSave else { return }
-        delegate?.save(drawing: canvasView.drawing)
-    }
-
-    private func updateContentSizeIfNeeded(_ canvasView: PKCanvasView) {
-        guard !canvasView.drawing.bounds.isNull,
-              UserPreference().enabledInfiniteScroll else { return }
-        let drawingWidth = canvasView.drawing.bounds.maxX
-        if canvasView.contentSize.width * 9 / 10 < drawingWidth {
-            canvasView.contentSize.width += canvasView.frame.width
-        }
-
-        let drawingHeight = canvasView.drawing.bounds.maxY
-        if canvasView.contentSize.height * 9 / 10 < drawingHeight {
-            canvasView.contentSize.height += canvasView.frame.height
-        }
-
-    }
-}
-
 // MARK: - UIActivityItemSource
 extension CanvasDelegateBridgeObject: UIActivityItemSource {
     func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
