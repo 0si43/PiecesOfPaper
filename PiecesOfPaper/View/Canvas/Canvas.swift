@@ -34,7 +34,7 @@ struct Canvas: View {
     var cancelButton: Alert.Button { .default(Text("Cancel")) }
 
     var body: some View {
-        PKCanvasViewWrapper(canvasView: $viewModel.canvasView)
+        PKCanvasViewWrapper(canvasView: $viewModel.canvasView, saveAction: viewModel.save)
             .gesture(tap)
             .navigationBarTitleDisplayMode(.inline)
             .statusBar(hidden: viewModel.hideExceptPaper)

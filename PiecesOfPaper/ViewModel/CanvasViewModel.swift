@@ -21,14 +21,11 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
                 canvasView.drawing = drawing
                 initialContentSize()
             }
-
-            canvasView.delegate = delegateBridge
         }
     }
 
     var canvasView = PKCanvasView() {
         didSet {
-            canvasView.delegate = delegateBridge
             canvasView.maximumZoomScale = 8.0
             delegateBridge.toolPicker.addObserver(canvasView)
             addPencilInteraction()
@@ -74,7 +71,6 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         self.document = noteDocument
 
         delegateBridge.delegate = self
-        canvasView.delegate = delegateBridge
         delegateBridge.toolPicker.addObserver(canvasView)
         addPencilInteraction()
     }
