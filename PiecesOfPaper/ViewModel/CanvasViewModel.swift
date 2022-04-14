@@ -9,7 +9,7 @@
 import Foundation
 import PencilKit
 
-final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegate {
+final class CanvasViewModel: ObservableObject {
     var document: NoteDocument? {
         didSet {
             if document == nil {
@@ -41,8 +41,6 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         }
     }
 
-    private let delegateBridge = CanvasDelegateBridgeObject()
-
     var canReviewRequest: Bool {
         guard let inboxUrl = FilePath.inboxUrl,
               let inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: inboxUrl.path) else {
@@ -61,13 +59,11 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
             image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
         }
 
-        return UIActivityViewControllerWrapper(activityItems: [image, delegateBridge])
+        return UIActivityViewControllerWrapper(activityItems: [image])
     }
 
     init(noteDocument: NoteDocument? = nil) {
         self.document = noteDocument
-
-        delegateBridge.delegate = self
     }
 
     private func createNewDocument() {
