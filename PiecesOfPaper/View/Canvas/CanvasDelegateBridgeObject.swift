@@ -19,53 +19,10 @@ protocol CanvasDelegateBridgeObjectDelegate: AnyObject {
 // MARK: - PKToolPickerObserver
 ///  This class conform some protocol, because SwiftUI Views cannot conform PencilKit delegates
 final class CanvasDelegateBridgeObject: NSObject, PKToolPickerObserver {
-    let toolPicker = PKToolPicker()
-    private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
-    private var previousTool: PKTool!
-    private var currentTool: PKTool!
     weak var delegate: CanvasDelegateBridgeObjectDelegate?
 
     override init() {
         super.init()
-
-        toolPicker.addObserver(self)
-        toolPicker.selectedTool = defaultTool
-        previousTool = defaultTool
-        currentTool = defaultTool
-        toolPicker.showsDrawingPolicyControls = false
-    }
-
-    func toolPickerSelectedToolDidChange(_ toolPicker: PKToolPicker) {
-        previousTool = currentTool
-        currentTool = toolPicker.selectedTool
-    }
-}
-
-// MARK: - UIPencilInteractionDelegate
-extension CanvasDelegateBridgeObject: UIPencilInteractionDelegate {
-    /// Double tap action on Appel Pencil when PKToolPicker is invisible(When it's visible, iOS handles its action)
-    func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
-        guard !toolPicker.isVisible else { return }
-        let action = UIPencilInteraction.preferredTapAction
-        switch action {
-        case .switchPrevious:   switchPreviousTool()
-        case .switchEraser:     switchEraser()
-        case .showColorPalette: delegate?.hideExceptPaper.toggle()
-        case .ignore:           return
-        default:                return
-        }
-    }
-
-    private func switchPreviousTool() {
-        toolPicker.selectedTool = previousTool
-    }
-
-    private func switchEraser() {
-        if currentTool is PKEraserTool {
-            toolPicker.selectedTool = previousTool
-        } else {
-            toolPicker.selectedTool = PKEraserTool(.vector)
-        }
     }
 }
 
