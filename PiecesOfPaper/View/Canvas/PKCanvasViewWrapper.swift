@@ -11,15 +11,18 @@ import PencilKit
 
 struct PKCanvasViewWrapper: UIViewRepresentable {
     @Binding var canvasView: PKCanvasView
+    @Binding var showToolPicker: Bool
+
     let saveAction: (PKDrawing) -> Void
 
     func makeUIView(context: Context) -> PKCanvasView {
-        canvasView.tool = PKInkingTool(.pen, color: .black, width: 1)
         canvasView.delegate = context.coordinator
         return canvasView
     }
 
-    func updateUIView(_ canvasView: PKCanvasView, context: Context) {}
+    func updateUIView(_ canvasView: PKCanvasView, context: Context) {
+        context.coordinator.toolPicker.setVisible(showToolPicker, forFirstResponder: canvasView)
+    }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -27,8 +30,26 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
 
     class Coordinator: NSObject {
         let parent: PKCanvasViewWrapper
+        let toolPicker = PKToolPicker()
+        private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
+        private var previousTool: PKTool!
+        private var currentTool: PKTool!
         init(_ canvasViewWrapper: PKCanvasViewWrapper) {
             self.parent = canvasViewWrapper
+
+            self.previousTool = defaultTool
+            self.currentTool = defaultTool
+            toolPicker.selectedTool = defaultTool
+            super.init()
+
+            toolPicker.showsDrawingPolicyControls = false
+            toolPicker.addObserver(self)
+            toolPicker.addObserver(canvasViewWrapper.canvasView)
+            toolPicker.setVisible(true, forFirstResponder: canvasViewWrapper.canvasView)
+
+            let pencilInteraction = UIPencilInteraction()
+            pencilInteraction.delegate = self
+            canvasViewWrapper.canvasView.addInteraction(pencilInteraction)
         }
     }
 }
@@ -55,6 +76,39 @@ extension PKCanvasViewWrapper.Coordinator: PKCanvasViewDelegate {
         }
     }
 
+}
+
+extension PKCanvasViewWrapper.Coordinator: PKToolPickerObserver {
+    func toolPickerSelectedToolDidChange(_ toolPicker: PKToolPicker) {
+        previousTool = currentTool
+        currentTool = toolPicker.selectedTool
+    }
+}
+
+extension PKCanvasViewWrapper.Coordinator: UIPencilInteractionDelegate {
+    func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
+        guard !toolPicker.isVisible else { return }
+        let action = UIPencilInteraction.preferredTapAction
+        switch action {
+        case .switchPrevious:   switchPreviousTool()
+        case .switchEraser:     switchEraser()
+        case .showColorPalette: parent.showToolPicker.toggle()
+        case .ignore:           return
+        default:                return
+        }
+    }
+
+    private func switchPreviousTool() {
+        toolPicker.selectedTool = previousTool
+    }
+
+    private func switchEraser() {
+        if currentTool is PKEraserTool {
+            toolPicker.selectedTool = previousTool
+        } else {
+            toolPicker.selectedTool = PKEraserTool(.vector)
+        }
+    }
 }
 
 // struct PKCanvasViewWrapper_Previews: PreviewProvider {

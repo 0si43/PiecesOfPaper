@@ -27,22 +27,21 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
     var canvasView = PKCanvasView() {
         didSet {
             canvasView.maximumZoomScale = 8.0
-            delegateBridge.toolPicker.addObserver(canvasView)
-            addPencilInteraction()
         }
     }
 
     @Published var hideExceptPaper = true
+    @Published var showToolPicker = true
     @Published var showDrawingInformation = false
     @Published var showTagList = false
     @Published var showUnsavedAlert = false
-    @Published var isShowActivityView = false {
-        didSet {
-            if isShowActivityView == true {
-                delegateBridge.toolPicker.setVisible(false, forFirstResponder: canvasView)
-            }
-        }
-    }
+    @Published var isShowActivityView = false // {
+//        didSet {
+//            if isShowActivityView == true {
+//                delegateBridge.toolPicker.setVisible(false, forFirstResponder: canvasView)
+//            }
+//        }
+//    }
 
     private let delegateBridge = CanvasDelegateBridgeObject()
 
@@ -71,8 +70,6 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         self.document = noteDocument
 
         delegateBridge.delegate = self
-        delegateBridge.toolPicker.addObserver(canvasView)
-        addPencilInteraction()
     }
 
     private func createNewDocument() {
@@ -84,12 +81,6 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         let path = inboxUrl.appendingPathComponent(FilePath.fileName)
         document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
         canvasView = PKCanvasView()
-    }
-
-    private func addPencilInteraction() {
-        let pencilInteraction = UIPencilInteraction()
-        pencilInteraction.delegate = delegateBridge
-        canvasView.addInteraction(pencilInteraction)
     }
 
     private var isDrawingWiderThanWindow: Bool {
@@ -142,9 +133,5 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         } catch {
             print("Could not archive: ", error.localizedDescription)
         }
-    }
-
-    func setVisibleToolPicker(_ isVisible: Bool) {
-        delegateBridge.toolPicker.setVisible(isVisible, forFirstResponder: canvasView)
     }
 }
