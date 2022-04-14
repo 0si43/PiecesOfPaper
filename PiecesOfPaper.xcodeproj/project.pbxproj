@@ -38,7 +38,6 @@
 		A6620E2E274C6E8E00C708A2 /* SideBarList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E2D274C6E8E00C708A2 /* SideBarList.swift */; };
 		A6620E34274C774D00C708A2 /* ScrollButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E33274C774D00C708A2 /* ScrollButton.swift */; };
 		A6620E36274C7A3D00C708A2 /* Notes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E35274C7A3D00C708A2 /* Notes.swift */; };
-		A6620E38274C819300C708A2 /* CanvasDelegateBridgeObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E37274C819300C708A2 /* CanvasDelegateBridgeObject.swift */; };
 		A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E39274C8FA400C708A2 /* NoteDocument.swift */; };
 		A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E3B274CD88000C708A2 /* FilePath.swift */; };
 		A667CCB927B4ACB20076CEB8 /* TargetPreviewDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A667CCB827B4ACB20076CEB8 /* TargetPreviewDevice.swift */; };
@@ -96,7 +95,6 @@
 		A6620E2D274C6E8E00C708A2 /* SideBarList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarList.swift; sourceTree = "<group>"; };
 		A6620E33274C774D00C708A2 /* ScrollButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollButton.swift; sourceTree = "<group>"; };
 		A6620E35274C7A3D00C708A2 /* Notes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notes.swift; sourceTree = "<group>"; };
-		A6620E37274C819300C708A2 /* CanvasDelegateBridgeObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasDelegateBridgeObject.swift; sourceTree = "<group>"; };
 		A6620E39274C8FA400C708A2 /* NoteDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocument.swift; sourceTree = "<group>"; };
 		A6620E3B274CD88000C708A2 /* FilePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePath.swift; sourceTree = "<group>"; };
 		A6675A37251D89BA00343151 /* Like Paper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Like Paper.entitlements"; sourceTree = "<group>"; };
@@ -194,7 +192,6 @@
 			children = (
 				A6484FCD272B923B00676ED8 /* Canvas.swift */,
 				A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */,
-				A6620E37274C819300C708A2 /* CanvasDelegateBridgeObject.swift */,
 				A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */,
 				A63C959A2765A5D500822461 /* NoteInformation.swift */,
 			);
@@ -433,7 +430,6 @@
 				A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */,
 				A63C9593276444CF00822461 /* ListCondition.swift in Sources */,
 				A6A229BF27705623009ED7D4 /* AppViewModel.swift in Sources */,
-				A6620E38274C819300C708A2 /* CanvasDelegateBridgeObject.swift in Sources */,
 				A63C95972764589F00822461 /* ListConditionSettingViewModel.swift in Sources */,
 				A6CADA51276752E600657E9E /* SettingView.swift in Sources */,
 				A63C9590275E111500822461 /* AddTagFooter.swift in Sources */,

@@ -1,5 +1,5 @@
 //
-//  Canvas.swift
+//  PKCanvasViewWrapper.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/10/29.
@@ -37,9 +37,9 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
         init(_ canvasViewWrapper: PKCanvasViewWrapper) {
             self.parent = canvasViewWrapper
 
+            toolPicker.selectedTool = defaultTool
             self.previousTool = defaultTool
             self.currentTool = defaultTool
-            toolPicker.selectedTool = defaultTool
             super.init()
 
             toolPicker.showsDrawingPolicyControls = false
@@ -54,6 +54,7 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
     }
 }
 
+// MARK: - PKCanvasViewDelegate
 extension PKCanvasViewWrapper.Coordinator: PKCanvasViewDelegate {
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
         updateContentSizeIfNeeded(canvasView)
@@ -78,6 +79,7 @@ extension PKCanvasViewWrapper.Coordinator: PKCanvasViewDelegate {
 
 }
 
+// MARK: - PKToolPickerObserver
 extension PKCanvasViewWrapper.Coordinator: PKToolPickerObserver {
     func toolPickerSelectedToolDidChange(_ toolPicker: PKToolPicker) {
         previousTool = currentTool
@@ -85,6 +87,7 @@ extension PKCanvasViewWrapper.Coordinator: PKToolPickerObserver {
     }
 }
 
+// MARK: - UIPencilInteractionDelegate
 extension PKCanvasViewWrapper.Coordinator: UIPencilInteractionDelegate {
     func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
         guard !toolPicker.isVisible else { return }
@@ -111,10 +114,20 @@ extension PKCanvasViewWrapper.Coordinator: UIPencilInteractionDelegate {
     }
 }
 
-// struct PKCanvasViewWrapper_Previews: PreviewProvider {
-//    @State static var canvas = PKCanvasView()
-//
-//    static var previews: some View {
-//        PKCanvasViewWrapper(canvasView: $canvas)
-//    }
-// }
+// MARK: - UIScrollViewDelegate
+extension PKCanvasViewWrapper.Coordinator: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        parent.canvasView
+    }
+}
+
+ struct PKCanvasViewWrapper_Previews: PreviewProvider {
+    @State static var canvas = PKCanvasView()
+    @State static var showToolPicker = false
+
+    static var previews: some View {
+        PKCanvasViewWrapper(canvasView: $canvas,
+                            showToolPicker: $showToolPicker,
+                            saveAction: { _ in })
+    }
+ }
