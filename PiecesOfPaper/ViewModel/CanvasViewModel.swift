@@ -35,13 +35,11 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
     @Published var showDrawingInformation = false
     @Published var showTagList = false
     @Published var showUnsavedAlert = false
-    @Published var isShowActivityView = false // {
-//        didSet {
-//            if isShowActivityView == true {
-//                delegateBridge.toolPicker.setVisible(false, forFirstResponder: canvasView)
-//            }
-//        }
-//    }
+    @Published var isShowActivityView = false {
+        didSet {
+            showToolPicker = !isShowActivityView
+        }
+    }
 
     private let delegateBridge = CanvasDelegateBridgeObject()
 
