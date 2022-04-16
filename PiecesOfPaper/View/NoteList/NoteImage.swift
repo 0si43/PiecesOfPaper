@@ -10,15 +10,16 @@ import SwiftUI
 import PencilKit
 
 struct NoteImage: View {
-    var drawing: PKDrawing
+    var document: NoteDocument
+    @State var showCanvas = false
     var action: () -> Void
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
     private var image: UIImage {
-        drawing.image(from: drawing.bounds, scale: 1.0)
+        document.entity.drawing.image(from: document.entity.drawing.bounds, scale: 1.0)
     }
 
     var body: some View {
-        Button(action: action,
+        Button(action: { showCanvas = true },
                label: {
                 Image(uiImage: image)
                     .resizable()
@@ -27,11 +28,16 @@ struct NoteImage: View {
                     .background(Color(UIColor.secondarySystemBackground))
                     .shadow(radius: 5.0)
         })
+        .fullScreenCover(isPresented: $showCanvas) {
+            NavigationView {
+                Canvas(viewModel: CanvasViewModel(noteDocument: document))
+            }
+        }
     }
 }
 
- struct NoteImage_Previews: PreviewProvider {
-    static var previews: some View {
-        NoteImage(drawing: PKDrawing(), action: {})
-    }
- }
+// struct NoteImage_Previews: PreviewProvider {
+//    static var previews: some View {
+//        NoteImage(drawing: PKDrawing(), action: {})
+//    }
+// }

@@ -27,7 +27,7 @@ struct RootView: View {
         }
         .fullScreenCover(isPresented: $viewModel.isShowCanvas) {
             NavigationView {
-                Canvas(viewModel: canvasViewModel)
+                Canvas(viewModel: CanvasViewModel())
             }
         }
         .sheet(isPresented: $viewModel.showOnboarding) {
@@ -60,9 +60,7 @@ struct RootView: View {
                 return
             }
 
-            if didShowOnboarding {
-                CanvasRouter.shared.openNewCanvas()
-            }
+            viewModel.isShowCanvas = true
         }
         .alert(isPresented: $viewModel.iCloudDenying) { () -> Alert in
             Alert(title: Text(viewModel.iCloudDeniedWarningMessage),

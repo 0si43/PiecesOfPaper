@@ -10,10 +10,45 @@ import SwiftUI
 import PencilKit
 
 struct PKCanvasViewWrapper: UIViewRepresentable {
-    @Binding var canvasView: PKCanvasView
+    private let canvasView = PKCanvasView()
     @Binding var showToolPicker: Bool
-
     let saveAction: (PKDrawing) -> Void
+
+    init(drawing: PKDrawing?, showToolPicker: Binding<Bool>,
+         saveAction: @escaping (PKDrawing) -> Void) {
+        self._showToolPicker = showToolPicker
+        self.saveAction = saveAction
+        canvasView.maximumZoomScale = 8.0
+        if let drawing = drawing {
+            self.canvasView.drawing = drawing
+            initialContentSize()
+        }
+    }
+
+    private var isDrawingWiderThanWindow: Bool {
+        canvasView.frame.width < canvasView.drawing.bounds.maxX
+    }
+
+    private var isDrawingHigherThanWindow: Bool {
+        canvasView.frame.height < canvasView.drawing.bounds.maxY
+    }
+
+    private func initialContentSize() {
+        guard !canvasView.drawing.bounds.isNull else { return }
+
+        if isDrawingWiderThanWindow, isDrawingHigherThanWindow {
+            canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
+                                           height: canvasView.drawing.bounds.maxY)
+        } else if isDrawingWiderThanWindow, !isDrawingHigherThanWindow {
+            canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
+                                           height: canvasView.frame.height)
+        } else if !isDrawingWiderThanWindow, isDrawingHigherThanWindow {
+            canvasView.contentSize = .init(width: canvasView.frame.width,
+                                           height: canvasView.drawing.bounds.maxY)
+        }
+
+        canvasView.contentOffset = .zero
+    }
 
     func makeUIView(context: Context) -> PKCanvasView {
         canvasView.delegate = context.coordinator
@@ -22,6 +57,7 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
 
     func updateUIView(_ canvasView: PKCanvasView, context: Context) {
         context.coordinator.toolPicker.setVisible(showToolPicker, forFirstResponder: canvasView)
+        canvasView.becomeFirstResponder()
     }
 
     func makeCoordinator() -> Coordinator {
@@ -42,14 +78,22 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
             self.currentTool = defaultTool
             super.init()
 
+            setToolPicker()
+            setPencilInteraction()
+        }
+
+        private func setToolPicker() {
             toolPicker.showsDrawingPolicyControls = false
             toolPicker.addObserver(self)
-            toolPicker.addObserver(canvasViewWrapper.canvasView)
-            toolPicker.setVisible(true, forFirstResponder: canvasViewWrapper.canvasView)
+            toolPicker.addObserver(parent.canvasView)
+            toolPicker.setVisible(false, forFirstResponder: parent.canvasView)
+            parent.canvasView.becomeFirstResponder()
+        }
 
+        private func setPencilInteraction() {
             let pencilInteraction = UIPencilInteraction()
             pencilInteraction.delegate = self
-            canvasViewWrapper.canvasView.addInteraction(pencilInteraction)
+            parent.canvasView.addInteraction(pencilInteraction)
         }
     }
 }
@@ -122,11 +166,11 @@ extension PKCanvasViewWrapper.Coordinator: UIScrollViewDelegate {
 }
 
  struct PKCanvasViewWrapper_Previews: PreviewProvider {
-    @State static var canvas = PKCanvasView()
+    @State static var drawing = PKDrawing()
     @State static var showToolPicker = false
 
     static var previews: some View {
-        PKCanvasViewWrapper(canvasView: $canvas,
+        PKCanvasViewWrapper(drawing: drawing,
                             showToolPicker: $showToolPicker,
                             saveAction: { _ in })
     }

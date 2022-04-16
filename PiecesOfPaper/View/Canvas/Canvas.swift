@@ -22,7 +22,6 @@ struct Canvas: View {
             .onEnded { _ in
                 viewModel.hideExceptPaper.toggle()
                 viewModel.showToolPicker = !viewModel.hideExceptPaper
-                viewModel.canvasView.becomeFirstResponder()
             }
     }
 
@@ -34,7 +33,7 @@ struct Canvas: View {
     var cancelButton: Alert.Button { .default(Text("Cancel")) }
 
     var body: some View {
-        PKCanvasViewWrapper(canvasView: $viewModel.canvasView,
+        PKCanvasViewWrapper(drawing: viewModel.document?.entity.drawing,
                             showToolPicker: $viewModel.showToolPicker,
                             saveAction: viewModel.save)
             .gesture(tap)
@@ -86,7 +85,7 @@ struct Canvas: View {
 
     private func archive() {
         if !UserPreference().enabledAutoSave {
-            guard !viewModel.canvasView.drawing.strokes.isEmpty else {
+            guard !(viewModel.document?.entity.drawing.strokes.isEmpty ?? true) else {
                 presentationMode.wrappedValue.dismiss()
                 return
             }
@@ -103,7 +102,7 @@ struct Canvas: View {
 
     private func close() {
         if !UserPreference().enabledAutoSave {
-            viewModel.save(drawing: viewModel.canvasView.drawing)
+            viewModel.save()
         }
 
         if viewModel.hasSavedDocument {

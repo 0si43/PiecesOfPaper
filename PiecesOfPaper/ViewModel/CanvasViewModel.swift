@@ -10,28 +10,10 @@ import Foundation
 import PencilKit
 
 final class CanvasViewModel: ObservableObject {
-    var document: NoteDocument? {
-        didSet {
-            if document == nil {
-                createNewDocument()
-            }
-
-            canvasView.delegate = nil
-            if let drawing = document?.entity.drawing {
-                canvasView.drawing = drawing
-                initialContentSize()
-            }
-        }
-    }
-
-    var canvasView = PKCanvasView() {
-        didSet {
-            canvasView.maximumZoomScale = 8.0
-        }
-    }
+    var document: NoteDocument?
 
     @Published var hideExceptPaper = true
-    @Published var showToolPicker = true
+    @Published var showToolPicker = false
     @Published var showDrawingInformation = false
     @Published var showTagList = false
     @Published var showUnsavedAlert = false
@@ -52,7 +34,7 @@ final class CanvasViewModel: ObservableObject {
     var hasSavedDocument = false
 
     var activityViewController: UIActivityViewControllerWrapper {
-        let drawing = canvasView.drawing
+        guard let drawing = document?.entity.drawing else { return UIActivityViewControllerWrapper(activityItems: []) }
         var image = UIImage()
         let trait = UITraitCollection(userInterfaceStyle: .light)
         trait.performAsCurrent {
@@ -64,6 +46,10 @@ final class CanvasViewModel: ObservableObject {
 
     init(noteDocument: NoteDocument? = nil) {
         self.document = noteDocument
+
+        if document == nil {
+            createNewDocument()
+        }
     }
 
     private func createNewDocument() {
@@ -74,32 +60,11 @@ final class CanvasViewModel: ObservableObject {
         guard let inboxUrl = FilePath.inboxUrl else { return }
         let path = inboxUrl.appendingPathComponent(FilePath.fileName)
         document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
-        canvasView = PKCanvasView()
     }
 
-    private var isDrawingWiderThanWindow: Bool {
-        canvasView.frame.width < canvasView.drawing.bounds.maxX
-    }
-
-    private var isDrawingHigherThanWindow: Bool {
-        canvasView.frame.height < canvasView.drawing.bounds.maxY
-    }
-
-    func initialContentSize() {
-        guard !canvasView.drawing.bounds.isNull else { return }
-
-        if isDrawingWiderThanWindow, isDrawingHigherThanWindow {
-            canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
-                                           height: canvasView.drawing.bounds.maxY)
-        } else if isDrawingWiderThanWindow, !isDrawingHigherThanWindow {
-            canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
-                                           height: canvasView.frame.height)
-        } else if !isDrawingWiderThanWindow, isDrawingHigherThanWindow {
-            canvasView.contentSize = .init(width: canvasView.frame.width,
-                                           height: canvasView.drawing.bounds.maxY)
-        }
-
-        canvasView.contentOffset = .zero
+    func save() {
+        guard let drawing = document?.entity.drawing else { return }
+        save(drawing: drawing)
     }
 
     func save(drawing: PKDrawing) {
