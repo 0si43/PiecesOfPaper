@@ -52,6 +52,11 @@ struct Notes: View {
                 Button(action: new) { Image(systemName: "plus.circle") }
             }
         }
+        .fullScreenCover(isPresented: $viewModel.showCanvas) {
+            NavigationView {
+                Canvas(viewModel: CanvasViewModel())
+            }
+        }
         .sheet(isPresented: $viewModel.isListConditionSheet) {
             NavigationView {
                 ListConditionSetting(listCondition: $viewModel.listCondition)
@@ -69,7 +74,7 @@ struct Notes: View {
     }
 
     func new() {
-        CanvasRouter.shared.openNewCanvas()
+        viewModel.showCanvas = true
     }
 }
 

@@ -25,7 +25,7 @@ struct RootView: View {
         NavigationView {
             SideBarList()
         }
-        .fullScreenCover(isPresented: $viewModel.isShowCanvas) {
+        .fullScreenCover(isPresented: $viewModel.showCanvas) {
             NavigationView {
                 Canvas(viewModel: CanvasViewModel())
             }
@@ -43,9 +43,6 @@ struct RootView: View {
                    TagListToNote()
                })
         .onAppear {
-            CanvasRouter.shared.bind(isShowCanvas: $viewModel.isShowCanvas,
-                                     noteDocument: $canvasViewModel.document)
-            // I thought this can work, but SwiftUI cannot pass the document data...
             TagListRouter.shared.bind(isShowTagList: $viewModel.isShowTagList)
             viewModel.hasDrawingPlist = DrawingsPlistConverter.hasDrawingsPlist
             DrawingsPlistConverter.convert()
@@ -60,7 +57,7 @@ struct RootView: View {
                 return
             }
 
-            viewModel.isShowCanvas = true
+            viewModel.showCanvas = true
         }
         .alert(isPresented: $viewModel.iCloudDenying) { () -> Alert in
             Alert(title: Text(viewModel.iCloudDeniedWarningMessage),

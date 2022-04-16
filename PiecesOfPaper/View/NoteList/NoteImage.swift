@@ -12,7 +12,6 @@ import PencilKit
 struct NoteImage: View {
     var document: NoteDocument
     @State var showCanvas = false
-    var action: () -> Void
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
     private var image: UIImage {
         document.entity.drawing.image(from: document.entity.drawing.bounds, scale: 1.0)
@@ -37,7 +36,9 @@ struct NoteImage: View {
 }
 
 // struct NoteImage_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NoteImage(drawing: PKDrawing(), action: {})
+//     @State static var document = NoteDocument(fileURL: URL(string: "https://google.com")!, entity: NoteEntity(drawing: PKDrawing()))
+//
+//     static var previews: some View {
+//        NoteImage(document: document)
 //    }
 // }
