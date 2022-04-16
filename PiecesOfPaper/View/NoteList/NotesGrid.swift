@@ -41,8 +41,7 @@ struct NotesGrid: View {
         LazyVGrid(columns: [gridItem]) {
             ForEach((0..<documents.endIndex), id: \.self) { index in
                 VStack {
-                    NoteImage(document: documents[index],
-                              action: { CanvasRouter.shared.openCanvas(noteDocument: documents[index]) })
+                    NoteImage(document: documents[index])
                     .contextMenu {
                         Button(
                             action: { duplicate(noteDocument: documents[index]) },
