@@ -9,45 +9,19 @@
 import Foundation
 import PencilKit
 
-final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegate {
-    var document: NoteDocument? {
-        didSet {
-            if document == nil {
-                createNewDocument()
-            }
-
-            canvasView.delegate = nil
-            if let drawing = document?.entity.drawing {
-                canvasView.drawing = drawing
-                initialContentSize()
-            }
-
-            canvasView.delegate = delegateBridge
-        }
-    }
-
-    var canvasView = PKCanvasView() {
-        didSet {
-            canvasView.delegate = delegateBridge
-            canvasView.maximumZoomScale = 8.0
-            delegateBridge.toolPicker.addObserver(canvasView)
-            addPencilInteraction()
-        }
-    }
+final class CanvasViewModel: ObservableObject {
+    var document: NoteDocument?
 
     @Published var hideExceptPaper = true
+    @Published var showToolPicker = false
     @Published var showDrawingInformation = false
     @Published var showTagList = false
     @Published var showUnsavedAlert = false
     @Published var isShowActivityView = false {
         didSet {
-            if isShowActivityView == true {
-                delegateBridge.toolPicker.setVisible(false, forFirstResponder: canvasView)
-            }
+            showToolPicker = !isShowActivityView
         }
     }
-
-    private let delegateBridge = CanvasDelegateBridgeObject()
 
     var canReviewRequest: Bool {
         guard let inboxUrl = FilePath.inboxUrl,
@@ -60,23 +34,22 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
     var hasSavedDocument = false
 
     var activityViewController: UIActivityViewControllerWrapper {
-        let drawing = canvasView.drawing
+        guard let drawing = document?.entity.drawing else { return UIActivityViewControllerWrapper(activityItems: []) }
         var image = UIImage()
         let trait = UITraitCollection(userInterfaceStyle: .light)
         trait.performAsCurrent {
             image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
         }
 
-        return UIActivityViewControllerWrapper(activityItems: [image, delegateBridge])
+        return UIActivityViewControllerWrapper(activityItems: [image])
     }
 
     init(noteDocument: NoteDocument? = nil) {
         self.document = noteDocument
 
-        delegateBridge.delegate = self
-        canvasView.delegate = delegateBridge
-        delegateBridge.toolPicker.addObserver(canvasView)
-        addPencilInteraction()
+        if document == nil {
+            createNewDocument()
+        }
     }
 
     private func createNewDocument() {
@@ -87,38 +60,11 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         guard let inboxUrl = FilePath.inboxUrl else { return }
         let path = inboxUrl.appendingPathComponent(FilePath.fileName)
         document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
-        canvasView = PKCanvasView()
     }
 
-    private func addPencilInteraction() {
-        let pencilInteraction = UIPencilInteraction()
-        pencilInteraction.delegate = delegateBridge
-        canvasView.addInteraction(pencilInteraction)
-    }
-
-    private var isDrawingWiderThanWindow: Bool {
-        canvasView.frame.width < canvasView.drawing.bounds.maxX
-    }
-
-    private var isDrawingHigherThanWindow: Bool {
-        canvasView.frame.height < canvasView.drawing.bounds.maxY
-    }
-
-    func initialContentSize() {
-        guard !canvasView.drawing.bounds.isNull else { return }
-
-        if isDrawingWiderThanWindow, isDrawingHigherThanWindow {
-            canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
-                                           height: canvasView.drawing.bounds.maxY)
-        } else if isDrawingWiderThanWindow, !isDrawingHigherThanWindow {
-            canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
-                                           height: canvasView.frame.height)
-        } else if !isDrawingWiderThanWindow, isDrawingHigherThanWindow {
-            canvasView.contentSize = .init(width: canvasView.frame.width,
-                                           height: canvasView.drawing.bounds.maxY)
-        }
-
-        canvasView.contentOffset = .zero
+    func save() {
+        guard let drawing = document?.entity.drawing else { return }
+        save(drawing: drawing)
     }
 
     func save(drawing: PKDrawing) {
@@ -146,9 +92,5 @@ final class CanvasViewModel: ObservableObject, CanvasDelegateBridgeObjectDelegat
         } catch {
             print("Could not archive: ", error.localizedDescription)
         }
-    }
-
-    func setVisibleToolPicker(_ isVisible: Bool) {
-        delegateBridge.toolPicker.setVisible(isVisible, forFirstResponder: canvasView)
     }
 }

@@ -38,8 +38,10 @@ struct NotesScrollViewReader: View {
     }
 }
 
-// struct NotesScrollViewReader_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NotesScrollViewReader(documents: [NoteDocument()])
-//    }
-// }
+ struct NotesScrollViewReader_Previews: PreviewProvider {
+     static var array = Array(repeating: NoteDocument.createTestData(), count: 9)
+     static var parent = Notes(viewModel: NotesViewModel(targetDirectory: .inbox))
+    static var previews: some View {
+        NotesScrollViewReader(documents: array, parent: parent)
+    }
+ }
