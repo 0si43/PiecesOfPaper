@@ -21,8 +21,7 @@ struct Canvas: View {
         TapGesture(count: 1)
             .onEnded { _ in
                 viewModel.hideExceptPaper.toggle()
-                viewModel.setVisibleToolPicker(!viewModel.hideExceptPaper)
-                viewModel.canvasView.becomeFirstResponder()
+                viewModel.showToolPicker = !viewModel.hideExceptPaper
             }
     }
 
@@ -34,7 +33,9 @@ struct Canvas: View {
     var cancelButton: Alert.Button { .default(Text("Cancel")) }
 
     var body: some View {
-        PKCanvasViewWrapper(canvasView: $viewModel.canvasView)
+        PKCanvasViewWrapper(drawing: viewModel.document?.entity.drawing,
+                            showToolPicker: $viewModel.showToolPicker,
+                            saveAction: viewModel.save)
             .gesture(tap)
             .navigationBarTitleDisplayMode(.inline)
             .statusBar(hidden: viewModel.hideExceptPaper)
@@ -47,7 +48,7 @@ struct Canvas: View {
                     }
                     if viewModel.document != nil {
                         Button(action: {
-                                viewModel.setVisibleToolPicker(false)
+                                viewModel.showToolPicker.toggle()
                                 viewModel.showTagList.toggle()
                             },
                             label: {
@@ -67,10 +68,10 @@ struct Canvas: View {
                 }
             }
             .sheet(isPresented: $viewModel.isShowActivityView,
-                   onDismiss: { viewModel.setVisibleToolPicker(true) },
+                   onDismiss: { viewModel.showToolPicker = true },
                    content: { viewModel.activityViewController })
             .sheet(isPresented: $viewModel.showTagList,
-                   onDismiss: { viewModel.setVisibleToolPicker(true) },
+                   onDismiss: { viewModel.showToolPicker = true },
                    content: { TagListToNote(viewModel: TagListToNoteViewModel(noteDocument: viewModel.document)) })
             .alert(isPresented: $viewModel.showUnsavedAlert) { () -> Alert in
                 Alert(title: Text("Are you sure you want to discard the changes you made?"),
@@ -84,11 +85,11 @@ struct Canvas: View {
 
     private func archive() {
         if !UserPreference().enabledAutoSave {
-            guard !viewModel.canvasView.drawing.strokes.isEmpty else {
+            guard !(viewModel.document?.entity.drawing.strokes.isEmpty ?? true) else {
                 presentationMode.wrappedValue.dismiss()
                 return
             }
-            viewModel.setVisibleToolPicker(false)
+            viewModel.showToolPicker = false
             viewModel.showUnsavedAlert.toggle()
             return
         }
@@ -101,7 +102,7 @@ struct Canvas: View {
 
     private func close() {
         if !UserPreference().enabledAutoSave {
-            viewModel.save(drawing: viewModel.canvasView.drawing)
+            viewModel.save()
         }
 
         if viewModel.hasSavedDocument {

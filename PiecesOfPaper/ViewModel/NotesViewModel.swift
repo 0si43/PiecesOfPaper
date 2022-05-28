@@ -17,10 +17,35 @@ final class NotesViewModel: ObservableObject {
 
     var isLoaded = false
     var showArchiveAlert = false
+    var showCanvas = false {
+        willSet {
+            objectWillChange.send()
+        }
+    }
+
     var isListConditionSheet = false {
         willSet {
             objectWillChange.send()
         }
+    }
+
+    var documentToShare: NoteDocument?
+    var showActivityView = false {
+        willSet {
+            objectWillChange.send()
+        }
+    }
+
+    var activityViewController: UIActivityViewControllerWrapper? {
+        guard let document = documentToShare else { return nil }
+        let drawing = document.entity.drawing
+        var image = UIImage()
+        let trait = UITraitCollection(userInterfaceStyle: .light)
+        trait.performAsCurrent {
+            image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+        }
+
+        return UIActivityViewControllerWrapper(activityItems: [image])
     }
 
     var didFirstFetchRequest = false
@@ -233,6 +258,11 @@ final class NotesViewModel: ObservableObject {
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
 
         publish()
+    }
+
+    func share(_ document: NoteDocument) {
+        documentToShare = document
+        showActivityView = true
     }
 
     func archive(_ document: NoteDocument) {

@@ -11,7 +11,6 @@ import SwiftUI
 struct Notes: View {
     @ObservedObject var viewModel: NotesViewModel
     private var cancelButton: Alert.Button { .default(Text("Cancel")) }
-
     private var actionButton: Alert.Button {
         .destructive(
             Text(viewModel.isTargetDirectoryArchived ?  "Unarchived" : "Archived"),
@@ -52,10 +51,18 @@ struct Notes: View {
                 Button(action: new) { Image(systemName: "plus.circle") }
             }
         }
+        .fullScreenCover(isPresented: $viewModel.showCanvas) {
+            NavigationView {
+                Canvas(viewModel: CanvasViewModel())
+            }
+        }
         .sheet(isPresented: $viewModel.isListConditionSheet) {
             NavigationView {
                 ListConditionSetting(listCondition: $viewModel.listCondition)
             }
+        }
+        .sheet(isPresented: $viewModel.showActivityView) {
+            viewModel.activityViewController
         }
         .alert(isPresented: $viewModel.showArchiveAlert) { () -> Alert in
             Alert(title: Text(
@@ -69,9 +76,11 @@ struct Notes: View {
     }
 
     func new() {
-        CanvasRouter.shared.openNewCanvas()
+        viewModel.showCanvas = true
     }
 }
+
+// MARK: - NotesGridParent
 
 extension Notes: NotesGridParent {
     func getTagToNote(document: NoteDocument) -> [TagEntity] {
@@ -92,6 +101,10 @@ extension Notes: NotesGridParent {
 
     func delete(_ document: NoteDocument) {
         viewModel.delete(document)
+    }
+
+    func showActivityView(_ document: NoteDocument) {
+        viewModel.share(document)
     }
 }
 
