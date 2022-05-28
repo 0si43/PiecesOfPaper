@@ -11,7 +11,6 @@ import SwiftUI
 struct RootView: View {
     @StateObject var viewModel = AppViewModel()
     @StateObject var canvasViewModel = CanvasViewModel()
-    @AppStorage("onboarding_v3.0.0") var didShowOnboarding = false
 
     private var useICloudButton: Alert.Button {
         .default(Text("Use iCloud"), action: viewModel.openSettingApp)
@@ -30,12 +29,7 @@ struct RootView: View {
                 Canvas(viewModel: CanvasViewModel())
             }
         }
-        .sheet(isPresented: $viewModel.showOnboarding) {
-            Onboarding()
-                .onAppear {
-                    didShowOnboarding = true
-                }
-        }
+
         .sheet(isPresented: $viewModel.isShowTagList,
                onDismiss: {
                TagListRouter.shared.documentForPass = nil
@@ -46,11 +40,6 @@ struct RootView: View {
             TagListRouter.shared.bind(isShowTagList: $viewModel.isShowTagList)
             viewModel.hasDrawingPlist = DrawingsPlistConverter.hasDrawingsPlist
             DrawingsPlistConverter.convert()
-
-            guard didShowOnboarding else {
-                viewModel.showOnboarding = true
-                return
-            }
 
             guard !UserPreference().shouldGrantiCloud else {
                 viewModel.iCloudDenying = true
