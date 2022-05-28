@@ -15,27 +15,15 @@ protocol NotesGridParent {
     func archive(_ document: NoteDocument)
     func unarchive(_ document: NoteDocument)
     func delete(_ document: NoteDocument)
+    func showActivityView(_ document: NoteDocument)
 
 }
 
 struct NotesGrid: View {
-    @State var isShowActivityView = false
     @State var documentToShare: NoteDocument?
     var documents: [NoteDocument]
     var parent: NotesGridParent
-
     let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
-    var activityViewController: UIActivityViewControllerWrapper? {
-        guard let document = documentToShare else { return nil }
-        let drawing = document.entity.drawing
-        var image = UIImage()
-        let trait = UITraitCollection(userInterfaceStyle: .light)
-        trait.performAsCurrent {
-            image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
-        }
-
-        return UIActivityViewControllerWrapper(activityItems: [image])
-    }
 
     var body: some View {
         LazyVGrid(columns: [gridItem]) {
@@ -74,9 +62,6 @@ struct NotesGrid: View {
                 }
             }
         }
-        .sheet(isPresented: $isShowActivityView) {
-            activityViewController
-        }
     }
 
     func duplicate(noteDocument: NoteDocument) {
@@ -96,8 +81,7 @@ struct NotesGrid: View {
     }
 
     func share(noteDocument: NoteDocument) {
-        documentToShare = noteDocument
-        isShowActivityView = true
+        parent.showActivityView(noteDocument)
     }
 }
 
