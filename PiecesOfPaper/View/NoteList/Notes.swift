@@ -11,12 +11,23 @@ import SwiftUI
 struct Notes: View {
     @ObservedObject var viewModel: NotesViewModel
     private var cancelButton: Alert.Button { .default(Text("Cancel")) }
-
     private var actionButton: Alert.Button {
         .destructive(
             Text(viewModel.isTargetDirectoryArchived ?  "Unarchived" : "Archived"),
             action: { viewModel.isTargetDirectoryArchived ? viewModel.allUnarchive() : viewModel.allArchive() }
         )
+    }
+
+    private var activityViewController: UIActivityViewControllerWrapper? {
+        guard let document = viewModel.documentToShare else { return nil }
+        let drawing = document.entity.drawing
+        var image = UIImage()
+        let trait = UITraitCollection(userInterfaceStyle: .light)
+        trait.performAsCurrent {
+            image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+        }
+
+        return UIActivityViewControllerWrapper(activityItems: [image])
     }
 
     var body: some View {
@@ -62,6 +73,9 @@ struct Notes: View {
                 ListConditionSetting(listCondition: $viewModel.listCondition)
             }
         }
+        .sheet(isPresented: $viewModel.showActivityView) {
+            activityViewController
+        }
         .alert(isPresented: $viewModel.showArchiveAlert) { () -> Alert in
             Alert(title: Text(
                             "Are you sure you want to " +
@@ -77,6 +91,8 @@ struct Notes: View {
         viewModel.showCanvas = true
     }
 }
+
+// MARK: - NotesGridParent
 
 extension Notes: NotesGridParent {
     func getTagToNote(document: NoteDocument) -> [TagEntity] {
@@ -97,6 +113,10 @@ extension Notes: NotesGridParent {
 
     func delete(_ document: NoteDocument) {
         viewModel.delete(document)
+    }
+
+    func showActivityView(_ document: NoteDocument) {
+        viewModel.share(document)
     }
 }
 

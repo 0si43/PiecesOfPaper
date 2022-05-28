@@ -22,7 +22,15 @@ final class NotesViewModel: ObservableObject {
             objectWillChange.send()
         }
     }
+
     var isListConditionSheet = false {
+        willSet {
+            objectWillChange.send()
+        }
+    }
+
+    var documentToShare: NoteDocument?
+    var showActivityView = false {
         willSet {
             objectWillChange.send()
         }
@@ -238,6 +246,11 @@ final class NotesViewModel: ObservableObject {
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
 
         publish()
+    }
+
+    func share(_ document: NoteDocument) {
+        documentToShare = document
+        showActivityView = true
     }
 
     func archive(_ document: NoteDocument) {
