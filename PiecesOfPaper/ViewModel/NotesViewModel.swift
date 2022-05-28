@@ -36,6 +36,18 @@ final class NotesViewModel: ObservableObject {
         }
     }
 
+    var activityViewController: UIActivityViewControllerWrapper? {
+        guard let document = documentToShare else { return nil }
+        let drawing = document.entity.drawing
+        var image = UIImage()
+        let trait = UITraitCollection(userInterfaceStyle: .light)
+        trait.performAsCurrent {
+            image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+        }
+
+        return UIActivityViewControllerWrapper(activityItems: [image])
+    }
+
     var didFirstFetchRequest = false
     enum TargetDirectory: String {
         case inbox, archived, all

@@ -18,18 +18,6 @@ struct Notes: View {
         )
     }
 
-    private var activityViewController: UIActivityViewControllerWrapper? {
-        guard let document = viewModel.documentToShare else { return nil }
-        let drawing = document.entity.drawing
-        var image = UIImage()
-        let trait = UITraitCollection(userInterfaceStyle: .light)
-        trait.performAsCurrent {
-            image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
-        }
-
-        return UIActivityViewControllerWrapper(activityItems: [image])
-    }
-
     var body: some View {
         Group {
             if !viewModel.isLoaded {
@@ -74,7 +62,7 @@ struct Notes: View {
             }
         }
         .sheet(isPresented: $viewModel.showActivityView) {
-            activityViewController
+            viewModel.activityViewController
         }
         .alert(isPresented: $viewModel.showArchiveAlert) { () -> Alert in
             Alert(title: Text(
