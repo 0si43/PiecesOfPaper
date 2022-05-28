@@ -26,11 +26,11 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
     }
 
     private var isDrawingWiderThanWindow: Bool {
-        canvasView.frame.width < canvasView.drawing.bounds.maxX
+        UIScreen.main.bounds.width < canvasView.drawing.bounds.maxX
     }
 
     private var isDrawingHigherThanWindow: Bool {
-        canvasView.frame.height < canvasView.drawing.bounds.maxY
+        UIScreen.main.bounds.height < canvasView.drawing.bounds.maxY
     }
 
     private func initialContentSize() {
@@ -41,9 +41,9 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
                                            height: canvasView.drawing.bounds.maxY)
         } else if isDrawingWiderThanWindow, !isDrawingHigherThanWindow {
             canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
-                                           height: canvasView.frame.height)
+                                           height: UIScreen.main.bounds.height)
         } else if !isDrawingWiderThanWindow, isDrawingHigherThanWindow {
-            canvasView.contentSize = .init(width: canvasView.frame.width,
+            canvasView.contentSize = .init(width: UIScreen.main.bounds.width,
                                            height: canvasView.drawing.bounds.maxY)
         }
 
