@@ -85,8 +85,10 @@ struct NotesGrid: View {
     }
 }
 
-// struct NotesGrid_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NotesGrid()
-//    }
-// }
+ struct NotesGrid_Previews: PreviewProvider {
+     static var parent = Notes(viewModel: NotesViewModel(targetDirectory: .inbox))
+     static var array = Array(repeating: NoteDocument.createTestData(), count: 9)
+     static var previews: some View {
+         NotesGrid(documents: array, parent: parent)
+    }
+ }
