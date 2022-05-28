@@ -15,6 +15,7 @@ class NotesViewModelTest: XCTestCase {
     var document: NoteDocument!
 
     override func setUpWithError() throws {
+        try? super.setUpWithError()
         viewModel = .init(targetDirectory: .inbox)
         document = NoteDocument.createTestData()
     }
