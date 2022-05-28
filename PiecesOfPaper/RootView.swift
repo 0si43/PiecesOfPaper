@@ -29,7 +29,6 @@ struct RootView: View {
                 Canvas(viewModel: CanvasViewModel())
             }
         }
-
         .sheet(isPresented: $viewModel.isShowTagList,
                onDismiss: {
                TagListRouter.shared.documentForPass = nil
