@@ -35,10 +35,8 @@ struct NoteImage: View {
     }
 }
 
-// struct NoteImage_Previews: PreviewProvider {
-//     @State static var document = NoteDocument(fileURL: URL(string: "https://google.com")!, entity: NoteEntity(drawing: PKDrawing()))
-//
-//     static var previews: some View {
-//        NoteImage(document: document)
-//    }
-// }
+ struct NoteImage_Previews: PreviewProvider {
+     static var previews: some View {
+         NoteImage(document: NoteDocument.createTestData())
+    }
+ }

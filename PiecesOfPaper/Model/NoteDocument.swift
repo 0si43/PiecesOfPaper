@@ -57,4 +57,12 @@ final class NoteDocument: UIDocument {
         }
         currentVersion?.isResolved = true
     }
+
+    static func createTestData() -> NoteDocument {
+        guard let url = URL(string: "file:///test") else {
+            fatalError()
+        }
+
+        return NoteDocument(fileURL: url, entity: NoteEntity(drawing: PKDrawing()))
+    }
 }
