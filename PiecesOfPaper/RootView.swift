@@ -21,9 +21,7 @@ struct RootView: View {
     }
 
     var body: some View {
-        NavigationView {
-            SideBarList()
-        }
+        SideBarList()
         .fullScreenCover(isPresented: $viewModel.showCanvas) {
             NavigationView {
                 Canvas(viewModel: CanvasViewModel())

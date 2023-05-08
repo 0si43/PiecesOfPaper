@@ -15,6 +15,18 @@ struct SideBarList: View {
     @StateObject var archivedNoteViewModel = NotesViewModel(targetDirectory: .archived)
 
     var body: some View {
+        if #available(iOS 16.0, *) {
+            NavigationStack {
+                list
+            }
+        } else {
+            NavigationView {
+                list
+            }
+        }
+    }
+
+    var list: some View {
         List {
             Section(header: Text("Folder")) {
                 NavigationLink(destination: Notes(viewModel: inboxNoteViewModel),
