@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct SideBarList: View {
-    @State private var showInbox = true
+    @State private var isActive = true
     @StateObject var inboxNoteViewModel = NotesViewModel(targetDirectory: .inbox)
     @StateObject var allNoteViewModel = NotesViewModel(targetDirectory: .all)
     @StateObject var archivedNoteViewModel = NotesViewModel(targetDirectory: .archived)
@@ -18,7 +18,7 @@ struct SideBarList: View {
         List {
             Section(header: Text("Folder")) {
                 NavigationLink(destination: Notes(viewModel: inboxNoteViewModel),
-                               isActive: $showInbox) {
+                               isActive: $isActive) {
                     Label("Inbox", systemImage: "tray")
                 }
                 NavigationLink(destination: Notes(viewModel: allNoteViewModel)) {
@@ -39,7 +39,6 @@ struct SideBarList: View {
                 }
             }
         }
-        .listStyle(SidebarListStyle())
         .navigationTitle("Pieces of Paper")
     }
 }
@@ -50,6 +49,7 @@ struct SideBarList_Previews: PreviewProvider {
             SideBarList()
                 .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
                 .previewDisplayName(deviceName.rawValue)
+                .previewInterfaceOrientation(.landscapeLeft)
         }
     }
 }
