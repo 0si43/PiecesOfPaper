@@ -16,8 +16,10 @@ struct SideBarList: View {
 
     var body: some View {
         if #available(iOS 16.0, *) {
-            NavigationStack {
+            NavigationSplitView() {
                 list
+            } detail: {
+                Notes(viewModel: inboxNoteViewModel)
             }
         } else {
             NavigationView {
