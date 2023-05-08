@@ -12,24 +12,22 @@ struct RootView: View {
     @StateObject var viewModel = AppViewModel()
     @StateObject var canvasViewModel = CanvasViewModel()
 
-    private var useICloudButton: Alert.Button {
-        .default(Text("Use iCloud"), action: viewModel.openSettingApp)
-    }
-
-    private var useDeviceButton: Alert.Button {
-        .default(Text("Use device storage"), action: viewModel.switchDeviceStorage)
-    }
-
     var body: some View {
         SideBarList()
         .fullScreenCover(isPresented: $viewModel.showCanvas) {
-            NavigationView {
-                Canvas(viewModel: CanvasViewModel())
+            if #available(iOS 16.0, *) {
+                NavigationStack {
+                    Canvas(viewModel: CanvasViewModel())
+                }
+            } else {
+                NavigationView {
+                    Canvas(viewModel: CanvasViewModel())
+                }
             }
         }
         .sheet(isPresented: $viewModel.isShowTagList,
                onDismiss: {
-               TagListRouter.shared.documentForPass = nil
+                   TagListRouter.shared.documentForPass = nil
                }, content: {
                    TagListToNote()
                })
@@ -45,10 +43,15 @@ struct RootView: View {
 
             viewModel.showCanvas = true
         }
-        .alert(isPresented: $viewModel.iCloudDenying) { () -> Alert in
-            Alert(title: Text(viewModel.iCloudDeniedWarningMessage),
-                  primaryButton: useICloudButton,
-                  secondaryButton: useDeviceButton)
+        .alert("", isPresented: $viewModel.iCloudDenying) {
+             Button("Use iCloud") {
+                 viewModel.openSettingApp()
+             }
+             Button("Use device storage") {
+                 viewModel.switchDeviceStorage()
+             }
+         } message: {
+             Text(viewModel.iCloudDeniedWarningMessage)
         }
     }
 }
