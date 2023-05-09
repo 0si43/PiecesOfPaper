@@ -72,7 +72,7 @@ struct Canvas: View {
                    content: { viewModel.activityViewController })
             .sheet(isPresented: $viewModel.showTagList,
                    onDismiss: { viewModel.showToolPicker = true },
-                   content: { TagListToNote(viewModel: TagListToNoteViewModel(noteDocument: viewModel.document)) })
+                   content: { AddTagView(viewModel: TagListToNoteViewModel(noteDocument: viewModel.document)) })
             .alert(isPresented: $viewModel.showUnsavedAlert) { () -> Alert in
                 Alert(title: Text("Are you sure you want to discard the changes you made?"),
                       primaryButton: discardButton,

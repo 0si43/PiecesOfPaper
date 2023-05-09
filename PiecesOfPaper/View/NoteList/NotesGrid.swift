@@ -51,11 +51,15 @@ struct NotesGrid: View {
                         }
                         Button(action: { share(noteDocument: documents[index]) },
                                label: { Label("Share", systemImage: "square.and.arrow.up") })
-                        Button(
-                            action: {
-                                TagListRouter.shared.showTagList(noteDocument: documents[index])
-                            },
-                            label: { Label("Tag", systemImage: "tag") })
+                        // FIXME: add tag
+//                        Button(
+//                            action: {
+//                                NotificationCenter.default.post(
+//                                    name: .showAddTagView,
+//                                    object: self,
+//                                    userInfo: ["document": documents[index]]
+//                            )},
+//                            label: { Label("Tag", systemImage: "tag") })
                     }
                     TagHStack(tags: parent.getTagToNote(document: documents[index]))
                         .padding(.horizontal)

@@ -33,8 +33,6 @@ final class TagListToNoteViewModel: ObservableObject {
         tags = tagModel.fetch()
         if let document = noteDocument {
             self.noteDocument = document
-        } else {
-            self.noteDocument = TagListRouter.shared.documentForPass
         }
     }
 

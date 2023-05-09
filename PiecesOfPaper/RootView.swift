@@ -11,6 +11,8 @@ import SwiftUI
 struct RootView: View {
     @StateObject var viewModel = AppViewModel()
     @StateObject var canvasViewModel = CanvasViewModel()
+//    @State var isShowTagList = false
+//    @State var document: NoteDocument?
 
     var body: some View {
         SideBarList()
@@ -25,14 +27,11 @@ struct RootView: View {
                 }
             }
         }
-        .sheet(isPresented: $viewModel.isShowTagList,
-               onDismiss: {
-                   TagListRouter.shared.documentForPass = nil
-               }, content: {
-                   TagListToNote()
-               })
+//        .sheet(isPresented: $isShowTagList,
+//               content: {
+//                   AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
+//               })
         .onAppear {
-            TagListRouter.shared.bind(isShowTagList: $viewModel.isShowTagList)
             viewModel.hasDrawingPlist = DrawingsPlistConverter.hasDrawingsPlist
             DrawingsPlistConverter.convert()
 
@@ -43,6 +42,12 @@ struct RootView: View {
 
             viewModel.showCanvas = true
         }
+//        .onReceive(NotificationCenter.default.publisher(for: .showAddTagView)) { notification in
+//            if let document = notification.userInfo?["document"] as? NoteDocument {
+//                self.document = document
+//                isShowTagList = true
+//            }
+//        }
         .alert("", isPresented: $viewModel.iCloudDenying) {
              Button("Use iCloud") {
                  viewModel.openSettingApp()

@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct TagListToNote: View {
+struct AddTagView: View {
     @ObservedObject var viewModel = TagListToNoteViewModel()
 
     var body: some View {
@@ -34,8 +34,8 @@ struct TagListToNote: View {
     }
 }
 
-struct TagListToNote_Previews: PreviewProvider {
+struct AddTagView_Previews: PreviewProvider {
     static var previews: some View {
-        TagListToNote()
+        AddTagView()
     }
 }
