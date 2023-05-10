@@ -13,7 +13,7 @@ struct RootView: View {
     @StateObject var canvasViewModel = CanvasViewModel()
 
     var body: some View {
-        SideBarList()
+        SideBarListView()
         .fullScreenCover(isPresented: $viewModel.showCanvas) {
             if #available(iOS 16.0, *) {
                 NavigationStack {
