@@ -29,7 +29,7 @@ struct NoteImage: View {
         })
         .fullScreenCover(isPresented: $showCanvas) {
             NavigationView {
-                Canvas(viewModel: CanvasViewModel(noteDocument: document))
+                CanvasView(viewModel: CanvasViewModel(noteDocument: document))
             }
         }
     }
