@@ -10,8 +10,7 @@ import Foundation
 import PencilKit
 
 final class CanvasViewModel: ObservableObject {
-    var document: NoteDocument?
-
+    var document: NoteDocument
     @Published var hideExceptPaper = true
     @Published var showToolPicker = false
     @Published var showDrawingInformation = false
@@ -34,37 +33,27 @@ final class CanvasViewModel: ObservableObject {
     var hasSavedDocument = false
 
     var activityViewController: UIActivityViewControllerWrapper {
-        guard let drawing = document?.entity.drawing else { return UIActivityViewControllerWrapper(activityItems: []) }
         var image = UIImage()
         let trait = UITraitCollection(userInterfaceStyle: .light)
         trait.performAsCurrent {
-            image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+            image = document.entity.drawing.image(from: document.entity.drawing.bounds, scale: UIScreen.main.scale)
         }
 
         return UIActivityViewControllerWrapper(activityItems: [image])
     }
 
     init(noteDocument: NoteDocument? = nil) {
-        self.document = noteDocument
-
-        if document == nil {
-            createNewDocument()
-        }
-    }
-
-    private func createNewDocument() {
-        defer {
+        if let document = noteDocument {
+            self.document = document
+        } else {
+            let path = FilePath.inboxUrl!.appendingPathComponent(FilePath.fileName)
+            self.document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
             hasSavedDocument = false
         }
-
-        guard let inboxUrl = FilePath.inboxUrl else { return }
-        let path = inboxUrl.appendingPathComponent(FilePath.fileName)
-        document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
     }
 
     func save() {
-        guard let drawing = document?.entity.drawing else { return }
-        save(drawing: drawing)
+        save(drawing: document.entity.drawing)
     }
 
     func save(drawing: PKDrawing) {
@@ -72,9 +61,8 @@ final class CanvasViewModel: ObservableObject {
             hasSavedDocument = true
         }
 
-        document?.entity.drawing = drawing
-        document?.entity.updatedDate = Date()
-        guard let document = document else { return }
+        document.entity.drawing = drawing
+        document.entity.updatedDate = Date()
 
         if FileManager.default.fileExists(atPath: document.fileURL.path) {
             document.save(to: document.fileURL, for: .forOverwriting)
@@ -84,8 +72,7 @@ final class CanvasViewModel: ObservableObject {
     }
 
     func archive() {
-        guard let document = document,
-              let archivedUrl = FilePath.archivedUrl else { return }
+        guard let archivedUrl = FilePath.archivedUrl else { return }
         let toUrl = archivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
         do {
             try FileManager.default.moveItem(at: document.fileURL, to: toUrl)

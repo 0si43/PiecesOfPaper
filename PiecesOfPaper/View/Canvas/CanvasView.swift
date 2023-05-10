@@ -12,15 +12,15 @@ import StoreKit
 import LinkPresentation
 
 struct CanvasView: View {
-    @ObservedObject var viewModel: CanvasViewModel
+    @EnvironmentObject var canvasViewModel: CanvasViewModel
     @Environment(\.dismiss) var dismiss
     @AppStorage("review_requested") var reviewRequested = false
 
     var tap: some Gesture {
         TapGesture(count: 1)
             .onEnded { _ in
-                viewModel.hideExceptPaper.toggle()
-                viewModel.showToolPicker = !viewModel.hideExceptPaper
+                canvasViewModel.hideExceptPaper.toggle()
+                canvasViewModel.showToolPicker = !canvasViewModel.hideExceptPaper
             }
     }
 
@@ -32,67 +32,65 @@ struct CanvasView: View {
     var cancelButton: Alert.Button { .default(Text("Cancel")) }
 
     var body: some View {
-        PKCanvasViewWrapper(drawing: viewModel.document?.entity.drawing,
-                            showToolPicker: $viewModel.showToolPicker,
-                            saveAction: viewModel.save)
+        PKCanvasViewWrapper(drawing: canvasViewModel.document.entity.drawing,
+                            showToolPicker: $canvasViewModel.showToolPicker,
+                            saveAction: canvasViewModel.save)
             .gesture(tap)
             .navigationBarTitleDisplayMode(.inline)
-            .statusBar(hidden: viewModel.hideExceptPaper)
-            .navigationBarHidden(viewModel.hideExceptPaper)
+            .statusBar(hidden: canvasViewModel.hideExceptPaper)
+            .navigationBarHidden(canvasViewModel.hideExceptPaper)
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button(action: archive) {
                         Image(systemName: "trash").foregroundColor(.red)
                     }
-                    if viewModel.document != nil {
-                        Button(action: {
-                                viewModel.showToolPicker.toggle()
-                                viewModel.showTagList.toggle()
-                            },
-                            label: {
-                                Image(systemName: "tag.circle")
-                            })
-                    }
-                    Button(action: { viewModel.showDrawingInformation.toggle() },
+                    Button(action: {
+                        canvasViewModel.showToolPicker.toggle()
+                        canvasViewModel.showTagList.toggle()
+                        },
+                        label: {
+                            Image(systemName: "tag.circle")
+                        })
+                    Button(action: { canvasViewModel.showDrawingInformation.toggle() },
                            label: { Image(systemName: "info.circle") })
-                    .popover(isPresented: $viewModel.showDrawingInformation) {
-                        NoteInformationView(document: viewModel.document!)
+                    .popover(isPresented: $canvasViewModel.showDrawingInformation) {
+                        NoteInformationView(document: canvasViewModel.document)
                     }
-                    Button(action: { viewModel.isShowActivityView.toggle() },
+                    Button(action: { canvasViewModel.isShowActivityView.toggle() },
                            label: { Image(systemName: "square.and.arrow.up") })
                     Button(action: close) {
                         Image(systemName: "tray.full")
                     }
                 }
             }
-            .sheet(isPresented: $viewModel.isShowActivityView,
-                   onDismiss: { viewModel.showToolPicker = true },
-                   content: { viewModel.activityViewController })
-            .sheet(isPresented: $viewModel.showTagList,
-                   onDismiss: { viewModel.showToolPicker = true },
-                   content: { AddTagView(viewModel: TagListToNoteViewModel(noteDocument: viewModel.document)) })
-            .alert(isPresented: $viewModel.showUnsavedAlert) { () -> Alert in
+            .sheet(isPresented: $canvasViewModel.isShowActivityView,
+                   onDismiss: { canvasViewModel.showToolPicker = true },
+                   content: { canvasViewModel.activityViewController })
+            .sheet(isPresented: $canvasViewModel.showTagList,
+                   onDismiss: { canvasViewModel.showToolPicker = true },
+                   content: { AddTagView(viewModel: TagListToNoteViewModel(noteDocument: canvasViewModel.document)) })
+            .alert(isPresented: $canvasViewModel.showUnsavedAlert) { () -> Alert in
                 Alert(title: Text("Are you sure you want to discard the changes you made?"),
                       primaryButton: discardButton,
                       secondaryButton: cancelButton)
             }
             .onAppear {
-                viewModel.hideExceptPaper = true
+                canvasViewModel.hideExceptPaper = true
             }
     }
 
     private func archive() {
         if !UserPreference().enabledAutoSave {
-            guard !(viewModel.document?.entity.drawing.strokes.isEmpty ?? true) else {
+            guard !canvasViewModel.document.entity.drawing.strokes.isEmpty else {
                 dismiss()
                 return
             }
-            viewModel.showToolPicker = false
-            viewModel.showUnsavedAlert.toggle()
+            canvasViewModel.showToolPicker = false
+            canvasViewModel.showUnsavedAlert.toggle()
             return
         }
-        viewModel.archive()
+        canvasViewModel.archive()
         // do not send notification
 
         dismiss()
@@ -101,18 +99,18 @@ struct CanvasView: View {
 
     private func close() {
         if !UserPreference().enabledAutoSave {
-            viewModel.save()
+            canvasViewModel.save()
         }
 
-        if viewModel.hasSavedDocument {
-            NotificationCenter.default.post(name: .addedNewNote, object: viewModel.document)
+        if canvasViewModel.hasSavedDocument {
+            NotificationCenter.default.post(name: .addedNewNote, object: canvasViewModel.document)
         }
         dismiss()
         reviewRequest()
     }
 
     private func reviewRequest() {
-        if viewModel.canReviewRequest,
+        if canvasViewModel.canReviewRequest,
            !reviewRequested,
            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             SKStoreReviewController.requestReview(in: windowScene)
@@ -126,7 +124,8 @@ struct CanvasView_Previews: PreviewProvider {
 
     static var previews: some View {
         ForEach(TargetPreviewDevice.allCases) { deviceName in
-            CanvasView(viewModel: viewModel)
+            CanvasView()
+                .environmentObject(CanvasViewModel())
                 .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
                 .previewDisplayName(deviceName.rawValue)
                 .previewInterfaceOrientation(.landscapeLeft)

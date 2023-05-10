@@ -53,7 +53,7 @@ struct Notes: View {
         }
         .fullScreenCover(isPresented: $viewModel.showCanvas) {
             NavigationView {
-                CanvasView(viewModel: CanvasViewModel())
+                CanvasView()
             }
         }
         .sheet(isPresented: $viewModel.isListConditionSheet) {
