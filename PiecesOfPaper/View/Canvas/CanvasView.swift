@@ -57,7 +57,7 @@ struct CanvasView: View {
                     Button(action: { viewModel.showDrawingInformation.toggle() },
                            label: { Image(systemName: "info.circle") })
                     .popover(isPresented: $viewModel.showDrawingInformation) {
-                        NoteInformation(document: viewModel.document)
+                        NoteInformationView(document: viewModel.document!)
                     }
                     Button(action: { viewModel.isShowActivityView.toggle() },
                            label: { Image(systemName: "square.and.arrow.up") })
