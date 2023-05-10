@@ -20,6 +20,9 @@ protocol NotesGridParent {
 }
 
 struct NotesGrid: View {
+    // FIXME: - あとで直す
+    @State var temp = false
+    @State var document: NoteDocument?
     @State var documentToShare: NoteDocument?
     var documents: [NoteDocument]
     var parent: NotesGridParent
@@ -52,19 +55,20 @@ struct NotesGrid: View {
                         Button(action: { share(noteDocument: documents[index]) },
                                label: { Label("Share", systemImage: "square.and.arrow.up") })
                         // FIXME: add tag
-//                        Button(
-//                            action: {
-//                                NotificationCenter.default.post(
-//                                    name: .showAddTagView,
-//                                    object: self,
-//                                    userInfo: ["document": documents[index]]
-//                            )},
-//                            label: { Label("Tag", systemImage: "tag") })
+                        Button(
+                            action: {
+                                document = documents[index]
+                                temp = true
+                            },
+                            label: { Label("Tag", systemImage: "tag") })
                     }
                     TagHStack(tags: parent.getTagToNote(document: documents[index]))
                         .padding(.horizontal)
                 }
             }
+        }
+        .sheet(isPresented: $temp) {
+            AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
         }
     }
 
