@@ -11,10 +11,11 @@ import SwiftUI
 struct RootView: View {
     @EnvironmentObject var appViewModel: AppViewModel
     @EnvironmentObject var canvasViewModel: CanvasViewModel
+    @State var showCanvasView = false
 
     var body: some View {
         SideBarListView()
-        .fullScreenCover(isPresented: $appViewModel.showCanvas) {
+        .fullScreenCover(isPresented: $showCanvasView) {
             if #available(iOS 16.0, *) {
                 NavigationStack {
                     CanvasView()
@@ -33,8 +34,7 @@ struct RootView: View {
                 appViewModel.iCloudDenying = true
                 return
             }
-
-            appViewModel.showCanvas = true
+            showCanvasView = true
         }
         .alert("", isPresented: $appViewModel.iCloudDenying) {
              Button("Use iCloud") {

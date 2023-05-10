@@ -10,6 +10,8 @@ import SwiftUI
 
 struct Notes: View {
     @ObservedObject var viewModel: NotesViewModel
+    @EnvironmentObject var canvasViewModel: CanvasViewModel
+    @State var showCanvasView = false
     private var cancelButton: Alert.Button { .default(Text("Cancel")) }
     private var actionButton: Alert.Button {
         .destructive(
@@ -51,7 +53,7 @@ struct Notes: View {
                 Button(action: new) { Image(systemName: "plus.circle") }
             }
         }
-        .fullScreenCover(isPresented: $viewModel.showCanvas) {
+        .fullScreenCover(isPresented: $showCanvasView) {
             NavigationView {
                 CanvasView()
             }
@@ -76,7 +78,8 @@ struct Notes: View {
     }
 
     func new() {
-        viewModel.showCanvas = true
+        canvasViewModel.newDocument()
+        showCanvasView = true
     }
 }
 
@@ -111,5 +114,6 @@ extension Notes: NotesGridParent {
 struct Notes_Previews: PreviewProvider {
     static var previews: some View {
         Notes(viewModel: NotesViewModel(targetDirectory: .inbox))
+            .environmentObject(CanvasViewModel())
     }
 }
