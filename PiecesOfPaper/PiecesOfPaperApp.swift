@@ -11,9 +11,13 @@ import PencilKit
 
 @main
 struct PiecesOfPaperApp: App {
+    @StateObject var appViewModel = AppViewModel()
+    @StateObject var canvasViewModel = CanvasViewModel()
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environmentObject(appViewModel)
+                .environmentObject(canvasViewModel)
         }
     }
 }

@@ -9,42 +9,42 @@
 import SwiftUI
 
 struct RootView: View {
-    @StateObject var viewModel = AppViewModel()
-    @StateObject var canvasViewModel = CanvasViewModel()
+    @EnvironmentObject var appViewModel: AppViewModel
+    @EnvironmentObject var canvasViewModel: CanvasViewModel
 
     var body: some View {
         SideBarListView()
-        .fullScreenCover(isPresented: $viewModel.showCanvas) {
+        .fullScreenCover(isPresented: $appViewModel.showCanvas) {
             if #available(iOS 16.0, *) {
                 NavigationStack {
-                    CanvasView(viewModel: CanvasViewModel())
+                    CanvasView()
                 }
             } else {
                 NavigationView {
-                    CanvasView(viewModel: CanvasViewModel())
+                    CanvasView()
                 }
             }
         }
         .onAppear {
-            viewModel.hasDrawingPlist = DrawingsPlistConverter.hasDrawingsPlist
+            appViewModel.hasDrawingPlist = DrawingsPlistConverter.hasDrawingsPlist
             DrawingsPlistConverter.convert()
 
             guard !UserPreference().shouldGrantiCloud else {
-                viewModel.iCloudDenying = true
+                appViewModel.iCloudDenying = true
                 return
             }
 
-            viewModel.showCanvas = true
+            appViewModel.showCanvas = true
         }
-        .alert("", isPresented: $viewModel.iCloudDenying) {
+        .alert("", isPresented: $appViewModel.iCloudDenying) {
              Button("Use iCloud") {
-                 viewModel.openSettingApp()
+                 appViewModel.openSettingApp()
              }
              Button("Use device storage") {
-                 viewModel.switchDeviceStorage()
+                 appViewModel.switchDeviceStorage()
              }
          } message: {
-             Text(viewModel.iCloudDeniedWarningMessage)
+             Text(appViewModel.iCloudDeniedWarningMessage)
         }
     }
 }
@@ -52,5 +52,7 @@ struct RootView: View {
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
         RootView()
+            .environmentObject(AppViewModel())
+            .environmentObject(CanvasViewModel())
     }
 }
