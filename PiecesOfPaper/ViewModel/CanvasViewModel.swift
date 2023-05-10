@@ -42,14 +42,20 @@ final class CanvasViewModel: ObservableObject {
         return UIActivityViewControllerWrapper(activityItems: [image])
     }
 
-    init(noteDocument: NoteDocument? = nil) {
-        if let document = noteDocument {
-            self.document = document
-        } else {
-            let path = FilePath.inboxUrl!.appendingPathComponent(FilePath.fileName)
-            self.document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
-            hasSavedDocument = false
-        }
+    init() {
+        let path = FilePath.inboxUrl!.appendingPathComponent(FilePath.fileName)
+        self.document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
+        hasSavedDocument = false
+    }
+
+    init(noteDocument: NoteDocument) {
+        self.document = noteDocument
+    }
+
+    func newDocument() {
+        let path = FilePath.inboxUrl!.appendingPathComponent(FilePath.fileName)
+        self.document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
+        hasSavedDocument = false
     }
 
     func save() {

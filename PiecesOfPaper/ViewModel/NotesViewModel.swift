@@ -17,11 +17,6 @@ final class NotesViewModel: ObservableObject {
 
     var isLoaded = false
     var showArchiveAlert = false
-    var showCanvas = false {
-        willSet {
-            objectWillChange.send()
-        }
-    }
 
     var isListConditionSheet = false {
         willSet {
