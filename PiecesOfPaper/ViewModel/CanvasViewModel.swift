@@ -11,15 +11,9 @@ import PencilKit
 
 final class CanvasViewModel: ObservableObject {
     var document: NoteDocument
-    @Published var showToolPicker = false
     @Published var showDrawingInformation = false
     @Published var showTagList = false
     @Published var showUnsavedAlert = false
-    @Published var isShowActivityView = false {
-        didSet {
-            showToolPicker = !isShowActivityView
-        }
-    }
 
     var canReviewRequest: Bool {
         guard let inboxUrl = FilePath.inboxUrl,
@@ -30,16 +24,6 @@ final class CanvasViewModel: ObservableObject {
     }
 
     var hasSavedDocument = false
-
-    var activityViewController: UIActivityViewControllerWrapper {
-        var image = UIImage()
-        let trait = UITraitCollection(userInterfaceStyle: .light)
-        trait.performAsCurrent {
-            image = document.entity.drawing.image(from: document.entity.drawing.bounds, scale: UIScreen.main.scale)
-        }
-
-        return UIActivityViewControllerWrapper(activityItems: [image])
-    }
 
     init() {
         let path = FilePath.inboxUrl!.appendingPathComponent(FilePath.fileName)

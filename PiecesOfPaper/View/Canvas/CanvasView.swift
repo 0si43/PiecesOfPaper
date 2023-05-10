@@ -16,6 +16,8 @@ struct CanvasView: View {
     @Environment(\.dismiss) var dismiss
     @AppStorage("review_requested") var reviewRequested = false
     @State var hideExceptPaper = true
+    @State var showToolPicker = false
+    @State var isShowActivityView = false
 
     var discardButton: Alert.Button {
         .destructive(
@@ -26,14 +28,14 @@ struct CanvasView: View {
 
     var body: some View {
         PKCanvasViewWrapper(drawing: canvasViewModel.document.entity.drawing,
-                            showToolPicker: $canvasViewModel.showToolPicker,
+                            showToolPicker: $showToolPicker,
                             saveAction: canvasViewModel.save)
         .onAppear {
             hideExceptPaper = true
         }
         .onTapGesture {
             hideExceptPaper.toggle()
-            canvasViewModel.showToolPicker = !hideExceptPaper
+            showToolPicker = !hideExceptPaper
         }
         .statusBar(hidden: hideExceptPaper)
         .navigationBarHidden(hideExceptPaper)
@@ -41,11 +43,11 @@ struct CanvasView: View {
         .toolbar {
             toolbarItemGroup
         }
-        .sheet(isPresented: $canvasViewModel.isShowActivityView,
-               onDismiss: { canvasViewModel.showToolPicker = true },
-               content: { canvasViewModel.activityViewController })
+        .sheet(isPresented: $isShowActivityView,
+               onDismiss: { showToolPicker = true },
+               content: { activityViewController })
         .sheet(isPresented: $canvasViewModel.showTagList,
-               onDismiss: { canvasViewModel.showToolPicker = true },
+               onDismiss: { showToolPicker = true },
                content: { AddTagView(viewModel: TagListToNoteViewModel(noteDocument: canvasViewModel.document)) })
         .alert(isPresented: $canvasViewModel.showUnsavedAlert) { () -> Alert in
             Alert(title: Text("Are you sure you want to discard the changes you made?"),
@@ -54,13 +56,13 @@ struct CanvasView: View {
         }
     }
 
-    var toolbarItemGroup: ToolbarItemGroup<some View> {
+    private var toolbarItemGroup: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             Button(action: archive) {
                 Image(systemName: "trash").foregroundColor(.red)
             }
             Button(action: {
-                canvasViewModel.showToolPicker.toggle()
+                showToolPicker = false
                 canvasViewModel.showTagList.toggle()
                 },
                 label: {
@@ -71,12 +73,28 @@ struct CanvasView: View {
             .popover(isPresented: $canvasViewModel.showDrawingInformation) {
                 NoteInformationView(document: canvasViewModel.document)
             }
-            Button(action: { canvasViewModel.isShowActivityView.toggle() },
+            Button(action: {
+                showToolPicker = false
+                isShowActivityView.toggle()
+            },
                    label: { Image(systemName: "square.and.arrow.up") })
             Button(action: close) {
                 Image(systemName: "tray.full")
             }
         }
+    }
+
+    private var activityViewController: UIActivityViewControllerWrapper {
+        var image = UIImage()
+        let trait = UITraitCollection(userInterfaceStyle: .light)
+        trait.performAsCurrent {
+            image = canvasViewModel.document.entity.drawing.image(
+                from: canvasViewModel.document.entity.drawing.bounds,
+                scale: UIScreen.main.scale
+            )
+        }
+
+        return UIActivityViewControllerWrapper(activityItems: [image])
     }
 
     private func archive() {
@@ -85,7 +103,7 @@ struct CanvasView: View {
                 dismiss()
                 return
             }
-            canvasViewModel.showToolPicker = false
+            showToolPicker = false
             canvasViewModel.showUnsavedAlert.toggle()
             return
         }
