@@ -11,7 +11,6 @@ import PencilKit
 
 final class CanvasViewModel: ObservableObject {
     var document: NoteDocument
-    @Published var hideExceptPaper = true
     @Published var showToolPicker = false
     @Published var showDrawingInformation = false
     @Published var showTagList = false

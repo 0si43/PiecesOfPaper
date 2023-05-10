@@ -15,14 +15,7 @@ struct CanvasView: View {
     @EnvironmentObject var canvasViewModel: CanvasViewModel
     @Environment(\.dismiss) var dismiss
     @AppStorage("review_requested") var reviewRequested = false
-
-    var tap: some Gesture {
-        TapGesture(count: 1)
-            .onEnded { _ in
-                canvasViewModel.hideExceptPaper.toggle()
-                canvasViewModel.showToolPicker = !canvasViewModel.hideExceptPaper
-            }
-    }
+    @State var hideExceptPaper = true
 
     var discardButton: Alert.Button {
         .destructive(
@@ -35,49 +28,55 @@ struct CanvasView: View {
         PKCanvasViewWrapper(drawing: canvasViewModel.document.entity.drawing,
                             showToolPicker: $canvasViewModel.showToolPicker,
                             saveAction: canvasViewModel.save)
-            .gesture(tap)
-            .navigationBarTitleDisplayMode(.inline)
-            .statusBar(hidden: canvasViewModel.hideExceptPaper)
-            .navigationBarHidden(canvasViewModel.hideExceptPaper)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    Button(action: archive) {
-                        Image(systemName: "trash").foregroundColor(.red)
-                    }
-                    Button(action: {
-                        canvasViewModel.showToolPicker.toggle()
-                        canvasViewModel.showTagList.toggle()
-                        },
-                        label: {
-                            Image(systemName: "tag.circle")
-                        })
-                    Button(action: { canvasViewModel.showDrawingInformation.toggle() },
-                           label: { Image(systemName: "info.circle") })
-                    .popover(isPresented: $canvasViewModel.showDrawingInformation) {
-                        NoteInformationView(document: canvasViewModel.document)
-                    }
-                    Button(action: { canvasViewModel.isShowActivityView.toggle() },
-                           label: { Image(systemName: "square.and.arrow.up") })
-                    Button(action: close) {
-                        Image(systemName: "tray.full")
-                    }
-                }
+        .onAppear {
+            hideExceptPaper = true
+        }
+        .onTapGesture {
+            hideExceptPaper.toggle()
+            canvasViewModel.showToolPicker = !hideExceptPaper
+        }
+        .statusBar(hidden: hideExceptPaper)
+        .navigationBarHidden(hideExceptPaper)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            toolbarItemGroup
+        }
+        .sheet(isPresented: $canvasViewModel.isShowActivityView,
+               onDismiss: { canvasViewModel.showToolPicker = true },
+               content: { canvasViewModel.activityViewController })
+        .sheet(isPresented: $canvasViewModel.showTagList,
+               onDismiss: { canvasViewModel.showToolPicker = true },
+               content: { AddTagView(viewModel: TagListToNoteViewModel(noteDocument: canvasViewModel.document)) })
+        .alert(isPresented: $canvasViewModel.showUnsavedAlert) { () -> Alert in
+            Alert(title: Text("Are you sure you want to discard the changes you made?"),
+                  primaryButton: discardButton,
+                  secondaryButton: cancelButton)
+        }
+    }
+
+    var toolbarItemGroup: ToolbarItemGroup<some View> {
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+            Button(action: archive) {
+                Image(systemName: "trash").foregroundColor(.red)
             }
-            .sheet(isPresented: $canvasViewModel.isShowActivityView,
-                   onDismiss: { canvasViewModel.showToolPicker = true },
-                   content: { canvasViewModel.activityViewController })
-            .sheet(isPresented: $canvasViewModel.showTagList,
-                   onDismiss: { canvasViewModel.showToolPicker = true },
-                   content: { AddTagView(viewModel: TagListToNoteViewModel(noteDocument: canvasViewModel.document)) })
-            .alert(isPresented: $canvasViewModel.showUnsavedAlert) { () -> Alert in
-                Alert(title: Text("Are you sure you want to discard the changes you made?"),
-                      primaryButton: discardButton,
-                      secondaryButton: cancelButton)
+            Button(action: {
+                canvasViewModel.showToolPicker.toggle()
+                canvasViewModel.showTagList.toggle()
+                },
+                label: {
+                    Image(systemName: "tag.circle")
+                })
+            Button(action: { canvasViewModel.showDrawingInformation.toggle() },
+                   label: { Image(systemName: "info.circle") })
+            .popover(isPresented: $canvasViewModel.showDrawingInformation) {
+                NoteInformationView(document: canvasViewModel.document)
             }
-            .onAppear {
-                canvasViewModel.hideExceptPaper = true
+            Button(action: { canvasViewModel.isShowActivityView.toggle() },
+                   label: { Image(systemName: "square.and.arrow.up") })
+            Button(action: close) {
+                Image(systemName: "tray.full")
             }
+        }
     }
 
     private func archive() {
