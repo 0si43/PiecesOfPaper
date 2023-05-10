@@ -17,11 +17,11 @@ struct RootView: View {
         .fullScreenCover(isPresented: $viewModel.showCanvas) {
             if #available(iOS 16.0, *) {
                 NavigationStack {
-                    Canvas(viewModel: CanvasViewModel())
+                    CanvasView(viewModel: CanvasViewModel())
                 }
             } else {
                 NavigationView {
-                    Canvas(viewModel: CanvasViewModel())
+                    CanvasView(viewModel: CanvasViewModel())
                 }
             }
         }

@@ -1,5 +1,5 @@
 //
-//  Canvas.swift
+//  CanvasView.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/10/29.
@@ -11,10 +11,9 @@ import PencilKit
 import StoreKit
 import LinkPresentation
 
-struct Canvas: View {
+struct CanvasView: View {
     @ObservedObject var viewModel: CanvasViewModel
-
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     @AppStorage("review_requested") var reviewRequested = false
 
     var tap: some Gesture {
@@ -27,7 +26,7 @@ struct Canvas: View {
 
     var discardButton: Alert.Button {
         .destructive(
-            Text("Discard"), action: { presentationMode.wrappedValue.dismiss() }
+            Text("Discard"), action: { dismiss() }
         )
     }
     var cancelButton: Alert.Button { .default(Text("Cancel")) }
@@ -86,7 +85,7 @@ struct Canvas: View {
     private func archive() {
         if !UserPreference().enabledAutoSave {
             guard !(viewModel.document?.entity.drawing.strokes.isEmpty ?? true) else {
-                presentationMode.wrappedValue.dismiss()
+                dismiss()
                 return
             }
             viewModel.showToolPicker = false
@@ -96,7 +95,7 @@ struct Canvas: View {
         viewModel.archive()
         // do not send notification
 
-        presentationMode.wrappedValue.dismiss()
+        dismiss()
         reviewRequest()
     }
 
@@ -108,7 +107,7 @@ struct Canvas: View {
         if viewModel.hasSavedDocument {
             NotificationCenter.default.post(name: .addedNewNote, object: viewModel.document)
         }
-        presentationMode.wrappedValue.dismiss()
+        dismiss()
         reviewRequest()
     }
 
@@ -122,14 +121,15 @@ struct Canvas: View {
     }
 }
 
-struct Canvas_Previews: PreviewProvider {
+struct CanvasView_Previews: PreviewProvider {
     static var viewModel = CanvasViewModel()
 
     static var previews: some View {
         ForEach(TargetPreviewDevice.allCases) { deviceName in
-            Canvas(viewModel: viewModel)
+            CanvasView(viewModel: viewModel)
                 .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
                 .previewDisplayName(deviceName.rawValue)
+                .previewInterfaceOrientation(.landscapeLeft)
         }
     }
 }
