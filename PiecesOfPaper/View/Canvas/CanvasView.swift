@@ -112,9 +112,9 @@ struct CanvasView: View {
     }
 
     private func reviewRequest() {
-        if let windowScene = UIApplication.shared.windows.first?.windowScene,
-           viewModel.canReviewRequest,
-           !reviewRequested {
+        if viewModel.canReviewRequest,
+           !reviewRequested,
+           let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             SKStoreReviewController.requestReview(in: windowScene)
             reviewRequested = true
         }
