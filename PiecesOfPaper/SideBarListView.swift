@@ -1,5 +1,5 @@
 //
-//  PiecesOfPaperApp.swift
+//  SideBarListView.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/11/03.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct SideBarList: View {
+struct SideBarListView: View {
     @State private var isActive = true
     @StateObject var inboxNoteViewModel = NotesViewModel(targetDirectory: .inbox)
     @StateObject var allNoteViewModel = NotesViewModel(targetDirectory: .all)
@@ -57,10 +57,10 @@ struct SideBarList: View {
     }
 }
 
-struct SideBarList_Previews: PreviewProvider {
+struct SideBarListView_Previews: PreviewProvider {
     static var previews: some View {
         ForEach(TargetPreviewDevice.allCases) { deviceName in
-            SideBarList()
+            SideBarListView()
                 .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
                 .previewDisplayName(deviceName.rawValue)
                 .previewInterfaceOrientation(.landscapeLeft)
