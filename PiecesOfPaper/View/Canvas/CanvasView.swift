@@ -15,28 +15,34 @@ struct CanvasView: View {
     @EnvironmentObject var canvasViewModel: CanvasViewModel
     @Environment(\.dismiss) var dismiss
     @AppStorage("review_requested") var reviewRequested = false
+    @State var canvasView = PKCanvasView()
+    @State var toolPicker = PKToolPicker()
     @State var hideExceptPaper = true
-    @State var showToolPicker = false
     @State var isShowActivityView = false
+    @State var showUnsavedAlert = false
 
-    var discardButton: Alert.Button {
-        .destructive(
-            Text("Discard"), action: { dismiss() }
-        )
+    var tapGesture: some Gesture {
+        TapGesture(count: 1)
+            .onEnded { _ in
+                hideExceptPaper.toggle()
+                setToolPickerVisible(!hideExceptPaper)
+            }
     }
-    var cancelButton: Alert.Button { .default(Text("Cancel")) }
+
+    private func setToolPickerVisible(_ isVisible: Bool) {
+        toolPicker.setVisible(isVisible, forFirstResponder: canvasView)
+        canvasView.becomeFirstResponder()
+    }
 
     var body: some View {
-        PKCanvasViewWrapper(drawing: canvasViewModel.document.entity.drawing,
-                            showToolPicker: $showToolPicker,
+        PKCanvasViewWrapper(canvasView: $canvasView,
+                            toolPicker: $toolPicker,
                             saveAction: canvasViewModel.save)
         .onAppear {
+            canvasView.drawing = canvasViewModel.document.entity.drawing
             hideExceptPaper = true
         }
-        .onTapGesture {
-            hideExceptPaper.toggle()
-            showToolPicker = !hideExceptPaper
-        }
+        .gesture(tapGesture)
         .statusBar(hidden: hideExceptPaper)
         .navigationBarHidden(hideExceptPaper)
         .navigationBarBackButtonHidden(true)
@@ -44,15 +50,30 @@ struct CanvasView: View {
             toolbarItemGroup
         }
         .sheet(isPresented: $isShowActivityView,
-               onDismiss: { showToolPicker = true },
+               onDismiss: {
+                   setToolPickerVisible(true)
+               },
                content: { activityViewController })
         .sheet(isPresented: $canvasViewModel.showTagList,
-               onDismiss: { showToolPicker = true },
-               content: { AddTagView(viewModel: TagListToNoteViewModel(noteDocument: canvasViewModel.document)) })
-        .alert(isPresented: $canvasViewModel.showUnsavedAlert) { () -> Alert in
-            Alert(title: Text("Are you sure you want to discard the changes you made?"),
-                  primaryButton: discardButton,
-                  secondaryButton: cancelButton)
+               onDismiss: {
+                   setToolPickerVisible(true)
+
+               },
+               content: {
+                   AddTagView(viewModel: TagListToNoteViewModel(noteDocument: canvasViewModel.document))
+               }
+        )
+        .alert("", isPresented: $showUnsavedAlert) {
+             Button(role: .destructive) {
+                 dismiss()
+             } label: {
+                 Text("Discard")
+             }
+             Button("Cancel") {
+
+             }
+         } message: {
+             Text("Are you sure you want to discard the changes you made?")
         }
     }
 
@@ -62,7 +83,7 @@ struct CanvasView: View {
                 Image(systemName: "trash").foregroundColor(.red)
             }
             Button(action: {
-                showToolPicker = false
+                setToolPickerVisible(false)
                 canvasViewModel.showTagList.toggle()
                 },
                 label: {
@@ -74,7 +95,7 @@ struct CanvasView: View {
                 NoteInformationView(document: canvasViewModel.document)
             }
             Button(action: {
-                showToolPicker = false
+                setToolPickerVisible(false)
                 isShowActivityView.toggle()
             },
                    label: { Image(systemName: "square.and.arrow.up") })
@@ -103,8 +124,8 @@ struct CanvasView: View {
                 dismiss()
                 return
             }
-            showToolPicker = false
-            canvasViewModel.showUnsavedAlert.toggle()
+            setToolPickerVisible(false)
+            showUnsavedAlert = true
             return
         }
         canvasViewModel.archive()
