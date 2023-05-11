@@ -13,7 +13,6 @@ final class CanvasViewModel: ObservableObject {
     var document: NoteDocument
     @Published var showDrawingInformation = false
     @Published var showTagList = false
-    @Published var showUnsavedAlert = false
 
     var canReviewRequest: Bool {
         guard let inboxUrl = FilePath.inboxUrl,
