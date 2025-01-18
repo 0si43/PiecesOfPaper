@@ -15,22 +15,22 @@ struct SideBarListView: View {
 
     var body: some View {
         NavigationSplitView {
-            list
+            sideBarList
         } detail: {
-            Notes(viewModel: inboxNoteViewModel)
+            NoteListParentView(viewModel: inboxNoteViewModel)
         }
     }
 
-    var list: some View {
+    var sideBarList: some View {
         List {
             Section(header: Text("Folder")) {
-                NavigationLink(destination: Notes(viewModel: inboxNoteViewModel)) {
+                NavigationLink(destination: NoteListParentView(viewModel: inboxNoteViewModel)) {
                     Label("Inbox", systemImage: "tray")
                 }
-                NavigationLink(destination: Notes(viewModel: allNoteViewModel)) {
+                NavigationLink(destination: NoteListParentView(viewModel: allNoteViewModel)) {
                     Label("All", systemImage: "tray.full")
                 }
-                NavigationLink(destination: Notes(viewModel: archivedNoteViewModel)) {
+                NavigationLink(destination: NoteListParentView(viewModel: archivedNoteViewModel)) {
                     Label("Trash", systemImage: "trash")
                 }
             }
