@@ -34,12 +34,6 @@ final class CanvasViewModel: ObservableObject {
         self.document = noteDocument
     }
 
-    func newDocument() {
-        let path = FilePath.inboxUrl!.appendingPathComponent(FilePath.fileName)
-        self.document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
-        hasSavedDocument = false
-    }
-
     func save() {
         save(drawing: document.entity.drawing)
     }

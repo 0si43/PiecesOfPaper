@@ -10,14 +10,13 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject var appViewModel: AppViewModel
-    @EnvironmentObject var canvasViewModel: CanvasViewModel
     @State var showCanvasView = false
 
     var body: some View {
         SideBarListView()
         .fullScreenCover(isPresented: $showCanvasView) {
             NavigationStack {
-                CanvasView()
+                CanvasView(canvasViewModel: CanvasViewModel())
             }
         }
         .onAppear {
