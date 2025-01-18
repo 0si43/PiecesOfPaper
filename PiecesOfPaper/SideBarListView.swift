@@ -15,16 +15,10 @@ struct SideBarListView: View {
     @StateObject var archivedNoteViewModel = NotesViewModel(targetDirectory: .archived)
 
     var body: some View {
-        if #available(iOS 16.0, *) {
-            NavigationSplitView() {
-                list
-            } detail: {
-                Notes(viewModel: inboxNoteViewModel)
-            }
-        } else {
-            NavigationView {
-                list
-            }
+        NavigationSplitView {
+            list
+        } detail: {
+            Notes(viewModel: inboxNoteViewModel)
         }
     }
 

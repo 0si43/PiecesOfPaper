@@ -16,14 +16,8 @@ struct RootView: View {
     var body: some View {
         SideBarListView()
         .fullScreenCover(isPresented: $showCanvasView) {
-            if #available(iOS 16.0, *) {
-                NavigationStack {
-                    CanvasView()
-                }
-            } else {
-                NavigationView {
-                    CanvasView()
-                }
+            NavigationStack {
+                CanvasView()
             }
         }
         .onAppear {

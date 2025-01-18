@@ -50,7 +50,7 @@ struct NoteInformationView: View {
     }
 
     var rightColumnView: some View {
-        VStack() {
+        VStack {
             Group {
                 #if DEBUG
                 Text("🛠" + document.entity.id.uuidString)
