@@ -12,7 +12,7 @@ import StoreKit
 import LinkPresentation
 
 struct CanvasView: View {
-    @EnvironmentObject var canvasViewModel: CanvasViewModel
+    @ObservedObject var canvasViewModel: CanvasViewModel
     @Environment(\.dismiss) var dismiss
     @AppStorage("review_requested") var reviewRequested = false
     @State var canvasView = PKCanvasView()
@@ -158,8 +158,7 @@ struct CanvasView_Previews: PreviewProvider {
 
     static var previews: some View {
         ForEach(TargetPreviewDevice.allCases) { deviceName in
-            CanvasView()
-                .environmentObject(CanvasViewModel())
+            CanvasView(canvasViewModel: CanvasViewModel())
                 .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
                 .previewDisplayName(deviceName.rawValue)
                 .previewInterfaceOrientation(.landscapeLeft)

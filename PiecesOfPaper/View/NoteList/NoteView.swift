@@ -20,7 +20,6 @@ struct NoteView: View {
 
     var body: some View {
         Button(action: {
-            canvasViewModel.document = document
             showCanvasView = true
         }, label: {
             Image(uiImage: image)
@@ -32,7 +31,7 @@ struct NoteView: View {
         })
         .fullScreenCover(isPresented: $showCanvasView) {
             NavigationView {
-                CanvasView()
+                CanvasView(canvasViewModel: CanvasViewModel(noteDocument: document))
             }
         }
     }

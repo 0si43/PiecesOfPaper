@@ -50,12 +50,12 @@ struct NoteListParentView: View {
                 Button(action: viewModel.update,
                        label: { Image(systemName: "arrow.triangle.2.circlepath") })
                     .disabled(!viewModel.isLoaded)
-                Button(action: new) { Image(systemName: "plus.circle") }
+                Button(action: openNewNote) { Image(systemName: "plus.circle") }
             }
         }
         .fullScreenCover(isPresented: $showCanvasView) {
             NavigationView {
-                CanvasView()
+                CanvasView(canvasViewModel: CanvasViewModel())
             }
         }
         .sheet(isPresented: $viewModel.isListConditionSheet) {
@@ -107,8 +107,7 @@ struct NoteListParentView: View {
         }
     }
 
-    func new() {
-        canvasViewModel.newDocument()
+    func openNewNote() {
         showCanvasView = true
     }
 }
