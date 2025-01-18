@@ -72,7 +72,7 @@ struct CanvasView: View {
 
              }
          } message: {
-             Text("Are you sure you want to discard the changes you made?")
+             Text("Discard changes?")
         }
     }
 
