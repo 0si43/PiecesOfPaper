@@ -17,7 +17,7 @@ struct SettingView: View {
         List {
             Section(header: Text("Preference")) {
                 Toggle(isOn: $viewModel.enablediCloud) {
-                    Label("Enable iCloud", systemImage: viewModel.enablediCloud ? "icloud.fill" : "icloud")
+                    Label("Enable iCloud", systemImage: "icloud")
                 }
                 Toggle(isOn: $viewModel.enabledAutoSave) {
                     Label("Auto Save", systemImage: "gearshape")
