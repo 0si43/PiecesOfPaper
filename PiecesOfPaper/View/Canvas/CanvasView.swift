@@ -57,7 +57,6 @@ struct CanvasView: View {
         .sheet(isPresented: $canvasViewModel.showTagList,
                onDismiss: {
                    setToolPickerVisible(true)
-
                },
                content: {
                    AddTagView(viewModel: TagListToNoteViewModel(noteDocument: canvasViewModel.document))
