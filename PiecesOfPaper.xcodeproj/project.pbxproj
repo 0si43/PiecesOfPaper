@@ -27,16 +27,15 @@
 		A6484FCE272B923B00676ED8 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FCD272B923B00676ED8 /* CanvasView.swift */; };
 		A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */; };
 		A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */; };
-		A6484FD6272E63B000676ED8 /* NotesGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD5272E63B000676ED8 /* NotesGrid.swift */; };
-		A64AE9F22759A963002C66F7 /* NoteImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F12759A963002C66F7 /* NoteImage.swift */; };
+		A6484FD6272E63B000676ED8 /* NoteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD5272E63B000676ED8 /* NoteListView.swift */; };
+		A64AE9F22759A963002C66F7 /* NoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F12759A963002C66F7 /* NoteView.swift */; };
 		A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F3275B203A002C66F7 /* NoteEntity.swift */; };
-		A64AE9F6275C5A1A002C66F7 /* NotesScrollViewReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F5275C5A1A002C66F7 /* NotesScrollViewReader.swift */; };
 		A64F971C2751CB68001E46B0 /* DrawingsPlistConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64F971B2751CB68001E46B0 /* DrawingsPlistConverter.swift */; };
 		A66205682841E1A1009562EC /* NotesViewModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A66205672841E1A1009562EC /* NotesViewModelTest.swift */; };
 		A6620E2C2748ABE400C708A2 /* CanvasViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E2B2748ABE400C708A2 /* CanvasViewModel.swift */; };
 		A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E2D274C6E8E00C708A2 /* SideBarListView.swift */; };
 		A6620E34274C774D00C708A2 /* ScrollButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E33274C774D00C708A2 /* ScrollButton.swift */; };
-		A6620E36274C7A3D00C708A2 /* Notes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E35274C7A3D00C708A2 /* Notes.swift */; };
+		A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */; };
 		A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E39274C8FA400C708A2 /* NoteDocument.swift */; };
 		A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E3B274CD88000C708A2 /* FilePath.swift */; };
 		A667CCB927B4ACB20076CEB8 /* TargetPreviewDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A667CCB827B4ACB20076CEB8 /* TargetPreviewDevice.swift */; };
@@ -81,16 +80,15 @@
 		A6484FCD272B923B00676ED8 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKCanvasViewWrapper.swift; sourceTree = "<group>"; };
 		A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
-		A6484FD5272E63B000676ED8 /* NotesGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesGrid.swift; sourceTree = "<group>"; };
-		A64AE9F12759A963002C66F7 /* NoteImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteImage.swift; sourceTree = "<group>"; };
+		A6484FD5272E63B000676ED8 /* NoteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteListView.swift; sourceTree = "<group>"; };
+		A64AE9F12759A963002C66F7 /* NoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteView.swift; sourceTree = "<group>"; };
 		A64AE9F3275B203A002C66F7 /* NoteEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEntity.swift; sourceTree = "<group>"; };
-		A64AE9F5275C5A1A002C66F7 /* NotesScrollViewReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesScrollViewReader.swift; sourceTree = "<group>"; };
 		A64F971B2751CB68001E46B0 /* DrawingsPlistConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingsPlistConverter.swift; sourceTree = "<group>"; };
 		A66205672841E1A1009562EC /* NotesViewModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesViewModelTest.swift; sourceTree = "<group>"; };
 		A6620E2B2748ABE400C708A2 /* CanvasViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasViewModel.swift; sourceTree = "<group>"; };
 		A6620E2D274C6E8E00C708A2 /* SideBarListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarListView.swift; sourceTree = "<group>"; };
 		A6620E33274C774D00C708A2 /* ScrollButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollButton.swift; sourceTree = "<group>"; };
-		A6620E35274C7A3D00C708A2 /* Notes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notes.swift; sourceTree = "<group>"; };
+		A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteListParentView.swift; sourceTree = "<group>"; };
 		A6620E39274C8FA400C708A2 /* NoteDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocument.swift; sourceTree = "<group>"; };
 		A6620E3B274CD88000C708A2 /* FilePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePath.swift; sourceTree = "<group>"; };
 		A6675A37251D89BA00343151 /* Like Paper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Like Paper.entitlements"; sourceTree = "<group>"; };
@@ -195,10 +193,9 @@
 		A6743E692765B8410075F138 /* NoteList */ = {
 			isa = PBXGroup;
 			children = (
-				A6620E35274C7A3D00C708A2 /* Notes.swift */,
-				A64AE9F5275C5A1A002C66F7 /* NotesScrollViewReader.swift */,
-				A6484FD5272E63B000676ED8 /* NotesGrid.swift */,
-				A64AE9F12759A963002C66F7 /* NoteImage.swift */,
+				A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */,
+				A6484FD5272E63B000676ED8 /* NoteListView.swift */,
+				A64AE9F12759A963002C66F7 /* NoteView.swift */,
 				A6620E33274C774D00C708A2 /* ScrollButton.swift */,
 				A63C9594276447BD00822461 /* ListConditionSetting.swift */,
 			);
@@ -399,14 +396,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A64AE9F6275C5A1A002C66F7 /* NotesScrollViewReader.swift in Sources */,
 				A6134B80245C09FC00E5F0FB /* DataModel.swift in Sources */,
 				A63C956D275C7CF300822461 /* TagEntity.swift in Sources */,
 				A6484FCE272B923B00676ED8 /* CanvasView.swift in Sources */,
 				A6620E2C2748ABE400C708A2 /* CanvasViewModel.swift in Sources */,
 				A63C9586275DB86600822461 /* AddTagView.swift in Sources */,
 				A63C959B2765A5D500822461 /* NoteInformationView.swift in Sources */,
-				A64AE9F22759A963002C66F7 /* NoteImage.swift in Sources */,
+				A64AE9F22759A963002C66F7 /* NoteView.swift in Sources */,
 				A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */,
 				A64F971C2751CB68001E46B0 /* DrawingsPlistConverter.swift in Sources */,
 				A63C9588275DB97900822461 /* DeletableTag.swift in Sources */,
@@ -431,11 +427,11 @@
 				A63C9580275CFF7900822461 /* TagModel.swift in Sources */,
 				A63C9595276447BD00822461 /* ListConditionSetting.swift in Sources */,
 				A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */,
-				A6484FD6272E63B000676ED8 /* NotesGrid.swift in Sources */,
+				A6484FD6272E63B000676ED8 /* NoteListView.swift in Sources */,
 				A6CADA532767581700657E9E /* SettingViewModel.swift in Sources */,
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,
 				A6CADA5527675D8500657E9E /* UserPreference.swift in Sources */,
-				A6620E36274C7A3D00C708A2 /* Notes.swift in Sources */,
+				A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */,
 				A63C957C275C8FD900822461 /* TagListViewModel.swift in Sources */,
 				A63C958A275DDA9E00822461 /* TagListToNoteViewModel.swift in Sources */,
 			);
@@ -459,7 +455,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = JDTR4Y333X;
 				INFOPLIST_FILE = PiecesOfPaperTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -480,7 +476,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = JDTR4Y333X;
 				INFOPLIST_FILE = PiecesOfPaperTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

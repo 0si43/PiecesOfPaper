@@ -1,5 +1,5 @@
 //
-//  NotesGrid.swift
+//  NoteListParentView.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/10/31.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct Notes: View {
+struct NoteListParentView: View {
     @ObservedObject var viewModel: NotesViewModel
     @EnvironmentObject var canvasViewModel: CanvasViewModel
     @State var showCanvasView = false
@@ -34,7 +34,7 @@ struct Notes: View {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {
-                    NotesScrollViewReader(documents: viewModel.publishedNoteDocuments,
+                    NoteScrollView(documents: viewModel.publishedNoteDocuments,
                                           parent: self)
                 }
             }
@@ -77,15 +77,45 @@ struct Notes: View {
         }
     }
 
+    private struct NoteScrollView: View {
+        var documents: [NoteDocument]
+        var parent: NoteListViewParent
+
+        var body: some View {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    Spacer(minLength: 30.0)
+                    NoteListView(documents: documents, parent: parent)
+                }
+                .padding([.leading, .trailing])
+                .navigationBarTitleDisplayMode(.inline)
+                .overlay(
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            ScrollButton(action: { scrollToBottom(proxy: proxy) },
+                                         image: Image(systemName: "arrow.down.circle"))
+                        }
+                    }
+                )
+            }
+        }
+
+        func scrollToBottom(proxy: ScrollViewProxy) {
+            proxy.scrollTo(documents.endIndex - 1, anchor: .bottom)
+        }
+    }
+
     func new() {
         canvasViewModel.newDocument()
         showCanvasView = true
     }
 }
 
-// MARK: - NotesGridParent
+// MARK: - NoteListViewParent
 
-extension Notes: NotesGridParent {
+extension NoteListParentView: NoteListViewParent {
     func getTagToNote(document: NoteDocument) -> [TagEntity] {
         viewModel.getTagToNote(document: document)
     }
@@ -113,7 +143,7 @@ extension Notes: NotesGridParent {
 
 struct Notes_Previews: PreviewProvider {
     static var previews: some View {
-        Notes(viewModel: NotesViewModel(targetDirectory: .inbox))
+        NoteListParentView(viewModel: NotesViewModel(targetDirectory: .inbox))
             .environmentObject(CanvasViewModel())
     }
 }

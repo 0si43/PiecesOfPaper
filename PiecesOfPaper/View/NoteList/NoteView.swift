@@ -1,5 +1,5 @@
 //
-//  NoteImage.swift
+//  NoteView.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/12/03.
@@ -9,7 +9,7 @@
 import SwiftUI
 import PencilKit
 
-struct NoteImage: View {
+struct NoteView: View {
     var document: NoteDocument
     @EnvironmentObject var canvasViewModel: CanvasViewModel
     @State var showCanvasView = false
@@ -40,7 +40,7 @@ struct NoteImage: View {
 
  struct NoteImage_Previews: PreviewProvider {
      static var previews: some View {
-         NoteImage(document: NoteDocument.createTestData())
+         NoteView(document: NoteDocument.createTestData())
              .environmentObject(CanvasViewModel())
     }
  }

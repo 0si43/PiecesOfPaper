@@ -1,5 +1,5 @@
 //
-//  NotesGrid.swift
+//  NoteListView.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/10/31.
@@ -9,30 +9,29 @@
 import SwiftUI
 import PencilKit
 
-protocol NotesGridParent {
+protocol NoteListViewParent {
     func getTagToNote(document: NoteDocument) -> [TagEntity]
     func duplicate(_ document: NoteDocument)
     func archive(_ document: NoteDocument)
     func unarchive(_ document: NoteDocument)
     func delete(_ document: NoteDocument)
     func showActivityView(_ document: NoteDocument)
-
 }
 
-struct NotesGrid: View {
+struct NoteListView: View {
     // FIXME: - あとで直す
     @State var temp = false
     @State var document: NoteDocument?
     @State var documentToShare: NoteDocument?
     var documents: [NoteDocument]
-    var parent: NotesGridParent
+    var parent: NoteListViewParent
     let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
 
     var body: some View {
         LazyVGrid(columns: [gridItem]) {
             ForEach((0..<documents.endIndex), id: \.self) { index in
                 VStack {
-                    NoteImage(document: documents[index])
+                    NoteView(document: documents[index])
                     .contextMenu {
                         Button(
                             action: { duplicate(noteDocument: documents[index]) },
@@ -93,10 +92,10 @@ struct NotesGrid: View {
     }
 }
 
- struct NotesGrid_Previews: PreviewProvider {
-     static var parent = Notes(viewModel: NotesViewModel(targetDirectory: .inbox))
+ struct NoteListView_Previews: PreviewProvider {
+     static var parent = NoteListParentView(viewModel: NotesViewModel(targetDirectory: .inbox))
      static var array = Array(repeating: NoteDocument.createTestData(), count: 9)
      static var previews: some View {
-         NotesGrid(documents: array, parent: parent)
+         NoteListView(documents: array, parent: parent)
     }
  }
