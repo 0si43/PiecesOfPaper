@@ -7,7 +7,6 @@
 //
 
 import PencilKit
-import Combine
 
 final class NotesViewModel: ObservableObject {
     var objectWillChange = ObjectWillChangePublisher()
@@ -89,8 +88,6 @@ final class NotesViewModel: ObservableObject {
     }
 
     init(targetDirectory: TargetDirectory) {
-        defer { subscribe() }
-
         self.directory = targetDirectory
         let decoder = JSONDecoder()
         guard let data = UserDefaults.standard.data(forKey: "listCondition(" + directory.rawValue + ")"),
@@ -106,46 +103,6 @@ final class NotesViewModel: ObservableObject {
         let encoder = JSONEncoder()
         guard let data = try? encoder.encode(listCondition) else { return }
         UserDefaults.standard.set(data, forKey: "listCondition(" + directory.rawValue + ")")
-    }
-
-    private var cancellable: Set<AnyCancellable> = []
-    private func subscribe() {
-        NotificationCenter.default.publisher(for: .addedNewNote)
-            .map({ $0.object as? NoteDocument })
-            .sink { [weak self] document in
-                guard let self = self, let document = document,
-                      self.shouldInsertStoredArray(isArchived: document.isArchived) else { return }
-
-                if self.noteDocuments.contains(document) {
-                    self.noteDocuments = self.noteDocuments.map { $0 == document ? document : $0 }
-                } else {
-                    self.noteDocuments.append(document)
-                }
-
-                self.publish()
-            }
-            .store(in: &cancellable)
-
-        NotificationCenter.default.publisher(for: .changedTagToNote)
-            .map({ $0.object as? NoteDocument })
-            .sink { [weak self] document in
-                guard let document = document,
-                      let documents = self?.noteDocuments, !documents.isEmpty else { return }
-
-                self?.noteDocuments = documents.map {
-                    $0.entity.id == document.entity.id ? document : $0
-                }
-                self?.publish()
-            }
-            .store(in: &cancellable)
-    }
-
-    private func shouldInsertStoredArray(isArchived: Bool) -> Bool {
-        if isArchived {
-            return isTargetDirectoryArchived
-        } else {
-            return isTargetDirectoryInbox
-        }
     }
 
     func fetch() {

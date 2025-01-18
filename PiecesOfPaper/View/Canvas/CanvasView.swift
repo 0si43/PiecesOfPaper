@@ -139,9 +139,6 @@ struct CanvasView: View {
             canvasViewModel.save()
         }
 
-        if canvasViewModel.hasSavedDocument {
-            NotificationCenter.default.post(name: .addedNewNote, object: canvasViewModel.document)
-        }
         dismiss()
         reviewRequest()
     }
