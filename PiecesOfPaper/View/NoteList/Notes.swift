@@ -15,7 +15,7 @@ struct Notes: View {
     private var cancelButton: Alert.Button { .default(Text("Cancel")) }
     private var actionButton: Alert.Button {
         .destructive(
-            Text(viewModel.isTargetDirectoryArchived ?  "Unarchived" : "Archived"),
+            Text(viewModel.isTargetDirectoryArchived ? "Unarchived" : "Archived"),
             action: { viewModel.isTargetDirectoryArchived ? viewModel.allUnarchive() : viewModel.allArchive() }
         )
     }
