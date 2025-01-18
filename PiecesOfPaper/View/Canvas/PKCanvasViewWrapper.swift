@@ -24,8 +24,6 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
         self.saveAction = saveAction
         self.previousTool = defaultTool
         self.currentTool = defaultTool
-        self.canvasView.maximumZoomScale = 8.0
-        initialContentSize()
     }
 
     private var isDrawingWiderThanWindow: Bool {
@@ -54,6 +52,8 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> PKCanvasView {
+        canvasView.maximumZoomScale = 8.0
+        initialContentSize()
         canvasView.drawingPolicy =
             UIDevice.current.userInterfaceIdiom == .pad
             ? .pencilOnly
