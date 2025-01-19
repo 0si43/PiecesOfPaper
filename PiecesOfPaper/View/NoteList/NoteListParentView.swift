@@ -18,19 +18,17 @@ struct NoteListParentView: View {
 
     var body: some View {
         Group {
-            if !viewModel.isLoaded {
+            if viewModel.isLoading {
                 ProgressView()
-                    .onAppear {
-                        guard !viewModel.didFirstFetchRequest else { return }
-                        viewModel.fetch()
-                        viewModel.didFirstFetchRequest = true
+                    .task {
+                        await viewModel.fetch()
                     }
             } else {
-                if viewModel.publishedNoteDocuments.isEmpty {
+                if viewModel.displayNoteDocuments.isEmpty {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {
-                    NoteScrollView(documents: viewModel.publishedNoteDocuments, parent: self)
+                    NoteScrollView(documents: viewModel.displayNoteDocuments, parent: self)
                 }
             }
         }
@@ -55,7 +53,7 @@ struct NoteListParentView: View {
         }
         .alert(isPresented: $showArchiveAlert) { () -> Alert in
             let operationText = viewModel.isTargetDirectoryArchived ? "unarchived" : "archived"
-            let countText = viewModel.publishedNoteDocuments.count
+            let countText = viewModel.displayNoteDocuments.count
             let alertText = """
                 Are you sure you want to \(operationText) \(countText) notes?
             """
@@ -84,7 +82,7 @@ struct NoteListParentView: View {
             } label: {
                 Image(systemName: "arrow.triangle.2.circlepath")
             }
-            .disabled(!viewModel.isLoaded)
+            .disabled(viewModel.isLoading)
             Button {
                 openNewNote()
             } label: {
