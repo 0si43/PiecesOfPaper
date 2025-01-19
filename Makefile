@@ -46,6 +46,8 @@ test: # Xcode test # TEST_DEVICE=[device] TEST_OS=[OS]
 -skip-testing:${UI_TESTS_TARGET_NAME} \
 CODE_SIGN_IDENTITY="" \
 CODE_SIGNING_REQUIRED=NO \
+CODE_SIGNING_ALLOWED=NO \
+ONLY_ACTIVE_ARCH=YES \
 clean test
 
 .PHONY: show-devices
