@@ -10,35 +10,30 @@ import Foundation
 import SwiftUI
 
 class ListOrderSettingViewModel: ObservableObject {
-    var bindingListOrder: Binding<ListOrder>
-    @Published var editableListOrder: ListOrder
+    @Binding var listOrder: ListOrder
     var tags = TagModel().tags
-    var filteringTag: [TagEntity] {
-        tags.filter {
-            editableListOrder.filterBy.contains($0)
-        }
-    }
 
     init(listOrder: Binding<ListOrder>) {
-        self.bindingListOrder = listOrder
-        self.editableListOrder = listOrder.wrappedValue
+        self._listOrder = listOrder
+    }
+
+    var filteringTag: [TagEntity] {
+        tags.filter {
+            listOrder.filterBy.contains($0)
+        }
     }
 
     var nonFilteringTag: [TagEntity] {
         tags.filter {
-            !editableListOrder.filterBy.contains($0)
+            !listOrder.filterBy.contains($0)
         }
     }
 
     func add(tag: TagEntity) {
-        editableListOrder.filterBy.append(tag)
+        listOrder.filterBy.append(tag)
     }
 
     func remove(tag: TagEntity) {
-        editableListOrder.filterBy = editableListOrder.filterBy.filter { $0 != tag }
-    }
-
-    func bind() {
-        bindingListOrder.wrappedValue = editableListOrder
+        listOrder.filterBy = listOrder.filterBy.filter { $0 != tag }
     }
 }
