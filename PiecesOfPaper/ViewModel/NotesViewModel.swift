@@ -15,7 +15,6 @@ final class NotesViewModel: ObservableObject {
     private var counter = 0
 
     var isLoaded = false
-    var showArchiveAlert = false
 
     var didFirstFetchRequest = false
     enum TargetDirectory: String {
@@ -218,11 +217,6 @@ final class NotesViewModel: ObservableObject {
         return tags.filter {
             document.entity.tags.contains($0)
         }
-    }
-
-    func showArchiveOrUnarchiveAlert() {
-        showArchiveAlert = true
-        objectWillChange.send()
     }
 
     func allArchive() {
