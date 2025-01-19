@@ -24,7 +24,7 @@ struct ListOrderSettingView: View {
                 Spacer()
             }
             .padding(.horizontal)
-            Picker("", selection: $viewModel.editableListOrder.sortBy) {
+            Picker("", selection: $viewModel.listOrder.sortBy) {
                 ForEach(ListOrder.SortBy.allCases) { sortBy in
                     Text(sortBy.rawValue)
                         .tag(sortBy)
@@ -38,7 +38,7 @@ struct ListOrderSettingView: View {
                 Spacer()
             }
             .padding(.horizontal)
-            Picker("", selection: $viewModel.editableListOrder.sortOrder) {
+            Picker("", selection: $viewModel.listOrder.sortOrder) {
                 ForEach(ListOrder.SortOrder.allCases) { sortOrder in
                     Text(sortOrder.rawValue)
                         .tag(sortOrder)
@@ -70,29 +70,16 @@ struct ListOrderSettingView: View {
 
         }
         .toolbar {
-            ToolbarItemGroup(placement: .navigationBarLeading) {
-                Button(action: cancel) {
-                    Text("Cancel")
-                    .foregroundColor(.red)
-                }
-            }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button(action: apply) {
-                    Text("Apply")
+                Button {
+                    dismiss()
+                } label: {
+                    Text("Done")
                 }
             }
         }
         .navigationTitle("Sort & filter condition")
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    func cancel() {
-        dismiss()
-    }
-
-    func apply() {
-        viewModel.bind()
-        dismiss()
     }
 }
 
