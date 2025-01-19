@@ -30,33 +30,49 @@ struct NoteListView: View {
                 VStack {
                     NoteView(document: documents[index])
                     .contextMenu {
-                        Button(
-                            action: { parent.duplicate(documents[index]) },
-                            label: { Label("Duplicate", systemImage: "doc.on.doc") })
-                        if documents[index].isArchived {
-                                Button(
-                                    action: { parent.unarchive(documents[index]) },
-                                    label: { Label("Move to Inbox", systemImage: "tray") })
-                                Button(role: .destructive) {
-                                    parent.delete(documents[index])
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                        } else {
-                            Button(action: { parent.archive(documents[index]) },
-                                   label: { Label("Move to Trash", systemImage: "trash") })
-                        }
-                        Button(action: { parent.showActivityView(documents[index]) },
-                               label: { Label("Share", systemImage: "square.and.arrow.up") })
-                        Button(
-                            action: {
-                                parent.showActivityView(documents[index])
-                            },
-                            label: { Label("Tag", systemImage: "tag") })
+                        contextMenu(document: documents[index])
                     }
                     TagHStack(tags: parent.getTagToNote(document: documents[index]))
                         .padding(.horizontal)
                 }
+            }
+        }
+    }
+
+    func contextMenu(document: NoteDocument) -> some View {
+        Group {
+            Button {
+                parent.duplicate(document)
+            } label: {
+                Label("Duplicate", systemImage: "doc.on.doc")
+            }
+            if document.isArchived {
+                Button {
+                    parent.unarchive(document)
+                } label: {
+                    Label("Move to Inbox", systemImage: "tray")
+                }
+                Button(role: .destructive) {
+                    parent.delete(document)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            } else {
+                Button {
+                    parent.archive(document)
+                } label: {
+                    Label("Move to Trash", systemImage: "trash")
+                }
+            }
+            Button {
+                parent.showActivityView(document)
+            } label: {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+            Button {
+                parent.showAddTagView(document)
+            } label: {
+                Label("Tag", systemImage: "tag")
             }
         }
     }
