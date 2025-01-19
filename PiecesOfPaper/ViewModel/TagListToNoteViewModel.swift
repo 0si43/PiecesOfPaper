@@ -10,8 +10,8 @@ import Foundation
 import Combine
 
 final class TagListToNoteViewModel: ObservableObject {
-    let tagModel = TagModel()
-    var tags: [TagEntity]
+    private let tagModel = TagModel()
+    private var tags: [TagEntity]
     var noteDocument: NoteDocument?
     var objectWillChange = ObjectWillChangePublisher()
 

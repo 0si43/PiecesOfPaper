@@ -10,14 +10,15 @@ import SwiftUI
 import PencilKit
 
 struct PKCanvasViewWrapper: UIViewRepresentable {
-    @Binding var canvasView: PKCanvasView
-    @Binding var toolPicker: PKToolPicker
+    @Binding private var canvasView: PKCanvasView
+    @Binding private var toolPicker: PKToolPicker
     private let saveAction: (PKDrawing) -> Void
     private var defaultTool = PKInkingTool(.pen, color: .black, width: 1)
     private var previousTool: PKTool
     private var currentTool: PKTool
 
-    init(canvasView: Binding<PKCanvasView>, toolPicker: Binding<PKToolPicker>,
+    init(canvasView: Binding<PKCanvasView>,
+         toolPicker: Binding<PKToolPicker>,
          saveAction: @escaping (PKDrawing) -> Void) {
         self._canvasView = canvasView
         self._toolPicker = toolPicker
@@ -122,8 +123,6 @@ extension PKCanvasViewWrapper.Coordinator: PKToolPickerObserver {
 // MARK: - UIPencilInteractionDelegate
 extension PKCanvasViewWrapper.Coordinator: UIPencilInteractionDelegate {
     func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
-        // ToolPickerが表示されているときは標準で動作する
-        // カラーパレット出すアクションはないので、かわりにToolPickerを表示する
         guard !parent.toolPicker.isVisible else { return }
         let action = UIPencilInteraction.preferredTapAction
         switch action {

@@ -12,16 +12,16 @@ import StoreKit
 import LinkPresentation
 
 struct CanvasView: View {
-    @ObservedObject var canvasViewModel: CanvasViewModel
-    @Environment(\.dismiss) var dismiss
-    @AppStorage("review_requested") var reviewRequested = false
-    @State var canvasView = PKCanvasView()
-    @State var toolPicker = PKToolPicker()
-    @State var hideExceptPaper = true
-    @State var isShowActivityView = false
-    @State var showUnsavedAlert = false
+    @ObservedObject private(set) var canvasViewModel: CanvasViewModel
+    @Environment(\.dismiss) private var dismiss
+    @AppStorage("review_requested") private var reviewRequested = false
+    @State private var canvasView = PKCanvasView()
+    @State private var toolPicker = PKToolPicker()
+    @State private var hideExceptPaper = true
+    @State private var isShowActivityView = false
+    @State private var showUnsavedAlert = false
 
-    var tapGesture: some Gesture {
+    private var tapGesture: some Gesture {
         TapGesture(count: 1)
             .onEnded { _ in
                 hideExceptPaper.toggle()
@@ -128,8 +128,6 @@ struct CanvasView: View {
             return
         }
         canvasViewModel.archive()
-        // do not send notification
-
         dismiss()
         reviewRequest()
     }

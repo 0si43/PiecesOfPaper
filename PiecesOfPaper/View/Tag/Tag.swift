@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct Tag: View {
-    var entity: TagEntity
+    private(set) var entity: TagEntity
 
     var body: some View {
         Text(entity.name)

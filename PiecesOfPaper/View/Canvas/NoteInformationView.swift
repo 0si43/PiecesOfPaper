@@ -6,11 +6,10 @@
 //  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
 //
 
-import PencilKit
 import SwiftUI
 
 struct NoteInformationView: View {
-    var document: NoteDocument
+    private(set) var document: NoteDocument
     let dataFormatter: DateFormatter = {
         let dataFormatter = DateFormatter()
         dataFormatter.dateStyle = .medium
@@ -26,7 +25,7 @@ struct NoteInformationView: View {
         }
     }
 
-    var leftColumnView: some View {
+    private var leftColumnView: some View {
         VStack {
             Group {
                 #if DEBUG
@@ -49,7 +48,7 @@ struct NoteInformationView: View {
         .scaledToFit()
     }
 
-    var rightColumnView: some View {
+    private var rightColumnView: some View {
         VStack {
             Group {
                 #if DEBUG

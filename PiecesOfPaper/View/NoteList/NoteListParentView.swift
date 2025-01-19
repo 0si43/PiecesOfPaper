@@ -9,16 +9,12 @@
 import SwiftUI
 
 struct NoteListParentView: View {
-    @ObservedObject private var viewModel: NotesViewModel
+    @ObservedObject private(set) var viewModel: NotesViewModel
     @State private var showCanvasView = false
     @State private var showListOrderSettingView = false
     @State private var documentToShare: NoteDocument?
     @State private var documentToTag: NoteDocument?
     @State private var showArchiveAlert = false
-
-    init(viewModel: NotesViewModel) {
-        self.viewModel = viewModel
-    }
 
     var body: some View {
         Group {

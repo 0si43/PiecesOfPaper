@@ -20,9 +20,9 @@ protocol NoteListViewParent {
 }
 
 struct NoteListView: View {
-    var documents: [NoteDocument]
-    var parent: NoteListViewParent
-    let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
+    private(set) var documents: [NoteDocument]
+    private(set) var parent: NoteListViewParent
+    private let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
 
     var body: some View {
         LazyVGrid(columns: [gridItem]) {

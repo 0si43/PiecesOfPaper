@@ -9,9 +9,9 @@
 import SwiftUI
 
 struct SettingView: View {
-    @ObservedObject var viewModel = SettingViewModel()
-    let repositoryUrl = URL(string: "https://github.com/0si43/PiecesOfPaper")
-    let developerSiteUrl = URL(string: "https://www.shetommy.com/")
+    @ObservedObject private(set) var viewModel = SettingViewModel()
+    private let repositoryUrl = URL(string: "https://github.com/0si43/PiecesOfPaper")
+    private let developerSiteUrl = URL(string: "https://www.shetommy.com/")
 
     var body: some View {
         List {

@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct ScrollButton: View {
-    var action: () -> Void
-    var image: Image
+    private(set) var action: () -> Void
+    private(set) var image: Image
 
     var body: some View {
         Button(action: action) {

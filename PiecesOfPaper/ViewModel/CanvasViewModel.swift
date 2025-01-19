@@ -10,7 +10,7 @@ import Foundation
 import PencilKit
 
 final class CanvasViewModel: ObservableObject {
-    var document: NoteDocument
+    private(set) var document: NoteDocument
     @Published var showDrawingInformation = false
     @Published var showTagList = false
 
