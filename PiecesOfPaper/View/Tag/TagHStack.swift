@@ -9,9 +9,9 @@
 import SwiftUI
 
 struct TagHStack: View {
-    var tags: [TagEntity]
-    var action: ((TagEntity) -> Void)?
-    var deletable = false
+    private(set) var tags: [TagEntity]
+    private(set) var action: ((TagEntity) -> Void)?
+    private(set) var deletable = false
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {

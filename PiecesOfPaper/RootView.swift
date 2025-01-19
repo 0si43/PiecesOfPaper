@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct RootView: View {
-    @EnvironmentObject var appViewModel: AppViewModel
-    @State var showCanvasView = false
+    @EnvironmentObject private var appViewModel: AppViewModel
+    @State private var showCanvasView = false
 
     var body: some View {
         SideBarListView()
@@ -46,6 +46,5 @@ struct RootView_Previews: PreviewProvider {
     static var previews: some View {
         RootView()
             .environmentObject(AppViewModel())
-            .environmentObject(CanvasViewModel())
     }
 }

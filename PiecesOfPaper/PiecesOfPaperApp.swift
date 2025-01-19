@@ -11,7 +11,7 @@ import PencilKit
 
 @main
 struct PiecesOfPaperApp: App {
-    @StateObject var appViewModel = AppViewModel()
+    @StateObject private var appViewModel = AppViewModel()
     var body: some Scene {
         WindowGroup {
             RootView()

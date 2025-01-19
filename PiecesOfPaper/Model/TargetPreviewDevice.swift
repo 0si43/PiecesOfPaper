@@ -11,6 +11,6 @@ import Foundation
 enum TargetPreviewDevice: String, Identifiable, CaseIterable {
     var id: String { rawValue }
 
-    case iPhone14Pro = "iPhone 14 Pro"
+    case iPhone16Pro = "iPhone 16 Pro"
     case iPadPro6th = "iPad Pro (12.9-inch) (6th generation)"
 }

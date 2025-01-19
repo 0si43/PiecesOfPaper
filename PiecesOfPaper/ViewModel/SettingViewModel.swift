@@ -9,7 +9,7 @@
 import Foundation
 
 final class SettingViewModel: ObservableObject {
-    var userPreference = UserPreference()
+    private var userPreference = UserPreference()
 
     @Published var enablediCloud: Bool {
         didSet {

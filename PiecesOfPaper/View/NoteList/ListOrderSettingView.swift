@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct ListOrderSettingView: View {
-    @ObservedObject var viewModel: ListOrderSettingViewModel
+    @ObservedObject private var viewModel: ListOrderSettingViewModel
     @Environment(\.dismiss) private var dismiss
 
     init(listOrder: Binding<ListOrder>) {

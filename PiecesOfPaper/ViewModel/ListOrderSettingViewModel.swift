@@ -9,9 +9,9 @@
 import Foundation
 import SwiftUI
 
-class ListOrderSettingViewModel: ObservableObject {
+final class ListOrderSettingViewModel: ObservableObject {
     @Binding var listOrder: ListOrder
-    var tags = TagModel().tags
+    private var tags = TagModel().tags
 
     init(listOrder: Binding<ListOrder>) {
         self._listOrder = listOrder
