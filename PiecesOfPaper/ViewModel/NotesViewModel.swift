@@ -6,17 +6,14 @@
 //  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
 //
 
-import PencilKit
+import Foundation
 
+@MainActor
 final class NotesViewModel: ObservableObject {
-    var objectWillChange = ObjectWillChangePublisher()
-    var publishedNoteDocuments = [NoteDocument]()
+    @Published var displayNoteDocuments = [NoteDocument]()
+    // Set initial value to true to show loading state when view appears
+    @Published var isLoading = true
     private var noteDocuments = [NoteDocument]()
-    private var counter = 0
-
-    var isLoaded = false
-
-    var didFirstFetchRequest = false
     enum TargetDirectory: String {
         case inbox, archived, all
     }
@@ -30,14 +27,110 @@ final class NotesViewModel: ObservableObject {
         directory == .archived
     }
 
+    private var listOrderStore: ListOrderStoreProtocol
     var listOrder: ListOrder {
         didSet {
-            saveConditionInDevice()
-            publish()
+            listOrderStore.set(directoryName: directory.rawValue, listOrder: listOrder)
         }
     }
 
-    private var documentsAppliedConditions: [NoteDocument] {
+    private func saveConditionInDevice() {
+        let encoder = JSONEncoder()
+        guard let data = try? encoder.encode(listOrder) else { return }
+        UserDefaults.standard.set(data, forKey: "listOrder(" + directory.rawValue + ")")
+    }
+
+    init(targetDirectory: TargetDirectory, listOrderStore: ListOrderStoreProtocol = ListOrderStore()) {
+        self.directory = targetDirectory
+        self.listOrderStore = listOrderStore
+        self.listOrder = listOrderStore.get(directoryName: directory.rawValue)
+    }
+
+    // MARK: - fetch
+    
+    func fetch() async {
+        defer {
+            isLoading = false
+        }
+        isLoading = true
+        let (added, removed) = fetchChangedFileUrls()
+        await updateDocuments(addedUrls: added, removedUrls: removed)
+        display()
+    }
+
+    private var cachedUrls: [URL] = []
+    private func fetchChangedFileUrls() -> (addedUrls: [URL], removedUrls: [URL]) {
+        let latestUrls = getFileUrls()
+        let oldSet = Set(cachedUrls)
+        let latestSet = Set(latestUrls)
+        let added = latestSet.subtracting(oldSet)
+        let removed = oldSet.subtracting(latestSet)
+        return (Array(added), Array(removed))
+    }
+
+    private func updateDocuments(addedUrls: [URL], removedUrls: [URL]) async {
+        await withTaskGroup(of: Void.self) { [weak self] group in
+            for url in addedUrls {
+                group.addTask {
+                    await self?.open(fileUrl: url)
+                }
+            }
+        }
+
+        removedUrls.forEach { url in
+            if let index = noteDocuments.firstIndex(where: { $0.fileURL == url }) {
+                noteDocuments.remove(at: index)
+            }
+        }
+    }
+
+    private func display() {
+        displayNoteDocuments = reorderDocuments
+    }
+
+    // MARK: - helper methods for fetch
+    
+    /// get file path array (iCloud or local storage)
+    private func getFileUrls() -> [URL] {
+        guard let inboxUrl = FilePath.inboxUrl,
+              var inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: inboxUrl.path),
+              let archivedUrl = FilePath.archivedUrl,
+              var archivedFileNames =
+                try? FileManager.default.contentsOfDirectory(atPath: archivedUrl.path) else { return [] }
+
+        inboxFileNames = inboxFileNames.filter { $0.hasSuffix(".plist") }
+        archivedFileNames = archivedFileNames.filter { $0.hasSuffix(".plist") }
+
+        switch directory {
+        case .inbox:
+            return inboxFileNames.map { inboxUrl.appendingPathComponent($0) }
+        case .archived:
+            return archivedFileNames.map { archivedUrl.appendingPathComponent($0) }
+        case .all:
+            let inboxUrls = inboxFileNames.map { inboxUrl.appendingPathComponent($0) }
+            let archivedUrls = archivedFileNames.map { archivedUrl.appendingPathComponent($0) }
+            return inboxUrls + archivedUrls
+        }
+    }
+
+    private func open(fileUrl: URL) async {
+        guard FileManager.default.fileExists(atPath: fileUrl.path) else { return }
+        let document = NoteDocument(fileURL: fileUrl)
+        let success = await document.open()
+        if success {
+            noteDocuments.append(document)
+        } else {
+            // FIXME: - somehow notify failure to user
+        }
+        await document.close()
+    }
+
+    func update() {
+//        noteDocuments.removeAll()
+//        openDocuments()
+    }
+
+    private var reorderDocuments: [NoteDocument] {
         var notes = noteDocuments
         listOrder.filterBy.forEach { filteringTag in
             notes = notes.filter { $0.entity.tags.contains(filteringTag) }
@@ -61,107 +154,7 @@ final class NotesViewModel: ObservableObject {
         return notes
     }
 
-    init(targetDirectory: TargetDirectory) {
-        self.directory = targetDirectory
-        let decoder = JSONDecoder()
-        guard let data = UserDefaults.standard.data(forKey: "listOrder(" + directory.rawValue + ")"),
-              let condition = try? decoder.decode(ListOrder.self, from: data) else {
-                  self.listOrder = ListOrder()
-                  saveConditionInDevice()
-                  return
-              }
-        self.listOrder = condition
-    }
-
-    private func saveConditionInDevice() {
-        let encoder = JSONEncoder()
-        guard let data = try? encoder.encode(listOrder) else { return }
-        UserDefaults.standard.set(data, forKey: "listOrder(" + directory.rawValue + ")")
-    }
-
-    func fetch() {
-        openDocuments()
-    }
-
-    private func openDocuments() {
-        let urls = getFileUrl()
-        guard !urls.isEmpty else {
-            noteDocuments.removeAll()
-            isLoaded = true
-            objectWillChange.send()
-            return
-        }
-
-        DispatchQueue.main.async { [weak self] in
-            self?.counter = urls.count
-        }
-        urls.forEach { url in
-            open(fileUrl: url)
-        }
-    }
-
-    private func getFileUrl() -> [URL] {
-        guard let inboxUrl = FilePath.inboxUrl,
-              var inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: inboxUrl.path),
-              let archivedUrl = FilePath.archivedUrl,
-              var archivedFileNames =
-                try? FileManager.default.contentsOfDirectory(atPath: archivedUrl.path) else { return [] }
-
-        inboxFileNames = inboxFileNames.filter { $0.hasSuffix(".plist") }.sorted(by: >)
-        archivedFileNames = archivedFileNames.filter { $0.hasSuffix(".plist") }.sorted(by: >)
-
-        switch directory {
-        case .inbox:
-            return inboxFileNames.map { inboxUrl.appendingPathComponent($0) }
-        case .archived:
-            return archivedFileNames.map { archivedUrl.appendingPathComponent($0) }
-        case .all:
-            let inboxUrls = inboxFileNames.map { inboxUrl.appendingPathComponent($0) }
-            let archivedUrls = archivedFileNames.map { archivedUrl.appendingPathComponent($0) }
-            return inboxUrls + archivedUrls
-        }
-    }
-
-    private func open(fileUrl: URL) {
-        guard FileManager.default.fileExists(atPath: fileUrl.path) else { return }
-        let document = NoteDocument(fileURL: fileUrl)
-
-        document.open { [weak self] success in
-            if success {
-                defer {
-                    document.close()
-                }
-
-                self?.noteDocuments.append(document)
-                self?.publishIfLoadEnded()
-            } else {
-                fatalError("could not open document")
-            }
-        }
-    }
-
-    private func publishIfLoadEnded() {
-        if counter <= noteDocuments.count {
-            publish()
-        }
-    }
-
-    private func publish() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.publishedNoteDocuments = self.documentsAppliedConditions
-            self.isLoaded = true
-            self.counter = 0
-            self.objectWillChange.send()
-        }
-    }
-
-    func update() {
-        isLoaded = false
-        noteDocuments.removeAll()
-        objectWillChange.send()
-        openDocuments()
-    }
+    // MARK: - action
 
     func duplicate(_ document: NoteDocument) {
         guard let inboxUrl = FilePath.inboxUrl,
@@ -174,7 +167,7 @@ final class NotesViewModel: ObservableObject {
         newDocument.save(to: newUrl, for: .forCreating) { [weak self] success in
             if success {
                 self?.noteDocuments.append(newDocument)
-                self?.publish()
+                self?.display()
             }
         }
     }
@@ -182,7 +175,7 @@ final class NotesViewModel: ObservableObject {
     func delete(_ document: NoteDocument) {
         try? FileManager.default.removeItem(at: document.fileURL)
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
-        publish()
+        display()
     }
 
     func archive(_ document: NoteDocument) {
@@ -195,7 +188,7 @@ final class NotesViewModel: ObservableObject {
         }
 
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
-        publish()
+        display()
     }
 
     func unarchive(_ document: NoteDocument) {
@@ -208,7 +201,7 @@ final class NotesViewModel: ObservableObject {
         }
 
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
-        publish()
+        display()
     }
 
     func getTagToNote(document: NoteDocument) -> [TagEntity] {
@@ -221,11 +214,11 @@ final class NotesViewModel: ObservableObject {
 
     func allArchive() {
         noteDocuments.forEach { archive($0) }
-        publish()
+        display()
     }
 
     func allUnarchive() {
         noteDocuments.forEach { unarchive($0) }
-        publish()
+        display()
     }
 }
