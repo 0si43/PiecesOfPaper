@@ -15,13 +15,7 @@ struct NoteListParentView: View {
     @State private var showListConditionSettingView = false
     @State private var documentToShare: NoteDocument?
     @State private var documentToTag: NoteDocument?
-    private var cancelButton: Alert.Button { .default(Text("Cancel")) }
-    private var actionButton: Alert.Button {
-        .destructive(
-            Text(viewModel.isTargetDirectoryArchived ? "Unarchived" : "Archived"),
-            action: { viewModel.isTargetDirectoryArchived ? viewModel.allUnarchive() : viewModel.allArchive() }
-        )
-    }
+    @State private var showArchiveAlert = false
 
     init(viewModel: NotesViewModel) {
         self.viewModel = viewModel
@@ -64,15 +58,16 @@ struct NoteListParentView: View {
         .sheet(item: $documentToTag) { document in
             AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
         }
-        .alert(isPresented: $viewModel.showArchiveAlert) { () -> Alert in
+        .alert(isPresented: $showArchiveAlert) { () -> Alert in
             let operationText = viewModel.isTargetDirectoryArchived ? "unarchived" : "archived"
             let countText = viewModel.publishedNoteDocuments.count
             let alertText = """
                 Are you sure you want to \(operationText) \(countText) notes?
             """
-            return Alert(title: Text(alertText),
-                  primaryButton: cancelButton,
-                  secondaryButton: actionButton
+            return Alert(
+                title: Text(alertText),
+                primaryButton: cancelButton,
+                secondaryButton: archiveActionButton
             )
         }
     }
@@ -80,7 +75,7 @@ struct NoteListParentView: View {
     private var toolbarItems: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             Button {
-                viewModel.showArchiveOrUnarchiveAlert()
+                showArchiveAlert = true
             } label: {
                 Image(systemName: viewModel.isTargetDirectoryArchived ? "tray.circle" : "archivebox.circle")
             }
@@ -149,6 +144,24 @@ struct NoteListParentView: View {
 
     private func openNewNote() {
         showCanvasView = true
+    }
+
+    private var cancelButton: Alert.Button {
+        .default(Text("Cancel"))
+    }
+    private var archiveActionButton: Alert.Button {
+        .destructive(
+            Text(
+                viewModel.isTargetDirectoryArchived
+                ? "Unarchived"
+                : "Archived"
+            ),
+            action: {
+                viewModel.isTargetDirectoryArchived
+                ? viewModel.allUnarchive()
+                : viewModel.allArchive()
+            }
+        )
     }
 }
 
