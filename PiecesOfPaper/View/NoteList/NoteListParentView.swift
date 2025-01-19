@@ -12,6 +12,7 @@ struct NoteListParentView: View {
     @ObservedObject var viewModel: NotesViewModel
     @EnvironmentObject var canvasViewModel: CanvasViewModel
     @State var showCanvasView = false
+    @State var showListConditionSettingView = false
     private var cancelButton: Alert.Button { .default(Text("Cancel")) }
     private var actionButton: Alert.Button {
         .destructive(
@@ -45,7 +46,7 @@ struct NoteListParentView: View {
                        label: {
                             Image(systemName: viewModel.isTargetDirectoryArchived ? "tray.circle" : "archivebox.circle")
                         })
-                Button(action: viewModel.toggleIsListConditionPopover,
+                Button(action: { showListConditionSettingView = true },
                        label: { Image(systemName: "line.3.horizontal.decrease.circle") })
                 Button(action: viewModel.update,
                        label: { Image(systemName: "arrow.triangle.2.circlepath") })
@@ -58,9 +59,9 @@ struct NoteListParentView: View {
                 CanvasView(canvasViewModel: CanvasViewModel())
             }
         }
-        .sheet(isPresented: $viewModel.isListConditionSheet) {
+        .sheet(isPresented: $showListConditionSettingView) {
             NavigationView {
-                ListConditionSetting(listCondition: $viewModel.listCondition)
+                ListConditionSettingView(listCondition: $viewModel.listCondition)
             }
         }
         .sheet(isPresented: $viewModel.showActivityView) {
@@ -137,6 +138,10 @@ extension NoteListParentView: NoteListViewParent {
 
     func showActivityView(_ document: NoteDocument) {
         viewModel.share(document)
+    }
+
+    func showAddTagView(_ document: NoteDocument) {
+//        AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
     }
 }
 

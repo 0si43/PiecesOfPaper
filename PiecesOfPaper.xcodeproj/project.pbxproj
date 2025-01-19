@@ -21,7 +21,7 @@
 		A63C958A275DDA9E00822461 /* TagListToNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */; };
 		A63C9590275E111500822461 /* AddTagFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C958F275E111500822461 /* AddTagFooter.swift */; };
 		A63C9593276444CF00822461 /* ListCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9592276444CF00822461 /* ListCondition.swift */; };
-		A63C9595276447BD00822461 /* ListConditionSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9594276447BD00822461 /* ListConditionSetting.swift */; };
+		A63C9595276447BD00822461 /* ListConditionSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9594276447BD00822461 /* ListConditionSettingView.swift */; };
 		A63C95972764589F00822461 /* ListConditionSettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C95962764589F00822461 /* ListConditionSettingViewModel.swift */; };
 		A63C959B2765A5D500822461 /* NoteInformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C959A2765A5D500822461 /* NoteInformationView.swift */; };
 		A6484FCE272B923B00676ED8 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FCD272B923B00676ED8 /* CanvasView.swift */; };
@@ -73,7 +73,7 @@
 		A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListToNoteViewModel.swift; sourceTree = "<group>"; };
 		A63C958F275E111500822461 /* AddTagFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTagFooter.swift; sourceTree = "<group>"; };
 		A63C9592276444CF00822461 /* ListCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCondition.swift; sourceTree = "<group>"; };
-		A63C9594276447BD00822461 /* ListConditionSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListConditionSetting.swift; sourceTree = "<group>"; };
+		A63C9594276447BD00822461 /* ListConditionSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListConditionSettingView.swift; sourceTree = "<group>"; };
 		A63C95962764589F00822461 /* ListConditionSettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListConditionSettingViewModel.swift; sourceTree = "<group>"; };
 		A63C959A2765A5D500822461 /* NoteInformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteInformationView.swift; sourceTree = "<group>"; };
 		A6484FCD272B923B00676ED8 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
@@ -194,7 +194,7 @@
 				A6484FD5272E63B000676ED8 /* NoteListView.swift */,
 				A64AE9F12759A963002C66F7 /* NoteView.swift */,
 				A6620E33274C774D00C708A2 /* ScrollButton.swift */,
-				A63C9594276447BD00822461 /* ListConditionSetting.swift */,
+				A63C9594276447BD00822461 /* ListConditionSettingView.swift */,
 			);
 			path = NoteList;
 			sourceTree = "<group>";
@@ -421,7 +421,7 @@
 				A63C9582275D1C2E00822461 /* TagHStack.swift in Sources */,
 				A667CCB927B4ACB20076CEB8 /* TargetPreviewDevice.swift in Sources */,
 				A63C9580275CFF7900822461 /* TagModel.swift in Sources */,
-				A63C9595276447BD00822461 /* ListConditionSetting.swift in Sources */,
+				A63C9595276447BD00822461 /* ListConditionSettingView.swift in Sources */,
 				A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */,
 				A6484FD6272E63B000676ED8 /* NoteListView.swift in Sources */,
 				A6CADA532767581700657E9E /* SettingViewModel.swift in Sources */,
