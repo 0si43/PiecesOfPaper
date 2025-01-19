@@ -15,25 +15,24 @@ final class ListOrderSettingViewModel: ObservableObject {
 
     init(listOrder: Binding<ListOrder>) {
         self._listOrder = listOrder
+        filteringTag = tags.filter { listOrder.wrappedValue.filterBy.contains($0) }
+        nonFilteringTag = tags.filter { !listOrder.wrappedValue.filterBy.contains($0) }
     }
 
-    var filteringTag: [TagEntity] {
-        tags.filter {
-            listOrder.filterBy.contains($0)
-        }
-    }
-
-    var nonFilteringTag: [TagEntity] {
-        tags.filter {
-            !listOrder.filterBy.contains($0)
-        }
+    @Published var filteringTag: [TagEntity]
+    @Published var nonFilteringTag: [TagEntity]
+    private func updatedFilterTag() {
+        filteringTag = tags.filter { listOrder.filterBy.contains($0) }
+        nonFilteringTag = tags.filter { !listOrder.filterBy.contains($0) }
     }
 
     func add(tag: TagEntity) {
         listOrder.filterBy.append(tag)
+        updatedFilterTag()
     }
 
     func remove(tag: TagEntity) {
         listOrder.filterBy = listOrder.filterBy.filter { $0 != tag }
+        updatedFilterTag()
     }
 }
