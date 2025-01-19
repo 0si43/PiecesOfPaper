@@ -51,11 +51,6 @@ struct SideBarListView: View {
 
 struct SideBarListView_Previews: PreviewProvider {
     static var previews: some View {
-        ForEach(TargetPreviewDevice.allCases) { deviceName in
-            SideBarListView()
-                .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
-                .previewDisplayName(deviceName.rawValue)
-                .previewInterfaceOrientation(.landscapeLeft)
-        }
+        SideBarListView()
     }
 }

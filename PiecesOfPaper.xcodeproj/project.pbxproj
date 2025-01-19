@@ -38,7 +38,6 @@
 		A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */; };
 		A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E39274C8FA400C708A2 /* NoteDocument.swift */; };
 		A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E3B274CD88000C708A2 /* FilePath.swift */; };
-		A667CCB927B4ACB20076CEB8 /* TargetPreviewDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A667CCB827B4ACB20076CEB8 /* TargetPreviewDevice.swift */; };
 		A6A229BF27705623009ED7D4 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A229BE27705623009ED7D4 /* AppViewModel.swift */; };
 		A6CADA51276752E600657E9E /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA50276752E600657E9E /* SettingView.swift */; };
 		A6CADA532767581700657E9E /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA522767581700657E9E /* SettingViewModel.swift */; };
@@ -91,7 +90,6 @@
 		A6620E39274C8FA400C708A2 /* NoteDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocument.swift; sourceTree = "<group>"; };
 		A6620E3B274CD88000C708A2 /* FilePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePath.swift; sourceTree = "<group>"; };
 		A6675A37251D89BA00343151 /* Like Paper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Like Paper.entitlements"; sourceTree = "<group>"; };
-		A667CCB827B4ACB20076CEB8 /* TargetPreviewDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetPreviewDevice.swift; sourceTree = "<group>"; };
 		A66E7512253531440026B9A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A66E7513253538E00026B9A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		A6A16EC225B1673500DF323F /* PiecesOfPaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PiecesOfPaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -168,7 +166,6 @@
 				A6620E39274C8FA400C708A2 /* NoteDocument.swift */,
 				A64AE9F3275B203A002C66F7 /* NoteEntity.swift */,
 				A63C957F275CFF7900822461 /* TagModel.swift */,
-				A667CCB827B4ACB20076CEB8 /* TargetPreviewDevice.swift */,
 				A63C956C275C7CF300822461 /* TagEntity.swift */,
 				A6CADA5427675D8500657E9E /* UserPreference.swift */,
 				A63C95912764435200822461 /* Deperecated */,
@@ -420,7 +417,6 @@
 				A6EE43272523271F000B203E /* Document.swift in Sources */,
 				A62EEAF2273248A300D513B8 /* PiecesOfPaperApp.swift in Sources */,
 				A63C9582275D1C2E00822461 /* TagHStack.swift in Sources */,
-				A667CCB927B4ACB20076CEB8 /* TargetPreviewDevice.swift in Sources */,
 				A63C9580275CFF7900822461 /* TagModel.swift in Sources */,
 				A63C9595276447BD00822461 /* ListOrderSettingView.swift in Sources */,
 				A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */,

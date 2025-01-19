@@ -155,11 +155,6 @@ struct CanvasView_Previews: PreviewProvider {
     static var viewModel = CanvasViewModel()
 
     static var previews: some View {
-        ForEach(TargetPreviewDevice.allCases) { deviceName in
-            CanvasView(canvasViewModel: CanvasViewModel())
-                .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
-                .previewDisplayName(deviceName.rawValue)
-                .previewInterfaceOrientation(.landscapeLeft)
-        }
+        CanvasView(canvasViewModel: CanvasViewModel())
     }
 }
