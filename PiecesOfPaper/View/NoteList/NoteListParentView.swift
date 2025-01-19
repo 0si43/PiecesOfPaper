@@ -10,9 +10,8 @@ import SwiftUI
 
 struct NoteListParentView: View {
     @ObservedObject private var viewModel: NotesViewModel
-    @EnvironmentObject private var canvasViewModel: CanvasViewModel
     @State private var showCanvasView = false
-    @State private var showListConditionSettingView = false
+    @State private var showListOrderSettingView = false
     @State private var documentToShare: NoteDocument?
     @State private var documentToTag: NoteDocument?
     @State private var showArchiveAlert = false
@@ -47,9 +46,9 @@ struct NoteListParentView: View {
                 CanvasView(canvasViewModel: CanvasViewModel())
             }
         }
-        .sheet(isPresented: $showListConditionSettingView) {
+        .sheet(isPresented: $showListOrderSettingView) {
             NavigationView {
-                ListConditionSettingView(listCondition: $viewModel.listCondition)
+                ListOrderSettingView(listOrder: $viewModel.listOrder)
             }
         }
         .sheet(item: $documentToShare) { document in
@@ -80,7 +79,7 @@ struct NoteListParentView: View {
                 Image(systemName: viewModel.isTargetDirectoryArchived ? "tray.circle" : "archivebox.circle")
             }
             Button {
-                showListConditionSettingView = true
+                showListOrderSettingView = true
             } label: {
                 Image(systemName: "line.3.horizontal.decrease.circle")
             }
@@ -200,6 +199,5 @@ extension NoteListParentView: NoteListViewParent {
 struct Notes_Previews: PreviewProvider {
     static var previews: some View {
         NoteListParentView(viewModel: NotesViewModel(targetDirectory: .inbox))
-            .environmentObject(CanvasViewModel())
     }
 }
