@@ -39,7 +39,8 @@ struct CanvasView: View {
                             toolPicker: $toolPicker,
                             saveAction: canvasViewModel.save)
         .onAppear {
-            canvasView.drawing = canvasViewModel.document.entity.drawing
+            guard let drawing = canvasViewModel.document?.entity.drawing else { return }
+            canvasView.drawing = drawing
             hideExceptPaper = true
         }
         .gesture(tapGesture)
@@ -91,7 +92,11 @@ struct CanvasView: View {
             Button(action: { canvasViewModel.showDrawingInformation.toggle() },
                    label: { Image(systemName: "info.circle") })
             .popover(isPresented: $canvasViewModel.showDrawingInformation) {
-                NoteInformationView(document: canvasViewModel.document)
+                if let document = canvasViewModel.document {
+                    NoteInformationView(document: document)
+                } else {
+                    EmptyView()
+                }
             }
             Button(action: {
                 setToolPickerVisible(false)
@@ -108,8 +113,9 @@ struct CanvasView: View {
         var image = UIImage()
         let trait = UITraitCollection(userInterfaceStyle: .light)
         trait.performAsCurrent {
-            image = canvasViewModel.document.entity.drawing.image(
-                from: canvasViewModel.document.entity.drawing.bounds,
+            guard let drawing = canvasViewModel.document?.entity.drawing else { return }
+            image = drawing.image(
+                from: drawing.bounds,
                 scale: UIScreen.main.scale
             )
         }
@@ -119,7 +125,7 @@ struct CanvasView: View {
 
     private func archive() {
         if !UserPreference().enabledAutoSave {
-            guard !canvasViewModel.document.entity.drawing.strokes.isEmpty else {
+            guard let document = canvasViewModel.document, !document.entity.drawing.strokes.isEmpty else {
                 dismiss()
                 return
             }
