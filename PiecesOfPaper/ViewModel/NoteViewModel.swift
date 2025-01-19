@@ -49,7 +49,7 @@ final class NoteViewModel: ObservableObject {
         }
         isLoading = true
         let (added, removed) = fetchChangedFileUrls()
-        // FIXME: - 消す
+        // FIXME: - デバッグ終わったら消す
         print("added: \(added.count), removed: \(removed.count)")
         await updateDocuments(addedUrls: added, removedUrls: removed)
         displayReorderDocuments()
@@ -74,9 +74,10 @@ final class NoteViewModel: ObservableObject {
 
     private func updateDocuments(addedUrls: [URL], removedUrls: [URL]) async {
         await withTaskGroup(of: Void.self) { [weak self] group in
+            guard let self = self else { return }
             for url in addedUrls {
                 group.addTask {
-                    await self?.open(fileUrl: url)
+                    await self.open(fileUrl: url)
                 }
             }
         }
