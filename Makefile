@@ -9,7 +9,7 @@ TEST_SDK := iphonesimulator
 TEST_CONFIGURATION := Debug
 TEST_PLATFORM := iOS Simulator
 TEST_DEVICE ?= iPad Pro (11-inch) (2nd generation)
-TEST_OS ?= 15.0
+TEST_OS ?= 18.0
 TEST_DESTINATION := 'platform=${TEST_PLATFORM},name=${TEST_DEVICE},OS=${TEST_OS}'
 
 .DEFAULT_GOAL := help
@@ -44,6 +44,8 @@ test: # Xcode test # TEST_DEVICE=[device] TEST_OS=[OS]
 -scheme ${SCHEME_NAME} \
 -destination ${TEST_DESTINATION} \
 -skip-testing:${UI_TESTS_TARGET_NAME} \
+CODE_SIGN_IDENTITY="" \
+CODE_SIGNING_REQUIRED=NO \
 clean test
 
 .PHONY: show-devices
