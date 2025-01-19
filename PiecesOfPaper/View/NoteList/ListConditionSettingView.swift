@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ListConditionSettingView: View {
     @ObservedObject var viewModel: ListConditionSettingViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
 
     init(listCondition: Binding<ListCondition>) {
         self.viewModel = ListConditionSettingViewModel(listCondition: listCondition)
@@ -87,12 +87,12 @@ struct ListConditionSettingView: View {
     }
 
     func cancel() {
-        presentationMode.wrappedValue.dismiss()
+        dismiss()
     }
 
     func apply() {
         viewModel.bind()
-        presentationMode.wrappedValue.dismiss()
+        dismiss()
     }
 }
 

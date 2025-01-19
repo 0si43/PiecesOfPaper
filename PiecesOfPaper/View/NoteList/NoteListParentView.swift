@@ -65,31 +65,45 @@ struct NoteListParentView: View {
             AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
         }
         .alert(isPresented: $viewModel.showArchiveAlert) { () -> Alert in
-            Alert(title: Text(
-                            "Are you sure you want to " +
-                            "\(viewModel.isTargetDirectoryArchived ? "unarchived" : "archived")" + " " +
-                            "\(viewModel.publishedNoteDocuments.count) notes?"
-                            ),
+            let operationText = viewModel.isTargetDirectoryArchived ? "unarchived" : "archived"
+            let countText = viewModel.publishedNoteDocuments.count
+            let alertText = """
+                Are you sure you want to \(operationText) \(countText) notes?
+            """
+            return Alert(title: Text(alertText),
                   primaryButton: cancelButton,
-                  secondaryButton: actionButton)
+                  secondaryButton: actionButton
+            )
         }
     }
 
     private var toolbarItems: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
-            Button(action: { viewModel.showArchiveOrUnarchiveAlert() },
-                   label: {
-                        Image(systemName: viewModel.isTargetDirectoryArchived ? "tray.circle" : "archivebox.circle")
-                    })
-            Button(action: { showListConditionSettingView = true },
-                   label: { Image(systemName: "line.3.horizontal.decrease.circle") })
-            Button(action: viewModel.update,
-                   label: { Image(systemName: "arrow.triangle.2.circlepath") })
-                .disabled(!viewModel.isLoaded)
-            Button(action: openNewNote) { Image(systemName: "plus.circle") }
+            Button {
+                viewModel.showArchiveOrUnarchiveAlert()
+            } label: {
+                Image(systemName: viewModel.isTargetDirectoryArchived ? "tray.circle" : "archivebox.circle")
+            }
+            Button {
+                showListConditionSettingView = true
+            } label: {
+                Image(systemName: "line.3.horizontal.decrease.circle")
+            }
+            Button {
+                viewModel.update()
+            } label: {
+                Image(systemName: "arrow.triangle.2.circlepath")
+            }
+            .disabled(!viewModel.isLoaded)
+            Button {
+                openNewNote()
+            } label: {
+                Image(systemName: "plus.circle")
+            }
         }
     }
 
+    /// This view is for scrolling to the bottom
     private struct NoteScrollView: View {
         var documents: [NoteDocument]
         var parent: NoteListViewParent
@@ -107,8 +121,10 @@ struct NoteListParentView: View {
                         Spacer()
                         HStack {
                             Spacer()
-                            ScrollButton(action: { scrollToBottom(proxy: proxy) },
-                                         image: Image(systemName: "arrow.down.circle"))
+                            ScrollButton(
+                                action: { scrollToBottom(proxy: proxy) },
+                                image: Image(systemName: "arrow.down.circle")
+                            )
                         }
                     }
                 )
