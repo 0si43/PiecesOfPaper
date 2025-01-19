@@ -94,7 +94,7 @@ final class NoteViewModel: ObservableObject {
     }
 
     // MARK: - helper methods for fetch
-    
+
     /// get file path array (iCloud or local storage)
     private func getFileUrls() -> [URL] {
         guard let inboxUrl = FilePath.inboxUrl,
