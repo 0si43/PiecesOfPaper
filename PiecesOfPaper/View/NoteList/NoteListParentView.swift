@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NoteListParentView: View {
-    @ObservedObject private(set) var viewModel: NotesViewModel
+    @ObservedObject private(set) var viewModel: NoteViewModel
     @State private var showCanvasView = false
     @State private var showListOrderSettingView = false
     @State private var documentToShare: NoteDocument?
@@ -20,9 +20,6 @@ struct NoteListParentView: View {
         Group {
             if viewModel.isLoading {
                 ProgressView()
-                    .task {
-                        await viewModel.fetch()
-                    }
             } else {
                 if viewModel.displayNoteDocuments.isEmpty {
                     Text("No Data")
@@ -31,6 +28,9 @@ struct NoteListParentView: View {
                     NoteScrollView(documents: viewModel.displayNoteDocuments, parent: self)
                 }
             }
+        }
+        .task {
+            await viewModel.incrementalFetch()
         }
         .toolbar {
             toolbarItems
@@ -63,6 +63,15 @@ struct NoteListParentView: View {
                 secondaryButton: archiveActionButton
             )
         }
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: .dismissCanvasView
+            )
+        ) { _ in
+            Task {
+                await viewModel.incrementalFetch()
+            }
+        }
     }
 
     private var toolbarItems: some ToolbarContent {
@@ -78,7 +87,9 @@ struct NoteListParentView: View {
                 Image(systemName: "line.3.horizontal.decrease.circle")
             }
             Button {
-                viewModel.update()
+                Task {
+                    await viewModel.reload()
+                }
             } label: {
                 Image(systemName: "arrow.triangle.2.circlepath")
             }
@@ -192,6 +203,6 @@ extension NoteListParentView: NoteListViewParent {
 
 struct Notes_Previews: PreviewProvider {
     static var previews: some View {
-        NoteListParentView(viewModel: NotesViewModel(targetDirectory: .inbox))
+        NoteListParentView(viewModel: NoteViewModel(targetDirectory: .inbox))
     }
 }

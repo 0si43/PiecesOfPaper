@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		A6134B80245C09FC00E5F0FB /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6134B7F245C09FC00E5F0FB /* DataModel.swift */; };
 		A62EEAF2273248A300D513B8 /* PiecesOfPaperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62EEAF1273248A300D513B8 /* PiecesOfPaperApp.swift */; };
-		A62EEAF42732517600D513B8 /* NotesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62EEAF32732517600D513B8 /* NotesViewModel.swift */; };
+		A62EEAF42732517600D513B8 /* NoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62EEAF32732517600D513B8 /* NoteViewModel.swift */; };
 		A63C956D275C7CF300822461 /* TagEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C956C275C7CF300822461 /* TagEntity.swift */; };
 		A63C9578275C8F4A00822461 /* TagList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9577275C8F4A00822461 /* TagList.swift */; };
 		A63C957C275C8FD900822461 /* TagListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C957B275C8FD900822461 /* TagListViewModel.swift */; };
@@ -40,6 +40,7 @@
 		A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E3B274CD88000C708A2 /* FilePath.swift */; };
 		A6A229BF27705623009ED7D4 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A229BE27705623009ED7D4 /* AppViewModel.swift */; };
 		A6C8DD072D3CC1E300D7D32F /* ListOrderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C8DD062D3CC1E300D7D32F /* ListOrderStore.swift */; };
+		A6C8DD092D3CEE5400D7D32F /* Notification+.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C8DD082D3CEE5400D7D32F /* Notification+.swift */; };
 		A6CADA51276752E600657E9E /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA50276752E600657E9E /* SettingView.swift */; };
 		A6CADA532767581700657E9E /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA522767581700657E9E /* SettingViewModel.swift */; };
 		A6CADA5527675D8500657E9E /* UserPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA5427675D8500657E9E /* UserPreference.swift */; };
@@ -61,7 +62,7 @@
 /* Begin PBXFileReference section */
 		A6134B7F245C09FC00E5F0FB /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		A62EEAF1273248A300D513B8 /* PiecesOfPaperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesOfPaperApp.swift; sourceTree = "<group>"; };
-		A62EEAF32732517600D513B8 /* NotesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesViewModel.swift; sourceTree = "<group>"; };
+		A62EEAF32732517600D513B8 /* NoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewModel.swift; sourceTree = "<group>"; };
 		A63C956C275C7CF300822461 /* TagEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagEntity.swift; sourceTree = "<group>"; };
 		A63C9577275C8F4A00822461 /* TagList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagList.swift; sourceTree = "<group>"; };
 		A63C957B275C8FD900822461 /* TagListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListViewModel.swift; sourceTree = "<group>"; };
@@ -97,6 +98,7 @@
 		A6A16EC625B1673500DF323F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6A229BE27705623009ED7D4 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		A6C8DD062D3CC1E300D7D32F /* ListOrderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrderStore.swift; sourceTree = "<group>"; };
+		A6C8DD082D3CEE5400D7D32F /* Notification+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+.swift"; sourceTree = "<group>"; };
 		A6CADA50276752E600657E9E /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		A6CADA522767581700657E9E /* SettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewModel.swift; sourceTree = "<group>"; };
 		A6CADA5427675D8500657E9E /* UserPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreference.swift; sourceTree = "<group>"; };
@@ -150,7 +152,7 @@
 			children = (
 				A6A229BE27705623009ED7D4 /* AppViewModel.swift */,
 				A6620E2B2748ABE400C708A2 /* CanvasViewModel.swift */,
-				A62EEAF32732517600D513B8 /* NotesViewModel.swift */,
+				A62EEAF32732517600D513B8 /* NoteViewModel.swift */,
 				A6C8DD062D3CC1E300D7D32F /* ListOrderStore.swift */,
 				A63C957B275C8FD900822461 /* TagListViewModel.swift */,
 				A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */,
@@ -164,6 +166,7 @@
 			isa = PBXGroup;
 			children = (
 				A64F971B2751CB68001E46B0 /* DrawingsPlistConverter.swift */,
+				A6C8DD082D3CEE5400D7D32F /* Notification+.swift */,
 				A6620E3B274CD88000C708A2 /* FilePath.swift */,
 				A63C9592276444CF00822461 /* ListOrder.swift */,
 				A6620E39274C8FA400C708A2 /* NoteDocument.swift */,
@@ -406,6 +409,7 @@
 				A63C9588275DB97900822461 /* DeletableTag.swift in Sources */,
 				A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */,
 				A63C9593276444CF00822461 /* ListOrder.swift in Sources */,
+				A6C8DD092D3CEE5400D7D32F /* Notification+.swift in Sources */,
 				A6C8DD072D3CC1E300D7D32F /* ListOrderStore.swift in Sources */,
 				A6A229BF27705623009ED7D4 /* AppViewModel.swift in Sources */,
 				A63C95972764589F00822461 /* ListOrderSettingViewModel.swift in Sources */,
@@ -415,7 +419,7 @@
 				A6620E34274C774D00C708A2 /* ScrollButton.swift in Sources */,
 				A6F6ED4B27C77A7500DD3296 /* RootView.swift in Sources */,
 				A63C9578275C8F4A00822461 /* TagList.swift in Sources */,
-				A62EEAF42732517600D513B8 /* NotesViewModel.swift in Sources */,
+				A62EEAF42732517600D513B8 /* NoteViewModel.swift in Sources */,
 				A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */,
 				A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */,
 				A6EE43272523271F000B203E /* Document.swift in Sources */,
