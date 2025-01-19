@@ -139,6 +139,7 @@ struct CanvasView: View {
 
         dismiss()
         reviewRequest()
+        NotificationCenter.default.post(name: .dismissCanvasView, object: nil)
     }
 
     private func reviewRequest() {

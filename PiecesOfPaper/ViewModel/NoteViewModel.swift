@@ -1,5 +1,5 @@
 //
-//  NotesViewModel.swift
+//  NoteViewModel.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/11/03.
@@ -9,7 +9,7 @@
 import Foundation
 
 @MainActor
-final class NotesViewModel: ObservableObject {
+final class NoteViewModel: ObservableObject {
     @Published var displayNoteDocuments = [NoteDocument]()
     // Set initial value to true to show loading state when view appears
     @Published var isLoading = true
@@ -31,13 +31,8 @@ final class NotesViewModel: ObservableObject {
     var listOrder: ListOrder {
         didSet {
             listOrderStore.set(directoryName: directory.rawValue, listOrder: listOrder)
+            displayReorderDocuments()
         }
-    }
-
-    private func saveConditionInDevice() {
-        let encoder = JSONEncoder()
-        guard let data = try? encoder.encode(listOrder) else { return }
-        UserDefaults.standard.set(data, forKey: "listOrder(" + directory.rawValue + ")")
     }
 
     init(targetDirectory: TargetDirectory, listOrderStore: ListOrderStoreProtocol = ListOrderStore()) {
@@ -47,15 +42,23 @@ final class NotesViewModel: ObservableObject {
     }
 
     // MARK: - fetch
-    
-    func fetch() async {
+
+    func incrementalFetch() async {
         defer {
             isLoading = false
         }
         isLoading = true
         let (added, removed) = fetchChangedFileUrls()
+        // FIXME: - 消す
+        print("added: \(added.count), removed: \(removed.count)")
         await updateDocuments(addedUrls: added, removedUrls: removed)
-        display()
+        displayReorderDocuments()
+    }
+
+    func reload() async {
+        noteDocuments.removeAll()
+        cachedUrls.removeAll()
+        await incrementalFetch()
     }
 
     private var cachedUrls: [URL] = []
@@ -65,6 +68,7 @@ final class NotesViewModel: ObservableObject {
         let latestSet = Set(latestUrls)
         let added = latestSet.subtracting(oldSet)
         let removed = oldSet.subtracting(latestSet)
+        cachedUrls = latestUrls
         return (Array(added), Array(removed))
     }
 
@@ -84,7 +88,7 @@ final class NotesViewModel: ObservableObject {
         }
     }
 
-    private func display() {
+    private func displayReorderDocuments() {
         displayNoteDocuments = reorderDocuments
     }
 
@@ -125,11 +129,6 @@ final class NotesViewModel: ObservableObject {
         await document.close()
     }
 
-    func update() {
-//        noteDocuments.removeAll()
-//        openDocuments()
-    }
-
     private var reorderDocuments: [NoteDocument] {
         var notes = noteDocuments
         listOrder.filterBy.forEach { filteringTag in
@@ -167,15 +166,19 @@ final class NotesViewModel: ObservableObject {
         newDocument.save(to: newUrl, for: .forCreating) { [weak self] success in
             if success {
                 self?.noteDocuments.append(newDocument)
-                self?.display()
+                self?.displayReorderDocuments()
             }
         }
     }
 
     func delete(_ document: NoteDocument) {
-        try? FileManager.default.removeItem(at: document.fileURL)
-        noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
-        display()
+        do {
+            try FileManager.default.removeItem(at: document.fileURL)
+            noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
+            displayReorderDocuments()
+        } catch {
+            // FIXME: - need alert
+        }
     }
 
     func archive(_ document: NoteDocument) {
@@ -188,7 +191,7 @@ final class NotesViewModel: ObservableObject {
         }
 
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
-        display()
+        displayReorderDocuments()
     }
 
     func unarchive(_ document: NoteDocument) {
@@ -201,7 +204,7 @@ final class NotesViewModel: ObservableObject {
         }
 
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
-        display()
+        displayReorderDocuments()
     }
 
     func getTagToNote(document: NoteDocument) -> [TagEntity] {
@@ -214,11 +217,11 @@ final class NotesViewModel: ObservableObject {
 
     func allArchive() {
         noteDocuments.forEach { archive($0) }
-        display()
+        displayReorderDocuments()
     }
 
     func allUnarchive() {
         noteDocuments.forEach { unarchive($0) }
-        display()
+        displayReorderDocuments()
     }
 }

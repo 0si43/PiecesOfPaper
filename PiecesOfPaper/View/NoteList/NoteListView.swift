@@ -79,7 +79,7 @@ struct NoteListView: View {
 }
 
  struct NoteListView_Previews: PreviewProvider {
-     static var parent = NoteListParentView(viewModel: NotesViewModel(targetDirectory: .inbox))
+     static var parent = NoteListParentView(viewModel: NoteViewModel(targetDirectory: .inbox))
      static var array = Array(repeating: NoteDocument.createTestData(), count: 9)
      static var previews: some View {
          NoteListView(documents: array, parent: parent)

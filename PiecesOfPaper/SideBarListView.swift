@@ -9,9 +9,9 @@
 import SwiftUI
 
 struct SideBarListView: View {
-    @StateObject private var inboxNoteViewModel = NotesViewModel(targetDirectory: .inbox)
-    @StateObject private var allNoteViewModel = NotesViewModel(targetDirectory: .all)
-    @StateObject private var archivedNoteViewModel = NotesViewModel(targetDirectory: .archived)
+    @StateObject private var inboxNoteViewModel = NoteViewModel(targetDirectory: .inbox)
+    @StateObject private var allNoteViewModel = NoteViewModel(targetDirectory: .all)
+    @StateObject private var archivedNoteViewModel = NoteViewModel(targetDirectory: .archived)
 
     var body: some View {
         NavigationSplitView {
