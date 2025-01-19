@@ -82,11 +82,6 @@ struct NoteInformationView: View {
 
  struct NoteInformation_Previews: PreviewProvider {
     static var previews: some View {
-        ForEach(TargetPreviewDevice.allCases) { deviceName in
-            NoteInformationView(document: NoteDocument.createTestData())
-                .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
-                .previewDisplayName(deviceName.rawValue)
-                .previewInterfaceOrientation(.landscapeLeft)
-        }
+        NoteInformationView(document: NoteDocument.createTestData())
     }
  }
