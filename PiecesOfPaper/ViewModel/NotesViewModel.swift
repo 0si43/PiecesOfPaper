@@ -30,7 +30,7 @@ final class NotesViewModel: ObservableObject {
         directory == .archived
     }
 
-    var listCondition: ListCondition {
+    var listOrder: ListOrder {
         didSet {
             saveConditionInDevice()
             publish()
@@ -39,19 +39,19 @@ final class NotesViewModel: ObservableObject {
 
     private var documentsAppliedConditions: [NoteDocument] {
         var notes = noteDocuments
-        listCondition.filterBy.forEach { filteringTag in
+        listOrder.filterBy.forEach { filteringTag in
             notes = notes.filter { $0.entity.tags.contains(filteringTag) }
         }
-        switch listCondition.sortOrder {
+        switch listOrder.sortOrder {
         case .ascending:
-            switch listCondition.sortBy {
+            switch listOrder.sortBy {
             case .updatedDate:
                 notes = notes.sorted { $0.entity.updatedDate < $1.entity.updatedDate }
             case .createdDate:
                 notes = notes.sorted { $0.entity.createdDate < $1.entity.createdDate }
             }
         case .descending:
-            switch listCondition.sortBy {
+            switch listOrder.sortBy {
             case .updatedDate:
                 notes = notes.sorted { $0.entity.updatedDate > $1.entity.updatedDate }
             case .createdDate:
@@ -64,19 +64,19 @@ final class NotesViewModel: ObservableObject {
     init(targetDirectory: TargetDirectory) {
         self.directory = targetDirectory
         let decoder = JSONDecoder()
-        guard let data = UserDefaults.standard.data(forKey: "listCondition(" + directory.rawValue + ")"),
-              let condition = try? decoder.decode(ListCondition.self, from: data) else {
-                  self.listCondition = ListCondition()
+        guard let data = UserDefaults.standard.data(forKey: "listOrder(" + directory.rawValue + ")"),
+              let condition = try? decoder.decode(ListOrder.self, from: data) else {
+                  self.listOrder = ListOrder()
                   saveConditionInDevice()
                   return
               }
-        self.listCondition = condition
+        self.listOrder = condition
     }
 
     private func saveConditionInDevice() {
         let encoder = JSONEncoder()
-        guard let data = try? encoder.encode(listCondition) else { return }
-        UserDefaults.standard.set(data, forKey: "listCondition(" + directory.rawValue + ")")
+        guard let data = try? encoder.encode(listOrder) else { return }
+        UserDefaults.standard.set(data, forKey: "listOrder(" + directory.rawValue + ")")
     }
 
     func fetch() {

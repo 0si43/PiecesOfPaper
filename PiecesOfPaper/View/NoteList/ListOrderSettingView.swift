@@ -1,5 +1,5 @@
 //
-//  ListConditionSettingView.swift
+//  ListOrderSettingView.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/12/11.
@@ -8,12 +8,12 @@
 
 import SwiftUI
 
-struct ListConditionSettingView: View {
-    @ObservedObject var viewModel: ListConditionSettingViewModel
+struct ListOrderSettingView: View {
+    @ObservedObject var viewModel: ListOrderSettingViewModel
     @Environment(\.dismiss) private var dismiss
 
-    init(listCondition: Binding<ListCondition>) {
-        self.viewModel = ListConditionSettingViewModel(listCondition: listCondition)
+    init(listOrder: Binding<ListOrder>) {
+        self.viewModel = ListOrderSettingViewModel(listOrder: listOrder)
     }
 
     var body: some View {
@@ -24,8 +24,8 @@ struct ListConditionSettingView: View {
                 Spacer()
             }
             .padding(.horizontal)
-            Picker("", selection: $viewModel.editableListCondition.sortBy) {
-                ForEach(ListCondition.SortBy.allCases) { sortBy in
+            Picker("", selection: $viewModel.editableListOrder.sortBy) {
+                ForEach(ListOrder.SortBy.allCases) { sortBy in
                     Text(sortBy.rawValue)
                         .tag(sortBy)
                 }
@@ -38,8 +38,8 @@ struct ListConditionSettingView: View {
                 Spacer()
             }
             .padding(.horizontal)
-            Picker("", selection: $viewModel.editableListCondition.sortOrder) {
-                ForEach(ListCondition.SortOrder.allCases) { sortOrder in
+            Picker("", selection: $viewModel.editableListOrder.sortOrder) {
+                ForEach(ListOrder.SortOrder.allCases) { sortOrder in
                     Text(sortOrder.rawValue)
                         .tag(sortOrder)
                 }
@@ -96,9 +96,9 @@ struct ListConditionSettingView: View {
     }
 }
 
-struct ListConditionSetting_Previews: PreviewProvider {
-    @State static var listCondition = ListCondition()
+struct ListOrderSettingView_Previews: PreviewProvider {
+    @State static var listOrder = ListOrder()
     static var previews: some View {
-        ListConditionSettingView(listCondition: $listCondition)
+        ListOrderSettingView(listOrder: $listOrder)
     }
 }
