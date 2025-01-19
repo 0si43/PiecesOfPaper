@@ -9,16 +9,21 @@
 import SwiftUI
 
 struct NoteListParentView: View {
-    @ObservedObject var viewModel: NotesViewModel
-    @EnvironmentObject var canvasViewModel: CanvasViewModel
-    @State var showCanvasView = false
-    @State var showListConditionSettingView = false
+    @ObservedObject private var viewModel: NotesViewModel
+    @EnvironmentObject private var canvasViewModel: CanvasViewModel
+    @State private var showCanvasView = false
+    @State private var showListConditionSettingView = false
+    @State private var documentToTag: NoteDocument?
     private var cancelButton: Alert.Button { .default(Text("Cancel")) }
     private var actionButton: Alert.Button {
         .destructive(
             Text(viewModel.isTargetDirectoryArchived ? "Unarchived" : "Archived"),
             action: { viewModel.isTargetDirectoryArchived ? viewModel.allUnarchive() : viewModel.allArchive() }
         )
+    }
+
+    init(viewModel: NotesViewModel) {
+        self.viewModel = viewModel
     }
 
     var body: some View {
@@ -41,18 +46,7 @@ struct NoteListParentView: View {
             }
         }
         .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button(action: { viewModel.showArchiveOrUnarchiveAlert() },
-                       label: {
-                            Image(systemName: viewModel.isTargetDirectoryArchived ? "tray.circle" : "archivebox.circle")
-                        })
-                Button(action: { showListConditionSettingView = true },
-                       label: { Image(systemName: "line.3.horizontal.decrease.circle") })
-                Button(action: viewModel.update,
-                       label: { Image(systemName: "arrow.triangle.2.circlepath") })
-                    .disabled(!viewModel.isLoaded)
-                Button(action: openNewNote) { Image(systemName: "plus.circle") }
-            }
+            toolbarItems
         }
         .fullScreenCover(isPresented: $showCanvasView) {
             NavigationView {
@@ -67,6 +61,9 @@ struct NoteListParentView: View {
         .sheet(isPresented: $viewModel.showActivityView) {
             viewModel.activityViewController
         }
+        .sheet(item: $documentToTag) { document in
+            AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
+        }
         .alert(isPresented: $viewModel.showArchiveAlert) { () -> Alert in
             Alert(title: Text(
                             "Are you sure you want to " +
@@ -75,6 +72,21 @@ struct NoteListParentView: View {
                             ),
                   primaryButton: cancelButton,
                   secondaryButton: actionButton)
+        }
+    }
+
+    private var toolbarItems: some ToolbarContent {
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+            Button(action: { viewModel.showArchiveOrUnarchiveAlert() },
+                   label: {
+                        Image(systemName: viewModel.isTargetDirectoryArchived ? "tray.circle" : "archivebox.circle")
+                    })
+            Button(action: { showListConditionSettingView = true },
+                   label: { Image(systemName: "line.3.horizontal.decrease.circle") })
+            Button(action: viewModel.update,
+                   label: { Image(systemName: "arrow.triangle.2.circlepath") })
+                .disabled(!viewModel.isLoaded)
+            Button(action: openNewNote) { Image(systemName: "plus.circle") }
         }
     }
 
@@ -141,7 +153,7 @@ extension NoteListParentView: NoteListViewParent {
     }
 
     func showAddTagView(_ document: NoteDocument) {
-//        AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
+        documentToTag = document
     }
 }
 
