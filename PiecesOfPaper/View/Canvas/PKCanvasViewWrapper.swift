@@ -10,19 +10,21 @@ import SwiftUI
 import PencilKit
 
 struct PKCanvasViewWrapper: UIViewRepresentable {
-    private let canvasView = PKCanvasView()
-    @Binding var showToolPicker: Bool
-    let saveAction: (PKDrawing) -> Void
+    @Binding private var canvasView: PKCanvasView
+    @Binding private var toolPicker: PKToolPicker
+    private let saveAction: (PKDrawing) -> Void
+    private var defaultTool = PKInkingTool(.pen, color: .black, width: 1)
+    private var previousTool: PKTool
+    private var currentTool: PKTool
 
-    init(drawing: PKDrawing?, showToolPicker: Binding<Bool>,
+    init(canvasView: Binding<PKCanvasView>,
+         toolPicker: Binding<PKToolPicker>,
          saveAction: @escaping (PKDrawing) -> Void) {
-        self._showToolPicker = showToolPicker
+        self._canvasView = canvasView
+        self._toolPicker = toolPicker
         self.saveAction = saveAction
-        canvasView.maximumZoomScale = 8.0
-        if let drawing = drawing {
-            self.canvasView.drawing = drawing
-            initialContentSize()
-        }
+        self.previousTool = defaultTool
+        self.currentTool = defaultTool
     }
 
     private var isDrawingWiderThanWindow: Bool {
@@ -51,46 +53,33 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> PKCanvasView {
-        canvasView.delegate = context.coordinator
+        canvasView.maximumZoomScale = 8.0
+        initialContentSize()
+        canvasView.drawingPolicy =
+            UIDevice.current.userInterfaceIdiom == .pad
+            ? .pencilOnly
+            : .anyInput
+        toolPicker.showsDrawingPolicyControls = false
+        toolPicker.addObserver(canvasView)
+        toolPicker.setVisible(false, forFirstResponder: canvasView)
+        canvasView.becomeFirstResponder()
+        toolPicker.selectedTool = defaultTool
         return canvasView
     }
 
-    func updateUIView(_ canvasView: PKCanvasView, context: Context) {
-        context.coordinator.toolPicker.setVisible(showToolPicker, forFirstResponder: canvasView)
-        canvasView.becomeFirstResponder()
-    }
+    func updateUIView(_ canvasView: PKCanvasView, context: Context) {}
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 
     class Coordinator: NSObject {
-        let parent: PKCanvasViewWrapper
-        let toolPicker = PKToolPicker()
-        private let defaultTool = PKInkingTool(.pen, color: .black, width: 1)
-        private var previousTool: PKTool!
-        private var currentTool: PKTool!
+        var parent: PKCanvasViewWrapper
         init(_ canvasViewWrapper: PKCanvasViewWrapper) {
             self.parent = canvasViewWrapper
-
-            toolPicker.selectedTool = defaultTool
-            self.previousTool = defaultTool
-            self.currentTool = defaultTool
             super.init()
-
-            setToolPicker()
-            setPencilInteraction()
-        }
-
-        private func setToolPicker() {
-            toolPicker.showsDrawingPolicyControls = false
-            toolPicker.addObserver(self)
-            toolPicker.addObserver(parent.canvasView)
-            toolPicker.setVisible(false, forFirstResponder: parent.canvasView)
-            parent.canvasView.becomeFirstResponder()
-        }
-
-        private func setPencilInteraction() {
+            canvasViewWrapper.canvasView.delegate = self
+            canvasViewWrapper.toolPicker.addObserver(self)
             let pencilInteraction = UIPencilInteraction()
             pencilInteraction.delegate = self
             parent.canvasView.addInteraction(pencilInteraction)
@@ -126,35 +115,38 @@ extension PKCanvasViewWrapper.Coordinator: PKCanvasViewDelegate {
 // MARK: - PKToolPickerObserver
 extension PKCanvasViewWrapper.Coordinator: PKToolPickerObserver {
     func toolPickerSelectedToolDidChange(_ toolPicker: PKToolPicker) {
-        previousTool = currentTool
-        currentTool = toolPicker.selectedTool
+        parent.previousTool = parent.currentTool
+        parent.currentTool = toolPicker.selectedTool
     }
 }
 
 // MARK: - UIPencilInteractionDelegate
 extension PKCanvasViewWrapper.Coordinator: UIPencilInteractionDelegate {
     func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
-        guard !toolPicker.isVisible else { return }
+        guard !parent.toolPicker.isVisible else { return }
         let action = UIPencilInteraction.preferredTapAction
         switch action {
         case .switchPrevious:   switchPreviousTool()
         case .switchEraser:     switchEraser()
-        case .showColorPalette: parent.showToolPicker.toggle()
-        case .ignore:           return
-        default:                return
+        default:                showToolPicker()
         }
     }
 
     private func switchPreviousTool() {
-        toolPicker.selectedTool = previousTool
+        parent.toolPicker.selectedTool = parent.previousTool
     }
 
     private func switchEraser() {
-        if currentTool is PKEraserTool {
-            toolPicker.selectedTool = previousTool
+        if parent.currentTool is PKEraserTool {
+            parent.toolPicker.selectedTool = parent.previousTool
         } else {
-            toolPicker.selectedTool = PKEraserTool(.vector)
+            parent.toolPicker.selectedTool = PKEraserTool(.vector)
         }
+    }
+
+    private func showToolPicker() {
+        parent.toolPicker.setVisible(!parent.toolPicker.isVisible, forFirstResponder: parent.canvasView)
+        parent.canvasView.becomeFirstResponder()
     }
 }
 
@@ -166,12 +158,12 @@ extension PKCanvasViewWrapper.Coordinator: UIScrollViewDelegate {
 }
 
  struct PKCanvasViewWrapper_Previews: PreviewProvider {
-    @State static var drawing = PKDrawing()
-    @State static var showToolPicker = false
+    @State static var canvasView = PKCanvasView()
+    @State static var toolPicker = PKToolPicker()
 
     static var previews: some View {
-        PKCanvasViewWrapper(drawing: drawing,
-                            showToolPicker: $showToolPicker,
+        PKCanvasViewWrapper(canvasView: $canvasView,
+                            toolPicker: $toolPicker,
                             saveAction: { _ in })
     }
  }

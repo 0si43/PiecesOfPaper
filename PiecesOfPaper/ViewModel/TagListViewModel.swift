@@ -9,7 +9,7 @@
 import Foundation
 
 final class TagListViewModel: ObservableObject {
-    let tagModel = TagModel()
+    private let tagModel = TagModel()
     @Published var tags: [TagEntity] {
         didSet {
             tagModel.save(tags: tags)

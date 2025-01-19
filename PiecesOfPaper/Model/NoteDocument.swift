@@ -9,8 +9,9 @@
 import UIKit
 import PencilKit
 
-final class NoteDocument: UIDocument {
+final class NoteDocument: UIDocument, Identifiable {
     var entity: NoteEntity
+    var id: UUID { entity.id }
 
     var isArchived: Bool {
         guard let archivedUrl = FilePath.archivedUrl else { return false }

@@ -1,5 +1,5 @@
 //
-//  ListCondition.swift
+//  ListOrder.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/12/11.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ListCondition: Codable {
+struct ListOrder: Codable {
     enum SortBy: String, CaseIterable, Identifiable, Codable {
         case createdDate = "created date"
         case updatedDate = "updated date"

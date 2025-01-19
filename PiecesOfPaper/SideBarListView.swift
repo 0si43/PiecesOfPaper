@@ -1,5 +1,5 @@
 //
-//  PiecesOfPaperApp.swift
+//  SideBarListView.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/11/03.
@@ -8,23 +8,29 @@
 
 import SwiftUI
 
-struct SideBarList: View {
-    @State private var showInbox = true
-    @StateObject var inboxNoteViewModel = NotesViewModel(targetDirectory: .inbox)
-    @StateObject var allNoteViewModel = NotesViewModel(targetDirectory: .all)
-    @StateObject var archivedNoteViewModel = NotesViewModel(targetDirectory: .archived)
+struct SideBarListView: View {
+    @StateObject private var inboxNoteViewModel = NoteViewModel(targetDirectory: .inbox)
+    @StateObject private var allNoteViewModel = NoteViewModel(targetDirectory: .all)
+    @StateObject private var archivedNoteViewModel = NoteViewModel(targetDirectory: .archived)
 
     var body: some View {
+        NavigationSplitView {
+            sideBarList
+        } detail: {
+            NoteListParentView(viewModel: inboxNoteViewModel)
+        }
+    }
+
+    private var sideBarList: some View {
         List {
             Section(header: Text("Folder")) {
-                NavigationLink(destination: Notes(viewModel: inboxNoteViewModel),
-                               isActive: $showInbox) {
+                NavigationLink(destination: NoteListParentView(viewModel: inboxNoteViewModel)) {
                     Label("Inbox", systemImage: "tray")
                 }
-                NavigationLink(destination: Notes(viewModel: allNoteViewModel)) {
+                NavigationLink(destination: NoteListParentView(viewModel: allNoteViewModel)) {
                     Label("All", systemImage: "tray.full")
                 }
-                NavigationLink(destination: Notes(viewModel: archivedNoteViewModel)) {
+                NavigationLink(destination: NoteListParentView(viewModel: archivedNoteViewModel)) {
                     Label("Trash", systemImage: "trash")
                 }
             }
@@ -39,17 +45,12 @@ struct SideBarList: View {
                 }
             }
         }
-        .listStyle(SidebarListStyle())
         .navigationTitle("Pieces of Paper")
     }
 }
 
-struct SideBarList_Previews: PreviewProvider {
+struct SideBarListView_Previews: PreviewProvider {
     static var previews: some View {
-        ForEach(TargetPreviewDevice.allCases) { deviceName in
-            SideBarList()
-                .previewDevice(PreviewDevice(rawValue: deviceName.rawValue))
-                .previewDisplayName(deviceName.rawValue)
-        }
+        SideBarListView()
     }
 }
