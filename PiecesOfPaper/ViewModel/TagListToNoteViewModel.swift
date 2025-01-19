@@ -10,8 +10,8 @@ import Foundation
 import Combine
 
 final class TagListToNoteViewModel: ObservableObject {
-    let tagModel = TagModel()
-    var tags: [TagEntity]
+    private let tagModel = TagModel()
+    private var tags: [TagEntity]
     var noteDocument: NoteDocument?
     var objectWillChange = ObjectWillChangePublisher()
 
@@ -33,8 +33,6 @@ final class TagListToNoteViewModel: ObservableObject {
         tags = tagModel.fetch()
         if let document = noteDocument {
             self.noteDocument = document
-        } else {
-            self.noteDocument = TagListRouter.shared.documentForPass
         }
     }
 
@@ -54,7 +52,6 @@ final class TagListToNoteViewModel: ObservableObject {
         guard let noteDocument = noteDocument else { return }
         noteDocument.save(to: noteDocument.fileURL, for: .forOverwriting) { [weak self] success in
             if success {
-                NotificationCenter.default.post(name: .changedTagToNote, object: noteDocument)
                 self?.objectWillChange.send()
             } else {
                 print("save failed")

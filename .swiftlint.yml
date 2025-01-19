@@ -1,3 +1,6 @@
+analyzer_rules:
+  - unused_import
+
 # デフォルト有効で無効にするルール
 disabled_rules:
   #- block_based_kvo
@@ -84,7 +87,7 @@ disabled_rules:
 opt_in_rules:
   - anyobject_protocol
   - array_init
-  - attributes
+#  - attributes
 # - closure_body_length # SwiftUIだと守れないため
   - closure_end_indentation
   - closure_spacing
@@ -163,7 +166,6 @@ opt_in_rules:
   - unavailable_function
   - unneeded_parentheses_in_closure_argument
   - untyped_error_in_catch
-  - unused_import
   - vertical_parameter_alignment_on_call
   #- vertical_whitespace_between_cases # Switch文のケース間に空白行を設けたくないこともあるため
   #- vertical_whitespace_closing_braces # 中括弧を閉じる前に空白行を設けたいことがあるため

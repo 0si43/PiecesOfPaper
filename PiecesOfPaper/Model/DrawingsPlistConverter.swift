@@ -30,7 +30,7 @@ enum DrawingsPlistConverter {
                     let path = inboxUrl.appendingPathComponent(FilePath.fileName)
                     let newDocument = NoteDocument(fileURL: path, entity: NoteEntity(drawing: drawing))
                     newDocument.save(to: path, for: .forCreating) { _ in
-                        // need some error handling
+                        // no operation
                     }
                 }
                 let newUrl = savingUrl.appendingPathComponent("converted_drawings.plist")

@@ -8,8 +8,8 @@
 
 import SwiftUI
 
-struct TagListToNote: View {
-    @ObservedObject var viewModel = TagListToNoteViewModel()
+struct AddTagView: View {
+    @ObservedObject private(set) var viewModel = TagListToNoteViewModel()
 
     var body: some View {
         if viewModel.noteDocument != nil {
@@ -34,8 +34,8 @@ struct TagListToNote: View {
     }
 }
 
-struct TagListToNote_Previews: PreviewProvider {
+struct AddTagView_Previews: PreviewProvider {
     static var previews: some View {
-        TagListToNote()
+        AddTagView()
     }
 }

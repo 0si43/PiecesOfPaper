@@ -9,8 +9,6 @@
 import UIKit
 
 final class AppViewModel: ObservableObject {
-    @Published var showCanvas = false
-    @Published var isShowTagList = false
     @Published var iCloudDenying = false
     @Published var showOnboarding = false
     var hasDrawingPlist = false

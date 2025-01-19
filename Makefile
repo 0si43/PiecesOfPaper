@@ -8,8 +8,8 @@ UI_TESTS_TARGET_NAME := ${PRODUCT_NAME}UITests
 TEST_SDK := iphonesimulator
 TEST_CONFIGURATION := Debug
 TEST_PLATFORM := iOS Simulator
-TEST_DEVICE ?= iPad Pro (11-inch) (2nd generation)
-TEST_OS ?= 15.0
+TEST_DEVICE ?= iPad Pro 13-inch (M4)
+TEST_OS ?= 18.1
 TEST_DESTINATION := 'platform=${TEST_PLATFORM},name=${TEST_DEVICE},OS=${TEST_OS}'
 
 .DEFAULT_GOAL := help

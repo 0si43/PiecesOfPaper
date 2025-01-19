@@ -9,48 +9,35 @@
 import SwiftUI
 
 struct RootView: View {
-    @StateObject var viewModel = AppViewModel()
-    @StateObject var canvasViewModel = CanvasViewModel()
-
-    private var useICloudButton: Alert.Button {
-        .default(Text("Use iCloud"), action: viewModel.openSettingApp)
-    }
-
-    private var useDeviceButton: Alert.Button {
-        .default(Text("Use device storage"), action: viewModel.switchDeviceStorage)
-    }
+    @EnvironmentObject private var appViewModel: AppViewModel
+    @State private var showCanvasView = false
 
     var body: some View {
-        NavigationView {
-            SideBarList()
-        }
-        .fullScreenCover(isPresented: $viewModel.showCanvas) {
-            NavigationView {
-                Canvas(viewModel: CanvasViewModel())
+        SideBarListView()
+        .fullScreenCover(isPresented: $showCanvasView) {
+            NavigationStack {
+                CanvasView(canvasViewModel: CanvasViewModel())
             }
         }
-        .sheet(isPresented: $viewModel.isShowTagList,
-               onDismiss: {
-               TagListRouter.shared.documentForPass = nil
-               }, content: {
-                   TagListToNote()
-               })
         .onAppear {
-            TagListRouter.shared.bind(isShowTagList: $viewModel.isShowTagList)
-            viewModel.hasDrawingPlist = DrawingsPlistConverter.hasDrawingsPlist
+            appViewModel.hasDrawingPlist = DrawingsPlistConverter.hasDrawingsPlist
             DrawingsPlistConverter.convert()
 
             guard !UserPreference().shouldGrantiCloud else {
-                viewModel.iCloudDenying = true
+                appViewModel.iCloudDenying = true
                 return
             }
-
-            viewModel.showCanvas = true
+            showCanvasView = true
         }
-        .alert(isPresented: $viewModel.iCloudDenying) { () -> Alert in
-            Alert(title: Text(viewModel.iCloudDeniedWarningMessage),
-                  primaryButton: useICloudButton,
-                  secondaryButton: useDeviceButton)
+        .alert("", isPresented: $appViewModel.iCloudDenying) {
+             Button("Use iCloud") {
+                 appViewModel.openSettingApp()
+             }
+             Button("Use device storage") {
+                 appViewModel.switchDeviceStorage()
+             }
+         } message: {
+             Text(appViewModel.iCloudDeniedWarningMessage)
         }
     }
 }
@@ -58,5 +45,6 @@ struct RootView: View {
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
         RootView()
+            .environmentObject(AppViewModel())
     }
 }
