@@ -10,7 +10,7 @@ import PencilKit
 import XCTest
 @testable import Pieces_of_Paper
 
-// class NotesViewModelTest: XCTestCase {
+ class NotesViewModelTest: XCTestCase {
 //    var viewModel: NotesViewModel!
 //    var document: NoteDocument!
 //
@@ -26,4 +26,4 @@ import XCTest
 //        XCTAssertEqual(viewModel.documentToShare, document)
 //        XCTAssertTrue(viewModel.showActivityView)
 //    }
-// }
+ }
