@@ -17,12 +17,6 @@ final class NotesViewModel: ObservableObject {
     var isLoaded = false
     var showArchiveAlert = false
 
-    var isListConditionSheet = false {
-        willSet {
-            objectWillChange.send()
-        }
-    }
-
     var documentToShare: NoteDocument?
     var showActivityView = false {
         willSet {
@@ -133,8 +127,8 @@ final class NotesViewModel: ObservableObject {
               var archivedFileNames =
                 try? FileManager.default.contentsOfDirectory(atPath: archivedUrl.path) else { return [] }
 
-        inboxFileNames = inboxFileNames.filter { $0.hasSuffix(".plist") }
-        archivedFileNames = archivedFileNames.filter { $0.hasSuffix(".plist") }
+        inboxFileNames = inboxFileNames.filter { $0.hasSuffix(".plist") }.sorted(by: >)
+        archivedFileNames = archivedFileNames.filter { $0.hasSuffix(".plist") }.sorted(by: >)
 
         switch directory {
         case .inbox:
@@ -208,7 +202,6 @@ final class NotesViewModel: ObservableObject {
     func delete(_ document: NoteDocument) {
         try? FileManager.default.removeItem(at: document.fileURL)
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
-
         publish()
     }
 
@@ -249,11 +242,6 @@ final class NotesViewModel: ObservableObject {
         return tags.filter {
             document.entity.tags.contains($0)
         }
-    }
-
-    func toggleIsListConditionPopover() {
-        isListConditionSheet.toggle()
-        objectWillChange.send()
     }
 
     func showArchiveOrUnarchiveAlert() {

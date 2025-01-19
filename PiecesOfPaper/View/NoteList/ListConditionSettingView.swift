@@ -1,5 +1,5 @@
 //
-//  ListConditionSetting.swift
+//  ListConditionSettingView.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/12/11.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ListConditionSetting: View {
+struct ListConditionSettingView: View {
     @ObservedObject var viewModel: ListConditionSettingViewModel
     @Environment(\.presentationMode) var presentationMode
 
@@ -99,6 +99,6 @@ struct ListConditionSetting: View {
 struct ListConditionSetting_Previews: PreviewProvider {
     @State static var listCondition = ListCondition()
     static var previews: some View {
-        ListConditionSetting(listCondition: $listCondition)
+        ListConditionSettingView(listCondition: $listCondition)
     }
 }
