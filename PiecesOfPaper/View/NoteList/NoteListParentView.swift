@@ -13,6 +13,7 @@ struct NoteListParentView: View {
     @EnvironmentObject private var canvasViewModel: CanvasViewModel
     @State private var showCanvasView = false
     @State private var showListConditionSettingView = false
+    @State private var documentToShare: NoteDocument?
     @State private var documentToTag: NoteDocument?
     private var cancelButton: Alert.Button { .default(Text("Cancel")) }
     private var actionButton: Alert.Button {
@@ -40,8 +41,7 @@ struct NoteListParentView: View {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {
-                    NoteScrollView(documents: viewModel.publishedNoteDocuments,
-                                          parent: self)
+                    NoteScrollView(documents: viewModel.publishedNoteDocuments, parent: self)
                 }
             }
         }
@@ -58,8 +58,8 @@ struct NoteListParentView: View {
                 ListConditionSettingView(listCondition: $viewModel.listCondition)
             }
         }
-        .sheet(isPresented: $viewModel.showActivityView) {
-            viewModel.activityViewController
+        .sheet(item: $documentToShare) { document in
+            activityViewController(document: document)
         }
         .sheet(item: $documentToTag) { document in
             AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
@@ -120,7 +120,18 @@ struct NoteListParentView: View {
         }
     }
 
-    func openNewNote() {
+    private func activityViewController(document: NoteDocument) -> UIActivityViewControllerWrapper {
+        let drawing = document.entity.drawing
+        var image = UIImage()
+        let trait = UITraitCollection(userInterfaceStyle: .light)
+        trait.performAsCurrent {
+            image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+        }
+
+        return UIActivityViewControllerWrapper(activityItems: [image])
+    }
+
+    private func openNewNote() {
         showCanvasView = true
     }
 }
@@ -149,7 +160,7 @@ extension NoteListParentView: NoteListViewParent {
     }
 
     func showActivityView(_ document: NoteDocument) {
-        viewModel.share(document)
+        documentToShare = document
     }
 
     func showAddTagView(_ document: NoteDocument) {
