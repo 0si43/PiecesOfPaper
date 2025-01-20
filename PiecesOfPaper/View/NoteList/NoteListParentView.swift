@@ -18,7 +18,7 @@ struct NoteListParentView: View {
 
     var body: some View {
         Group {
-            if viewModel.isLoading {
+            if viewModel.isShowLoading {
                 ProgressView()
             } else {
                 if viewModel.displayNoteDocuments.isEmpty {
@@ -93,7 +93,7 @@ struct NoteListParentView: View {
             } label: {
                 Image(systemName: "arrow.triangle.2.circlepath")
             }
-            .disabled(viewModel.isLoading)
+            .disabled(viewModel.isShowLoading)
             Button {
                 openNewNote()
             } label: {
