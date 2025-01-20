@@ -32,6 +32,11 @@ struct NoteListParentView: View {
         .task {
             await viewModel.incrementalFetch()
         }
+        .refreshable {
+            Task {
+                await viewModel.reload()
+            }
+        }
         .toolbar {
             toolbarItems
         }
