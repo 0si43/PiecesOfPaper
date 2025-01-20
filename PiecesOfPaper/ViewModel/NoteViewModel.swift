@@ -11,8 +11,7 @@ import Foundation
 @MainActor
 final class NoteViewModel: ObservableObject {
     @Published var displayNoteDocuments = [NoteDocument]()
-    // Set initial value to true to show loading state when view appears
-    @Published var isLoading = true
+    @Published var isShowLoading = true
     private var noteDocuments = [NoteDocument]()
     enum TargetDirectory: String {
         case inbox, archived, all
@@ -45,9 +44,9 @@ final class NoteViewModel: ObservableObject {
 
     func incrementalFetch() async {
         defer {
-            isLoading = false
+            isShowLoading = false
         }
-        isLoading = true
+        isShowLoading = true
         let (added, removed) = fetchChangedFileUrls()
         // FIXME: - デバッグ終わったら消す
         print("added: \(added.count), removed: \(removed.count)")
