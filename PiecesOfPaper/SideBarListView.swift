@@ -12,36 +12,67 @@ struct SideBarListView: View {
     @StateObject private var inboxNoteViewModel = NoteViewModel(targetDirectory: .inbox)
     @StateObject private var allNoteViewModel = NoteViewModel(targetDirectory: .all)
     @StateObject private var archivedNoteViewModel = NoteViewModel(targetDirectory: .archived)
+    @State private var selection: Page? = .inbox
+    private enum Page: String, CaseIterable {
+        case inbox, all, trash
+        case tag
+        case setting
+        
+        var label: String {
+            switch self {
+            case .inbox: "Inbox"
+            case .all: "All"
+            case .trash: "Trash"
+            case .tag: "Tag List"
+            case .setting: "Setting"
+            }
+        }
+    }
 
     var body: some View {
         NavigationSplitView {
             sideBarList
         } detail: {
-            NoteListParentView(viewModel: inboxNoteViewModel)
+            switch selection {
+            case .inbox:
+                NoteListParentView(viewModel: inboxNoteViewModel)
+            case .all:
+                NoteListParentView(viewModel: allNoteViewModel)
+            case .trash:
+                NoteListParentView(viewModel: archivedNoteViewModel)
+            case .tag:
+                TagList()
+            case .setting:
+                SettingView()
+            default:
+                Text("Unknown page")
+            }
         }
     }
 
     private var sideBarList: some View {
-        List {
-            Section(header: Text("Folder")) {
-                NavigationLink(destination: NoteListParentView(viewModel: inboxNoteViewModel)) {
-                    Label("Inbox", systemImage: "tray")
+        List(selection: $selection) {
+            Section(header: Text("Folders")) {
+                NavigationLink(value: Page.inbox) {
+                    Label(Page.inbox.label, systemImage: "tray")
                 }
-                NavigationLink(destination: NoteListParentView(viewModel: allNoteViewModel)) {
-                    Label("All", systemImage: "tray.full")
+
+                NavigationLink(value: Page.all) {
+                    Label(Page.all.label, systemImage: "tray.full")
                 }
-                NavigationLink(destination: NoteListParentView(viewModel: archivedNoteViewModel)) {
-                    Label("Trash", systemImage: "trash")
+
+                NavigationLink(value: Page.trash) {
+                    Label(Page.trash.label, systemImage: "trash")
                 }
             }
             Section(header: Text("Tag")) {
-                NavigationLink(destination: TagList()) {
-                    Label("Tag List", systemImage: "tag")
+                NavigationLink(value: Page.tag) {
+                    Label(Page.tag.label, systemImage: "tag")
                 }
             }
             Section(header: Text("Setting")) {
-                NavigationLink(destination: SettingView()) {
-                    Label("Setting", systemImage: "gearshape")
+                NavigationLink(value: Page.setting) {
+                    Label(Page.setting.label, systemImage: "gearshape")
                 }
             }
         }
