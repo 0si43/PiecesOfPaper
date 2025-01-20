@@ -85,7 +85,7 @@ disabled_rules:
 
 # デフォルト無効で有効にするルール
 opt_in_rules:
-  - anyobject_protocol
+# - anyobject_protocol
   - array_init
 #  - attributes
 # - closure_body_length # SwiftUIだと守れないため
@@ -189,6 +189,6 @@ line_length:
   warning: 300
   error: 500
 
-#identifier_name:
+identifier_name:
   min_length:
     warning: 1 # `r` `g` `b` などを使いたいため
