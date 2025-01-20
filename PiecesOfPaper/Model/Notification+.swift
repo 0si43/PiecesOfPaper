@@ -1,5 +1,6 @@
+// swiftlint:disable:this file_name
 //
-//  Notification++.swift
+//  Notification+.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2025/01/19.

@@ -1,7 +1,0 @@
-/Users/nakajima/Dev/PiecesOfPaper/PiecesOfPaper/ViewModel/NotesViewModel.swift:28:1 Corrected Trailing Whitespace
-/Users/nakajima/Dev/PiecesOfPaper/PiecesOfPaper/ViewModel/NotesViewModel.swift:72:1 Corrected Trailing Whitespace
-/Users/nakajima/Dev/PiecesOfPaper/PiecesOfPaper/ViewModel/NotesViewModel.swift:81:1 Corrected Trailing Whitespace
-/Users/nakajima/Dev/PiecesOfPaper/PiecesOfPaper/ViewModel/NotesViewModel.swift:151:1 Corrected Trailing Whitespace
-/Users/nakajima/Dev/PiecesOfPaper/PiecesOfPaper/ViewModel/NotesViewModel.swift:153:1 Corrected Trailing Whitespace
-/Users/nakajima/Dev/PiecesOfPaper/PiecesOfPaper/ViewModel/CanvasViewModel.swift:28:37: warning: Force Unwrapping Violation: Force unwrapping should be avoided (force_unwrapping)
-/Users/nakajima/Dev/PiecesOfPaper/PiecesOfPaper/ViewModel/NotesViewModel.swift:118:20: warning: Todo Violation: FIXMEs should be resolved (- need notification to user) (todo)
