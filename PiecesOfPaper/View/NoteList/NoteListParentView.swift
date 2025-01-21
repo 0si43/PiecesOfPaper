@@ -81,24 +81,28 @@ struct NoteListParentView: View {
 
     private var toolbarItems: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
-            Button {
-                showArchiveAlert = true
-            } label: {
-                Image(systemName: viewModel.isTargetDirectoryArchived ? "tray.circle" : "archivebox.circle")
-            }
-            Button {
-                showListOrderSettingView = true
-            } label: {
-                Image(systemName: "line.3.horizontal.decrease.circle")
-            }
-            Button {
-                Task {
-                    await viewModel.reload()
+            Menu {
+                Button {
+                    showArchiveAlert = true
+                } label: {
+                    Label(viewModel.isTargetDirectoryArchived ? "Unarchive" : "Archive", systemImage: "tray.circle")
                 }
+                Button {
+                    showListOrderSettingView = true
+                } label: {
+                    Label("Reorder", systemImage: "line.3.horizontal.decrease.circle")
+                }
+                Button {
+                    Task {
+                        await viewModel.reload()
+                    }
+                } label: {
+                    Label("Reload", systemImage: "arrow.triangle.2.circlepath")
+                }
+                .disabled(viewModel.isShowLoading)
             } label: {
-                Image(systemName: "arrow.triangle.2.circlepath")
+                Image(systemName: "ellipsis.circle")
             }
-            .disabled(viewModel.isShowLoading)
             Button {
                 openNewNote()
             } label: {

@@ -17,7 +17,7 @@ struct SideBarListView: View {
         case inbox, all, trash
         case tag
         case setting
-        
+
         var label: String {
             switch self {
             case .inbox: "Inbox"
