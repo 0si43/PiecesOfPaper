@@ -23,7 +23,7 @@ struct NoteListTagHStack: View {
         .frame(minHeight: 40)
         .background(Color.gray.opacity(0.05))
         .onTapGesture { action() }
-        
+
     }
 }
 
