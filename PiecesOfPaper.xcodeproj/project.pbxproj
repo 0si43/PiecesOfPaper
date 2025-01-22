@@ -47,6 +47,7 @@
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
 		A6EE43272523271F000B203E /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE43262523271F000B203E /* Document.swift */; };
 		A6F6ED4B27C77A7500DD3296 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F6ED4A27C77A7500DD3296 /* RootView.swift */; };
+		A6FD03422D3FAD8600224B03 /* NoteListTagHStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FD03412D3FAD8600224B03 /* NoteListTagHStack.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +108,7 @@
 		A6DE5BC82437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6EE43262523271F000B203E /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		A6F6ED4A27C77A7500DD3296 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		A6FD03412D3FAD8600224B03 /* NoteListTagHStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteListTagHStack.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,6 +211,7 @@
 				A63C958F275E111500822461 /* AddTagFooter.swift */,
 				A63C9585275DB86600822461 /* AddTagView.swift */,
 				A63C9581275D1C2E00822461 /* TagHStack.swift */,
+				A6FD03412D3FAD8600224B03 /* NoteListTagHStack.swift */,
 				A63C9583275DB67700822461 /* Tag.swift */,
 				A63C9587275DB97900822461 /* DeletableTag.swift */,
 			);
@@ -420,6 +423,7 @@
 				A6F6ED4B27C77A7500DD3296 /* RootView.swift in Sources */,
 				A63C9578275C8F4A00822461 /* TagList.swift in Sources */,
 				A62EEAF42732517600D513B8 /* NoteViewModel.swift in Sources */,
+				A6FD03422D3FAD8600224B03 /* NoteListTagHStack.swift in Sources */,
 				A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */,
 				A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */,
 				A6EE43272523271F000B203E /* Document.swift in Sources */,
