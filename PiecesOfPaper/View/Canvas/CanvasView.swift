@@ -60,7 +60,9 @@ struct CanvasView: View {
                    setToolPickerVisible(true)
                },
                content: {
-                   AddTagView(viewModel: TagListToNoteViewModel(noteDocument: canvasViewModel.document))
+                    if let document = canvasViewModel.document {
+                        AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
+                    }
                }
         )
         .alert("", isPresented: $showUnsavedAlert) {
