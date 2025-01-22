@@ -32,7 +32,10 @@ struct NoteListView: View {
                     .contextMenu {
                         contextMenu(document: documents[index])
                     }
-                    TagHStack(tags: parent.getTagToNote(document: documents[index]))
+                    NoteListTagHStack(
+                        tags: parent.getTagToNote(document: documents[index]),
+                        action: { parent.showAddTagView(documents[index]) }
+                    )
                         .padding(.horizontal)
                 }
             }
