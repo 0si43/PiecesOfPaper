@@ -85,7 +85,13 @@ struct NoteListParentView: View {
                 Button {
                     showArchiveAlert = true
                 } label: {
-                    Label(viewModel.isTargetDirectoryArchived ? "Unarchive" : "Archive", systemImage: "tray.circle")
+                    Label(viewModel.isTargetDirectoryArchived
+                          ? "Move all to Inbox"
+                          : "Move all to Trash",
+                          systemImage: viewModel.isTargetDirectoryArchived
+                          ? "tray.circle"
+                          : "trash"
+                    )
                 }
                 Button {
                     showListOrderSettingView = true
@@ -166,8 +172,8 @@ struct NoteListParentView: View {
         .destructive(
             Text(
                 viewModel.isTargetDirectoryArchived
-                ? "Unarchived"
-                : "Archived"
+                ? "Move all to Inbox"
+                : "Move all to Trash"
             ),
             action: {
                 viewModel.isTargetDirectoryArchived

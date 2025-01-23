@@ -166,7 +166,7 @@ final class NoteViewModel: ObservableObject {
         newDocument.save(to: newUrl, for: .forCreating) { [weak self] success in
             if success {
                 self?.noteDocuments.append(newDocument)
-                self?.displayReorderDocuments()
+                self?.displayNoteDocuments.append(newDocument)
             }
         }
     }
@@ -175,7 +175,7 @@ final class NoteViewModel: ObservableObject {
         do {
             try FileManager.default.removeItem(at: document.fileURL)
             noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
-            displayReorderDocuments()
+            displayNoteDocuments = Array(displayNoteDocuments.filter { $0.entity.id != document.entity.id })
         } catch {
             // FIXME: - need alert
         }
@@ -191,7 +191,7 @@ final class NoteViewModel: ObservableObject {
         }
 
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
-        displayReorderDocuments()
+        displayNoteDocuments = Array(displayNoteDocuments.filter { $0.entity.id != document.entity.id })
     }
 
     func unarchive(_ document: NoteDocument) {
@@ -204,7 +204,7 @@ final class NoteViewModel: ObservableObject {
         }
 
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
-        displayReorderDocuments()
+        displayNoteDocuments = Array(displayNoteDocuments.filter { $0.entity.id != document.entity.id })
     }
 
     func getTagToNote(document: NoteDocument) -> [TagEntity] {
