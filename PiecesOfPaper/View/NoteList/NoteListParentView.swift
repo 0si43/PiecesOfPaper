@@ -53,9 +53,14 @@ struct NoteListParentView: View {
         .sheet(item: $documentToShare) { document in
             activityViewController(document: document)
         }
-        .sheet(item: $documentToTag) { document in
+        .sheet(item: $documentToTag,
+               onDismiss: {
+                   Task {
+                       await viewModel.incrementalFetch()
+                   }
+               }, content: { document in
             AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
-        }
+        })
         .alert(isPresented: $showArchiveAlert) { () -> Alert in
             let operationText = viewModel.isTargetDirectoryArchived ? "unarchived" : "archived"
             let countText = viewModel.displayNoteDocuments.count
