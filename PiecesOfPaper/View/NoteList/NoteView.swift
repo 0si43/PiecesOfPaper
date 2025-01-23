@@ -10,8 +10,7 @@ import SwiftUI
 import PencilKit
 
 struct NoteView: View {
-    private(set) var document: NoteDocument
-    @EnvironmentObject private var canvasViewModel: CanvasViewModel
+    @Binding private(set) var document: NoteDocument
     @State private var showCanvasView = false
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
     private var image: UIImage {
@@ -37,8 +36,9 @@ struct NoteView: View {
     }
 }
 
- struct NoteImage_Previews: PreviewProvider {
+ struct NoteView_Previews: PreviewProvider {
+     @State static var document = NoteDocument.createTestData()
      static var previews: some View {
-         NoteView(document: NoteDocument.createTestData())
+         NoteView(document: $document)
     }
  }
