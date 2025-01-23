@@ -20,7 +20,7 @@ protocol NoteListViewParent {
 }
 
 struct NoteListView: View {
-    private(set) var documents: [NoteDocument]
+    @Binding private(set) var documents: [NoteDocument]
     private(set) var parent: NoteListViewParent
     private let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
 
@@ -28,7 +28,7 @@ struct NoteListView: View {
         LazyVGrid(columns: [gridItem]) {
             ForEach((0..<documents.endIndex), id: \.self) { index in
                 VStack {
-                    NoteView(document: documents[index])
+                    NoteView(document: $documents[index])
                     .contextMenu {
                         contextMenu(document: documents[index])
                     }
@@ -80,11 +80,3 @@ struct NoteListView: View {
         }
     }
 }
-
- struct NoteListView_Previews: PreviewProvider {
-     static var parent = NoteListParentView(viewModel: NoteViewModel(targetDirectory: .inbox))
-     static var array = Array(repeating: NoteDocument.createTestData(), count: 9)
-     static var previews: some View {
-         NoteListView(documents: array, parent: parent)
-    }
- }

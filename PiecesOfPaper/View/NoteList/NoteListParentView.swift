@@ -25,7 +25,7 @@ struct NoteListParentView: View {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {
-                    NoteScrollView(documents: viewModel.displayNoteDocuments, parent: self)
+                    NoteScrollView(documents: $viewModel.displayNoteDocuments, parent: self)
                 }
             }
         }
@@ -113,14 +113,14 @@ struct NoteListParentView: View {
 
     /// This view is for scrolling to the bottom
     private struct NoteScrollView: View {
-        var documents: [NoteDocument]
+        @Binding var documents: [NoteDocument]
         var parent: NoteListViewParent
 
         var body: some View {
             ScrollViewReader { proxy in
                 ScrollView {
                     Spacer(minLength: 30.0)
-                    NoteListView(documents: documents, parent: parent)
+                    NoteListView(documents: $documents, parent: parent)
                 }
                 .padding([.leading, .trailing])
                 .navigationBarTitleDisplayMode(.inline)
