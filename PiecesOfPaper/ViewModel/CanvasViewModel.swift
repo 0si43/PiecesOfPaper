@@ -13,7 +13,6 @@ final class CanvasViewModel: ObservableObject {
     private var originalDocument: NoteDocument
     private(set) var document: NoteDocument
     @Published var showDrawingInformation = false
-    @Published var showTagList = false
 
     var canReviewRequest: Bool {
         guard let inboxUrl = FilePath.inboxUrl,
@@ -45,16 +44,6 @@ final class CanvasViewModel: ObservableObject {
             document.save(to: document.fileURL, for: .forOverwriting)
         } else {
             document.save(to: document.fileURL, for: .forCreating)
-        }
-    }
-
-    func archive() {
-        guard let archivedUrl = FilePath.archivedUrl else { return }
-        let toUrl = archivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
-        do {
-            try FileManager.default.moveItem(at: document.fileURL, to: toUrl)
-        } catch {
-            print("Could not archive: ", error.localizedDescription)
         }
     }
 }

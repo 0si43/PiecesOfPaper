@@ -54,23 +54,18 @@ struct CanvasView: View {
                    setToolPickerVisible(true)
                },
                content: { activityViewController })
-        .sheet(isPresented: $canvasViewModel.showTagList,
-               onDismiss: {
-                   setToolPickerVisible(true)
-               },
-               content: {
-                    AddTagView(viewModel: TagListToNoteViewModel(noteDocument: canvasViewModel.document))
-               }
-        )
         .alert("", isPresented: $showUnsavedAlert) {
-             Button(role: .destructive) {
-                 dismiss()
-             } label: {
-                 Text("Discard")
-             }
-             Button("Cancel") {
-
-             }
+            Button {
+                canvasViewModel.save()
+                dismiss()
+            } label: {
+                Text("Save")
+            }
+            Button(role: .destructive) {
+                dismiss()
+            } label: {
+                Text("Discard")
+            }
          } message: {
              Text("Discard changes?")
         }
@@ -78,26 +73,20 @@ struct CanvasView: View {
 
     private var toolbarItemGroup: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
-            Button(action: archive) {
-                Image(systemName: "trash").foregroundColor(.red)
+            Button {
+                canvasViewModel.showDrawingInformation.toggle()
+            } label: {
+                Image(systemName: "info.circle")
             }
-            Button(action: {
-                setToolPickerVisible(false)
-                canvasViewModel.showTagList.toggle()
-                },
-                label: {
-                    Image(systemName: "tag.circle")
-                })
-            Button(action: { canvasViewModel.showDrawingInformation.toggle() },
-                   label: { Image(systemName: "info.circle") })
             .popover(isPresented: $canvasViewModel.showDrawingInformation) {
                 NoteInformationView(document: canvasViewModel.document)
             }
-            Button(action: {
+            Button {
                 setToolPickerVisible(false)
                 isShowActivityView.toggle()
-            },
-                   label: { Image(systemName: "square.and.arrow.up") })
+            } label: {
+                Image(systemName: "square.and.arrow.up")
+            }
             Button(action: close) {
                 Image(systemName: "tray.full")
             }
@@ -117,20 +106,11 @@ struct CanvasView: View {
         return UIActivityViewControllerWrapper(activityItems: [image])
     }
 
-    private func archive() {
+    private func close() {
         if !UserPreference().enabledAutoSave {
             setToolPickerVisible(false)
             showUnsavedAlert = true
             return
-        }
-        canvasViewModel.archive()
-        dismiss()
-        reviewRequest()
-    }
-
-    private func close() {
-        if !UserPreference().enabledAutoSave {
-            canvasViewModel.save()
         }
 
         dismiss()
