@@ -10,7 +10,8 @@ import Foundation
 import PencilKit
 
 final class CanvasViewModel: ObservableObject {
-    private(set) var document: NoteDocument?
+    private var originalDocument: NoteDocument
+    private(set) var document: NoteDocument
     @Published var showDrawingInformation = false
     @Published var showTagList = false
 
@@ -22,23 +23,21 @@ final class CanvasViewModel: ObservableObject {
         return inboxFileNames.count >= 5
     }
 
-    init() {
-        if let path = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) {
-            self.document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
-        }
+    init(path: URL) {
+        self.document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
+        self.originalDocument = self.document
     }
 
     init(noteDocument: NoteDocument) {
         self.document = noteDocument
+        self.originalDocument = self.document
     }
 
     func save() {
-        guard let document else { return }
         save(drawing: document.entity.drawing)
     }
 
     func save(drawing: PKDrawing) {
-        guard let document else { return }
         document.entity.drawing = drawing
         document.entity.updatedDate = Date()
 
@@ -50,7 +49,7 @@ final class CanvasViewModel: ObservableObject {
     }
 
     func archive() {
-        guard let archivedUrl = FilePath.archivedUrl, let document else { return }
+        guard let archivedUrl = FilePath.archivedUrl else { return }
         let toUrl = archivedUrl.appendingPathComponent(document.fileURL.lastPathComponent)
         do {
             try FileManager.default.moveItem(at: document.fileURL, to: toUrl)

@@ -15,8 +15,10 @@ struct RootView: View {
     var body: some View {
         SideBarListView()
         .fullScreenCover(isPresented: $showCanvasView) {
-            NavigationStack {
-                CanvasView(canvasViewModel: CanvasViewModel())
+            if let path = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) {
+                NavigationStack {
+                    CanvasView(canvasViewModel: CanvasViewModel(path: path))
+                }
             }
         }
         .onAppear {
