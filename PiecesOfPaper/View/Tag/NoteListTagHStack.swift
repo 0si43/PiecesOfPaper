@@ -20,10 +20,9 @@ struct NoteListTagHStack: View {
                 }
             }
         }
-        .frame(minHeight: 40)
-        .background(Color.gray.opacity(0.05))
+        .frame(width: 250, height: 40)
+        .contentShape(Rectangle())
         .onTapGesture { action() }
-
     }
 }
 

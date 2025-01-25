@@ -24,9 +24,9 @@ struct NoteView: View {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 250.0, height: 190.0)
+                .frame(width: 250, height: 190)
                 .background(Color(UIColor.secondarySystemBackground))
-                .shadow(radius: 5.0)
+                .shadow(radius: 5)
         })
         .fullScreenCover(isPresented: $showCanvasView) {
             NavigationView {
