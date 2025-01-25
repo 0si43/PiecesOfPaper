@@ -56,8 +56,9 @@ struct CanvasView: View {
                content: { activityViewController })
         .alert("", isPresented: $showUnsavedAlert) {
             Button {
+                canvasViewModel.document.entity.drawing = canvasView.drawing
                 canvasViewModel.save()
-                dismiss()
+                closeCanvas()
             } label: {
                 Text("Save")
             }
@@ -67,7 +68,7 @@ struct CanvasView: View {
                 Text("Discard")
             }
          } message: {
-             Text("Discard changes?")
+             Text("Save changes?")
         }
     }
 
@@ -87,8 +88,8 @@ struct CanvasView: View {
             } label: {
                 Image(systemName: "square.and.arrow.up")
             }
-            Button(action: close) {
-                Image(systemName: "tray.full")
+            Button(action: done) {
+                Text("Done")
             }
         }
     }
@@ -106,13 +107,17 @@ struct CanvasView: View {
         return UIActivityViewControllerWrapper(activityItems: [image])
     }
 
-    private func close() {
-        if !UserPreference().enabledAutoSave {
+    private func done() {
+        if canvasView.drawing != canvasViewModel.document.entity.drawing {
             setToolPickerVisible(false)
             showUnsavedAlert = true
             return
         }
 
+        closeCanvas()
+    }
+
+    private func closeCanvas() {
         dismiss()
         reviewRequest()
         NotificationCenter.default.post(name: .dismissCanvasView, object: nil)
