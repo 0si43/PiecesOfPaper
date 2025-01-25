@@ -10,7 +10,6 @@ import Foundation
 import PencilKit
 
 final class CanvasViewModel: ObservableObject {
-    private var originalDocument: NoteDocument
     private(set) var document: NoteDocument
     @Published var showDrawingInformation = false
 
@@ -24,22 +23,26 @@ final class CanvasViewModel: ObservableObject {
 
     init(path: URL) {
         self.document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
-        self.originalDocument = self.document
     }
 
     init(noteDocument: NoteDocument) {
         self.document = noteDocument
-        self.originalDocument = self.document
     }
 
     func save() {
-        save(drawing: document.entity.drawing)
+        document.entity.updatedDate = Date()
+        writeFile(document: document)
     }
 
     func save(drawing: PKDrawing) {
+        guard document.entity.drawing != drawing else { return }
         document.entity.drawing = drawing
         document.entity.updatedDate = Date()
+        writeFile(document: document)
 
+    }
+
+    private func writeFile(document: NoteDocument) {
         if FileManager.default.fileExists(atPath: document.fileURL.path) {
             document.save(to: document.fileURL, for: .forOverwriting)
         } else {

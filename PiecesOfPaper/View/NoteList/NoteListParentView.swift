@@ -119,7 +119,7 @@ struct NoteListParentView: View {
             Button {
                 openNewNote()
             } label: {
-                Image(systemName: "plus.circle")
+                Image(systemName: "square.and.pencil")
             }
         }
     }
