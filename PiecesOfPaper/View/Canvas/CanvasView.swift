@@ -39,8 +39,7 @@ struct CanvasView: View {
                             toolPicker: $toolPicker,
                             saveAction: canvasViewModel.save)
         .onAppear {
-            guard let drawing = canvasViewModel.document?.entity.drawing else { return }
-            canvasView.drawing = drawing
+            canvasView.drawing = canvasViewModel.document.entity.drawing
             hideExceptPaper = true
         }
         .gesture(tapGesture)
@@ -60,9 +59,7 @@ struct CanvasView: View {
                    setToolPickerVisible(true)
                },
                content: {
-                    if let document = canvasViewModel.document {
-                        AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
-                    }
+                    AddTagView(viewModel: TagListToNoteViewModel(noteDocument: canvasViewModel.document))
                }
         )
         .alert("", isPresented: $showUnsavedAlert) {
@@ -94,11 +91,7 @@ struct CanvasView: View {
             Button(action: { canvasViewModel.showDrawingInformation.toggle() },
                    label: { Image(systemName: "info.circle") })
             .popover(isPresented: $canvasViewModel.showDrawingInformation) {
-                if let document = canvasViewModel.document {
-                    NoteInformationView(document: document)
-                } else {
-                    EmptyView()
-                }
+                NoteInformationView(document: canvasViewModel.document)
             }
             Button(action: {
                 setToolPickerVisible(false)
@@ -115,9 +108,8 @@ struct CanvasView: View {
         var image = UIImage()
         let trait = UITraitCollection(userInterfaceStyle: .light)
         trait.performAsCurrent {
-            guard let drawing = canvasViewModel.document?.entity.drawing else { return }
-            image = drawing.image(
-                from: drawing.bounds,
+            image = canvasViewModel.document.entity.drawing.image(
+                from: canvasViewModel.document.entity.drawing.bounds,
                 scale: UIScreen.main.scale
             )
         }
@@ -127,10 +119,6 @@ struct CanvasView: View {
 
     private func archive() {
         if !UserPreference().enabledAutoSave {
-            guard let document = canvasViewModel.document, !document.entity.drawing.strokes.isEmpty else {
-                dismiss()
-                return
-            }
             setToolPickerVisible(false)
             showUnsavedAlert = true
             return
@@ -161,9 +149,9 @@ struct CanvasView: View {
 }
 
 struct CanvasView_Previews: PreviewProvider {
-    static var viewModel = CanvasViewModel()
+    static var viewModel = CanvasViewModel(noteDocument: NoteDocument.createTestData())
 
     static var previews: some View {
-        CanvasView(canvasViewModel: CanvasViewModel())
+        CanvasView(canvasViewModel: viewModel)
     }
 }

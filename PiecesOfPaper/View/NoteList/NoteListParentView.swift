@@ -41,8 +41,10 @@ struct NoteListParentView: View {
             toolbarItems
         }
         .fullScreenCover(isPresented: $showCanvasView) {
-            NavigationView {
-                CanvasView(canvasViewModel: CanvasViewModel())
+            if let path = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) {
+                NavigationStack {
+                    CanvasView(canvasViewModel: CanvasViewModel(path: path))
+                }
             }
         }
         .sheet(isPresented: $showListOrderSettingView) {
