@@ -12,6 +12,8 @@ import Foundation
 final class NoteViewModel: ObservableObject {
     @Published var displayNoteDocuments = [NoteDocument]()
     @Published var isShowLoading = true
+    @Published var documentToShare: NoteDocument?
+    @Published var documentToTag: NoteDocument?
     private var noteDocuments = [NoteDocument]()
     enum TargetDirectory: String {
         case inbox, archived, all
@@ -165,8 +167,9 @@ final class NoteViewModel: ObservableObject {
         let newDocument = NoteDocument(fileURL: newUrl, entity: entity)
         newDocument.save(to: newUrl, for: .forCreating) { [weak self] success in
             if success {
+                self?.cachedUrls.append(newUrl)
                 self?.noteDocuments.append(newDocument)
-                self?.displayNoteDocuments.append(newDocument)
+                self?.displayNoteDocuments.insert(newDocument, at: 0)
             }
         }
     }
@@ -174,6 +177,7 @@ final class NoteViewModel: ObservableObject {
     func delete(_ document: NoteDocument) {
         do {
             try FileManager.default.removeItem(at: document.fileURL)
+            cachedUrls = cachedUrls.filter { $0 != document.fileURL }
             noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
             displayNoteDocuments = Array(displayNoteDocuments.filter { $0.entity.id != document.entity.id })
         } catch {
@@ -190,6 +194,7 @@ final class NoteViewModel: ObservableObject {
             print("Could not archive: ", error.localizedDescription)
         }
 
+        cachedUrls = cachedUrls.filter { $0 != document.fileURL }
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
         displayNoteDocuments = Array(displayNoteDocuments.filter { $0.entity.id != document.entity.id })
     }
@@ -203,6 +208,7 @@ final class NoteViewModel: ObservableObject {
             print("Could not unarchive: ", error.localizedDescription)
         }
 
+        cachedUrls = cachedUrls.filter { $0 != document.fileURL }
         noteDocuments = Array(noteDocuments.filter { $0.entity.id != document.entity.id })
         displayNoteDocuments = Array(displayNoteDocuments.filter { $0.entity.id != document.entity.id })
     }
