@@ -10,18 +10,16 @@ import SwiftUI
 
 struct SideBarListView: View {
     @StateObject private var inboxNoteViewModel = NoteViewModel(targetDirectory: .inbox)
-    @StateObject private var allNoteViewModel = NoteViewModel(targetDirectory: .all)
     @StateObject private var archivedNoteViewModel = NoteViewModel(targetDirectory: .archived)
     @State private var selection: Page? = .inbox
     private enum Page: String, CaseIterable {
-        case inbox, all, trash
+        case inbox, trash
         case tag
         case setting
 
         var label: String {
             switch self {
             case .inbox: "Inbox"
-            case .all: "All"
             case .trash: "Trash"
             case .tag: "Tag List"
             case .setting: "Setting"
@@ -36,8 +34,6 @@ struct SideBarListView: View {
             switch selection {
             case .inbox:
                 NoteListParentView(viewModel: inboxNoteViewModel)
-            case .all:
-                NoteListParentView(viewModel: allNoteViewModel)
             case .trash:
                 NoteListParentView(viewModel: archivedNoteViewModel)
             case .tag:
@@ -55,10 +51,6 @@ struct SideBarListView: View {
             Section(header: Text("Folders")) {
                 NavigationLink(value: Page.inbox) {
                     Label(Page.inbox.label, systemImage: "tray")
-                }
-
-                NavigationLink(value: Page.all) {
-                    Label(Page.all.label, systemImage: "tray.full")
                 }
 
                 NavigationLink(value: Page.trash) {

@@ -16,7 +16,7 @@ final class NoteViewModel: ObservableObject {
     @Published var documentToTag: NoteDocument?
     private var noteDocuments = [NoteDocument]()
     enum TargetDirectory: String {
-        case inbox, archived, all
+        case inbox, archived
     }
 
     private var directory: TargetDirectory
@@ -112,10 +112,6 @@ final class NoteViewModel: ObservableObject {
             return inboxFileNames.map { inboxUrl.appendingPathComponent($0) }
         case .archived:
             return archivedFileNames.map { archivedUrl.appendingPathComponent($0) }
-        case .all:
-            let inboxUrls = inboxFileNames.map { inboxUrl.appendingPathComponent($0) }
-            let archivedUrls = archivedFileNames.map { archivedUrl.appendingPathComponent($0) }
-            return inboxUrls + archivedUrls
         }
     }
 
