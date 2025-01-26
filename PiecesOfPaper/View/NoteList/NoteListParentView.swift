@@ -11,14 +11,7 @@ import SwiftUI
 struct NoteListParentView: View {
     @ObservedObject private(set) var viewModel: NoteViewModel
     @Environment(\.scenePhase) private var scenePhase
-    @State private var showCanvasView = false
     @State private var showListOrderSettingView = false
-    @State private var showAlert = false
-    @State private var alertType: AlertType?
-
-    private enum AlertType {
-        case iCloudDenied, archive
-    }
 
     var body: some View {
         Group {
@@ -39,8 +32,8 @@ struct NoteListParentView: View {
             }
 
             guard !UserPreference().shouldGrantiCloud else {
-                alertType = .iCloudDenied
-                showAlert = true
+                viewModel.alertType = .iCloudDenied
+                viewModel.showAlert = true
                 return
             }
 
@@ -54,7 +47,7 @@ struct NoteListParentView: View {
         .toolbar {
             toolbarItems
         }
-        .fullScreenCover(isPresented: $showCanvasView) {
+        .fullScreenCover(isPresented: $viewModel.showCanvasView) {
             if let path = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) {
                 NavigationStack {
                     CanvasView(canvasViewModel: CanvasViewModel(path: path))
@@ -78,14 +71,16 @@ struct NoteListParentView: View {
             AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
         })
         .alert("",
-               isPresented: $showAlert,
-               presenting: alertType) { type in
+               isPresented: $viewModel.showAlert,
+               presenting: viewModel.alertType) { type in
                 switch type {
                 case .iCloudDenied:
                     iCloudButton
                     localStorageButton
                 case .archive:
                     archiveActionButton
+                case .error:
+                    Text("OK")
                 }
             } message: { type in
                 switch type {
@@ -98,6 +93,8 @@ struct NoteListParentView: View {
                         Are you sure you want to \(operationText) \(countText) notes?
                     """
                     return Text(alertText)
+                case let .error(error):
+                    return Text(error.localizedDescription)
                 }
         }
         .onReceive(
@@ -113,7 +110,7 @@ struct NoteListParentView: View {
             switch phase {
             case .active:
                 guard !UserPreference().shouldGrantiCloud else { return }
-                showCanvasView = true
+                viewModel.showCanvasView = true
             default:
                 break
             }
@@ -124,8 +121,8 @@ struct NoteListParentView: View {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             Menu {
                 Button {
-                    alertType = .archive
-                    showAlert = true
+                    viewModel.alertType = .archive
+                    viewModel.showAlert = true
                 } label: {
                     Label(viewModel.isTargetDirectoryArchived
                           ? "Move all to Inbox"
@@ -152,7 +149,7 @@ struct NoteListParentView: View {
                 Image(systemName: "ellipsis.circle")
             }
             Button {
-                showCanvasView = true
+                viewModel.showCanvasView = true
             } label: {
                 Image(systemName: "square.and.pencil")
             }

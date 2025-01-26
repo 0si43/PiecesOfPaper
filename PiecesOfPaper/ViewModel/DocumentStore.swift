@@ -56,11 +56,11 @@ final class DocumentStore: DocumentStoreProtocol {
     }
 }
 
-enum DocumentStoreError: Error {
+enum DocumentStoreError: LocalizedError {
     case fileNotExist(path: String)
     case fileOpenFailed(path: String)
 
-    var localizedDescription: String {
+    var errorDescription: String? {
         switch self {
         case .fileNotExist(let path):
             "File does not exist at \(path)."
