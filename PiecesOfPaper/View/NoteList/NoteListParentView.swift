@@ -10,6 +10,7 @@ import SwiftUI
 
 struct NoteListParentView: View {
     @ObservedObject private(set) var viewModel: NoteViewModel
+    @Environment(\.scenePhase) private var scenePhase
     @State private var showCanvasView = false
     @State private var showListOrderSettingView = false
     @State private var documentToShare: NoteDocument?
@@ -84,6 +85,14 @@ struct NoteListParentView: View {
                 await viewModel.incrementalFetch()
             }
         }
+        .onChange(of: scenePhase) { phase in
+            switch phase {
+            case .active:
+                showCanvasView = true
+            default:
+                break
+            }
+        }
     }
 
     private var toolbarItems: some ToolbarContent {
@@ -117,7 +126,7 @@ struct NoteListParentView: View {
                 Image(systemName: "ellipsis.circle")
             }
             Button {
-                openNewNote()
+                showCanvasView = true
             } label: {
                 Image(systemName: "square.and.pencil")
             }
@@ -166,10 +175,6 @@ struct NoteListParentView: View {
         }
 
         return UIActivityViewControllerWrapper(activityItems: [image])
-    }
-
-    private func openNewNote() {
-        showCanvasView = true
     }
 
     private var cancelButton: Alert.Button {

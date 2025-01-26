@@ -9,18 +9,10 @@
 import SwiftUI
 
 struct RootView: View {
-    @EnvironmentObject private var appViewModel: AppViewModel
-    @State private var showCanvasView = false
+    @StateObject private var appViewModel = AppViewModel()
 
     var body: some View {
         SideBarListView()
-        .fullScreenCover(isPresented: $showCanvasView) {
-            if let path = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) {
-                NavigationStack {
-                    CanvasView(canvasViewModel: CanvasViewModel(path: path))
-                }
-            }
-        }
         .onAppear {
             appViewModel.hasDrawingPlist = DrawingsPlistConverter.hasDrawingsPlist
             DrawingsPlistConverter.convert()
@@ -29,7 +21,6 @@ struct RootView: View {
                 appViewModel.iCloudDenying = true
                 return
             }
-            showCanvasView = true
         }
         .alert("", isPresented: $appViewModel.iCloudDenying) {
              Button("Use iCloud") {
@@ -47,6 +38,5 @@ struct RootView: View {
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
         RootView()
-            .environmentObject(AppViewModel())
     }
 }
