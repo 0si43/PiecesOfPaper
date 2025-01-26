@@ -62,6 +62,26 @@ struct SideBarListView: View {
                     Label(Page.tag.label, systemImage: "tag")
                 }
             }
+            Section(header: Text("Manage raw data\n(Open Files App)")) {
+                Button {
+                    if let path = FilePath.inboxUrl?.path(),
+                       let url = URL(string: "shareddocuments://" + path),
+                       UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
+                } label: {
+                    Label(Page.inbox.label, systemImage: "tray")
+                }
+                Button {
+                    if let path = FilePath.archivedUrl?.path(),
+                       let url = URL(string: "shareddocuments://" + path),
+                       UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
+                } label: {
+                    Label(Page.trash.label, systemImage: "trash")
+                }
+            }
             Section(header: Text("Setting")) {
                 NavigationLink(value: Page.setting) {
                     Label(Page.setting.label, systemImage: "gearshape")
