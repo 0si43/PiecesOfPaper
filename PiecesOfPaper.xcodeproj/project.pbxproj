@@ -38,6 +38,7 @@
 		A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */; };
 		A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E39274C8FA400C708A2 /* NoteDocument.swift */; };
 		A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E3B274CD88000C708A2 /* FilePath.swift */; };
+		A6BB3DCF2D460C7000FFCB62 /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BB3DCE2D460C7000FFCB62 /* TutorialView.swift */; };
 		A6C8DD072D3CC1E300D7D32F /* ListOrderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C8DD062D3CC1E300D7D32F /* ListOrderStore.swift */; };
 		A6C8DD092D3CEE5400D7D32F /* Notification+.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C8DD082D3CEE5400D7D32F /* Notification+.swift */; };
 		A6CADA51276752E600657E9E /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA50276752E600657E9E /* SettingView.swift */; };
@@ -96,6 +97,7 @@
 		A66E7513253538E00026B9A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		A6A16EC225B1673500DF323F /* PiecesOfPaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PiecesOfPaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6A16EC625B1673500DF323F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A6BB3DCE2D460C7000FFCB62 /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
 		A6C8DD062D3CC1E300D7D32F /* ListOrderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrderStore.swift; sourceTree = "<group>"; };
 		A6C8DD082D3CEE5400D7D32F /* Notification+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+.swift"; sourceTree = "<group>"; };
 		A6CADA50276752E600657E9E /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 		A6620E282748A01F00C708A2 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				A6BB3DCD2D460C5E00FFCB62 /* Tutorial */,
 				A6743E682765B8310075F138 /* Canvas */,
 				A6743E692765B8410075F138 /* NoteList */,
 				A6743E6A2765B8660075F138 /* Tag */,
@@ -222,6 +225,14 @@
 				A6A16EC625B1673500DF323F /* Info.plist */,
 			);
 			path = PiecesOfPaperTests;
+			sourceTree = "<group>";
+		};
+		A6BB3DCD2D460C5E00FFCB62 /* Tutorial */ = {
+			isa = PBXGroup;
+			children = (
+				A6BB3DCE2D460C7000FFCB62 /* TutorialView.swift */,
+			);
+			path = Tutorial;
 			sourceTree = "<group>";
 		};
 		A6CADA4F276752C600657E9E /* Setting */ = {
@@ -411,6 +422,7 @@
 				A63C9593276444CF00822461 /* ListOrder.swift in Sources */,
 				A6C8DD092D3CEE5400D7D32F /* Notification+.swift in Sources */,
 				A6C8DD072D3CC1E300D7D32F /* ListOrderStore.swift in Sources */,
+				A6BB3DCF2D460C7000FFCB62 /* TutorialView.swift in Sources */,
 				A63C95972764589F00822461 /* ListOrderSettingViewModel.swift in Sources */,
 				A6CADA51276752E600657E9E /* SettingView.swift in Sources */,
 				A63C9590275E111500822461 /* AddTagFooter.swift in Sources */,

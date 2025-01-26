@@ -15,6 +15,7 @@ struct SideBarListView: View {
     private enum Page: String, CaseIterable {
         case inbox, trash
         case tag
+        case tutorial
         case setting
 
         var label: String {
@@ -22,6 +23,7 @@ struct SideBarListView: View {
             case .inbox: "Inbox"
             case .trash: "Trash"
             case .tag: "Tag List"
+            case .tutorial: "Quick Tutorial"
             case .setting: "Setting"
             }
         }
@@ -38,6 +40,8 @@ struct SideBarListView: View {
                 NoteListParentView(viewModel: archivedNoteViewModel)
             case .tag:
                 TagList()
+            case .tutorial:
+                TutorialView()
             case .setting:
                 SettingView()
             default:
@@ -83,17 +87,16 @@ struct SideBarListView: View {
                 }
             }
             Section(header: Text("Setting")) {
+                NavigationLink(value: Page.tutorial) {
+                    Label(Page.tutorial.label, systemImage: "gearshape")
+                }
+            }
+            Section(header: Text("Setting")) {
                 NavigationLink(value: Page.setting) {
                     Label(Page.setting.label, systemImage: "gearshape")
                 }
             }
         }
         .navigationTitle("Pieces of Paper")
-    }
-}
-
-struct SideBarListView_Previews: PreviewProvider {
-    static var previews: some View {
-        SideBarListView()
     }
 }
