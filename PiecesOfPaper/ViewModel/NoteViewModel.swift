@@ -104,18 +104,6 @@ final class NoteViewModel: ObservableObject {
 
     // MARK: - helper methods for fetch
 
-    private func open(fileUrl: URL) async {
-        guard FileManager.default.fileExists(atPath: fileUrl.path) else { return }
-        let document = NoteDocument(fileURL: fileUrl)
-        let success = await document.open()
-        if success {
-            noteDocuments.append(document)
-        } else {
-            // FIXME: - somehow notify failure to user
-        }
-        await document.close()
-    }
-
     private var reorderDocuments: [NoteDocument] {
         var notes = noteDocuments
         listOrder.filterBy.forEach { filteringTag in
