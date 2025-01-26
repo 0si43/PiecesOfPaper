@@ -46,7 +46,7 @@ struct TutorialView: View {
             - You can use infinite canvas by default
             - Write something on the bottom-right corner of your note to expand the canvas
             - Toggle this feature on/off in settings
-            
+
             **Important Notes**
 
             - I have identified an issue where files created on iCloud may become inaccessible. While the exact conditions are unknown, this can potentially cause the entire app to hang.

@@ -98,19 +98,16 @@ final class NoteViewModel: ObservableObject {
 
     /// get file path array (iCloud or local storage)
     private func getFileUrls() -> [URL] {
-        guard let inboxUrl = FilePath.inboxUrl,
-              var inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: inboxUrl.path),
-              let archivedUrl = FilePath.archivedUrl,
-              var archivedFileNames =
-                try? FileManager.default.contentsOfDirectory(atPath: archivedUrl.path) else { return [] }
-
-        inboxFileNames = inboxFileNames.filter { $0.hasSuffix(".plist") }
-        archivedFileNames = archivedFileNames.filter { $0.hasSuffix(".plist") }
-
         switch directory {
         case .inbox:
+            guard let inboxUrl = FilePath.inboxUrl,
+                  var inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: inboxUrl.path) else { return [] }
+            inboxFileNames = inboxFileNames.filter { $0.hasSuffix(".plist") }
             return inboxFileNames.map { inboxUrl.appendingPathComponent($0) }
         case .archived:
+            guard let archivedUrl = FilePath.archivedUrl,
+                  var archivedFileNames = try? FileManager.default.contentsOfDirectory(atPath: archivedUrl.path) else { return [] }
+            archivedFileNames = archivedFileNames.filter { $0.hasSuffix(".plist") }
             return archivedFileNames.map { archivedUrl.appendingPathComponent($0) }
         }
     }
