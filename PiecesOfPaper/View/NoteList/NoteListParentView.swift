@@ -13,8 +13,6 @@ struct NoteListParentView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var showCanvasView = false
     @State private var showListOrderSettingView = false
-    @State private var documentToShare: NoteDocument?
-    @State private var documentToTag: NoteDocument?
     @State private var showAlert = false
     @State private var alertType: AlertType?
 
@@ -31,7 +29,7 @@ struct NoteListParentView: View {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {
-                    NoteScrollView(documents: $viewModel.displayNoteDocuments, parent: self)
+                    NoteScrollView(viewModel: viewModel)
                 }
             }
         }
@@ -68,10 +66,10 @@ struct NoteListParentView: View {
                 ListOrderSettingView(listOrder: $viewModel.listOrder)
             }
         }
-        .sheet(item: $documentToShare) { document in
+        .sheet(item: $viewModel.documentToShare) { document in
             activityViewController(document: document)
         }
-        .sheet(item: $documentToTag,
+        .sheet(item: $viewModel.documentToTag,
                onDismiss: {
                    Task {
                        await viewModel.incrementalFetch()
@@ -163,14 +161,13 @@ struct NoteListParentView: View {
 
     /// This view is for scrolling to the bottom
     private struct NoteScrollView: View {
-        @Binding var documents: [NoteDocument]
-        var parent: NoteListViewParent
+        @ObservedObject private(set) var viewModel: NoteViewModel
 
         var body: some View {
             ScrollViewReader { proxy in
                 ScrollView {
                     Spacer(minLength: 30.0)
-                    NoteListView(documents: $documents, parent: parent)
+                    NoteListView(viewModel: viewModel)
                 }
                 .padding([.leading, .trailing])
                 .navigationBarTitleDisplayMode(.inline)
@@ -190,7 +187,7 @@ struct NoteListParentView: View {
         }
 
         func scrollToBottom(proxy: ScrollViewProxy) {
-            proxy.scrollTo(documents.endIndex - 1, anchor: .bottom)
+            proxy.scrollTo(viewModel.displayNoteDocuments.endIndex - 1, anchor: .bottom)
         }
     }
 
@@ -240,38 +237,6 @@ struct NoteListParentView: View {
                 : "Move all to Trash"
             )
         }
-    }
-}
-
-// MARK: - NoteListViewParent
-
-extension NoteListParentView: NoteListViewParent {
-    func getTagToNote(document: NoteDocument) -> [TagEntity] {
-        viewModel.getTagToNote(document: document)
-    }
-
-    func duplicate(_ document: NoteDocument) {
-        viewModel.duplicate(document)
-    }
-
-    func archive(_ document: NoteDocument) {
-        viewModel.archive(document)
-    }
-
-    func unarchive(_ document: NoteDocument) {
-        viewModel.unarchive(document)
-    }
-
-    func delete(_ document: NoteDocument) {
-        viewModel.delete(document)
-    }
-
-    func showActivityView(_ document: NoteDocument) {
-        documentToShare = document
-    }
-
-    func showAddTagView(_ document: NoteDocument) {
-        documentToTag = document
     }
 }
 
