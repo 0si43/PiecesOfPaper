@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct SideBarListView: View {
-    @StateObject private var inboxNoteViewModel = NoteViewModel(targetDirectory: .inbox)
-    @StateObject private var archivedNoteViewModel = NoteViewModel(targetDirectory: .archived)
+    @StateObject private var inboxNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .inbox))
+    @StateObject private var archivedNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .archived))
     @State private var selection: Page? = .inbox
     private enum Page: String, CaseIterable {
         case inbox, trash

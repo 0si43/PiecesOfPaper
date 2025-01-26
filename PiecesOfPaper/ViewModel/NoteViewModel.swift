@@ -15,31 +15,28 @@ final class NoteViewModel: ObservableObject {
     @Published var documentToShare: NoteDocument?
     @Published var documentToTag: NoteDocument?
     private var noteDocuments = [NoteDocument]()
-    enum TargetDirectory: String {
-        case inbox, archived
-    }
 
-    private var directory: TargetDirectory
     var isTargetDirectoryInbox: Bool {
-        directory == .inbox
+        documentStore.directory == .inbox
     }
 
     var isTargetDirectoryArchived: Bool {
-        directory == .archived
+        documentStore.directory == .archived
     }
 
+    private var documentStore: DocumentStoreProtocol
     private var listOrderStore: ListOrderStoreProtocol
     var listOrder: ListOrder {
         didSet {
-            listOrderStore.set(directoryName: directory.rawValue, listOrder: listOrder)
+            listOrderStore.set(directoryName: documentStore.directory.rawValue, listOrder: listOrder)
             displayReorderDocuments()
         }
     }
 
-    init(targetDirectory: TargetDirectory, listOrderStore: ListOrderStoreProtocol = ListOrderStore()) {
-        self.directory = targetDirectory
+    init(documentStore: DocumentStoreProtocol, listOrderStore: ListOrderStoreProtocol = ListOrderStore()) {
+        self.documentStore = documentStore
         self.listOrderStore = listOrderStore
-        self.listOrder = listOrderStore.get(directoryName: directory.rawValue)
+        self.listOrder = listOrderStore.get(directoryName: documentStore.directory.rawValue)
     }
 
     // MARK: - fetch
@@ -64,7 +61,7 @@ final class NoteViewModel: ObservableObject {
 
     private var cachedUrls: [URL] = []
     private func fetchChangedFileUrls() -> (addedUrls: [URL], removedUrls: [URL]) {
-        let latestUrls = getFileUrls()
+        let latestUrls = documentStore.getFileUrls()
         let oldSet = Set(cachedUrls)
         let latestSet = Set(latestUrls)
         let added = latestSet.subtracting(oldSet)
@@ -74,13 +71,24 @@ final class NoteViewModel: ObservableObject {
     }
 
     private func updateDocuments(addedUrls: [URL], removedUrls: [URL]) async {
-        await withTaskGroup(of: Void.self) { [weak self] group in
-            guard let self = self else { return }
-            for url in addedUrls {
-                group.addTask {
-                    await self.open(fileUrl: url)
+        do {
+            noteDocuments += try await withThrowingTaskGroup(of: NoteDocument.self) { [weak self] group in
+                guard let self = self else { return [] }
+                var documents: [NoteDocument] = []
+                for url in addedUrls {
+                    group.addTask {
+                        try await self.documentStore.open(fileUrl: url)
+                    }
                 }
+
+                for try await document in group {
+                    documents.append(document)
+                }
+
+                return documents
             }
+        } catch {
+            // FIXME: -
         }
 
         removedUrls.forEach { url in
@@ -95,22 +103,6 @@ final class NoteViewModel: ObservableObject {
     }
 
     // MARK: - helper methods for fetch
-
-    /// get file path array (iCloud or local storage)
-    private func getFileUrls() -> [URL] {
-        switch directory {
-        case .inbox:
-            guard let inboxUrl = FilePath.inboxUrl,
-                  var inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: inboxUrl.path) else { return [] }
-            inboxFileNames = inboxFileNames.filter { $0.hasSuffix(".plist") }
-            return inboxFileNames.map { inboxUrl.appendingPathComponent($0) }
-        case .archived:
-            guard let archivedUrl = FilePath.archivedUrl,
-                  var archivedFileNames = try? FileManager.default.contentsOfDirectory(atPath: archivedUrl.path) else { return [] }
-            archivedFileNames = archivedFileNames.filter { $0.hasSuffix(".plist") }
-            return archivedFileNames.map { archivedUrl.appendingPathComponent($0) }
-        }
-    }
 
     private func open(fileUrl: URL) async {
         guard FileManager.default.fileExists(atPath: fileUrl.path) else { return }
