@@ -55,8 +55,7 @@ final class NoteViewModel: ObservableObject {
         }
         isShowLoading = true
         let (added, removed) = fetchChangedFileUrls()
-        // FIXME: - デバッグ終わったら消す
-        print("added: \(added.count), removed: \(removed.count)")
+//        print("added: \(added.count), removed: \(removed.count)")
         await updateDocuments(addedUrls: added, removedUrls: removed)
         displayReorderDocuments()
     }
