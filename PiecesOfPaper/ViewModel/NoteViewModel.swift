@@ -12,6 +12,14 @@ import Foundation
 final class NoteViewModel: ObservableObject {
     @Published var displayNoteDocuments = [NoteDocument]()
     @Published var isShowLoading = true
+    @Published var showCanvasView = false
+    @Published var showAlert = false
+    @Published var showAlertOnCanvas = false
+    @Published var alertType: AlertType?
+    enum AlertType {
+        case iCloudDenied, archive, error(Error)
+    }
+
     @Published var documentToShare: NoteDocument?
     @Published var documentToTag: NoteDocument?
     private var noteDocuments = [NoteDocument]()
