@@ -15,7 +15,12 @@ struct NoteListParentView: View {
     @State private var showListOrderSettingView = false
     @State private var documentToShare: NoteDocument?
     @State private var documentToTag: NoteDocument?
-    @State private var showArchiveAlert = false
+    @State private var showAlert = false
+    @State private var alertType: AlertType?
+
+    private enum AlertType {
+        case iCloudDenied, archive
+    }
 
     var body: some View {
         Group {
@@ -31,6 +36,16 @@ struct NoteListParentView: View {
             }
         }
         .task {
+            if DrawingsPlistConverter.hasDrawingsPlist {
+                DrawingsPlistConverter.convert()
+            }
+
+            guard !UserPreference().shouldGrantiCloud else {
+                alertType = .iCloudDenied
+                showAlert = true
+                return
+            }
+
             await viewModel.incrementalFetch()
         }
         .refreshable {
@@ -64,17 +79,28 @@ struct NoteListParentView: View {
                }, content: { document in
             AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
         })
-        .alert(isPresented: $showArchiveAlert) { () -> Alert in
-            let operationText = viewModel.isTargetDirectoryArchived ? "unarchived" : "archived"
-            let countText = viewModel.displayNoteDocuments.count
-            let alertText = """
-                Are you sure you want to \(operationText) \(countText) notes?
-            """
-            return Alert(
-                title: Text(alertText),
-                primaryButton: cancelButton,
-                secondaryButton: archiveActionButton
-            )
+        .alert("",
+               isPresented: $showAlert,
+               presenting: alertType) { type in
+                switch type {
+                case .iCloudDenied:
+                    iCloudButton
+                    localStorageButton
+                case .archive:
+                    archiveActionButton
+                }
+            } message: { type in
+                switch type {
+                case .iCloudDenied:
+                    return Text("The app could not access your iCloud Drive. You should change setting")
+                case .archive:
+                    let operationText = viewModel.isTargetDirectoryArchived ? "unarchived" : "archived"
+                    let countText = viewModel.displayNoteDocuments.count
+                    let alertText = """
+                        Are you sure you want to \(operationText) \(countText) notes?
+                    """
+                    return Text(alertText)
+                }
         }
         .onReceive(
             NotificationCenter.default.publisher(
@@ -88,6 +114,7 @@ struct NoteListParentView: View {
         .onChange(of: scenePhase) { phase in
             switch phase {
             case .active:
+                guard !UserPreference().shouldGrantiCloud else { return }
                 showCanvasView = true
             default:
                 break
@@ -99,7 +126,8 @@ struct NoteListParentView: View {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             Menu {
                 Button {
-                    showArchiveAlert = true
+                    alertType = .archive
+                    showAlert = true
                 } label: {
                     Label(viewModel.isTargetDirectoryArchived
                           ? "Move all to Inbox"
@@ -177,22 +205,41 @@ struct NoteListParentView: View {
         return UIActivityViewControllerWrapper(activityItems: [image])
     }
 
-    private var cancelButton: Alert.Button {
-        .default(Text("Cancel"))
+    // MARK: - Alert Components
+
+    private var iCloudButton: some View {
+        Button {
+            guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+            UIApplication.shared.open(url)
+        } label: {
+            Text("Use iCloud")
+        }
     }
-    private var archiveActionButton: Alert.Button {
-        .destructive(
+
+    private var localStorageButton: some View {
+        Button {
+            var userPreference = UserPreference()
+            userPreference.enablediCloud = false
+            Task {
+                await viewModel.incrementalFetch()
+            }
+        } label: {
+            Text("Use device storage")
+        }
+    }
+
+    private var archiveActionButton: some View {
+        Button(role: .destructive) {
+            viewModel.isTargetDirectoryArchived
+            ? viewModel.allUnarchive()
+            : viewModel.allArchive()
+        } label: {
             Text(
                 viewModel.isTargetDirectoryArchived
                 ? "Move all to Inbox"
                 : "Move all to Trash"
-            ),
-            action: {
-                viewModel.isTargetDirectoryArchived
-                ? viewModel.allUnarchive()
-                : viewModel.allArchive()
-            }
-        )
+            )
+        }
     }
 }
 
