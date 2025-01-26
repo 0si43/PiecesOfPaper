@@ -12,7 +12,7 @@ import StoreKit
 import LinkPresentation
 
 struct CanvasView: View {
-    @ObservedObject private(set) var canvasViewModel: CanvasViewModel
+    @StateObject var canvasViewModel: CanvasViewModel
     @Environment(\.dismiss) private var dismiss
     @AppStorage("review_requested") private var reviewRequested = false
     @State private var canvasView = PKCanvasView()
@@ -39,8 +39,7 @@ struct CanvasView: View {
                             toolPicker: $toolPicker,
                             saveAction: canvasViewModel.save)
         .onAppear {
-            guard let drawing = canvasViewModel.document?.entity.drawing else { return }
-            canvasView.drawing = drawing
+            canvasView.drawing = canvasViewModel.document.entity.drawing
             hideExceptPaper = true
         }
         .gesture(tapGesture)
@@ -55,56 +54,42 @@ struct CanvasView: View {
                    setToolPickerVisible(true)
                },
                content: { activityViewController })
-        .sheet(isPresented: $canvasViewModel.showTagList,
-               onDismiss: {
-                   setToolPickerVisible(true)
-               },
-               content: {
-                   AddTagView(viewModel: TagListToNoteViewModel(noteDocument: canvasViewModel.document))
-               }
-        )
         .alert("", isPresented: $showUnsavedAlert) {
-             Button(role: .destructive) {
-                 dismiss()
-             } label: {
-                 Text("Discard")
-             }
-             Button("Cancel") {
-
-             }
+            Button {
+                canvasViewModel.document.entity.drawing = canvasView.drawing
+                canvasViewModel.save()
+                closeCanvas()
+            } label: {
+                Text("Save")
+            }
+            Button(role: .destructive) {
+                dismiss()
+            } label: {
+                Text("Discard")
+            }
          } message: {
-             Text("Discard changes?")
+             Text("Save changes?")
         }
     }
 
     private var toolbarItemGroup: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
-            Button(action: archive) {
-                Image(systemName: "trash").foregroundColor(.red)
+            Button {
+                canvasViewModel.showDrawingInformation.toggle()
+            } label: {
+                Image(systemName: "info.circle")
             }
-            Button(action: {
-                setToolPickerVisible(false)
-                canvasViewModel.showTagList.toggle()
-                },
-                label: {
-                    Image(systemName: "tag.circle")
-                })
-            Button(action: { canvasViewModel.showDrawingInformation.toggle() },
-                   label: { Image(systemName: "info.circle") })
             .popover(isPresented: $canvasViewModel.showDrawingInformation) {
-                if let document = canvasViewModel.document {
-                    NoteInformationView(document: document)
-                } else {
-                    EmptyView()
-                }
+                NoteInformationView(document: canvasViewModel.document)
             }
-            Button(action: {
+            Button {
                 setToolPickerVisible(false)
                 isShowActivityView.toggle()
-            },
-                   label: { Image(systemName: "square.and.arrow.up") })
-            Button(action: close) {
-                Image(systemName: "tray.full")
+            } label: {
+                Image(systemName: "square.and.arrow.up")
+            }
+            Button(action: done) {
+                Text("Done")
             }
         }
     }
@@ -113,9 +98,8 @@ struct CanvasView: View {
         var image = UIImage()
         let trait = UITraitCollection(userInterfaceStyle: .light)
         trait.performAsCurrent {
-            guard let drawing = canvasViewModel.document?.entity.drawing else { return }
-            image = drawing.image(
-                from: drawing.bounds,
+            image = canvasViewModel.document.entity.drawing.image(
+                from: canvasViewModel.document.entity.drawing.bounds,
                 scale: UIScreen.main.scale
             )
         }
@@ -123,26 +107,17 @@ struct CanvasView: View {
         return UIActivityViewControllerWrapper(activityItems: [image])
     }
 
-    private func archive() {
-        if !UserPreference().enabledAutoSave {
-            guard let document = canvasViewModel.document, !document.entity.drawing.strokes.isEmpty else {
-                dismiss()
-                return
-            }
+    private func done() {
+        if canvasView.drawing != canvasViewModel.document.entity.drawing {
             setToolPickerVisible(false)
             showUnsavedAlert = true
             return
         }
-        canvasViewModel.archive()
-        dismiss()
-        reviewRequest()
+
+        closeCanvas()
     }
 
-    private func close() {
-        if !UserPreference().enabledAutoSave {
-            canvasViewModel.save()
-        }
-
+    private func closeCanvas() {
         dismiss()
         reviewRequest()
         NotificationCenter.default.post(name: .dismissCanvasView, object: nil)
@@ -159,9 +134,9 @@ struct CanvasView: View {
 }
 
 struct CanvasView_Previews: PreviewProvider {
-    static var viewModel = CanvasViewModel()
+    static var viewModel = CanvasViewModel(noteDocument: NoteDocument.createTestData())
 
     static var previews: some View {
-        CanvasView(canvasViewModel: CanvasViewModel())
+        CanvasView(canvasViewModel: viewModel)
     }
 }

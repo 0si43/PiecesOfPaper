@@ -9,21 +9,21 @@
 import SwiftUI
 
 struct SideBarListView: View {
-    @StateObject private var inboxNoteViewModel = NoteViewModel(targetDirectory: .inbox)
-    @StateObject private var allNoteViewModel = NoteViewModel(targetDirectory: .all)
-    @StateObject private var archivedNoteViewModel = NoteViewModel(targetDirectory: .archived)
+    @StateObject private var inboxNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .inbox))
+    @StateObject private var archivedNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .archived))
     @State private var selection: Page? = .inbox
     private enum Page: String, CaseIterable {
-        case inbox, all, trash
+        case inbox, trash
         case tag
+        case tutorial
         case setting
-        
+
         var label: String {
             switch self {
             case .inbox: "Inbox"
-            case .all: "All"
             case .trash: "Trash"
             case .tag: "Tag List"
+            case .tutorial: "Quick Tutorial"
             case .setting: "Setting"
             }
         }
@@ -36,12 +36,12 @@ struct SideBarListView: View {
             switch selection {
             case .inbox:
                 NoteListParentView(viewModel: inboxNoteViewModel)
-            case .all:
-                NoteListParentView(viewModel: allNoteViewModel)
             case .trash:
                 NoteListParentView(viewModel: archivedNoteViewModel)
             case .tag:
                 TagList()
+            case .tutorial:
+                TutorialView()
             case .setting:
                 SettingView()
             default:
@@ -57,10 +57,6 @@ struct SideBarListView: View {
                     Label(Page.inbox.label, systemImage: "tray")
                 }
 
-                NavigationLink(value: Page.all) {
-                    Label(Page.all.label, systemImage: "tray.full")
-                }
-
                 NavigationLink(value: Page.trash) {
                     Label(Page.trash.label, systemImage: "trash")
                 }
@@ -70,6 +66,31 @@ struct SideBarListView: View {
                     Label(Page.tag.label, systemImage: "tag")
                 }
             }
+            Section(header: Text("Manage raw data\n(Open Files App)")) {
+                Button {
+                    if let path = FilePath.inboxUrl?.path(),
+                       let url = URL(string: "shareddocuments://" + path),
+                       UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
+                } label: {
+                    Label(Page.inbox.label, systemImage: "tray")
+                }
+                Button {
+                    if let path = FilePath.archivedUrl?.path(),
+                       let url = URL(string: "shareddocuments://" + path),
+                       UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
+                } label: {
+                    Label(Page.trash.label, systemImage: "trash")
+                }
+            }
+            Section(header: Text("Setting")) {
+                NavigationLink(value: Page.tutorial) {
+                    Label(Page.tutorial.label, systemImage: "gearshape")
+                }
+            }
             Section(header: Text("Setting")) {
                 NavigationLink(value: Page.setting) {
                     Label(Page.setting.label, systemImage: "gearshape")
@@ -77,11 +98,5 @@ struct SideBarListView: View {
             }
         }
         .navigationTitle("Pieces of Paper")
-    }
-}
-
-struct SideBarListView_Previews: PreviewProvider {
-    static var previews: some View {
-        SideBarListView()
     }
 }

@@ -7,32 +7,25 @@
 //
 
 import SwiftUI
-import PencilKit
-
-protocol NoteListViewParent {
-    func getTagToNote(document: NoteDocument) -> [TagEntity]
-    func duplicate(_ document: NoteDocument)
-    func archive(_ document: NoteDocument)
-    func unarchive(_ document: NoteDocument)
-    func delete(_ document: NoteDocument)
-    func showActivityView(_ document: NoteDocument)
-    func showAddTagView(_ document: NoteDocument)
-}
 
 struct NoteListView: View {
-    private(set) var documents: [NoteDocument]
-    private(set) var parent: NoteListViewParent
+    @ObservedObject private(set) var viewModel: NoteViewModel
     private let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
 
     var body: some View {
         LazyVGrid(columns: [gridItem]) {
-            ForEach((0..<documents.endIndex), id: \.self) { index in
+            ForEach((0..<viewModel.displayNoteDocuments.endIndex), id: \.self) { index in
                 VStack {
-                    NoteView(document: documents[index])
+                    NoteView(document: $viewModel.displayNoteDocuments[index])
                     .contextMenu {
-                        contextMenu(document: documents[index])
+                        contextMenu(document: viewModel.displayNoteDocuments[index])
                     }
-                    TagHStack(tags: parent.getTagToNote(document: documents[index]))
+                    NoteListTagHStack(
+                        tags: viewModel.getTagToNote(document: viewModel.displayNoteDocuments[index]),
+                        action: {
+                            viewModel.documentToTag = viewModel.displayNoteDocuments[index]
+                        }
+                    )
                         .padding(.horizontal)
                 }
             }
@@ -42,46 +35,38 @@ struct NoteListView: View {
     func contextMenu(document: NoteDocument) -> some View {
         Group {
             Button {
-                parent.duplicate(document)
+                viewModel.duplicate(document)
             } label: {
                 Label("Duplicate", systemImage: "doc.on.doc")
             }
             if document.isArchived {
                 Button {
-                    parent.unarchive(document)
+                    viewModel.unarchive(document)
                 } label: {
                     Label("Move to Inbox", systemImage: "tray")
                 }
                 Button(role: .destructive) {
-                    parent.delete(document)
+                    viewModel.delete(document)
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
             } else {
                 Button {
-                    parent.archive(document)
+                    viewModel.archive(document)
                 } label: {
                     Label("Move to Trash", systemImage: "trash")
                 }
             }
             Button {
-                parent.showActivityView(document)
+                viewModel.documentToShare = document
             } label: {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             Button {
-                parent.showAddTagView(document)
+                viewModel.documentToTag = document
             } label: {
                 Label("Tag", systemImage: "tag")
             }
         }
     }
 }
-
- struct NoteListView_Previews: PreviewProvider {
-     static var parent = NoteListParentView(viewModel: NoteViewModel(targetDirectory: .inbox))
-     static var array = Array(repeating: NoteDocument.createTestData(), count: 9)
-     static var previews: some View {
-         NoteListView(documents: array, parent: parent)
-    }
- }
