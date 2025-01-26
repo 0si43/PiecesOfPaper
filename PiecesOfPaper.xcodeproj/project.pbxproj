@@ -39,6 +39,7 @@
 		A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E39274C8FA400C708A2 /* NoteDocument.swift */; };
 		A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E3B274CD88000C708A2 /* FilePath.swift */; };
 		A6BB3DCF2D460C7000FFCB62 /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BB3DCE2D460C7000FFCB62 /* TutorialView.swift */; };
+		A6BB3DD12D4639DA00FFCB62 /* DocumentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BB3DD02D4639DA00FFCB62 /* DocumentStore.swift */; };
 		A6C8DD072D3CC1E300D7D32F /* ListOrderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C8DD062D3CC1E300D7D32F /* ListOrderStore.swift */; };
 		A6C8DD092D3CEE5400D7D32F /* Notification+.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C8DD082D3CEE5400D7D32F /* Notification+.swift */; };
 		A6CADA51276752E600657E9E /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA50276752E600657E9E /* SettingView.swift */; };
@@ -98,6 +99,7 @@
 		A6A16EC225B1673500DF323F /* PiecesOfPaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PiecesOfPaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6A16EC625B1673500DF323F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6BB3DCE2D460C7000FFCB62 /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
+		A6BB3DD02D4639DA00FFCB62 /* DocumentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentStore.swift; sourceTree = "<group>"; };
 		A6C8DD062D3CC1E300D7D32F /* ListOrderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrderStore.swift; sourceTree = "<group>"; };
 		A6C8DD082D3CEE5400D7D32F /* Notification+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+.swift"; sourceTree = "<group>"; };
 		A6CADA50276752E600657E9E /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				A6620E2B2748ABE400C708A2 /* CanvasViewModel.swift */,
 				A62EEAF32732517600D513B8 /* NoteViewModel.swift */,
 				A6C8DD062D3CC1E300D7D32F /* ListOrderStore.swift */,
+				A6BB3DD02D4639DA00FFCB62 /* DocumentStore.swift */,
 				A63C957B275C8FD900822461 /* TagListViewModel.swift */,
 				A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */,
 				A63C95962764589F00822461 /* ListOrderSettingViewModel.swift */,
@@ -442,6 +445,7 @@
 				A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */,
 				A6484FD6272E63B000676ED8 /* NoteListView.swift in Sources */,
 				A6CADA532767581700657E9E /* SettingViewModel.swift in Sources */,
+				A6BB3DD12D4639DA00FFCB62 /* DocumentStore.swift in Sources */,
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,
 				A6CADA5527675D8500657E9E /* UserPreference.swift in Sources */,
 				A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */,

@@ -239,9 +239,3 @@ struct NoteListParentView: View {
         }
     }
 }
-
-struct Notes_Previews: PreviewProvider {
-    static var previews: some View {
-        NoteListParentView(viewModel: NoteViewModel(targetDirectory: .inbox))
-    }
-}
