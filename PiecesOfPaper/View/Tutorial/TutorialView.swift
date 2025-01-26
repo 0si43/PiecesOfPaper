@@ -56,10 +56,10 @@ struct TutorialView: View {
             **FAQ**
 
             Q: Is this app free?
-            A: Yes, it's **free**. In fact, all the source code is publicly available.
+            A: Yes, it's **free**. In fact, all the source code is [publicly available](https://github.com/0si43/PiecesOfPaper).
 
             Q: Where should I report bugs?
-            A: Please create an issue on [GitHub Repository](https://github.com/0si43/PiecesOfPaper) . However, I cannot promise to fix every issue (as this is a free app!). If you're a developer, I'd be delighted to receive your pull requests!😁
+            A: Please create an issue on [GitHub Repository](https://github.com/0si43/PiecesOfPaper). However, I cannot promise to fix every issue (as this is a free app!). If you're a developer, I'd be delighted to receive your pull requests!😁
 
             Q: This app's bug ruined my notes! I worked hard on those notes and now they're gone! This is terrible!
             A: Sorry for your inconvenience. Please note that Pieces of Paper is developed by an individual developer and offered as a free app.
