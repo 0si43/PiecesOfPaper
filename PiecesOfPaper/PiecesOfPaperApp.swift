@@ -9,6 +9,8 @@
 import SwiftUI
 import PencilKit
 
+// test
+
 @main
 struct PiecesOfPaperApp: App {
     @StateObject private var appViewModel = AppViewModel()
