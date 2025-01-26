@@ -64,7 +64,7 @@ struct TutorialView: View {
             Q: This app's bug ruined my notes! I worked hard on those notes and now they're gone! This is terrible!
             A: Sorry for your inconvenience. Please note that Pieces of Paper is developed by an individual developer and offered as a free app.
 
-               While I'm confident in the app's usability, I cannot guarantee 100% stability. For important documents, I cannot take responsibility for any data loss. I recommend regularly exporting your work as image files or using a more reliable app for critical documents.
+            While I'm confident in the app's usability, I cannot guarantee 100% stability. For important documents, I cannot take responsibility for any data loss. I recommend regularly exporting your work as image files or using a more reliable app for critical documents.
             """)
             .padding()
         }
