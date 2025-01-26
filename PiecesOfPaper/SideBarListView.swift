@@ -12,6 +12,8 @@ struct SideBarListView: View {
     @StateObject private var inboxNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .inbox))
     @StateObject private var archivedNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .archived))
     @State private var selection: Page? = .inbox
+    @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
+
     private enum Page: String, CaseIterable {
         case inbox, trash
         case tag
@@ -30,7 +32,7 @@ struct SideBarListView: View {
     }
 
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             sideBarList
         } detail: {
             switch selection {
@@ -86,9 +88,9 @@ struct SideBarListView: View {
                     Label(Page.trash.label, systemImage: "trash")
                 }
             }
-            Section(header: Text("Setting")) {
+            Section(header: Text("Tutorial")) {
                 NavigationLink(value: Page.tutorial) {
-                    Label(Page.tutorial.label, systemImage: "gearshape")
+                    Label(Page.tutorial.label, systemImage: "text.document")
                 }
             }
             Section(header: Text("Setting")) {
