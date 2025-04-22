@@ -40,6 +40,7 @@ struct CanvasView: View {
                             saveAction: canvasViewModel.save)
         .onAppear {
             canvasView.drawing = canvasViewModel.document.entity.drawing
+            initialContentSize()
             hideExceptPaper = true
         }
         .gesture(tapGesture)
@@ -70,6 +71,33 @@ struct CanvasView: View {
          } message: {
              Text("Save changes?")
         }
+    }
+
+    // MARK: - Window Adjustment
+
+    private var isDrawingWiderThanWindow: Bool {
+        UIScreen.main.bounds.width < canvasView.drawing.bounds.maxX
+    }
+
+    private var isDrawingHigherThanWindow: Bool {
+        UIScreen.main.bounds.height < canvasView.drawing.bounds.maxY
+    }
+
+    private func initialContentSize() {
+        guard !canvasView.drawing.bounds.isNull else { return }
+
+        if isDrawingWiderThanWindow, isDrawingHigherThanWindow {
+            canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
+                                           height: canvasView.drawing.bounds.maxY)
+        } else if isDrawingWiderThanWindow, !isDrawingHigherThanWindow {
+            canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
+                                           height: UIScreen.main.bounds.height)
+        } else if !isDrawingWiderThanWindow, isDrawingHigherThanWindow {
+            canvasView.contentSize = .init(width: UIScreen.main.bounds.width,
+                                           height: canvasView.drawing.bounds.maxY)
+        }
+
+        canvasView.contentOffset = .zero
     }
 
     private var toolbarItemGroup: ToolbarItemGroup<some View> {
