@@ -20,7 +20,7 @@ Pieces of Paper is a minimalist note-taking app specifically designed for quick 
 [![Download_on_the_App_Store_Badge](./docs/Download_on_the_App_Store_Badge.svg)](https://apps.apple.com/jp/app/like-a-paper/id1511690088#?platform=ipad)
 
 ## Technical Details
-This app serves as a practical implementation of [Apple's PencilKit framework]https://developer.apple.com/documentation/pencilkit), offering developers a real-world example of the framework in action.
+This app serves as a practical implementation of [Apple's PencilKit framework](https://developer.apple.com/documentation/pencilkit), offering developers a real-world example of the framework in action.
 
 ## Contributing
 While Pieces of Paper began as an individual project, contributions are welcome! To contribute:
