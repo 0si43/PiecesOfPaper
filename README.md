@@ -34,10 +34,5 @@ If you're learning iOS development or creating a similar app, feel free to clone
 ## Issues and Feedback
 If you encounter any issues or have suggestions for improvement, please create an issue in this repository.
 
-## Support
-Pieces of Paper is a free and open-source project. If you enjoy using the app and would like to support its continued development, consider buying me a beer! Your support fuels my motivation and helps maintain this project.
-
-<a href="https://www.buymeacoffee.com/st43"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a beer&emoji=🍺&slug=st43&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
-
 ## License
 MIT License
