@@ -20,8 +20,6 @@ struct Tag: View {
     }
 }
 
-struct Tag_Previews: PreviewProvider {
-    static var previews: some View {
-        Tag(entity: TagEntity(name: "Memo", color: CodableUIColor(uiColor: UIColor.blue)))
-    }
+#Preview {
+    Tag(entity: TagEntity(name: "Memo", color: CodableUIColor(uiColor: UIColor.blue)))
 }

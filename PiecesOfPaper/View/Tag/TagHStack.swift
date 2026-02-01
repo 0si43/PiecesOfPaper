@@ -32,11 +32,9 @@ struct TagHStack: View {
     }
 }
 
- struct TagHStack_Previews: PreviewProvider {
-     static var blue = TagEntity(id: UUID(), name: "blue", color: CodableUIColor(uiColor: .blue))
-     static var yellow = TagEntity(id: UUID(), name: "yellow", color: CodableUIColor(uiColor: .yellow))
-     static var red = TagEntity(id: UUID(), name: "red", color: CodableUIColor(uiColor: .red))
-     static var previews: some View {
-        TagHStack(tags: [blue, yellow, red])
-    }
- }
+#Preview {
+    let blue = TagEntity(id: UUID(), name: "blue", color: CodableUIColor(uiColor: .blue))
+    let yellow = TagEntity(id: UUID(), name: "yellow", color: CodableUIColor(uiColor: .yellow))
+    let red = TagEntity(id: UUID(), name: "red", color: CodableUIColor(uiColor: .red))
+    return TagHStack(tags: [blue, yellow, red])
+}

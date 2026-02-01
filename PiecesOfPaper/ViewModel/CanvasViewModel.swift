@@ -9,9 +9,10 @@
 import Foundation
 import PencilKit
 
-final class CanvasViewModel: ObservableObject {
+@Observable
+final class CanvasViewModel {
     private(set) var document: NoteDocument
-    @Published var showDrawingInformation = false
+    var showDrawingInformation = false
 
     var canReviewRequest: Bool {
         guard let inboxUrl = FilePath.inboxUrl,

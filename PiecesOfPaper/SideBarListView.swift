@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct SideBarListView: View {
-    @StateObject private var inboxNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .inbox))
-    @StateObject private var archivedNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .archived))
+    @State private var inboxNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .inbox))
+    @State private var archivedNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .archived))
     @State private var selection: Page? = .inbox
     @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
 

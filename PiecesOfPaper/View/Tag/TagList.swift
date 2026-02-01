@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct TagList: View {
-    @ObservedObject private(set) var viewModel = TagListViewModel()
+    @State private var viewModel = TagListViewModel()
 
     var body: some View {
         List {
@@ -25,8 +25,6 @@ struct TagList: View {
     }
 }
 
-struct TagList_Previews: PreviewProvider {
-    static var previews: some View {
-        TagList()
-    }
+#Preview {
+    TagList()
 }

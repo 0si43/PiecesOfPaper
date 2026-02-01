@@ -12,7 +12,7 @@ import StoreKit
 import LinkPresentation
 
 struct CanvasView: View {
-    @StateObject var canvasViewModel: CanvasViewModel
+    @State var canvasViewModel: CanvasViewModel
     @Environment(\.dismiss) private var dismiss
     @AppStorage("review_requested") private var reviewRequested = false
     @State private var canvasView = PKCanvasView()
@@ -45,7 +45,7 @@ struct CanvasView: View {
         }
         .gesture(tapGesture)
         .statusBar(hidden: hideExceptPaper)
-        .navigationBarHidden(hideExceptPaper)
+        .toolbar(hideExceptPaper ? .hidden : .visible, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             toolbarItemGroup
@@ -161,10 +161,6 @@ struct CanvasView: View {
     }
 }
 
-struct CanvasView_Previews: PreviewProvider {
-    static var viewModel = CanvasViewModel(noteDocument: NoteDocument.createTestData())
-
-    static var previews: some View {
-        CanvasView(canvasViewModel: viewModel)
-    }
+#Preview {
+    CanvasView(canvasViewModel: CanvasViewModel(noteDocument: NoteDocument.createTestData()))
 }

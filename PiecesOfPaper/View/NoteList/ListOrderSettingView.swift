@@ -9,11 +9,11 @@
 import SwiftUI
 
 struct ListOrderSettingView: View {
-    @ObservedObject private var viewModel: ListOrderSettingViewModel
+    @State private var viewModel: ListOrderSettingViewModel
     @Environment(\.dismiss) private var dismiss
 
     init(listOrder: Binding<ListOrder>) {
-        self.viewModel = ListOrderSettingViewModel(listOrder: listOrder)
+        self._viewModel = State(initialValue: ListOrderSettingViewModel(listOrder: listOrder))
     }
 
     var body: some View {
@@ -83,9 +83,7 @@ struct ListOrderSettingView: View {
     }
 }
 
-struct ListOrderSettingView_Previews: PreviewProvider {
-    @State static var listOrder = ListOrder()
-    static var previews: some View {
-        ListOrderSettingView(listOrder: $listOrder)
-    }
+#Preview {
+    @Previewable @State var listOrder = ListOrder()
+    ListOrderSettingView(listOrder: $listOrder)
 }

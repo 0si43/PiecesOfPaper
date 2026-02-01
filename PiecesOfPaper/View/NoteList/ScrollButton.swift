@@ -22,10 +22,6 @@ struct ScrollButton: View {
     }
 }
 
-struct ScrollButton_Previews: PreviewProvider {
-    static var previews: some View {
-        let action = { print("test") }
-        let image = Image(systemName: "arrow.down.circle")
-        ScrollButton(action: action, image: image)
-    }
+#Preview {
+    ScrollButton(action: { print("test") }, image: Image(systemName: "arrow.down.circle"))
 }

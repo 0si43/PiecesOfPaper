@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct SettingView: View {
-    @ObservedObject private(set) var viewModel = SettingViewModel()
+    @State private var viewModel = SettingViewModel()
     private let repositoryUrl = URL(string: "https://github.com/0si43/PiecesOfPaper")
     private let developerSiteUrl = URL(string: "https://www.shetommy.com/")
 
@@ -49,8 +49,6 @@ struct SettingView: View {
     }
 }
 
-struct SettingView_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingView()
-    }
+#Preview {
+    SettingView()
 }

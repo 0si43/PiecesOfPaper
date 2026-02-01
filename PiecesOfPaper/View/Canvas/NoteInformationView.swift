@@ -80,8 +80,6 @@ struct NoteInformationView: View {
     }
 }
 
- struct NoteInformation_Previews: PreviewProvider {
-    static var previews: some View {
-        NoteInformationView(document: NoteDocument.createTestData())
-    }
- }
+#Preview {
+    NoteInformationView(document: NoteDocument.createTestData())
+}

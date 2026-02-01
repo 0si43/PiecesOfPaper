@@ -9,18 +9,20 @@
 import Foundation
 import SwiftUI
 
-final class ListOrderSettingViewModel: ObservableObject {
-    @Binding var listOrder: ListOrder
-    private var tags = TagModel().tags
+@Observable
+final class ListOrderSettingViewModel {
+    @ObservationIgnored @Binding var listOrder: ListOrder
+    private var tags: [TagEntity]
+    var filteringTag: [TagEntity]
+    var nonFilteringTag: [TagEntity]
 
     init(listOrder: Binding<ListOrder>) {
         self._listOrder = listOrder
-        filteringTag = tags.filter { listOrder.wrappedValue.filterBy.contains($0) }
-        nonFilteringTag = tags.filter { !listOrder.wrappedValue.filterBy.contains($0) }
+        let allTags = TagModel().tags
+        self.tags = allTags
+        self.filteringTag = allTags.filter { listOrder.wrappedValue.filterBy.contains($0) }
+        self.nonFilteringTag = allTags.filter { !listOrder.wrappedValue.filterBy.contains($0) }
     }
-
-    @Published var filteringTag: [TagEntity]
-    @Published var nonFilteringTag: [TagEntity]
     private func updatedFilterTag() {
         filteringTag = tags.filter { listOrder.filterBy.contains($0) }
         nonFilteringTag = tags.filter { !listOrder.filterBy.contains($0) }

@@ -8,31 +8,31 @@
 
 import Foundation
 
-final class SettingViewModel: ObservableObject {
-    private var userPreference = UserPreference()
-
-    @Published var enablediCloud: Bool {
+@Observable
+final class SettingViewModel {
+    private var userPreference: UserPreference
+    var enablediCloud: Bool {
         didSet {
             userPreference.enablediCloud = enablediCloud
             FilePath.makeDirectoryIfNeeded()
         }
     }
-
-    @Published var enabledAutoSave: Bool {
+    var enabledAutoSave: Bool {
         didSet {
             userPreference.enabledAutoSave = enabledAutoSave
         }
     }
-
-    @Published var enabledInfiniteScroll: Bool {
+    var enabledInfiniteScroll: Bool {
         didSet {
             userPreference.enabledInfiniteScroll = enabledInfiniteScroll
         }
     }
 
     init() {
-        enablediCloud = userPreference.enablediCloud
-        enabledAutoSave = userPreference.enabledAutoSave
-        enabledInfiniteScroll = userPreference.enabledInfiniteScroll
+        let pref = UserPreference()
+        self.userPreference = pref
+        self.enablediCloud = pref.enablediCloud
+        self.enabledAutoSave = pref.enabledAutoSave
+        self.enabledInfiniteScroll = pref.enabledInfiniteScroll
     }
 }
