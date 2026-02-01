@@ -27,10 +27,6 @@ struct NoteListParentView: View {
             }
         }
         .task {
-            if DrawingsPlistConverter.hasDrawingsPlist {
-                DrawingsPlistConverter.convert()
-            }
-
             guard !UserPreference().shouldGrantiCloud else {
                 viewModel.alertType = .iCloudDenied
                 viewModel.showAlert = true

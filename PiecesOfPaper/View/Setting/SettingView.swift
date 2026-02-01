@@ -26,11 +26,6 @@ struct SettingView: View {
                     Label("Infinite Scroll", systemImage: "scroll")
                 }
             }
-            Section(header: Text("Converter")) {
-                Button(action: DrawingsPlistConverter.convert) {
-                    Label("Convert drawings.plist", systemImage: "square.3.stack.3d")
-                }
-            }
             Section(header: Text("About")) {
                 if let url = repositoryUrl {
                     Link(destination: url) {
