@@ -106,7 +106,7 @@ struct NoteListParentView: View {
                 await viewModel.incrementalFetch()
             }
         }
-        .onChange(of: scenePhase) { phase in
+        .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
                 guard !UserPreference().shouldGrantiCloud else { return }
