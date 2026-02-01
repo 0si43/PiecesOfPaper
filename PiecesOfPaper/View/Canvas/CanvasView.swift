@@ -45,7 +45,7 @@ struct CanvasView: View {
         }
         .gesture(tapGesture)
         .statusBar(hidden: hideExceptPaper)
-        .navigationBarHidden(hideExceptPaper)
+        .toolbar(hideExceptPaper ? .hidden : .visible, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             toolbarItemGroup
