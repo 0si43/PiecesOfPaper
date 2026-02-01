@@ -12,7 +12,7 @@ import StoreKit
 import LinkPresentation
 
 struct CanvasView: View {
-    @StateObject var canvasViewModel: CanvasViewModel
+    @State var canvasViewModel: CanvasViewModel
     @Environment(\.dismiss) private var dismiss
     @AppStorage("review_requested") private var reviewRequested = false
     @State private var canvasView = PKCanvasView()

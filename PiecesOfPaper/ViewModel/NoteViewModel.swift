@@ -8,20 +8,21 @@
 
 import Foundation
 
+@Observable
 @MainActor
-final class NoteViewModel: ObservableObject {
-    @Published var displayNoteDocuments = [NoteDocument]()
-    @Published var isShowLoading = true
-    @Published var showCanvasView = false
-    @Published var showAlert = false
-    @Published var showAlertOnCanvas = false
-    @Published var alertType: AlertType?
+final class NoteViewModel {
+    var displayNoteDocuments = [NoteDocument]()
+    var isShowLoading = true
+    var showCanvasView = false
+    var showAlert = false
+    var showAlertOnCanvas = false
+    var alertType: AlertType?
     enum AlertType {
         case iCloudDenied, archive, error(Error)
     }
 
-    @Published var documentToShare: NoteDocument?
-    @Published var documentToTag: NoteDocument?
+    var documentToShare: NoteDocument?
+    var documentToTag: NoteDocument?
     private var noteDocuments = [NoteDocument]()
 
     var isTargetDirectoryInbox: Bool {

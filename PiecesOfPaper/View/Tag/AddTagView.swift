@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct AddTagView: View {
-    @ObservedObject private(set) var viewModel: TagListToNoteViewModel
+    var viewModel: TagListToNoteViewModel
 
     var body: some View {
         List {

@@ -8,23 +8,24 @@
 
 import Foundation
 
-final class SettingViewModel: ObservableObject {
+@Observable
+final class SettingViewModel {
     private var userPreference = UserPreference()
 
-    @Published var enablediCloud: Bool {
+    var enablediCloud: Bool {
         didSet {
             userPreference.enablediCloud = enablediCloud
             FilePath.makeDirectoryIfNeeded()
         }
     }
 
-    @Published var enabledAutoSave: Bool {
+    var enabledAutoSave: Bool {
         didSet {
             userPreference.enabledAutoSave = enabledAutoSave
         }
     }
 
-    @Published var enabledInfiniteScroll: Bool {
+    var enabledInfiniteScroll: Bool {
         didSet {
             userPreference.enabledInfiniteScroll = enabledInfiniteScroll
         }

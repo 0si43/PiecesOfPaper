@@ -7,22 +7,24 @@
 //
 
 import Foundation
-import Combine
 
-final class TagListToNoteViewModel: ObservableObject {
+@Observable
+final class TagListToNoteViewModel {
     private let tagModel = TagModel()
     private var tags: [TagEntity]
     var noteDocument: NoteDocument
-    var objectWillChange = ObjectWillChangePublisher()
+    private var refreshTrigger = false
 
     var tagsToNote: [TagEntity] {
-        tags.filter {
+        _ = refreshTrigger
+        return tags.filter {
             noteDocument.entity.tags.contains($0)
         }
     }
 
     var tagsNotToNote: [TagEntity] {
-        tags.filter {
+        _ = refreshTrigger
+        return tags.filter {
             !noteDocument.entity.tags.contains($0)
         }
     }
@@ -45,7 +47,7 @@ final class TagListToNoteViewModel: ObservableObject {
     private func save() {
         noteDocument.save(to: noteDocument.fileURL, for: .forOverwriting) { [weak self] success in
             if success {
-                self?.objectWillChange.send()
+                self?.refreshTrigger.toggle()
             }
         }
     }

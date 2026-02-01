@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NoteListParentView: View {
-    @ObservedObject private(set) var viewModel: NoteViewModel
+    @Bindable var viewModel: NoteViewModel
     @Environment(\.scenePhase) private var scenePhase
     @State private var showListOrderSettingView = false
 
@@ -158,7 +158,7 @@ struct NoteListParentView: View {
 
     /// This view is for scrolling to the bottom
     private struct NoteScrollView: View {
-        @ObservedObject private(set) var viewModel: NoteViewModel
+        var viewModel: NoteViewModel
 
         var body: some View {
             ScrollViewReader { proxy in

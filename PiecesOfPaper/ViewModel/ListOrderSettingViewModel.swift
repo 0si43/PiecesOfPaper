@@ -9,8 +9,9 @@
 import Foundation
 import SwiftUI
 
-final class ListOrderSettingViewModel: ObservableObject {
-    @Binding var listOrder: ListOrder
+@Observable
+final class ListOrderSettingViewModel {
+    @ObservationIgnored @Binding var listOrder: ListOrder
     private var tags = TagModel().tags
 
     init(listOrder: Binding<ListOrder>) {
@@ -19,8 +20,8 @@ final class ListOrderSettingViewModel: ObservableObject {
         nonFilteringTag = tags.filter { !listOrder.wrappedValue.filterBy.contains($0) }
     }
 
-    @Published var filteringTag: [TagEntity]
-    @Published var nonFilteringTag: [TagEntity]
+    var filteringTag: [TagEntity]
+    var nonFilteringTag: [TagEntity]
     private func updatedFilterTag() {
         filteringTag = tags.filter { listOrder.filterBy.contains($0) }
         nonFilteringTag = tags.filter { !listOrder.filterBy.contains($0) }

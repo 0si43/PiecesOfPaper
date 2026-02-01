@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NoteListView: View {
-    @ObservedObject private(set) var viewModel: NoteViewModel
+    @Bindable var viewModel: NoteViewModel
     private let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
 
     var body: some View {
