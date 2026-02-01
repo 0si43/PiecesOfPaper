@@ -14,16 +14,16 @@ struct NoteListView: View {
 
     var body: some View {
         LazyVGrid(columns: [gridItem]) {
-            ForEach((0..<viewModel.displayNoteDocuments.endIndex), id: \.self) { index in
+            ForEach(viewModel.displayNoteDocuments) { document in
                 VStack {
-                    NoteView(document: $viewModel.displayNoteDocuments[index])
+                    NoteView(document: document)
                     .contextMenu {
-                        contextMenu(document: viewModel.displayNoteDocuments[index])
+                        contextMenu(document: document)
                     }
                     NoteListTagHStack(
-                        tags: viewModel.getTagToNote(document: viewModel.displayNoteDocuments[index]),
+                        tags: viewModel.getTagToNote(document: document),
                         action: {
-                            viewModel.documentToTag = viewModel.displayNoteDocuments[index]
+                            viewModel.documentToTag = document
                         }
                     )
                         .padding(.horizontal)
