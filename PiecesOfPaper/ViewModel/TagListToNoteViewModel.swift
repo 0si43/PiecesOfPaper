@@ -13,25 +13,18 @@ final class TagListToNoteViewModel {
     private let tagModel = TagModel()
     private var tags: [TagEntity]
     var noteDocument: NoteDocument
-    private var refreshTrigger = false
-
-    var tagsToNote: [TagEntity] {
-        _ = refreshTrigger
-        return tags.filter {
-            noteDocument.entity.tags.contains($0)
-        }
-    }
-
-    var tagsNotToNote: [TagEntity] {
-        _ = refreshTrigger
-        return tags.filter {
-            !noteDocument.entity.tags.contains($0)
-        }
-    }
+    private(set) var tagsToNote: [TagEntity] = []
+    private(set) var tagsNotToNote: [TagEntity] = []
 
     init(noteDocument: NoteDocument) {
         self.tags = tagModel.fetch()
         self.noteDocument = noteDocument
+        updateFilteredTags()
+    }
+
+    private func updateFilteredTags() {
+        tagsToNote = tags.filter { noteDocument.entity.tags.contains($0) }
+        tagsNotToNote = tags.filter { !noteDocument.entity.tags.contains($0) }
     }
 
     func add(tagName: TagEntity) {
@@ -47,7 +40,7 @@ final class TagListToNoteViewModel {
     private func save() {
         noteDocument.save(to: noteDocument.fileURL, for: .forOverwriting) { [weak self] success in
             if success {
-                self?.refreshTrigger.toggle()
+                self?.updateFilteredTags()
             }
         }
     }
