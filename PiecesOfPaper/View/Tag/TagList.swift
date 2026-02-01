@@ -25,8 +25,6 @@ struct TagList: View {
     }
 }
 
-struct TagList_Previews: PreviewProvider {
-    static var previews: some View {
-        TagList()
-    }
+#Preview {
+    TagList()
 }

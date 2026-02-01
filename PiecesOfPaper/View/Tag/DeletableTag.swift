@@ -23,9 +23,6 @@ struct DeletableTag: View {
     }
 }
 
- struct DeletableTag_Previews: PreviewProvider {
-     static var entity = TagEntity(id: UUID(), name: "gray", color: CodableUIColor(uiColor: .gray))
-    static var previews: some View {
-        DeletableTag(entity: entity)
-    }
- }
+#Preview {
+    DeletableTag(entity: TagEntity(id: UUID(), name: "gray", color: CodableUIColor(uiColor: .gray)))
+}

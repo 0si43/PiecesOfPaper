@@ -130,13 +130,10 @@ extension PKCanvasViewWrapper.Coordinator: UIScrollViewDelegate {
     }
 }
 
- struct PKCanvasViewWrapper_Previews: PreviewProvider {
-    @State static var canvasView = PKCanvasView()
-    @State static var toolPicker = PKToolPicker()
-
-    static var previews: some View {
-        PKCanvasViewWrapper(canvasView: $canvasView,
-                            toolPicker: $toolPicker,
-                            saveAction: { _ in })
-    }
- }
+#Preview {
+    @Previewable @State var canvasView = PKCanvasView()
+    @Previewable @State var toolPicker = PKToolPicker()
+    PKCanvasViewWrapper(canvasView: $canvasView,
+                        toolPicker: $toolPicker,
+                        saveAction: { _ in })
+}

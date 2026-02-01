@@ -26,11 +26,9 @@ struct NoteListTagHStack: View {
     }
 }
 
- struct NoteListTagHStack_Previews: PreviewProvider {
-     static var blue = TagEntity(id: UUID(), name: "blue", color: CodableUIColor(uiColor: .blue))
-     static var yellow = TagEntity(id: UUID(), name: "yellow", color: CodableUIColor(uiColor: .yellow))
-     static var red = TagEntity(id: UUID(), name: "red", color: CodableUIColor(uiColor: .red))
-     static var previews: some View {
-         NoteListTagHStack(tags: [blue, yellow, red], action: {})
-    }
- }
+#Preview {
+    let blue = TagEntity(id: UUID(), name: "blue", color: CodableUIColor(uiColor: .blue))
+    let yellow = TagEntity(id: UUID(), name: "yellow", color: CodableUIColor(uiColor: .yellow))
+    let red = TagEntity(id: UUID(), name: "red", color: CodableUIColor(uiColor: .red))
+    return NoteListTagHStack(tags: [blue, yellow, red], action: {})
+}

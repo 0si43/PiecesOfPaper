@@ -30,8 +30,6 @@ struct AddTagView: View {
     }
 }
 
-struct AddTagView_Previews: PreviewProvider {
-    static var previews: some View {
-        AddTagView(viewModel: TagListToNoteViewModel(noteDocument: NoteDocument.createTestData()))
-    }
+#Preview {
+    AddTagView(viewModel: TagListToNoteViewModel(noteDocument: NoteDocument.createTestData()))
 }

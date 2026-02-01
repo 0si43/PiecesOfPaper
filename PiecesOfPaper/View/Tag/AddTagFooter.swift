@@ -75,10 +75,7 @@ struct AddTagFooter: View {
     }
 }
 
-struct AddTagFooter_Previews: PreviewProvider {
-    @State static var tags = [TagEntity(name: "test", color: CodableUIColor(uiColor: .red))]
-
-    static var previews: some View {
-        AddTagFooter(tags: $tags)
-    }
+#Preview {
+    @Previewable @State var tags = [TagEntity(name: "test", color: CodableUIColor(uiColor: .red))]
+    AddTagFooter(tags: $tags)
 }

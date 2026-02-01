@@ -36,9 +36,7 @@ struct NoteView: View {
     }
 }
 
- struct NoteView_Previews: PreviewProvider {
-     @State static var document = NoteDocument.createTestData()
-     static var previews: some View {
-         NoteView(document: $document)
-    }
- }
+#Preview {
+    @Previewable @State var document = NoteDocument.createTestData()
+    NoteView(document: $document)
+}

@@ -161,10 +161,6 @@ struct CanvasView: View {
     }
 }
 
-struct CanvasView_Previews: PreviewProvider {
-    static var viewModel = CanvasViewModel(noteDocument: NoteDocument.createTestData())
-
-    static var previews: some View {
-        CanvasView(canvasViewModel: viewModel)
-    }
+#Preview {
+    CanvasView(canvasViewModel: CanvasViewModel(noteDocument: NoteDocument.createTestData()))
 }

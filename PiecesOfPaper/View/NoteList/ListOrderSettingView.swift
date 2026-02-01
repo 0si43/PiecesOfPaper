@@ -83,9 +83,7 @@ struct ListOrderSettingView: View {
     }
 }
 
-struct ListOrderSettingView_Previews: PreviewProvider {
-    @State static var listOrder = ListOrder()
-    static var previews: some View {
-        ListOrderSettingView(listOrder: $listOrder)
-    }
+#Preview {
+    @Previewable @State var listOrder = ListOrder()
+    ListOrderSettingView(listOrder: $listOrder)
 }
