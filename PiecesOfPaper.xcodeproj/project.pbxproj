@@ -610,7 +610,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = "PiecesOfPaper/Like Paper.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_TEAM = JDTR4Y333X;
 				INFOPLIST_FILE = PiecesOfPaper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -618,7 +618,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.2.1;
+				MARKETING_VERSION = 3.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper;
 				PRODUCT_NAME = "Pieces of Paper";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -636,7 +636,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = "PiecesOfPaper/Like Paper.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_TEAM = JDTR4Y333X;
 				INFOPLIST_FILE = PiecesOfPaper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -644,7 +644,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.2.1;
+				MARKETING_VERSION = 3.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper;
 				PRODUCT_NAME = "Pieces of Paper";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
