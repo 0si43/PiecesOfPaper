@@ -10,10 +10,12 @@ import SwiftUI
 
 struct ListOrderSettingView: View {
     @State private var viewModel: ListOrderSettingViewModel
+    @Binding private var parentListOrder: ListOrder
     @Environment(\.dismiss) private var dismiss
 
     init(listOrder: Binding<ListOrder>) {
-        self._viewModel = State(initialValue: ListOrderSettingViewModel(listOrder: listOrder))
+        self._parentListOrder = listOrder
+        self._viewModel = State(initialValue: ListOrderSettingViewModel(listOrder: listOrder.wrappedValue))
     }
 
     var body: some View {
@@ -32,6 +34,9 @@ struct ListOrderSettingView: View {
             }
             .pickerStyle(.segmented)
             .padding()
+            .onChange(of: viewModel.listOrder.sortBy) { _, newValue in
+                viewModel.updateSortBy(newValue)
+            }
             HStack {
                 Image(systemName: "arrow.up.arrow.down.circle")
                 Text("Sort Order")
@@ -46,6 +51,9 @@ struct ListOrderSettingView: View {
             }
             .pickerStyle(.segmented)
             .padding()
+            .onChange(of: viewModel.listOrder.sortOrder) { _, newValue in
+                viewModel.updateSortOrder(newValue)
+            }
             HStack {
                 Image(systemName: "line.3.horizontal.decrease.circle")
                 Text("Filter by")
@@ -68,6 +76,11 @@ struct ListOrderSettingView: View {
             .padding()
             Spacer()
 
+        }
+        .onAppear {
+            viewModel.onListOrderChanged = { [self] newListOrder in
+                self.parentListOrder = newListOrder
+            }
         }
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
