@@ -180,7 +180,11 @@ struct NoteListParentView: View {
         }
 
         func scrollToBottom(proxy: ScrollViewProxy) {
-            proxy.scrollTo(viewModel.displayNoteDocuments.endIndex - 1, anchor: .bottom)
+            guard let lastDocument =
+        viewModel.displayNoteDocuments.last else { return }
+            withAnimation {
+                proxy.scrollTo(lastDocument.id, anchor: .bottom)
+            }
         }
     }
 
