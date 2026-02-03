@@ -28,6 +28,7 @@ struct NoteListView: View {
                     )
                         .padding(.horizontal)
                 }
+                .id(document.id)
             }
         }
     }
