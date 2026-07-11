@@ -14,6 +14,7 @@ import LinkPresentation
 struct CanvasView: View {
     @State var canvasViewModel: CanvasViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.displayScale) private var displayScale
     @AppStorage("review_requested") private var reviewRequested = false
     @State private var canvasView = PKCanvasView()
     @State private var toolPicker = PKToolPicker()
@@ -35,12 +36,18 @@ struct CanvasView: View {
     }
 
     var body: some View {
+        GeometryReader { geometry in
+            canvas(windowSize: geometry.size)
+        }
+    }
+
+    private func canvas(windowSize: CGSize) -> some View {
         PKCanvasViewWrapper(canvasView: $canvasView,
                             toolPicker: $toolPicker,
                             saveAction: canvasViewModel.save)
         .onAppear {
             canvasView.drawing = canvasViewModel.document.entity.drawing
-            initialContentSize()
+            initialContentSize(windowSize: windowSize)
             hideExceptPaper = true
         }
         .gesture(tapGesture)
@@ -84,25 +91,25 @@ struct CanvasView: View {
 
     // MARK: - Window Adjustment
 
-    private var isDrawingWiderThanWindow: Bool {
-        UIScreen.main.bounds.width < canvasView.drawing.bounds.maxX
+    private func isDrawingWider(than windowSize: CGSize) -> Bool {
+        windowSize.width < canvasView.drawing.bounds.maxX
     }
 
-    private var isDrawingHigherThanWindow: Bool {
-        UIScreen.main.bounds.height < canvasView.drawing.bounds.maxY
+    private func isDrawingHigher(than windowSize: CGSize) -> Bool {
+        windowSize.height < canvasView.drawing.bounds.maxY
     }
 
-    private func initialContentSize() {
+    private func initialContentSize(windowSize: CGSize) {
         guard !canvasView.drawing.bounds.isNull else { return }
 
-        if isDrawingWiderThanWindow, isDrawingHigherThanWindow {
+        if isDrawingWider(than: windowSize), isDrawingHigher(than: windowSize) {
             canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
                                            height: canvasView.drawing.bounds.maxY)
-        } else if isDrawingWiderThanWindow, !isDrawingHigherThanWindow {
+        } else if isDrawingWider(than: windowSize), !isDrawingHigher(than: windowSize) {
             canvasView.contentSize = .init(width: canvasView.drawing.bounds.maxX,
-                                           height: UIScreen.main.bounds.height)
-        } else if !isDrawingWiderThanWindow, isDrawingHigherThanWindow {
-            canvasView.contentSize = .init(width: UIScreen.main.bounds.width,
+                                           height: windowSize.height)
+        } else if !isDrawingWider(than: windowSize), isDrawingHigher(than: windowSize) {
+            canvasView.contentSize = .init(width: windowSize.width,
                                            height: canvasView.drawing.bounds.maxY)
         }
 
@@ -116,6 +123,7 @@ struct CanvasView: View {
             } label: {
                 Image(systemName: "info.circle")
             }
+            .accessibilityLabel("Note Information")
             .popover(isPresented: $canvasViewModel.showDrawingInformation) {
                 NoteInformationView(document: canvasViewModel.document)
             }
@@ -125,6 +133,7 @@ struct CanvasView: View {
             } label: {
                 Image(systemName: "square.and.arrow.up")
             }
+            .accessibilityLabel("Share")
             Button(action: done) {
                 Text("Done")
             }
@@ -137,7 +146,7 @@ struct CanvasView: View {
         trait.performAsCurrent {
             image = canvasViewModel.document.entity.drawing.image(
                 from: canvasViewModel.document.entity.drawing.bounds,
-                scale: UIScreen.main.scale
+                scale: displayScale
             )
         }
 

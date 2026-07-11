@@ -35,6 +35,7 @@
 		A6C8DD092D3CEE5400D7D32F /* Notification+.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C8DD082D3CEE5400D7D32F /* Notification+.swift */; };
 		A6CADA51276752E600657E9E /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA50276752E600657E9E /* SettingView.swift */; };
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
+		A70000000000000000000019 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000009 /* PrivacyInfo.xcprivacy */; };
 		A6F6ED4B27C77A7500DD3296 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F6ED4A27C77A7500DD3296 /* RootView.swift */; };
 		A6FD03422D3FAD8600224B03 /* NoteListTagHStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FD03412D3FAD8600224B03 /* NoteListTagHStack.swift */; };
 		A70000000000000000000011 /* NoteRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000001 /* NoteRepository.swift */; };
@@ -92,6 +93,7 @@
 		A6CADA50276752E600657E9E /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		A6DE5BB72437167C006D3D47 /* Pieces of Paper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Pieces of Paper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BC32437167E006D3D47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A70000000000000000000009 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A6DE5BC82437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6F6ED4A27C77A7500DD3296 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		A6FD03412D3FAD8600224B03 /* NoteListTagHStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteListTagHStack.swift; sourceTree = "<group>"; };
@@ -272,6 +274,7 @@
 				A70000000000000000000021 /* Repository */,
 				A6620E2A2748A05B00C708A2 /* Model */,
 				A6DE5BC32437167E006D3D47 /* Assets.xcassets */,
+				A70000000000000000000009 /* PrivacyInfo.xcprivacy */,
 				A6675A37251D89BA00343151 /* Like Paper.entitlements */,
 				A6DE5BC82437167E006D3D47 /* Info.plist */,
 			);
@@ -368,6 +371,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */,
+				A70000000000000000000019 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

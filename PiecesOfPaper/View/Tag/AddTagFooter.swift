@@ -34,6 +34,8 @@ struct AddTagFooter: View {
         .onTapGesture {
             isTapped.toggle()
         }
+        .accessibilityLabel("Add Tag")
+        .accessibilityAddTraits(.isButton)
         .sheet(isPresented: $isTapped) {
             NavigationView {
                 VStack {
