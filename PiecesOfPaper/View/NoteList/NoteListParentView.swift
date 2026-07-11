@@ -14,6 +14,7 @@ struct NoteListParentView: View {
     @Environment(TagStore.self) private var tagStore
     @Environment(PreferenceStore.self) private var preferenceStore
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.displayScale) private var displayScale
     @State private var showListOrderSettingView = false
 
     private var isTargetDirectoryArchived: Bool {
@@ -207,7 +208,7 @@ struct NoteListParentView: View {
         var image = UIImage()
         let trait = UITraitCollection(userInterfaceStyle: .light)
         trait.performAsCurrent {
-            image = drawing.image(from: drawing.bounds, scale: UIScreen.main.scale)
+            image = drawing.image(from: drawing.bounds, scale: displayScale)
         }
 
         return UIActivityViewControllerWrapper(activityItems: [image])
