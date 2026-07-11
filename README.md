@@ -1,6 +1,6 @@
 # Pieces of Paper
 
-[![License](https://img.shields.io/github/license/0si43/PiecesOfPaper)](https://github.com/0si43/PiecesOfPaper/blob/master/LICENSE.md)
+[![License](https://img.shields.io/github/license/0si43/PiecesOfPaper)](https://github.com/0si43/PiecesOfPaper/blob/main/LICENSE.md)
 
 Pieces of Paper is a free iOS application created by @0si43 that provides a seamless handwriting experience with Apple Pencil.
 
