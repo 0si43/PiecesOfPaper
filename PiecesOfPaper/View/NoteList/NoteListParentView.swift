@@ -159,11 +159,13 @@ struct NoteListParentView: View {
             } label: {
                 Image(systemName: "ellipsis.circle")
             }
+            .accessibilityLabel("More Actions")
             Button {
                 noteStore.showCanvasView = true
             } label: {
                 Image(systemName: "square.and.pencil")
             }
+            .accessibilityLabel("New Note")
         }
     }
 
@@ -189,6 +191,7 @@ struct NoteListParentView: View {
                                 action: { scrollToBottom(proxy: proxy) },
                                 image: Image(systemName: "arrow.down.circle")
                             )
+                            .accessibilityLabel("Scroll to Bottom")
                         }
                     }
                 )

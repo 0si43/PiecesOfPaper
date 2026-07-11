@@ -123,6 +123,7 @@ struct CanvasView: View {
             } label: {
                 Image(systemName: "info.circle")
             }
+            .accessibilityLabel("Note Information")
             .popover(isPresented: $canvasViewModel.showDrawingInformation) {
                 NoteInformationView(document: canvasViewModel.document)
             }
@@ -132,6 +133,7 @@ struct CanvasView: View {
             } label: {
                 Image(systemName: "square.and.arrow.up")
             }
+            .accessibilityLabel("Share")
             Button(action: done) {
                 Text("Done")
             }

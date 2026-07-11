@@ -28,6 +28,7 @@ struct NoteView: View {
                 .background(Color(UIColor.secondarySystemBackground))
                 .shadow(radius: 5)
         })
+        .accessibilityLabel("Note")
         .fullScreenCover(isPresented: $showCanvasView) {
             NavigationView {
                 CanvasView(canvasViewModel: CanvasViewModel(noteDocument: document))
