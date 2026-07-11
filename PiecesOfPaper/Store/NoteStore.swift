@@ -197,14 +197,21 @@ final class NoteStore {
     // MARK: - Data operations
 
     func duplicate(_ document: NoteDocument, in directory: NoteDirectory) {
-        guard let newDocument = noteRepository.duplicate(document: document, in: directory) else { return }
-        switch directory {
-        case .inbox:
-            inboxCachedUrls.append(newDocument.fileURL)
-            inboxDocuments.append(newDocument)
-        case .archived:
-            archivedCachedUrls.append(newDocument.fileURL)
-            archivedDocuments.append(newDocument)
+        noteRepository.duplicate(document: document, in: directory) { [weak self] newDocument in
+            guard let self else { return }
+            guard let newDocument else {
+                self.alertType = .error(NoteStoreError.saveFailed)
+                self.showAlert = true
+                return
+            }
+            switch directory {
+            case .inbox:
+                self.inboxCachedUrls.append(newDocument.fileURL)
+                self.inboxDocuments.append(newDocument)
+            case .archived:
+                self.archivedCachedUrls.append(newDocument.fileURL)
+                self.archivedDocuments.append(newDocument)
+            }
         }
     }
 
@@ -261,14 +268,30 @@ final class NoteStore {
 
     func addTag(_ tag: TagEntity, to document: NoteDocument) {
         document.entity.tags.append(tag)
-        noteRepository.save(document: document)
-        updateDocumentInArray(document)
+        noteRepository.save(document: document) { [weak self] success in
+            guard let self else { return }
+            if success {
+                self.updateDocumentInArray(document)
+            } else {
+                document.entity.tags.removeAll { $0 == tag }
+                self.alertType = .error(NoteStoreError.saveFailed)
+                self.showAlert = true
+            }
+        }
     }
 
     func removeTag(_ tag: TagEntity, from document: NoteDocument) {
         document.entity.tags.removeAll { $0 == tag }
-        noteRepository.save(document: document)
-        updateDocumentInArray(document)
+        noteRepository.save(document: document) { [weak self] success in
+            guard let self else { return }
+            if success {
+                self.updateDocumentInArray(document)
+            } else {
+                document.entity.tags.append(tag)
+                self.alertType = .error(NoteStoreError.saveFailed)
+                self.showAlert = true
+            }
+        }
     }
 
     // MARK: - Private helpers

@@ -22,11 +22,11 @@ enum NoteDirectory: String {
 protocol NoteRepositoryProtocol: AnyObject {
     func getFileUrls(directory: NoteDirectory) -> [URL]
     @MainActor func open(fileUrl: URL) async throws -> NoteDocument
-    func save(document: NoteDocument)
-    func save(document: NoteDocument, for saveOperation: UIDocument.SaveOperation)
+    func save(document: NoteDocument, completion: @escaping (Bool) -> Void)
     func delete(fileUrl: URL) throws
     func move(fileUrl: URL, to directory: NoteDirectory) throws -> URL
-    func duplicate(document: NoteDocument, in directory: NoteDirectory) -> NoteDocument?
+    func duplicate(document: NoteDocument, in directory: NoteDirectory,
+                   completion: @escaping (NoteDocument?) -> Void)
 }
 
 final class NoteRepository: NoteRepositoryProtocol {
@@ -52,16 +52,10 @@ final class NoteRepository: NoteRepositoryProtocol {
         }
     }
 
-    func save(document: NoteDocument) {
-        if FileManager.default.fileExists(atPath: document.fileURL.path) {
-            document.save(to: document.fileURL, for: .forOverwriting)
-        } else {
-            document.save(to: document.fileURL, for: .forCreating)
-        }
-    }
-
-    func save(document: NoteDocument, for saveOperation: UIDocument.SaveOperation) {
-        document.save(to: document.fileURL, for: saveOperation)
+    func save(document: NoteDocument, completion: @escaping (Bool) -> Void) {
+        let saveOperation: UIDocument.SaveOperation =
+            FileManager.default.fileExists(atPath: document.fileURL.path) ? .forOverwriting : .forCreating
+        document.save(to: document.fileURL, for: saveOperation, completionHandler: completion)
     }
 
     func delete(fileUrl: URL) throws {
@@ -77,13 +71,18 @@ final class NoteRepository: NoteRepositoryProtocol {
         return toUrl
     }
 
-    func duplicate(document: NoteDocument, in directory: NoteDirectory) -> NoteDocument? {
-        guard let directoryUrl = directory.url else { return nil }
+    func duplicate(document: NoteDocument, in directory: NoteDirectory,
+                   completion: @escaping (NoteDocument?) -> Void) {
+        guard let directoryUrl = directory.url else {
+            completion(nil)
+            return
+        }
         let newUrl = directoryUrl.appendingPathComponent(FilePath.fileName)
         let entity = NoteEntity(drawing: document.entity.drawing)
         let newDocument = NoteDocument(fileURL: newUrl, entity: entity)
-        newDocument.save(to: newUrl, for: .forCreating)
-        return newDocument
+        newDocument.save(to: newUrl, for: .forCreating) { success in
+            completion(success ? newDocument : nil)
+        }
     }
 }
 

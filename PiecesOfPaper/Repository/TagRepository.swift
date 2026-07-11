@@ -10,7 +10,8 @@ import Foundation
 
 protocol TagRepositoryProtocol {
     func fetchAll() -> [TagEntity]
-    func saveAll(_ tags: [TagEntity])
+    @discardableResult
+    func saveAll(_ tags: [TagEntity]) -> Bool
 }
 
 struct TagRepository: TagRepositoryProtocol {
@@ -33,16 +34,18 @@ struct TagRepository: TagRepositoryProtocol {
         }
     }
 
-    func saveAll(_ tags: [TagEntity]) {
-        guard let tagListFileUrl = FilePath.tagListFileUrl else { return }
+    @discardableResult
+    func saveAll(_ tags: [TagEntity]) -> Bool {
+        guard let tagListFileUrl = FilePath.tagListFileUrl else { return false }
         syncFile(url: tagListFileUrl)
 
-        let encoder = JSONEncoder()
-        guard let data = try? encoder.encode(tags) else { return }
         do {
+            let data = try JSONEncoder().encode(tags)
             try data.write(to: tagListFileUrl)
+            return true
         } catch {
             print(error.localizedDescription)
+            return false
         }
     }
 

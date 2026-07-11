@@ -54,6 +54,25 @@ struct NoteStoreTests {
         #expect(noteStore.displayInboxDocuments.count == 3)
         #expect(noteStore.displayArchivedDocuments.isEmpty)
     }
+
+    @Test func test_addTag_persistsTagOnSuccessfulSave() async {
+        await noteStore.incrementalFetch(directory: .inbox)
+        let target = noteStore.displayInboxDocuments[0]
+        let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
+        noteStore.addTag(tag, to: target)
+        #expect(target.entity.tags == [tag])
+        #expect(!noteStore.showAlert)
+    }
+
+    @Test func test_addTag_rollsBackTagWhenSaveFails() async {
+        await noteStore.incrementalFetch(directory: .inbox)
+        repositoryMock.saveShouldSucceed = false
+        let target = noteStore.displayInboxDocuments[0]
+        let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
+        noteStore.addTag(tag, to: target)
+        #expect(target.entity.tags.isEmpty)
+        #expect(noteStore.showAlert)
+    }
 }
 
 final class NoteRepositoryMock: NoteRepositoryProtocol {
@@ -103,9 +122,10 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         }
     }
 
-    func save(document: NoteDocument) {}
-
-    func save(document: NoteDocument, for saveOperation: UIDocument.SaveOperation) {}
+    var saveShouldSucceed = true
+    func save(document: NoteDocument, completion: @escaping (Bool) -> Void) {
+        completion(saveShouldSucceed)
+    }
 
     func delete(fileUrl: URL) throws {}
 
@@ -116,8 +136,9 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         return fileUrl
     }
 
-    func duplicate(document: NoteDocument, in directory: NoteDirectory) -> NoteDocument? {
-        nil
+    func duplicate(document: NoteDocument, in directory: NoteDirectory,
+                   completion: @escaping (NoteDocument?) -> Void) {
+        completion(nil)
     }
 }
 
