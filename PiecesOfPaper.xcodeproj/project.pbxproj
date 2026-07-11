@@ -46,6 +46,13 @@
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
 		A6F6ED4B27C77A7500DD3296 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F6ED4A27C77A7500DD3296 /* RootView.swift */; };
 		A6FD03422D3FAD8600224B03 /* NoteListTagHStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FD03412D3FAD8600224B03 /* NoteListTagHStack.swift */; };
+		A70000000000000000000011 /* NoteRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000001 /* NoteRepository.swift */; };
+		A70000000000000000000012 /* TagRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000002 /* TagRepository.swift */; };
+		A70000000000000000000013 /* PreferenceRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000003 /* PreferenceRepository.swift */; };
+		A70000000000000000000014 /* NoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000004 /* NoteStore.swift */; };
+		A70000000000000000000015 /* TagStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000005 /* TagStore.swift */; };
+		A70000000000000000000016 /* PreferenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000006 /* PreferenceStore.swift */; };
+		A70000000000000000000017 /* NoteStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000007 /* NoteStoreTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,6 +112,13 @@
 		A6DE5BC82437167E006D3D47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A6F6ED4A27C77A7500DD3296 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		A6FD03412D3FAD8600224B03 /* NoteListTagHStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteListTagHStack.swift; sourceTree = "<group>"; };
+		A70000000000000000000001 /* NoteRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteRepository.swift; sourceTree = "<group>"; };
+		A70000000000000000000002 /* TagRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagRepository.swift; sourceTree = "<group>"; };
+		A70000000000000000000003 /* PreferenceRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceRepository.swift; sourceTree = "<group>"; };
+		A70000000000000000000004 /* NoteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStore.swift; sourceTree = "<group>"; };
+		A70000000000000000000005 /* TagStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagStore.swift; sourceTree = "<group>"; };
+		A70000000000000000000006 /* PreferenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceStore.swift; sourceTree = "<group>"; };
+		A70000000000000000000007 /* NoteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,9 +222,30 @@
 			isa = PBXGroup;
 			children = (
 				A66205672841E1A1009562EC /* NoteViewModelTest.swift */,
+				A70000000000000000000007 /* NoteStoreTests.swift */,
 				A6A16EC625B1673500DF323F /* Info.plist */,
 			);
 			path = PiecesOfPaperTests;
+			sourceTree = "<group>";
+		};
+		A70000000000000000000021 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				A70000000000000000000001 /* NoteRepository.swift */,
+				A70000000000000000000002 /* TagRepository.swift */,
+				A70000000000000000000003 /* PreferenceRepository.swift */,
+			);
+			path = Repository;
+			sourceTree = "<group>";
+		};
+		A70000000000000000000022 /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				A70000000000000000000004 /* NoteStore.swift */,
+				A70000000000000000000005 /* TagStore.swift */,
+				A70000000000000000000006 /* PreferenceStore.swift */,
+			);
+			path = Store;
 			sourceTree = "<group>";
 		};
 		A6BB3DCD2D460C5E00FFCB62 /* Tutorial */ = {
@@ -257,6 +292,8 @@
 				A6620E2D274C6E8E00C708A2 /* SideBarListView.swift */,
 				A6620E282748A01F00C708A2 /* View */,
 				A6620E292748A04D00C708A2 /* ViewModel */,
+				A70000000000000000000022 /* Store */,
+				A70000000000000000000021 /* Repository */,
 				A6620E2A2748A05B00C708A2 /* Model */,
 				A6DE5BC32437167E006D3D47 /* Assets.xcassets */,
 				A6675A37251D89BA00343151 /* Like Paper.entitlements */,
@@ -387,6 +424,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A66205682841E1A1009562EC /* NoteViewModelTest.swift in Sources */,
+				A70000000000000000000017 /* NoteStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -431,6 +469,12 @@
 				A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */,
 				A63C957C275C8FD900822461 /* TagListViewModel.swift in Sources */,
 				A63C958A275DDA9E00822461 /* TagListToNoteViewModel.swift in Sources */,
+				A70000000000000000000011 /* NoteRepository.swift in Sources */,
+				A70000000000000000000012 /* TagRepository.swift in Sources */,
+				A70000000000000000000013 /* PreferenceRepository.swift in Sources */,
+				A70000000000000000000014 /* NoteStore.swift in Sources */,
+				A70000000000000000000015 /* TagStore.swift in Sources */,
+				A70000000000000000000016 /* PreferenceStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
