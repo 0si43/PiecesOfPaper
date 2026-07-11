@@ -9,8 +9,9 @@
 import SwiftUI
 
 struct SideBarListView: View {
-    @State private var inboxNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .inbox))
-    @State private var archivedNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .archived))
+    @State private var noteStore = NoteStore()
+    @State private var tagStore = TagStore()
+    @State private var preferenceStore = PreferenceStore()
     @State private var selection: Page? = .inbox
     @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
 
@@ -37,9 +38,9 @@ struct SideBarListView: View {
         } detail: {
             switch selection {
             case .inbox:
-                NoteListParentView(viewModel: inboxNoteViewModel)
+                NoteListParentView(directory: .inbox)
             case .trash:
-                NoteListParentView(viewModel: archivedNoteViewModel)
+                NoteListParentView(directory: .archived)
             case .tag:
                 TagList()
             case .tutorial:
@@ -50,6 +51,9 @@ struct SideBarListView: View {
                 Text("Unknown page")
             }
         }
+        .environment(noteStore)
+        .environment(tagStore)
+        .environment(preferenceStore)
     }
 
     private var sideBarList: some View {

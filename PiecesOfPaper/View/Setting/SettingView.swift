@@ -9,20 +9,21 @@
 import SwiftUI
 
 struct SettingView: View {
-    @State private var viewModel = SettingViewModel()
+    @Environment(PreferenceStore.self) private var preferenceStore
     private let repositoryUrl = URL(string: "https://github.com/0si43/PiecesOfPaper")
     private let developerSiteUrl = URL(string: "https://www.shetommy.com/")
 
     var body: some View {
+        @Bindable var preferenceStore = preferenceStore
         List {
             Section(header: Text("Preference")) {
-                Toggle(isOn: $viewModel.enablediCloud) {
+                Toggle(isOn: $preferenceStore.enablediCloud) {
                     Label("Enable iCloud", systemImage: "icloud")
                 }
-                Toggle(isOn: $viewModel.enabledAutoSave) {
+                Toggle(isOn: $preferenceStore.enabledAutoSave) {
                     Label("Auto Save", systemImage: "gearshape")
                 }
-                Toggle(isOn: $viewModel.enabledInfiniteScroll) {
+                Toggle(isOn: $preferenceStore.enabledInfiniteScroll) {
                     Label("Infinite Scroll", systemImage: "scroll")
                 }
             }
@@ -46,4 +47,5 @@ struct SettingView: View {
 
 #Preview {
     SettingView()
+        .environment(PreferenceStore())
 }

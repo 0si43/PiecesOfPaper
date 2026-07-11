@@ -95,6 +95,8 @@ iOSInjectionProject/
 xcuserdata
 *.xcodeproj/*
 !*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/xcshareddata/**
 *.ipa
 *.zip
 Build

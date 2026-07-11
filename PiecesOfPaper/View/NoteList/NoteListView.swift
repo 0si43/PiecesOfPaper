@@ -9,21 +9,23 @@
 import SwiftUI
 
 struct NoteListView: View {
-    @Bindable var viewModel: NoteViewModel
+    let directory: NoteDirectory
+    @Environment(NoteStore.self) private var noteStore
+    @Environment(TagStore.self) private var tagStore
     private let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
 
     var body: some View {
         LazyVGrid(columns: [gridItem]) {
-            ForEach(viewModel.displayNoteDocuments) { document in
+            ForEach(noteStore.displayDocuments(for: directory)) { document in
                 VStack {
                     NoteView(document: document)
                     .contextMenu {
                         contextMenu(document: document)
                     }
                     NoteListTagHStack(
-                        tags: viewModel.getTagToNote(document: document),
+                        tags: tagStore.tagsFor(document: document),
                         action: {
-                            viewModel.documentToTag = document
+                            noteStore.documentToTag = document
                         }
                     )
                         .padding(.horizontal)
@@ -36,35 +38,35 @@ struct NoteListView: View {
     func contextMenu(document: NoteDocument) -> some View {
         Group {
             Button {
-                viewModel.duplicate(document)
+                noteStore.duplicate(document, in: directory)
             } label: {
                 Label("Duplicate", systemImage: "doc.on.doc")
             }
             if document.isArchived {
                 Button {
-                    viewModel.unarchive(document)
+                    noteStore.unarchive(document)
                 } label: {
                     Label("Move to Inbox", systemImage: "tray")
                 }
                 Button(role: .destructive) {
-                    viewModel.delete(document)
+                    noteStore.delete(document)
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
             } else {
                 Button {
-                    viewModel.archive(document)
+                    noteStore.archive(document)
                 } label: {
                     Label("Move to Trash", systemImage: "trash")
                 }
             }
             Button {
-                viewModel.documentToShare = document
+                noteStore.documentToShare = document
             } label: {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             Button {
-                viewModel.documentToTag = document
+                noteStore.documentToTag = document
             } label: {
                 Label("Tag", systemImage: "tag")
             }

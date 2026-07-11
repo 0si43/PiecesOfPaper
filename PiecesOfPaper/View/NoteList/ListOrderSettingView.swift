@@ -13,9 +13,9 @@ struct ListOrderSettingView: View {
     @Binding private var parentListOrder: ListOrder
     @Environment(\.dismiss) private var dismiss
 
-    init(listOrder: Binding<ListOrder>) {
+    init(listOrder: Binding<ListOrder>, tags: [TagEntity]) {
         self._parentListOrder = listOrder
-        self._viewModel = State(initialValue: ListOrderSettingViewModel(listOrder: listOrder.wrappedValue))
+        self._viewModel = State(initialValue: ListOrderSettingViewModel(listOrder: listOrder.wrappedValue, tags: tags))
     }
 
     var body: some View {
@@ -98,5 +98,5 @@ struct ListOrderSettingView: View {
 
 #Preview {
     @Previewable @State var listOrder = ListOrder()
-    ListOrderSettingView(listOrder: $listOrder)
+    ListOrderSettingView(listOrder: $listOrder, tags: [])
 }

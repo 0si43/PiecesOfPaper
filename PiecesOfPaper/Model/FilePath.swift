@@ -10,7 +10,7 @@ import Foundation
 
 enum FilePath {
     static var savingUrl: URL? {
-        UserPreference().enablediCloud
+        PreferenceRepository().getEnablediCloud()
             ? iCloudUrl ?? documentDirectoryUrl
             : documentDirectoryUrl
     }

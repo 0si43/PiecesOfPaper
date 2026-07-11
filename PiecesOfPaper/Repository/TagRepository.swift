@@ -1,5 +1,5 @@
 //
-//  TagModel.swift
+//  TagRepository.swift
 //  PiecesOfPaper
 //
 //  Created by Nakajima on 2021/12/05.
@@ -8,22 +8,12 @@
 
 import Foundation
 
-struct TagModel {
-    var tags: [TagEntity] {
-        guard let tagListFileUrl = FilePath.tagListFileUrl,
-                FileManager.default.fileExists(atPath: tagListFileUrl.path),
-              let content = FileManager.default.contents(atPath: tagListFileUrl.path) else { return [] }
-        syncFile(url: tagListFileUrl)
+protocol TagRepositoryProtocol {
+    func fetchAll() -> [TagEntity]
+    func saveAll(_ tags: [TagEntity])
+}
 
-        let decoder = JSONDecoder()
-        do {
-            return try decoder.decode([TagEntity].self, from: content)
-        } catch {
-            print("Data file format error: ", error.localizedDescription)
-            return []
-        }
-    }
-
+struct TagRepository: TagRepositoryProtocol {
     private var defaultTags = [
         TagEntity(name: "💡idea", color: CodableUIColor(uiColor: .systemYellow)),
         TagEntity(name: "🗒memo", color: CodableUIColor(uiColor: .systemBlue)),
@@ -31,7 +21,7 @@ struct TagModel {
         TagEntity(name: "🎨doodle", color: CodableUIColor(uiColor: .systemOrange))
     ]
 
-    func fetch() -> [TagEntity] {
+    func fetchAll() -> [TagEntity] {
         guard let tagListFileUrl = FilePath.tagListFileUrl else { return [] }
         syncFile(url: tagListFileUrl)
 
@@ -39,7 +29,33 @@ struct TagModel {
             makeFileIfNeeded()
             return defaultTags
         } else {
-            return tags
+            return loadTags(from: tagListFileUrl)
+        }
+    }
+
+    func saveAll(_ tags: [TagEntity]) {
+        guard let tagListFileUrl = FilePath.tagListFileUrl else { return }
+        syncFile(url: tagListFileUrl)
+
+        let encoder = JSONEncoder()
+        guard let data = try? encoder.encode(tags) else { return }
+        do {
+            try data.write(to: tagListFileUrl)
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+
+    private func loadTags(from url: URL) -> [TagEntity] {
+        guard FileManager.default.fileExists(atPath: url.path),
+              let content = FileManager.default.contents(atPath: url.path) else { return [] }
+
+        let decoder = JSONDecoder()
+        do {
+            return try decoder.decode([TagEntity].self, from: content)
+        } catch {
+            print("Data file format error: ", error.localizedDescription)
+            return []
         }
     }
 
@@ -58,19 +74,6 @@ struct TagModel {
             try? FileManager.default.createDirectory(at: libraryUrl, withIntermediateDirectories: false)
         }
 
-        save(tags: defaultTags)
-    }
-
-    func save(tags: [TagEntity]) {
-        guard let tagListFileUrl = FilePath.tagListFileUrl else { return }
-        syncFile(url: tagListFileUrl)
-
-        let encoder = JSONEncoder()
-        guard let data = try? encoder.encode(tags) else { return }
-        do {
-            try data.write(to: tagListFileUrl)
-        } catch {
-            print(error.localizedDescription)
-        }
+        saveAll(defaultTags)
     }
 }

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct AddTagFooter: View {
-    @Binding private(set) var tags: [TagEntity]
+    private(set) var onSave: (TagEntity) -> Void
     @State private var tagName: String = "🏷Tag"
     private var tagColor: CodableUIColor {
         CodableUIColor(uiColor: UIColor(color))
@@ -70,12 +70,11 @@ struct AddTagFooter: View {
     }
 
     private func save() {
-        tags.append(tagEntity)
+        onSave(tagEntity)
         isTapped.toggle()
     }
 }
 
 #Preview {
-    @Previewable @State var tags = [TagEntity(name: "test", color: CodableUIColor(uiColor: .red))]
-    AddTagFooter(tags: $tags)
+    AddTagFooter(onSave: { _ in })
 }

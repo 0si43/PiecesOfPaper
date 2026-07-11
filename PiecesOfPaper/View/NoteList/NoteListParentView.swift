@@ -9,41 +9,49 @@
 import SwiftUI
 
 struct NoteListParentView: View {
-    @Bindable var viewModel: NoteViewModel
+    let directory: NoteDirectory
+    @Environment(NoteStore.self) private var noteStore
+    @Environment(TagStore.self) private var tagStore
+    @Environment(PreferenceStore.self) private var preferenceStore
     @Environment(\.scenePhase) private var scenePhase
     @State private var showListOrderSettingView = false
 
+    private var isTargetDirectoryArchived: Bool {
+        directory == .archived
+    }
+
     var body: some View {
+        @Bindable var noteStore = noteStore
         Group {
-            if viewModel.isShowLoading {
+            if noteStore.isLoading {
                 ProgressView()
             } else {
-                if viewModel.displayNoteDocuments.isEmpty {
+                if noteStore.displayDocuments(for: directory).isEmpty {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {
-                    NoteScrollView(viewModel: viewModel)
+                    NoteScrollView(directory: directory)
                 }
             }
         }
         .task {
-            guard !UserPreference().shouldGrantiCloud else {
-                viewModel.alertType = .iCloudDenied
-                viewModel.showAlert = true
+            guard !preferenceStore.shouldGrantiCloud else {
+                noteStore.alertType = .iCloudDenied
+                noteStore.showAlert = true
                 return
             }
 
-            await viewModel.incrementalFetch()
+            await noteStore.incrementalFetch(directory: directory)
         }
         .refreshable {
             Task {
-                await viewModel.reload()
+                await noteStore.reload(directory: directory)
             }
         }
         .toolbar {
             toolbarItems
         }
-        .fullScreenCover(isPresented: $viewModel.showCanvasView) {
+        .fullScreenCover(isPresented: $noteStore.showCanvasView) {
             if let path = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) {
                 NavigationStack {
                     CanvasView(canvasViewModel: CanvasViewModel(path: path))
@@ -52,23 +60,29 @@ struct NoteListParentView: View {
         }
         .sheet(isPresented: $showListOrderSettingView) {
             NavigationView {
-                ListOrderSettingView(listOrder: $viewModel.listOrder)
+                ListOrderSettingView(
+                    listOrder: Binding(
+                        get: { noteStore.listOrder(for: directory) },
+                        set: { noteStore.setListOrder($0, for: directory) }
+                    ),
+                    tags: tagStore.tags
+                )
             }
         }
-        .sheet(item: $viewModel.documentToShare) { document in
+        .sheet(item: $noteStore.documentToShare) { document in
             activityViewController(document: document)
         }
-        .sheet(item: $viewModel.documentToTag,
+        .sheet(item: $noteStore.documentToTag,
                onDismiss: {
                    Task {
-                       await viewModel.incrementalFetch()
+                       await noteStore.incrementalFetch(directory: directory)
                    }
                }, content: { document in
-            AddTagView(viewModel: TagListToNoteViewModel(noteDocument: document))
+            AddTagView(document: document)
         })
         .alert("",
-               isPresented: $viewModel.showAlert,
-               presenting: viewModel.alertType) { type in
+               isPresented: $noteStore.showAlert,
+               presenting: noteStore.alertType) { type in
                 switch type {
                 case .iCloudDenied:
                     iCloudButton
@@ -83,8 +97,8 @@ struct NoteListParentView: View {
                 case .iCloudDenied:
                     return Text("The app could not access your iCloud Drive. You should change setting")
                 case .archive:
-                    let operationText = viewModel.isTargetDirectoryArchived ? "unarchived" : "archived"
-                    let countText = viewModel.displayNoteDocuments.count
+                    let operationText = isTargetDirectoryArchived ? "unarchived" : "archived"
+                    let countText = noteStore.displayDocuments(for: directory).count
                     let alertText = """
                         Are you sure you want to \(operationText) \(countText) notes?
                     """
@@ -99,14 +113,14 @@ struct NoteListParentView: View {
             )
         ) { _ in
             Task {
-                await viewModel.incrementalFetch()
+                await noteStore.incrementalFetch(directory: directory)
             }
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
-                guard !UserPreference().shouldGrantiCloud else { return }
-                viewModel.showCanvasView = true
+                guard !preferenceStore.shouldGrantiCloud else { return }
+                noteStore.showCanvasView = true
             default:
                 break
             }
@@ -117,13 +131,13 @@ struct NoteListParentView: View {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             Menu {
                 Button {
-                    viewModel.alertType = .archive
-                    viewModel.showAlert = true
+                    noteStore.alertType = .archive
+                    noteStore.showAlert = true
                 } label: {
-                    Label(viewModel.isTargetDirectoryArchived
+                    Label(isTargetDirectoryArchived
                           ? "Move all to Inbox"
                           : "Move all to Trash",
-                          systemImage: viewModel.isTargetDirectoryArchived
+                          systemImage: isTargetDirectoryArchived
                           ? "tray.circle"
                           : "trash"
                     )
@@ -135,17 +149,17 @@ struct NoteListParentView: View {
                 }
                 Button {
                     Task {
-                        await viewModel.reload()
+                        await noteStore.reload(directory: directory)
                     }
                 } label: {
                     Label("Reload", systemImage: "arrow.triangle.2.circlepath")
                 }
-                .disabled(viewModel.isShowLoading)
+                .disabled(noteStore.isLoading)
             } label: {
                 Image(systemName: "ellipsis.circle")
             }
             Button {
-                viewModel.showCanvasView = true
+                noteStore.showCanvasView = true
             } label: {
                 Image(systemName: "square.and.pencil")
             }
@@ -154,13 +168,14 @@ struct NoteListParentView: View {
 
     /// This view is for scrolling to the bottom
     private struct NoteScrollView: View {
-        var viewModel: NoteViewModel
+        let directory: NoteDirectory
+        @Environment(NoteStore.self) private var noteStore
 
         var body: some View {
             ScrollViewReader { proxy in
                 ScrollView {
                     Spacer(minLength: 30.0)
-                    NoteListView(viewModel: viewModel)
+                    NoteListView(directory: directory)
                 }
                 .padding([.leading, .trailing])
                 .navigationBarTitleDisplayMode(.inline)
@@ -180,8 +195,7 @@ struct NoteListParentView: View {
         }
 
         func scrollToBottom(proxy: ScrollViewProxy) {
-            guard let lastDocument =
-        viewModel.displayNoteDocuments.last else { return }
+            guard let lastDocument = noteStore.displayDocuments(for: directory).last else { return }
             withAnimation {
                 proxy.scrollTo(lastDocument.id, anchor: .bottom)
             }
@@ -212,10 +226,9 @@ struct NoteListParentView: View {
 
     private var localStorageButton: some View {
         Button {
-            var userPreference = UserPreference()
-            userPreference.enablediCloud = false
+            preferenceStore.enablediCloud = false
             Task {
-                await viewModel.incrementalFetch()
+                await noteStore.incrementalFetch(directory: directory)
             }
         } label: {
             Text("Use device storage")
@@ -224,12 +237,12 @@ struct NoteListParentView: View {
 
     private var archiveActionButton: some View {
         Button(role: .destructive) {
-            viewModel.isTargetDirectoryArchived
-            ? viewModel.allUnarchive()
-            : viewModel.allArchive()
+            isTargetDirectoryArchived
+            ? noteStore.allUnarchive()
+            : noteStore.allArchive()
         } label: {
             Text(
-                viewModel.isTargetDirectoryArchived
+                isTargetDirectoryArchived
                 ? "Move all to Inbox"
                 : "Move all to Trash"
             )
