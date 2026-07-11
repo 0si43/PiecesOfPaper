@@ -44,6 +44,7 @@
 		A70000000000000000000015 /* TagStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000005 /* TagStore.swift */; };
 		A70000000000000000000016 /* PreferenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000006 /* PreferenceStore.swift */; };
 		A70000000000000000000017 /* NoteStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000007 /* NoteStoreTests.swift */; };
+		A70000000000000000000018 /* NoteDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000008 /* NoteDocumentTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,6 +102,7 @@
 		A70000000000000000000005 /* TagStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagStore.swift; sourceTree = "<group>"; };
 		A70000000000000000000006 /* PreferenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceStore.swift; sourceTree = "<group>"; };
 		A70000000000000000000007 /* NoteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreTests.swift; sourceTree = "<group>"; };
+		A70000000000000000000008 /* NoteDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocumentTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +198,7 @@
 			isa = PBXGroup;
 			children = (
 				A70000000000000000000007 /* NoteStoreTests.swift */,
+				A70000000000000000000008 /* NoteDocumentTests.swift */,
 				A6A16EC625B1673500DF323F /* Info.plist */,
 			);
 			path = PiecesOfPaperTests;
@@ -397,6 +400,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A70000000000000000000017 /* NoteStoreTests.swift in Sources */,
+				A70000000000000000000018 /* NoteDocumentTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

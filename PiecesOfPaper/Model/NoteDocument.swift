@@ -33,19 +33,14 @@ final class NoteDocument: UIDocument, Identifiable {
     }
 
     override func contents(forType typeName: String) throws -> Any {
-        let encoder = PropertyListEncoder()
-        let data = (try? encoder.encode(entity)) ?? Data()
-        return data
+        try PropertyListEncoder().encode(entity)
     }
 
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
-        guard let content = contents as? Data else { return }
-        let decoder = PropertyListDecoder()
-        do {
-            entity = try decoder.decode(NoteEntity.self, from: content)
-        } catch {
-            print("Data file format error: ", error.localizedDescription)
+        guard let content = contents as? Data else {
+            throw NoteDocumentError.invalidContents
         }
+        entity = try PropertyListDecoder().decode(NoteEntity.self, from: content)
     }
 
     // The later is the winner
@@ -65,5 +60,13 @@ final class NoteDocument: UIDocument, Identifiable {
         }
 
         return NoteDocument(fileURL: url, entity: NoteEntity(drawing: PKDrawing()))
+    }
+}
+
+enum NoteDocumentError: LocalizedError {
+    case invalidContents
+
+    var errorDescription: String? {
+        "The note file is not in a readable format."
     }
 }
