@@ -124,37 +124,47 @@ final class NoteStore {
     }
 
     private func updateDocuments(addedUrls: [URL], removedUrls: [URL], directory: NoteDirectory) async {
-        do {
-            let newDocuments = try await withThrowingTaskGroup(of: NoteDocument.self) { [weak self] group in
-                guard let self = self else { return [NoteDocument]() }
-                var documents: [NoteDocument] = []
-                for url in addedUrls {
-                    group.addTask {
-                        try await self.noteRepository.open(fileUrl: url)
-                    }
+        let (newDocuments, failedUrls) = await withTaskGroup(
+            of: (url: URL, document: NoteDocument?).self
+        ) { group -> ([NoteDocument], [URL]) in
+            for url in addedUrls {
+                group.addTask {
+                    (url, try? await self.noteRepository.open(fileUrl: url))
                 }
+            }
 
-                for try await document in group {
+            var documents: [NoteDocument] = []
+            var failed: [URL] = []
+            for await result in group {
+                if let document = result.document {
                     documents.append(document)
-                }
-
-                return documents
-            }
-
-            switch directory {
-            case .inbox:
-                inboxDocuments += newDocuments
-                removedUrls.forEach { url in
-                    inboxDocuments.removeAll { $0.fileURL == url }
-                }
-            case .archived:
-                archivedDocuments += newDocuments
-                removedUrls.forEach { url in
-                    archivedDocuments.removeAll { $0.fileURL == url }
+                } else {
+                    failed.append(result.url)
                 }
             }
-        } catch {
-            // FIXME: - need alert
+
+            return (documents, failed)
+        }
+
+        switch directory {
+        case .inbox:
+            inboxDocuments += newDocuments
+            // Drop failed URLs from the cache so the next fetch retries them
+            inboxCachedUrls.removeAll { failedUrls.contains($0) }
+            removedUrls.forEach { url in
+                inboxDocuments.removeAll { $0.fileURL == url }
+            }
+        case .archived:
+            archivedDocuments += newDocuments
+            archivedCachedUrls.removeAll { failedUrls.contains($0) }
+            removedUrls.forEach { url in
+                archivedDocuments.removeAll { $0.fileURL == url }
+            }
+        }
+
+        if !failedUrls.isEmpty {
+            alertType = .error(NoteStoreError.openFailed(count: failedUrls.count))
+            showAlert = true
         }
     }
 
@@ -277,5 +287,19 @@ final class NoteStore {
         archivedCachedUrls.removeAll { $0 == document.fileURL }
         inboxDocuments.removeAll { $0.entity.id == document.entity.id }
         archivedDocuments.removeAll { $0.entity.id == document.entity.id }
+    }
+}
+
+enum NoteStoreError: LocalizedError {
+    case openFailed(count: Int)
+    case saveFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .openFailed(let count):
+            "Failed to load \(count) note(s). The files may be corrupted or not downloaded yet."
+        case .saveFailed:
+            "Failed to save the note."
+        }
     }
 }
