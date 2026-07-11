@@ -220,7 +220,8 @@ final class NoteStore {
             try noteRepository.delete(fileUrl: document.fileURL)
             removeDocumentFromArrays(document)
         } catch {
-            // FIXME: - need alert
+            alertType = .error(NoteStoreError.deleteFailed)
+            showAlert = true
         }
     }
 
@@ -316,6 +317,7 @@ final class NoteStore {
 enum NoteStoreError: LocalizedError {
     case openFailed(count: Int)
     case saveFailed
+    case deleteFailed
 
     var errorDescription: String? {
         switch self {
@@ -323,6 +325,8 @@ enum NoteStoreError: LocalizedError {
             "Failed to load \(count) note(s). The files may be corrupted or not downloaded yet."
         case .saveFailed:
             "Failed to save the note."
+        case .deleteFailed:
+            "Failed to delete the note."
         }
     }
 }
