@@ -24,6 +24,7 @@
 		A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */; };
 		A6484FD6272E63B000676ED8 /* NoteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD5272E63B000676ED8 /* NoteListView.swift */; };
 		A64AE9F22759A963002C66F7 /* NoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F12759A963002C66F7 /* NoteView.swift */; };
+		A7000000000000000000001A /* ThumbnailCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000000A /* ThumbnailCache.swift */; };
 		A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F3275B203A002C66F7 /* NoteEntity.swift */; };
 		A6620E2C2748ABE400C708A2 /* CanvasViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E2B2748ABE400C708A2 /* CanvasViewModel.swift */; };
 		A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E2D274C6E8E00C708A2 /* SideBarListView.swift */; };
@@ -76,6 +77,7 @@
 		A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
 		A6484FD5272E63B000676ED8 /* NoteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteListView.swift; sourceTree = "<group>"; };
 		A64AE9F12759A963002C66F7 /* NoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteView.swift; sourceTree = "<group>"; };
+		A7000000000000000000000A /* ThumbnailCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCache.swift; sourceTree = "<group>"; };
 		A64AE9F3275B203A002C66F7 /* NoteEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEntity.swift; sourceTree = "<group>"; };
 		A6620E2B2748ABE400C708A2 /* CanvasViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasViewModel.swift; sourceTree = "<group>"; };
 		A6620E2D274C6E8E00C708A2 /* SideBarListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarListView.swift; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 				A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */,
 				A6484FD5272E63B000676ED8 /* NoteListView.swift */,
 				A64AE9F12759A963002C66F7 /* NoteView.swift */,
+				A7000000000000000000000A /* ThumbnailCache.swift */,
 				A6620E33274C774D00C708A2 /* ScrollButton.swift */,
 				A63C9594276447BD00822461 /* ListOrderSettingView.swift */,
 			);
@@ -418,6 +421,7 @@
 				A63C9586275DB86600822461 /* AddTagView.swift in Sources */,
 				A63C959B2765A5D500822461 /* NoteInformationView.swift in Sources */,
 				A64AE9F22759A963002C66F7 /* NoteView.swift in Sources */,
+				A7000000000000000000001A /* ThumbnailCache.swift in Sources */,
 				A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */,
 				A63C9588275DB97900822461 /* DeletableTag.swift in Sources */,
 				A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */,

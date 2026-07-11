@@ -15,9 +15,17 @@ enum FilePath {
             : documentDirectoryUrl
     }
 
+    // url(forUbiquityContainerIdentifier:) is slow and not meant for the main thread,
+    // but it is called from computed properties all over the app. Resolve it once and reuse.
+    private static var cachediCloudUrl: URL?
     static var iCloudUrl: URL? {
+        if let cachediCloudUrl {
+            return cachediCloudUrl
+        }
         guard let url = FileManager.default.url(forUbiquityContainerIdentifier: nil) else { return nil }
-        return url.appendingPathComponent("Documents")
+        let documentsUrl = url.appendingPathComponent("Documents")
+        cachediCloudUrl = documentsUrl
+        return documentsUrl
     }
 
     static var documentDirectoryUrl: URL? {
