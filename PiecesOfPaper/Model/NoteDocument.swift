@@ -12,6 +12,7 @@ import PencilKit
 final class NoteDocument: UIDocument, Identifiable {
     var entity: NoteEntity
     var id: UUID { entity.id }
+    private var stateObserver: NSObjectProtocol?
 
     var isArchived: Bool {
         guard let archivedUrl = FilePath.archivedUrl else { return false }
@@ -21,15 +22,31 @@ final class NoteDocument: UIDocument, Identifiable {
     override init(fileURL: URL) {
         self.entity = NoteEntity(drawing: PKDrawing())
         super.init(fileURL: fileURL)
-
-        if self.documentState == .inConflict {
-            resolveConflict(url: fileURL)
-        }
+        observeStateChange()
     }
 
     init(fileURL: URL, entity: NoteEntity) {
         self.entity = entity
         super.init(fileURL: fileURL)
+        observeStateChange()
+    }
+
+    deinit {
+        if let stateObserver {
+            NotificationCenter.default.removeObserver(stateObserver)
+        }
+    }
+
+    // Conflict state is populated asynchronously after open(), never at init time,
+    // so it has to be watched through stateChangedNotification.
+    private func observeStateChange() {
+        stateObserver = NotificationCenter.default.addObserver(
+            forName: UIDocument.stateChangedNotification,
+            object: self,
+            queue: .main
+        ) { [weak self] _ in
+            self?.resolveConflictIfNeeded()
+        }
     }
 
     override func contents(forType typeName: String) throws -> Any {
@@ -44,14 +61,14 @@ final class NoteDocument: UIDocument, Identifiable {
     }
 
     // The later is the winner
-    private func resolveConflict(url: URL) {
-        let currentVersion = NSFileVersion.currentVersionOfItem(at: url)
+    private func resolveConflictIfNeeded() {
+        guard documentState.contains(.inConflict) else { return }
         do {
-            try NSFileVersion.removeOtherVersionsOfItem(at: url)
+            try NSFileVersion.removeOtherVersionsOfItem(at: fileURL)
+            NSFileVersion.currentVersionOfItem(at: fileURL)?.isResolved = true
         } catch {
-            print("failed delete conflict files")
+            print("failed to delete conflict versions: ", error.localizedDescription)
         }
-        currentVersion?.isResolved = true
     }
 
     static func createTestData() -> NoteDocument {
