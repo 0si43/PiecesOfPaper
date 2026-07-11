@@ -13,6 +13,7 @@ import PencilKit
 final class CanvasViewModel {
     private(set) var document: NoteDocument
     var showDrawingInformation = false
+    private let noteRepository: NoteRepositoryProtocol
 
     var canReviewRequest: Bool {
         guard let inboxUrl = FilePath.inboxUrl,
@@ -22,32 +23,25 @@ final class CanvasViewModel {
         return inboxFileNames.count >= 5
     }
 
-    init(path: URL) {
+    init(path: URL, noteRepository: NoteRepositoryProtocol = NoteRepository()) {
         self.document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
+        self.noteRepository = noteRepository
     }
 
-    init(noteDocument: NoteDocument) {
+    init(noteDocument: NoteDocument, noteRepository: NoteRepositoryProtocol = NoteRepository()) {
         self.document = noteDocument
+        self.noteRepository = noteRepository
     }
 
     func save() {
         document.entity.updatedDate = Date()
-        writeFile(document: document)
+        noteRepository.save(document: document)
     }
 
     func save(drawing: PKDrawing) {
         guard document.entity.drawing != drawing else { return }
         document.entity.drawing = drawing
         document.entity.updatedDate = Date()
-        writeFile(document: document)
-
-    }
-
-    private func writeFile(document: NoteDocument) {
-        if FileManager.default.fileExists(atPath: document.fileURL.path) {
-            document.save(to: document.fileURL, for: .forOverwriting)
-        } else {
-            document.save(to: document.fileURL, for: .forCreating)
-        }
+        noteRepository.save(document: document)
     }
 }

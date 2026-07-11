@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import PencilKit
 
 @Observable
 @MainActor
@@ -31,7 +30,6 @@ final class NoteStore {
     // MARK: - UI state
     var isLoading = true
     var showCanvasView = false
-    var canvasDocument: NoteDocument?
     var showAlert = false
     var alertType: AlertType?
     var documentToShare: NoteDocument?
@@ -188,31 +186,6 @@ final class NoteStore {
 
     // MARK: - Data operations
 
-    func save(document: NoteDocument) {
-        document.entity.updatedDate = Date()
-        noteRepository.save(document: document)
-        updateDocumentInArray(document)
-    }
-
-    func save(document: NoteDocument, drawing: PKDrawing) {
-        guard document.entity.drawing != drawing else { return }
-        document.entity.drawing = drawing
-        document.entity.updatedDate = Date()
-        noteRepository.save(document: document)
-        updateDocumentInArray(document)
-    }
-
-    func createNewNote() -> NoteDocument? {
-        guard let inboxUrl = FilePath.inboxUrl else { return nil }
-        let newUrl = inboxUrl.appendingPathComponent(FilePath.fileName)
-        let entity = NoteEntity(drawing: PKDrawing())
-        let newDocument = NoteDocument(fileURL: newUrl, entity: entity)
-        noteRepository.save(document: newDocument, for: .forCreating)
-        inboxCachedUrls.append(newUrl)
-        inboxDocuments.append(newDocument)
-        return newDocument
-    }
-
     func duplicate(_ document: NoteDocument, in directory: NoteDirectory) {
         guard let newDocument = noteRepository.duplicate(document: document, in: directory) else { return }
         switch directory {
@@ -286,16 +259,6 @@ final class NoteStore {
         document.entity.tags.removeAll { $0 == tag }
         noteRepository.save(document: document)
         updateDocumentInArray(document)
-    }
-
-    // MARK: - Review request helper
-
-    var canReviewRequest: Bool {
-        guard let inboxUrl = FilePath.inboxUrl,
-              let inboxFileNames = try? FileManager.default.contentsOfDirectory(atPath: inboxUrl.path) else {
-            return false
-        }
-        return inboxFileNames.count >= 5
     }
 
     // MARK: - Private helpers

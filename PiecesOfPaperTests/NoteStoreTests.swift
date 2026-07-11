@@ -22,13 +22,6 @@ struct NoteStoreTests {
         )
     }
 
-    func add(a: Int, b: Int) -> Int { a + b }
-
-    @Test func test_add() {
-        let result = add(a: 1, b: 1)
-        #expect(result == 2)
-    }
-
     @Test func test_incrementalFetch() async throws {
         await noteStore.incrementalFetch(directory: .inbox)
         #expect(noteStore.displayInboxDocuments == documents.reversed())

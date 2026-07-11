@@ -19,12 +19,11 @@ final class ListOrderSettingViewModel {
     // Callback to notify parent of changes
     var onListOrderChanged: ((ListOrder) -> Void)?
 
-    init(listOrder: ListOrder) {
+    init(listOrder: ListOrder, tags: [TagEntity]) {
         self.listOrder = listOrder
-        let allTags = TagModel().tags
-        self.tags = allTags
-        self.filteringTag = allTags.filter { listOrder.filterBy.contains($0) }
-        self.nonFilteringTag = allTags.filter { !listOrder.filterBy.contains($0) }
+        self.tags = tags
+        self.filteringTag = tags.filter { listOrder.filterBy.contains($0) }
+        self.nonFilteringTag = tags.filter { !listOrder.filterBy.contains($0) }
     }
 
     private func updatedFilterTag() {
