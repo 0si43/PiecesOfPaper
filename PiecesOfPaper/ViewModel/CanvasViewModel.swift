@@ -13,6 +13,7 @@ import PencilKit
 final class CanvasViewModel {
     private(set) var document: NoteDocument
     var showDrawingInformation = false
+    var showSaveFailedAlert = false
     private let noteRepository: NoteRepositoryProtocol
 
     var canReviewRequest: Bool {
@@ -33,15 +34,19 @@ final class CanvasViewModel {
         self.noteRepository = noteRepository
     }
 
-    func save() {
+    func save(completion: ((Bool) -> Void)? = nil) {
         document.entity.updatedDate = Date()
-        noteRepository.save(document: document)
+        noteRepository.save(document: document) { [weak self] success in
+            if !success {
+                self?.showSaveFailedAlert = true
+            }
+            completion?(success)
+        }
     }
 
     func save(drawing: PKDrawing) {
         guard document.entity.drawing != drawing else { return }
         document.entity.drawing = drawing
-        document.entity.updatedDate = Date()
-        noteRepository.save(document: document)
+        save()
     }
 }

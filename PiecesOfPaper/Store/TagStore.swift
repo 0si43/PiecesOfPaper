@@ -21,17 +21,24 @@ final class TagStore {
 
     func add(_ tag: TagEntity) {
         tags.append(tag)
-        repository.saveAll(tags)
+        saveOrRollback()
     }
 
     func remove(at offsets: IndexSet) {
         tags.remove(atOffsets: offsets)
-        repository.saveAll(tags)
+        saveOrRollback()
     }
 
     func remove(_ tag: TagEntity) {
         tags.removeAll { $0 == tag }
-        repository.saveAll(tags)
+        saveOrRollback()
+    }
+
+    // Reload from disk when a save fails so the UI never shows a state that was not persisted
+    private func saveOrRollback() {
+        if !repository.saveAll(tags) {
+            reload()
+        }
     }
 
     func tagsFor(document: NoteDocument) -> [TagEntity] {

@@ -58,8 +58,11 @@ struct CanvasView: View {
         .alert("", isPresented: $showUnsavedAlert) {
             Button {
                 canvasViewModel.document.entity.drawing = canvasView.drawing
-                canvasViewModel.save()
-                closeCanvas()
+                canvasViewModel.save { success in
+                    if success {
+                        closeCanvas()
+                    }
+                }
             } label: {
                 Text("Save")
             }
@@ -70,6 +73,12 @@ struct CanvasView: View {
             }
          } message: {
              Text("Save changes?")
+        }
+        .alert("Failed to save the note",
+               isPresented: $canvasViewModel.showSaveFailedAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Your latest changes may not be persisted.")
         }
     }
 

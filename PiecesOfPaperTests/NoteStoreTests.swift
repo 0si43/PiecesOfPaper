@@ -13,11 +13,13 @@ import Testing
 @MainActor
 struct NoteStoreTests {
     var noteStore: NoteStore
+    let repositoryMock: NoteRepositoryMock
     let documents = (0...2).map { _ in NoteDocument.createTestData() }
 
     init() {
+        repositoryMock = NoteRepositoryMock(documents: documents)
         noteStore = NoteStore(
-            noteRepository: NoteRepositoryMock(documents: documents),
+            noteRepository: repositoryMock,
             preferenceRepository: PreferenceRepositoryMock()
         )
     }
@@ -25,6 +27,51 @@ struct NoteStoreTests {
     @Test func test_incrementalFetch() async throws {
         await noteStore.incrementalFetch(directory: .inbox)
         #expect(noteStore.displayInboxDocuments == documents.reversed())
+    }
+
+    @Test func test_incrementalFetch_skipsUnreadableFileAndShowsError() async {
+        repositoryMock.failingUrls = [NoteRepositoryMock.TestFile.file2.url]
+        await noteStore.incrementalFetch(directory: .inbox)
+        #expect(noteStore.displayInboxDocuments.count == 2)
+        #expect(noteStore.showAlert)
+    }
+
+    @Test func test_incrementalFetch_retriesFailedFileOnNextFetch() async {
+        repositoryMock.failingUrls = [NoteRepositoryMock.TestFile.file2.url]
+        await noteStore.incrementalFetch(directory: .inbox)
+        #expect(noteStore.displayInboxDocuments.count == 2)
+
+        repositoryMock.failingUrls = []
+        await noteStore.incrementalFetch(directory: .inbox)
+        #expect(noteStore.displayInboxDocuments.count == 3)
+    }
+
+    @Test func test_archive_keepsDocumentWhenMoveFails() async {
+        await noteStore.incrementalFetch(directory: .inbox)
+        repositoryMock.moveShouldThrow = true
+        let target = noteStore.displayInboxDocuments[0]
+        noteStore.archive(target)
+        #expect(noteStore.displayInboxDocuments.count == 3)
+        #expect(noteStore.displayArchivedDocuments.isEmpty)
+    }
+
+    @Test func test_addTag_persistsTagOnSuccessfulSave() async {
+        await noteStore.incrementalFetch(directory: .inbox)
+        let target = noteStore.displayInboxDocuments[0]
+        let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
+        noteStore.addTag(tag, to: target)
+        #expect(target.entity.tags == [tag])
+        #expect(!noteStore.showAlert)
+    }
+
+    @Test func test_addTag_rollsBackTagWhenSaveFails() async {
+        await noteStore.incrementalFetch(directory: .inbox)
+        repositoryMock.saveShouldSucceed = false
+        let target = noteStore.displayInboxDocuments[0]
+        let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
+        noteStore.addTag(tag, to: target)
+        #expect(target.entity.tags.isEmpty)
+        #expect(noteStore.showAlert)
     }
 }
 
@@ -47,6 +94,8 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     }
 
     var documents: [NoteDocument]
+    var failingUrls: Set<URL> = []
+    var moveShouldThrow = false
 
     init(documents: [NoteDocument]) {
         self.documents = documents
@@ -58,30 +107,38 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
 
     @MainActor
     func open(fileUrl: URL) async throws -> NoteDocument {
+        if failingUrls.contains(fileUrl) {
+            throw NoteRepositoryError.fileOpenFailed(path: fileUrl.path)
+        }
         switch fileUrl.lastPathComponent {
         case "file1":
-            documents[0]
+            return documents[0]
         case "file2":
-            documents[1]
+            return documents[1]
         case "file3":
-            documents[2]
+            return documents[2]
         default:
             fatalError()
         }
     }
 
-    func save(document: NoteDocument) {}
-
-    func save(document: NoteDocument, for saveOperation: UIDocument.SaveOperation) {}
+    var saveShouldSucceed = true
+    func save(document: NoteDocument, completion: @escaping (Bool) -> Void) {
+        completion(saveShouldSucceed)
+    }
 
     func delete(fileUrl: URL) throws {}
 
     func move(fileUrl: URL, to directory: NoteDirectory) throws -> URL {
-        fileUrl
+        if moveShouldThrow {
+            throw NoteRepositoryError.directoryNotAvailable
+        }
+        return fileUrl
     }
 
-    func duplicate(document: NoteDocument, in directory: NoteDirectory) -> NoteDocument? {
-        nil
+    func duplicate(document: NoteDocument, in directory: NoteDirectory,
+                   completion: @escaping (NoteDocument?) -> Void) {
+        completion(nil)
     }
 }
 
