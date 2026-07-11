@@ -11,7 +11,6 @@
 		A62EEAF42732517600D513B8 /* NoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62EEAF32732517600D513B8 /* NoteViewModel.swift */; };
 		A63C956D275C7CF300822461 /* TagEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C956C275C7CF300822461 /* TagEntity.swift */; };
 		A63C9578275C8F4A00822461 /* TagList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9577275C8F4A00822461 /* TagList.swift */; };
-		A63C957C275C8FD900822461 /* TagListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C957B275C8FD900822461 /* TagListViewModel.swift */; };
 		A63C9580275CFF7900822461 /* TagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C957F275CFF7900822461 /* TagModel.swift */; };
 		A63C9582275D1C2E00822461 /* TagHStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9581275D1C2E00822461 /* TagHStack.swift */; };
 		A63C9584275DB67700822461 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9583275DB67700822461 /* Tag.swift */; };
@@ -21,7 +20,6 @@
 		A63C9590275E111500822461 /* AddTagFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C958F275E111500822461 /* AddTagFooter.swift */; };
 		A63C9593276444CF00822461 /* ListOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9592276444CF00822461 /* ListOrder.swift */; };
 		A63C9595276447BD00822461 /* ListOrderSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9594276447BD00822461 /* ListOrderSettingView.swift */; };
-		A63C95972764589F00822461 /* ListOrderSettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C95962764589F00822461 /* ListOrderSettingViewModel.swift */; };
 		A63C959B2765A5D500822461 /* NoteInformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C959A2765A5D500822461 /* NoteInformationView.swift */; };
 		A6484FCE272B923B00676ED8 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FCD272B923B00676ED8 /* CanvasView.swift */; };
 		A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */; };
@@ -41,7 +39,6 @@
 		A6C8DD072D3CC1E300D7D32F /* ListOrderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C8DD062D3CC1E300D7D32F /* ListOrderStore.swift */; };
 		A6C8DD092D3CEE5400D7D32F /* Notification+.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C8DD082D3CEE5400D7D32F /* Notification+.swift */; };
 		A6CADA51276752E600657E9E /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA50276752E600657E9E /* SettingView.swift */; };
-		A6CADA532767581700657E9E /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA522767581700657E9E /* SettingViewModel.swift */; };
 		A6CADA5527675D8500657E9E /* UserPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA5427675D8500657E9E /* UserPreference.swift */; };
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
 		A6F6ED4B27C77A7500DD3296 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F6ED4A27C77A7500DD3296 /* RootView.swift */; };
@@ -70,7 +67,6 @@
 		A62EEAF32732517600D513B8 /* NoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewModel.swift; sourceTree = "<group>"; };
 		A63C956C275C7CF300822461 /* TagEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagEntity.swift; sourceTree = "<group>"; };
 		A63C9577275C8F4A00822461 /* TagList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagList.swift; sourceTree = "<group>"; };
-		A63C957B275C8FD900822461 /* TagListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListViewModel.swift; sourceTree = "<group>"; };
 		A63C957F275CFF7900822461 /* TagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagModel.swift; sourceTree = "<group>"; };
 		A63C9581275D1C2E00822461 /* TagHStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagHStack.swift; sourceTree = "<group>"; };
 		A63C9583275DB67700822461 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
@@ -80,7 +76,6 @@
 		A63C958F275E111500822461 /* AddTagFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTagFooter.swift; sourceTree = "<group>"; };
 		A63C9592276444CF00822461 /* ListOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrder.swift; sourceTree = "<group>"; };
 		A63C9594276447BD00822461 /* ListOrderSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrderSettingView.swift; sourceTree = "<group>"; };
-		A63C95962764589F00822461 /* ListOrderSettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrderSettingViewModel.swift; sourceTree = "<group>"; };
 		A63C959A2765A5D500822461 /* NoteInformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteInformationView.swift; sourceTree = "<group>"; };
 		A6484FCD272B923B00676ED8 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKCanvasViewWrapper.swift; sourceTree = "<group>"; };
@@ -105,7 +100,6 @@
 		A6C8DD062D3CC1E300D7D32F /* ListOrderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrderStore.swift; sourceTree = "<group>"; };
 		A6C8DD082D3CEE5400D7D32F /* Notification+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+.swift"; sourceTree = "<group>"; };
 		A6CADA50276752E600657E9E /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
-		A6CADA522767581700657E9E /* SettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewModel.swift; sourceTree = "<group>"; };
 		A6CADA5427675D8500657E9E /* UserPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreference.swift; sourceTree = "<group>"; };
 		A6DE5BB72437167C006D3D47 /* Pieces of Paper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Pieces of Paper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6DE5BC32437167E006D3D47 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -158,10 +152,7 @@
 				A62EEAF32732517600D513B8 /* NoteViewModel.swift */,
 				A6C8DD062D3CC1E300D7D32F /* ListOrderStore.swift */,
 				A6BB3DD02D4639DA00FFCB62 /* DocumentStore.swift */,
-				A63C957B275C8FD900822461 /* TagListViewModel.swift */,
 				A63C9589275DDA9E00822461 /* TagListToNoteViewModel.swift */,
-				A63C95962764589F00822461 /* ListOrderSettingViewModel.swift */,
-				A6CADA522767581700657E9E /* SettingViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -445,7 +436,6 @@
 				A6C8DD092D3CEE5400D7D32F /* Notification+.swift in Sources */,
 				A6C8DD072D3CC1E300D7D32F /* ListOrderStore.swift in Sources */,
 				A6BB3DCF2D460C7000FFCB62 /* TutorialView.swift in Sources */,
-				A63C95972764589F00822461 /* ListOrderSettingViewModel.swift in Sources */,
 				A6CADA51276752E600657E9E /* SettingView.swift in Sources */,
 				A63C9590275E111500822461 /* AddTagFooter.swift in Sources */,
 				A63C9584275DB67700822461 /* Tag.swift in Sources */,
@@ -462,12 +452,10 @@
 				A63C9595276447BD00822461 /* ListOrderSettingView.swift in Sources */,
 				A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */,
 				A6484FD6272E63B000676ED8 /* NoteListView.swift in Sources */,
-				A6CADA532767581700657E9E /* SettingViewModel.swift in Sources */,
 				A6BB3DD12D4639DA00FFCB62 /* DocumentStore.swift in Sources */,
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,
 				A6CADA5527675D8500657E9E /* UserPreference.swift in Sources */,
 				A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */,
-				A63C957C275C8FD900822461 /* TagListViewModel.swift in Sources */,
 				A63C958A275DDA9E00822461 /* TagListToNoteViewModel.swift in Sources */,
 				A70000000000000000000011 /* NoteRepository.swift in Sources */,
 				A70000000000000000000012 /* TagRepository.swift in Sources */,

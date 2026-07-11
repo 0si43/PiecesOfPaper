@@ -11,6 +11,8 @@ import SwiftUI
 struct SideBarListView: View {
     @State private var inboxNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .inbox))
     @State private var archivedNoteViewModel = NoteViewModel(documentStore: DocumentStore(directory: .archived))
+    @State private var tagStore = TagStore()
+    @State private var preferenceStore = PreferenceStore()
     @State private var selection: Page? = .inbox
     @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
 
@@ -50,6 +52,8 @@ struct SideBarListView: View {
                 Text("Unknown page")
             }
         }
+        .environment(tagStore)
+        .environment(preferenceStore)
     }
 
     private var sideBarList: some View {

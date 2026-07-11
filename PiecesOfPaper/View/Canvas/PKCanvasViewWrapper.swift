@@ -65,13 +65,13 @@ extension PKCanvasViewWrapper.Coordinator: PKCanvasViewDelegate {
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
         updateContentSizeIfNeeded(canvasView)
 
-        guard UserPreference().enabledAutoSave else { return }
+        guard PreferenceRepository().getEnabledAutoSave() else { return }
         parent.saveAction(canvasView.drawing)
     }
 
     private func updateContentSizeIfNeeded(_ canvasView: PKCanvasView) {
         guard !canvasView.drawing.bounds.isNull,
-              UserPreference().enabledInfiniteScroll else { return }
+              PreferenceRepository().getEnabledInfiniteScroll() else { return }
         let drawingWidth = canvasView.drawing.bounds.maxX
         if canvasView.contentSize.width * 9 / 10 < drawingWidth {
             canvasView.contentSize.width += canvasView.frame.width
