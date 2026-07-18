@@ -7,11 +7,11 @@
 //
 
 import SwiftUI
+import PencilKit
 
 struct NoteListParentView: View {
     let directory: NoteDirectory
     @Environment(NoteStore.self) private var noteStore
-    @Environment(TagStore.self) private var tagStore
     @Environment(PreferenceStore.self) private var preferenceStore
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.displayScale) private var displayScale
@@ -55,7 +55,7 @@ struct NoteListParentView: View {
         .fullScreenCover(isPresented: $noteStore.showCanvasView) {
             if let path = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) {
                 NavigationStack {
-                    CanvasView(canvasViewModel: makeNewNoteCanvasViewModel(path: path))
+                    CanvasView(note: NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: path))
                 }
             }
         }
@@ -65,8 +65,7 @@ struct NoteListParentView: View {
                     listOrder: Binding(
                         get: { noteStore.listOrder(for: directory) },
                         set: { noteStore.setListOrder($0, for: directory) }
-                    ),
-                    tags: tagStore.tags
+                    )
                 )
             }
         }
@@ -195,12 +194,6 @@ struct NoteListParentView: View {
                 proxy.scrollTo(lastNote.id, anchor: .bottom)
             }
         }
-    }
-
-    private func makeNewNoteCanvasViewModel(path: URL) -> CanvasViewModel {
-        let canvasViewModel = CanvasViewModel(newNoteAt: path)
-        canvasViewModel.onPersisted = { noteStore.upsert($0) }
-        return canvasViewModel
     }
 
     private func activityViewController(note: NoteData) -> UIActivityViewControllerWrapper {

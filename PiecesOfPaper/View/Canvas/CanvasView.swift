@@ -12,7 +12,8 @@ import StoreKit
 import LinkPresentation
 
 struct CanvasView: View {
-    @State var canvasViewModel: CanvasViewModel
+    @State private var note: NoteData
+    @Environment(NoteStore.self) private var noteStore
     @Environment(\.dismiss) private var dismiss
     @Environment(\.displayScale) private var displayScale
     @AppStorage("review_requested") private var reviewRequested = false
@@ -21,6 +22,14 @@ struct CanvasView: View {
     @State private var hideExceptPaper = true
     @State private var isShowActivityView = false
     @State private var showUnsavedAlert = false
+    @State private var showDrawingInformation = false
+    @State private var showSaveFailedAlert = false
+    @State private var savingDrawing: PKDrawing?
+    @State private var queuedSave: (drawing: PKDrawing, completion: ((Bool) -> Void)?)?
+
+    init(note: NoteData) {
+        self._note = State(initialValue: note)
+    }
 
     private var tapGesture: some Gesture {
         TapGesture(count: 1)
@@ -35,6 +44,36 @@ struct CanvasView: View {
         canvasView.becomeFirstResponder()
     }
 
+    private func hasUnsavedChanges() -> Bool {
+        let drawing = canvasView.drawing
+        return drawing != note.entity.drawing
+            && drawing != savingDrawing
+            && drawing != queuedSave?.drawing
+    }
+
+    // Saves are serialized: concurrent UIDocument writes to one file can complete
+    // out of order and resurrect an older drawing
+    private func save(drawing: PKDrawing, completion: ((Bool) -> Void)? = nil) {
+        guard savingDrawing == nil else {
+            queuedSave = (drawing, completion)
+            return
+        }
+        savingDrawing = drawing
+        noteStore.save(drawing: drawing, to: note) { savedNote in
+            savingDrawing = nil
+            if let savedNote {
+                note = savedNote
+            } else {
+                showSaveFailedAlert = true
+            }
+            completion?(savedNote != nil)
+            if let next = queuedSave {
+                queuedSave = nil
+                save(drawing: next.drawing, completion: next.completion)
+            }
+        }
+    }
+
     var body: some View {
         GeometryReader { geometry in
             canvas(windowSize: geometry.size)
@@ -44,9 +83,9 @@ struct CanvasView: View {
     private func canvas(windowSize: CGSize) -> some View {
         PKCanvasViewWrapper(canvasView: $canvasView,
                             toolPicker: $toolPicker,
-                            saveAction: { canvasViewModel.save(drawing: $0) })
+                            saveAction: { save(drawing: $0) })
         .onAppear {
-            canvasView.drawing = canvasViewModel.note.entity.drawing
+            canvasView.drawing = note.entity.drawing
             initialContentSize(windowSize: windowSize)
             hideExceptPaper = true
         }
@@ -64,7 +103,7 @@ struct CanvasView: View {
                content: { activityViewController })
         .alert("", isPresented: $showUnsavedAlert) {
             Button {
-                canvasViewModel.save(drawing: canvasView.drawing) { success in
+                save(drawing: canvasView.drawing) { success in
                     if success {
                         closeCanvas()
                     }
@@ -81,7 +120,7 @@ struct CanvasView: View {
              Text("Save changes?")
         }
         .alert("Failed to save the note",
-               isPresented: $canvasViewModel.showSaveFailedAlert) {
+               isPresented: $showSaveFailedAlert) {
             Button("OK", role: .cancel) {}
         } message: {
             Text("Your latest changes may not be persisted.")
@@ -118,13 +157,13 @@ struct CanvasView: View {
     private var toolbarItemGroup: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             Button {
-                canvasViewModel.showDrawingInformation.toggle()
+                showDrawingInformation.toggle()
             } label: {
                 Image(systemName: "info.circle")
             }
             .accessibilityLabel("Note Information")
-            .popover(isPresented: $canvasViewModel.showDrawingInformation) {
-                NoteInformationView(note: canvasViewModel.note)
+            .popover(isPresented: $showDrawingInformation) {
+                NoteInformationView(note: note)
             }
             Button {
                 setToolPickerVisible(false)
@@ -143,8 +182,8 @@ struct CanvasView: View {
         var image = UIImage()
         let trait = UITraitCollection(userInterfaceStyle: .light)
         trait.performAsCurrent {
-            image = canvasViewModel.note.entity.drawing.image(
-                from: canvasViewModel.note.entity.drawing.bounds,
+            image = note.entity.drawing.image(
+                from: note.entity.drawing.bounds,
                 scale: displayScale
             )
         }
@@ -153,7 +192,7 @@ struct CanvasView: View {
     }
 
     private func done() {
-        if canvasViewModel.hasUnsavedChanges(comparedTo: canvasView.drawing) {
+        if hasUnsavedChanges() {
             setToolPickerVisible(false)
             showUnsavedAlert = true
             return
@@ -168,7 +207,7 @@ struct CanvasView: View {
     }
 
     private func reviewRequest() {
-        if canvasViewModel.canReviewRequest,
+        if noteStore.canRequestReview,
            !reviewRequested,
            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             SKStoreReviewController.requestReview(in: windowScene)
@@ -178,5 +217,6 @@ struct CanvasView: View {
 }
 
 #Preview {
-    CanvasView(canvasViewModel: CanvasViewModel(note: NoteData.createTestData()))
+    CanvasView(note: NoteData.createTestData())
+        .environment(NoteStore())
 }

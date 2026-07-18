@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import PencilKit
 
 @Observable
 @MainActor
@@ -306,6 +307,33 @@ final class NoteStore {
         } else {
             inboxCachedUrls.append(note.fileURL)
             inboxNotes.append(note)
+        }
+    }
+
+    // MARK: - Canvas support
+
+    var canRequestReview: Bool {
+        noteRepository.getFileUrls(directory: .inbox).count >= 5
+    }
+
+    func save(drawing: PKDrawing, to note: NoteData, completion: @escaping (NoteData?) -> Void) {
+        // Base on the store's copy, not the caller's snapshot: the caller may hold a
+        // stale note while an earlier save is in flight
+        let current = self.note(id: note.id) ?? note
+        guard drawing != current.entity.drawing else {
+            completion(current)
+            return
+        }
+        var updated = current
+        updated.entity.drawing = drawing
+        updated.entity.updatedDate = Date()
+        noteRepository.save(updated.entity, to: updated.fileURL) { [weak self] success in
+            if success {
+                self?.upsert(updated)
+                completion(updated)
+            } else {
+                completion(nil)
+            }
         }
     }
 
