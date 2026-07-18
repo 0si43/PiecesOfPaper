@@ -193,6 +193,35 @@ struct NoteStoreTests {
         #expect(noteStore.note(id: note.id) == nil)
     }
 
+    @Test func test_saveDrawing_basesPayloadOnStoreCopyNotStaleSnapshot() async throws {
+        await noteStore.incrementalFetch(directory: .inbox)
+        let staleSnapshot = notes[0]
+        let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
+        noteStore.addTag(tag, to: staleSnapshot)
+
+        var result: NoteData?
+        noteStore.save(drawing: makeDrawing(), to: staleSnapshot) { result = $0 }
+
+        let saved = try #require(result)
+        #expect(saved.entity.tags == [tag])
+        #expect(noteStore.note(id: staleSnapshot.id)?.entity.tags == [tag])
+    }
+
+    @Test func test_saveDrawing_skipsWhenStoreCopyAlreadyHasDrawing() async {
+        await noteStore.incrementalFetch(directory: .inbox)
+        let staleSnapshot = notes[0]
+        let drawing = makeDrawing()
+        var first: NoteData?
+        noteStore.save(drawing: drawing, to: staleSnapshot) { first = $0 }
+        let callsAfterFirst = repositoryMock.saveCallCount
+
+        var second: NoteData?
+        noteStore.save(drawing: drawing, to: staleSnapshot) { second = $0 }
+
+        #expect(second == first)
+        #expect(repositoryMock.saveCallCount == callsAfterFirst)
+    }
+
     @Test func test_canRequestReview_requiresFiveInboxFiles() {
         repositoryMock.fileUrls = (0..<4).map { URL(fileURLWithPath: "/path/to/note\($0).plist") }
         #expect(!noteStore.canRequestReview)
@@ -259,7 +288,9 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     }
 
     var saveShouldSucceed = true
+    private(set) var saveCallCount = 0
     func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void) {
+        saveCallCount += 1
         completion(saveShouldSucceed)
     }
 

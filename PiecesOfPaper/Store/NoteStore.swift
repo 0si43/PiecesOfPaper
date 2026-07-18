@@ -318,11 +318,14 @@ final class NoteStore {
 
     /// Persists the drawing and passes the saved note to the completion, or nil on failure
     func save(drawing: PKDrawing, to note: NoteData, completion: ((NoteData?) -> Void)? = nil) {
-        guard drawing != note.entity.drawing else {
-            completion?(note)
+        // Base on the store's copy, not the caller's snapshot: the caller may hold a
+        // stale note while an earlier save is in flight
+        let current = self.note(id: note.id) ?? note
+        guard drawing != current.entity.drawing else {
+            completion?(current)
             return
         }
-        var updated = note
+        var updated = current
         updated.entity.drawing = drawing
         updated.entity.updatedDate = Date()
         noteRepository.save(updated.entity, to: updated.fileURL) { [weak self] success in

@@ -24,6 +24,8 @@ struct CanvasView: View {
     @State private var showUnsavedAlert = false
     @State private var showDrawingInformation = false
     @State private var showSaveFailedAlert = false
+    @State private var savingDrawing: PKDrawing?
+    @State private var queuedSave: (drawing: PKDrawing, completion: ((Bool) -> Void)?)?
 
     init(note: NoteData) {
         self._note = State(initialValue: note)
@@ -43,17 +45,32 @@ struct CanvasView: View {
     }
 
     private func hasUnsavedChanges() -> Bool {
-        canvasView.drawing != note.entity.drawing
+        let drawing = canvasView.drawing
+        return drawing != note.entity.drawing
+            && drawing != savingDrawing
+            && drawing != queuedSave?.drawing
     }
 
+    // Saves are serialized: concurrent UIDocument writes to one file can complete
+    // out of order and resurrect an older drawing
     private func save(drawing: PKDrawing, completion: ((Bool) -> Void)? = nil) {
+        guard savingDrawing == nil else {
+            queuedSave = (drawing, completion)
+            return
+        }
+        savingDrawing = drawing
         noteStore.save(drawing: drawing, to: note) { savedNote in
+            savingDrawing = nil
             if let savedNote {
                 note = savedNote
             } else {
                 showSaveFailedAlert = true
             }
             completion?(savedNote != nil)
+            if let next = queuedSave {
+                queuedSave = nil
+                save(drawing: next.drawing, completion: next.completion)
+            }
         }
     }
 
