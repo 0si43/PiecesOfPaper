@@ -9,7 +9,7 @@
 import Foundation
 import PencilKit
 
-struct NoteEntity: Codable {
+struct NoteEntity: Codable, Equatable {
     var id = UUID()
     var drawing: PKDrawing
     var tags: [TagEntity]
