@@ -9,7 +9,7 @@
 import UIKit
 import PencilKit
 
-/// Renders note thumbnails off the main thread and caches them.
+/// Renders note thumbnails asynchronously and caches them.
 /// The cache key includes updatedDate, so an edited note is re-rendered automatically.
 final class ThumbnailCache {
     static let shared = ThumbnailCache()
@@ -24,9 +24,11 @@ final class ThumbnailCache {
         let drawing = note.entity.drawing
         guard !drawing.bounds.isNull else { return UIImage() }
 
-        let image = await Task.detached(priority: .userInitiated) {
+        // Not Task.detached: rendering PKDrawing off the main thread breaks
+        // PKCanvasView drawing process-wide on device (#187).
+        let image = await MainActor.run {
             drawing.image(from: drawing.bounds, scale: 1.0)
-        }.value
+        }
         cache.setObject(image, forKey: key)
         return image
     }
