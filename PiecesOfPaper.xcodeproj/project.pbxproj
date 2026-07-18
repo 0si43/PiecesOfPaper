@@ -47,6 +47,7 @@
 		A70000000000000000000016 /* PreferenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000006 /* PreferenceStore.swift */; };
 		A70000000000000000000017 /* NoteStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000007 /* NoteStoreTests.swift */; };
 		A70000000000000000000018 /* NoteDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000008 /* NoteDocumentTests.swift */; };
+		A7000000000000000000001B /* PreferenceStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000000B /* PreferenceStoreTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +108,7 @@
 		A70000000000000000000006 /* PreferenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceStore.swift; sourceTree = "<group>"; };
 		A70000000000000000000007 /* NoteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreTests.swift; sourceTree = "<group>"; };
 		A70000000000000000000008 /* NoteDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocumentTests.swift; sourceTree = "<group>"; };
+		A7000000000000000000000B /* PreferenceStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceStoreTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -204,6 +206,7 @@
 			children = (
 				A70000000000000000000007 /* NoteStoreTests.swift */,
 				A70000000000000000000008 /* NoteDocumentTests.swift */,
+				A7000000000000000000000B /* PreferenceStoreTests.swift */,
 				A6A16EC625B1673500DF323F /* Info.plist */,
 			);
 			path = PiecesOfPaperTests;
@@ -408,6 +411,7 @@
 			files = (
 				A70000000000000000000017 /* NoteStoreTests.swift in Sources */,
 				A70000000000000000000018 /* NoteDocumentTests.swift in Sources */,
+				A7000000000000000000001B /* PreferenceStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
