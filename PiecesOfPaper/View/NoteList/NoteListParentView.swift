@@ -55,7 +55,7 @@ struct NoteListParentView: View {
         .fullScreenCover(isPresented: $noteStore.showCanvasView) {
             if let path = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) {
                 NavigationStack {
-                    CanvasView(canvasViewModel: CanvasViewModel(path: path))
+                    CanvasView(canvasViewModel: makeNewNoteCanvasViewModel(path: path))
                 }
             }
         }
@@ -204,6 +204,12 @@ struct NoteListParentView: View {
                 proxy.scrollTo(lastDocument.id, anchor: .bottom)
             }
         }
+    }
+
+    private func makeNewNoteCanvasViewModel(path: URL) -> CanvasViewModel {
+        let canvasViewModel = CanvasViewModel(newNoteAt: path)
+        canvasViewModel.onPersisted = { noteStore.upsert($0) }
+        return canvasViewModel
     }
 
     private func activityViewController(document: NoteDocument) -> UIActivityViewControllerWrapper {

@@ -9,11 +9,13 @@
 import Foundation
 import PencilKit
 
+@MainActor
 @Observable
 final class CanvasViewModel {
-    private(set) var document: NoteDocument
+    private(set) var note: NoteData
     var showDrawingInformation = false
     var showSaveFailedAlert = false
+    var onPersisted: ((NoteData) -> Void)?
     private let noteRepository: NoteRepositoryProtocol
 
     var canReviewRequest: Bool {
@@ -24,29 +26,35 @@ final class CanvasViewModel {
         return inboxFileNames.count >= 5
     }
 
-    init(path: URL, noteRepository: NoteRepositoryProtocol = NoteRepository()) {
-        self.document = NoteDocument(fileURL: path, entity: NoteEntity(drawing: PKDrawing()))
+    init(newNoteAt path: URL, noteRepository: NoteRepositoryProtocol = NoteRepository()) {
+        self.note = NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: path)
         self.noteRepository = noteRepository
     }
 
-    init(noteDocument: NoteDocument, noteRepository: NoteRepositoryProtocol = NoteRepository()) {
-        self.document = noteDocument
+    init(note: NoteData, noteRepository: NoteRepositoryProtocol = NoteRepository()) {
+        self.note = note
         self.noteRepository = noteRepository
     }
 
-    func save(completion: ((Bool) -> Void)? = nil) {
-        document.entity.updatedDate = Date()
-        noteRepository.save(document: document) { [weak self] success in
-            if !success {
+    func hasUnsavedChanges(comparedTo drawing: PKDrawing) -> Bool {
+        drawing != note.entity.drawing
+    }
+
+    func save(drawing: PKDrawing, completion: ((Bool) -> Void)? = nil) {
+        guard hasUnsavedChanges(comparedTo: drawing) else {
+            completion?(true)
+            return
+        }
+        note.entity.drawing = drawing
+        note.entity.updatedDate = Date()
+        let saved = note
+        noteRepository.save(saved.entity, to: saved.fileURL) { [weak self] success in
+            if success {
+                self?.onPersisted?(saved)
+            } else {
                 self?.showSaveFailedAlert = true
             }
             completion?(success)
         }
-    }
-
-    func save(drawing: PKDrawing) {
-        guard document.entity.drawing != drawing else { return }
-        document.entity.drawing = drawing
-        save()
     }
 }

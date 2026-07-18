@@ -80,6 +80,13 @@ final class NoteDocument: UIDocument, Identifiable {
     }
 }
 
+// Temporary bridge while views migrate from NoteDocument to NoteData (#160)
+extension NoteDocument {
+    var noteData: NoteData {
+        NoteData(entity: entity, fileURL: fileURL)
+    }
+}
+
 enum NoteDocumentError: LocalizedError {
     case invalidContents
 

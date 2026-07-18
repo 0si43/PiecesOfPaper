@@ -295,6 +295,31 @@ final class NoteStore {
         }
     }
 
+    // MARK: - Note lookup & write-back
+
+    func note(id: UUID) -> NoteData? {
+        let document = inboxDocuments.first { $0.entity.id == id }
+            ?? archivedDocuments.first { $0.entity.id == id }
+        return document?.noteData
+    }
+
+    func upsert(_ note: NoteData) {
+        if let document = inboxDocuments.first(where: { $0.entity.id == note.id })
+            ?? archivedDocuments.first(where: { $0.entity.id == note.id }) {
+            document.entity = note.entity
+            updateDocumentInArray(document)
+        } else {
+            let document = NoteDocument(fileURL: note.fileURL, entity: note.entity)
+            if note.isArchived {
+                archivedCachedUrls.append(note.fileURL)
+                archivedDocuments.append(document)
+            } else {
+                inboxCachedUrls.append(note.fileURL)
+                inboxDocuments.append(document)
+            }
+        }
+    }
+
     // MARK: - Private helpers
 
     private func updateDocumentInArray(_ document: NoteDocument) {
