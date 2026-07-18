@@ -15,13 +15,15 @@ import PencilKit
 struct NoteStoreTests {
     var noteStore: NoteStore
     let repositoryMock: NoteRepositoryMock
+    let preferenceRepositoryMock: PreferenceRepositoryMock
     let notes = (0...2).map { _ in NoteData.createTestData() }
 
     init() {
         repositoryMock = NoteRepositoryMock(notes: notes)
+        preferenceRepositoryMock = PreferenceRepositoryMock()
         noteStore = NoteStore(
             noteRepository: repositoryMock,
-            preferenceRepository: PreferenceRepositoryMock()
+            preferenceRepository: preferenceRepositoryMock
         )
     }
 
@@ -63,6 +65,48 @@ struct NoteStoreTests {
         noteStore.addTag(tag, to: target)
         #expect(noteStore.note(id: target.id)?.entity.tags == [tag])
         #expect(!noteStore.showAlert)
+    }
+
+    @Test func test_inboxListOrder_persistsOnChange() {
+        var order = ListOrder()
+        order.sortBy = .createdDate
+        order.sortOrder = .ascending
+        noteStore.inboxListOrder = order
+        #expect(preferenceRepositoryMock.setListOrderCalls.count == 1)
+        let call = preferenceRepositoryMock.setListOrderCalls.first
+        #expect(call?.directoryName == NoteDirectory.inbox.rawValue)
+        #expect(call?.listOrder.sortBy == .createdDate)
+        #expect(call?.listOrder.sortOrder == .ascending)
+    }
+
+    @Test func test_archivedListOrder_persistsOnChange() {
+        var order = ListOrder()
+        order.sortOrder = .ascending
+        noteStore.archivedListOrder = order
+        #expect(preferenceRepositoryMock.setListOrderCalls.count == 1)
+        let call = preferenceRepositoryMock.setListOrderCalls.first
+        #expect(call?.directoryName == NoteDirectory.archived.rawValue)
+        #expect(call?.listOrder.sortOrder == .ascending)
+    }
+
+    @Test func test_init_restoresListOrdersWithoutRePersisting() {
+        let preferenceMock = PreferenceRepositoryMock()
+        var inboxOrder = ListOrder()
+        inboxOrder.sortBy = .createdDate
+        var archivedOrder = ListOrder()
+        archivedOrder.sortOrder = .ascending
+        preferenceMock.listOrders = [
+            NoteDirectory.inbox.rawValue: inboxOrder,
+            NoteDirectory.archived.rawValue: archivedOrder
+        ]
+
+        let store = NoteStore(
+            noteRepository: NoteRepositoryMock(notes: []),
+            preferenceRepository: preferenceMock
+        )
+        #expect(store.inboxListOrder.sortBy == .createdDate)
+        #expect(store.archivedListOrder.sortOrder == .ascending)
+        #expect(preferenceMock.setListOrderCalls.isEmpty)
     }
 
     @Test func test_addTag_rollsBackTagWhenSaveFails() async {
@@ -173,13 +217,43 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     }
 }
 
-struct PreferenceRepositoryMock: PreferenceRepositoryProtocol {
-    func getEnablediCloud() -> Bool { false }
-    func setEnablediCloud(_ value: Bool) {}
-    func getEnabledAutoSave() -> Bool { true }
-    func setEnabledAutoSave(_ value: Bool) {}
-    func getEnabledInfiniteScroll() -> Bool { true }
-    func setEnabledInfiniteScroll(_ value: Bool) {}
-    func getListOrder(directoryName: String) -> ListOrder { ListOrder() }
-    func setListOrder(directoryName: String, listOrder: ListOrder) {}
+final class PreferenceRepositoryMock: PreferenceRepositoryProtocol {
+    var enablediCloud = false
+    var enabledAutoSave = true
+    var enabledInfiniteScroll = true
+    var listOrders: [String: ListOrder] = [:]
+    private(set) var setEnablediCloudCalls: [Bool] = []
+    private(set) var setEnabledAutoSaveCalls: [Bool] = []
+    private(set) var setEnabledInfiniteScrollCalls: [Bool] = []
+    private(set) var setListOrderCalls: [(directoryName: String, listOrder: ListOrder)] = []
+
+    func getEnablediCloud() -> Bool { enablediCloud }
+
+    func setEnablediCloud(_ value: Bool) {
+        enablediCloud = value
+        setEnablediCloudCalls.append(value)
+    }
+
+    func getEnabledAutoSave() -> Bool { enabledAutoSave }
+
+    func setEnabledAutoSave(_ value: Bool) {
+        enabledAutoSave = value
+        setEnabledAutoSaveCalls.append(value)
+    }
+
+    func getEnabledInfiniteScroll() -> Bool { enabledInfiniteScroll }
+
+    func setEnabledInfiniteScroll(_ value: Bool) {
+        enabledInfiniteScroll = value
+        setEnabledInfiniteScrollCalls.append(value)
+    }
+
+    func getListOrder(directoryName: String) -> ListOrder {
+        listOrders[directoryName] ?? ListOrder()
+    }
+
+    func setListOrder(directoryName: String, listOrder: ListOrder) {
+        listOrders[directoryName] = listOrder
+        setListOrderCalls.append((directoryName, listOrder))
+    }
 }
