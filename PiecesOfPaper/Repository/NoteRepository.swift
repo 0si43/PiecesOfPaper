@@ -23,6 +23,7 @@ protocol NoteRepositoryProtocol: AnyObject {
     func getFileUrls(directory: NoteDirectory) -> [URL]
     @MainActor func open(fileUrl: URL) async throws -> NoteDocument
     func save(document: NoteDocument, completion: @escaping (Bool) -> Void)
+    func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void)
     func delete(fileUrl: URL) throws
     func move(fileUrl: URL, to directory: NoteDirectory) throws -> URL
     func duplicate(document: NoteDocument, in directory: NoteDirectory,
@@ -56,6 +57,13 @@ final class NoteRepository: NoteRepositoryProtocol {
         let saveOperation: UIDocument.SaveOperation =
             FileManager.default.fileExists(atPath: document.fileURL.path) ? .forOverwriting : .forCreating
         document.save(to: document.fileURL, for: saveOperation, completionHandler: completion)
+    }
+
+    func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void) {
+        // The transient document lives until the completion handler fires,
+        // which keeps its conflict observer active for the whole save.
+        let document = NoteDocument(fileURL: fileUrl, entity: entity)
+        save(document: document, completion: completion)
     }
 
     func delete(fileUrl: URL) throws {

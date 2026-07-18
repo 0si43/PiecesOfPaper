@@ -127,6 +127,10 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         completion(saveShouldSucceed)
     }
 
+    func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void) {
+        completion(saveShouldSucceed)
+    }
+
     func delete(fileUrl: URL) throws {}
 
     func move(fileUrl: URL, to directory: NoteDirectory) throws -> URL {
