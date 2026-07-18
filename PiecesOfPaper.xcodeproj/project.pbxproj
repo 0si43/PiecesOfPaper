@@ -49,6 +49,9 @@
 		A70000000000000000000018 /* NoteDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000008 /* NoteDocumentTests.swift */; };
 		A7000000000000000000001B /* PreferenceStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000000B /* PreferenceStoreTests.swift */; };
 		A7000000000000000000001C /* TagStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000000C /* TagStoreTests.swift */; };
+		A70000000000000000000041 /* NoteData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000031 /* NoteData.swift */; };
+		A70000000000000000000042 /* NoteDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000032 /* NoteDataTests.swift */; };
+		A70000000000000000000043 /* CanvasViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000033 /* CanvasViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +114,9 @@
 		A70000000000000000000008 /* NoteDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocumentTests.swift; sourceTree = "<group>"; };
 		A7000000000000000000000B /* PreferenceStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceStoreTests.swift; sourceTree = "<group>"; };
 		A7000000000000000000000C /* TagStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagStoreTests.swift; sourceTree = "<group>"; };
+		A70000000000000000000031 /* NoteData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteData.swift; sourceTree = "<group>"; };
+		A70000000000000000000032 /* NoteDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDataTests.swift; sourceTree = "<group>"; };
+		A70000000000000000000033 /* CanvasViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +164,7 @@
 				A6C8DD082D3CEE5400D7D32F /* Notification+.swift */,
 				A6620E3B274CD88000C708A2 /* FilePath.swift */,
 				A63C9592276444CF00822461 /* ListOrder.swift */,
+				A70000000000000000000031 /* NoteData.swift */,
 				A6620E39274C8FA400C708A2 /* NoteDocument.swift */,
 				A64AE9F3275B203A002C66F7 /* NoteEntity.swift */,
 				A63C956C275C7CF300822461 /* TagEntity.swift */,
@@ -206,6 +213,8 @@
 		A6A16EC325B1673500DF323F /* PiecesOfPaperTests */ = {
 			isa = PBXGroup;
 			children = (
+				A70000000000000000000033 /* CanvasViewModelTests.swift */,
+				A70000000000000000000032 /* NoteDataTests.swift */,
 				A70000000000000000000007 /* NoteStoreTests.swift */,
 				A70000000000000000000008 /* NoteDocumentTests.swift */,
 				A7000000000000000000000B /* PreferenceStoreTests.swift */,
@@ -412,6 +421,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A70000000000000000000043 /* CanvasViewModelTests.swift in Sources */,
+				A70000000000000000000042 /* NoteDataTests.swift in Sources */,
 				A70000000000000000000017 /* NoteStoreTests.swift in Sources */,
 				A70000000000000000000018 /* NoteDocumentTests.swift in Sources */,
 				A7000000000000000000001B /* PreferenceStoreTests.swift in Sources */,
@@ -451,6 +462,7 @@
 				A63C95972764589F00822461 /* ListOrderSettingViewModel.swift in Sources */,
 				A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */,
 				A6484FD6272E63B000676ED8 /* NoteListView.swift in Sources */,
+				A70000000000000000000041 /* NoteData.swift in Sources */,
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,
 				A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */,
 				A70000000000000000000011 /* NoteRepository.swift in Sources */,

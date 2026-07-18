@@ -44,9 +44,9 @@ struct CanvasView: View {
     private func canvas(windowSize: CGSize) -> some View {
         PKCanvasViewWrapper(canvasView: $canvasView,
                             toolPicker: $toolPicker,
-                            saveAction: canvasViewModel.save)
+                            saveAction: { canvasViewModel.save(drawing: $0) })
         .onAppear {
-            canvasView.drawing = canvasViewModel.document.entity.drawing
+            canvasView.drawing = canvasViewModel.note.entity.drawing
             initialContentSize(windowSize: windowSize)
             hideExceptPaper = true
         }
@@ -64,8 +64,7 @@ struct CanvasView: View {
                content: { activityViewController })
         .alert("", isPresented: $showUnsavedAlert) {
             Button {
-                canvasViewModel.document.entity.drawing = canvasView.drawing
-                canvasViewModel.save { success in
+                canvasViewModel.save(drawing: canvasView.drawing) { success in
                     if success {
                         closeCanvas()
                     }
@@ -125,7 +124,7 @@ struct CanvasView: View {
             }
             .accessibilityLabel("Note Information")
             .popover(isPresented: $canvasViewModel.showDrawingInformation) {
-                NoteInformationView(document: canvasViewModel.document)
+                NoteInformationView(note: canvasViewModel.note)
             }
             Button {
                 setToolPickerVisible(false)
@@ -144,8 +143,8 @@ struct CanvasView: View {
         var image = UIImage()
         let trait = UITraitCollection(userInterfaceStyle: .light)
         trait.performAsCurrent {
-            image = canvasViewModel.document.entity.drawing.image(
-                from: canvasViewModel.document.entity.drawing.bounds,
+            image = canvasViewModel.note.entity.drawing.image(
+                from: canvasViewModel.note.entity.drawing.bounds,
                 scale: displayScale
             )
         }
@@ -154,7 +153,7 @@ struct CanvasView: View {
     }
 
     private func done() {
-        if canvasView.drawing != canvasViewModel.document.entity.drawing {
+        if canvasViewModel.hasUnsavedChanges(comparedTo: canvasView.drawing) {
             setToolPickerVisible(false)
             showUnsavedAlert = true
             return
@@ -180,5 +179,5 @@ struct CanvasView: View {
 }
 
 #Preview {
-    CanvasView(canvasViewModel: CanvasViewModel(noteDocument: NoteDocument.createTestData()))
+    CanvasView(canvasViewModel: CanvasViewModel(note: NoteData.createTestData()))
 }

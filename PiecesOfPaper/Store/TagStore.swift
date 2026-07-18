@@ -41,12 +41,12 @@ final class TagStore {
         }
     }
 
-    func tagsFor(document: NoteDocument) -> [TagEntity] {
-        tags.filter { document.entity.tags.contains($0) }
+    func tagsFor(note: NoteData) -> [TagEntity] {
+        tags.filter { note.entity.tags.contains($0) }
     }
 
-    func tagsNotFor(document: NoteDocument) -> [TagEntity] {
-        tags.filter { !document.entity.tags.contains($0) }
+    func tagsNotFor(note: NoteData) -> [TagEntity] {
+        tags.filter { !note.entity.tags.contains($0) }
     }
 
     func filteringTags(from filterBy: [TagEntity]) -> [TagEntity] {

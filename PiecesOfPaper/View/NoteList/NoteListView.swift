@@ -16,57 +16,57 @@ struct NoteListView: View {
 
     var body: some View {
         LazyVGrid(columns: [gridItem]) {
-            ForEach(noteStore.displayDocuments(for: directory)) { document in
+            ForEach(noteStore.displayNotes(for: directory)) { note in
                 VStack {
-                    NoteView(document: document)
+                    NoteView(note: note)
                     .contextMenu {
-                        contextMenu(document: document)
+                        contextMenu(note: note)
                     }
                     NoteListTagHStack(
-                        tags: tagStore.tagsFor(document: document),
+                        tags: tagStore.tagsFor(note: note),
                         action: {
-                            noteStore.documentToTag = document
+                            noteStore.noteToTag = note
                         }
                     )
                         .padding(.horizontal)
                 }
-                .id(document.id)
+                .id(note.id)
             }
         }
     }
 
-    func contextMenu(document: NoteDocument) -> some View {
+    func contextMenu(note: NoteData) -> some View {
         Group {
             Button {
-                noteStore.duplicate(document, in: directory)
+                noteStore.duplicate(note, in: directory)
             } label: {
                 Label("Duplicate", systemImage: "doc.on.doc")
             }
-            if document.isArchived {
+            if note.isArchived {
                 Button {
-                    noteStore.unarchive(document)
+                    noteStore.unarchive(note)
                 } label: {
                     Label("Move to Inbox", systemImage: "tray")
                 }
                 Button(role: .destructive) {
-                    noteStore.delete(document)
+                    noteStore.delete(note)
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
             } else {
                 Button {
-                    noteStore.archive(document)
+                    noteStore.archive(note)
                 } label: {
                     Label("Move to Trash", systemImage: "trash")
                 }
             }
             Button {
-                noteStore.documentToShare = document
+                noteStore.noteToShare = note
             } label: {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             Button {
-                noteStore.documentToTag = document
+                noteStore.noteToTag = note
             } label: {
                 Label("Tag", systemImage: "tag")
             }

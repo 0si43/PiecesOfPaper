@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NoteInformationView: View {
-    private(set) var document: NoteDocument
+    private(set) var note: NoteData
     let dataFormatter: DateFormatter = {
         let dataFormatter = DateFormatter()
         dataFormatter.dateStyle = .medium
@@ -52,26 +52,26 @@ struct NoteInformationView: View {
         VStack {
             Group {
                 #if DEBUG
-                Text("🛠" + document.entity.id.uuidString)
+                Text("🛠" + note.entity.id.uuidString)
                     .minimumScaleFactor(0.5)
                 Divider()
                 #endif
             }
             Group {
-                Text(document.fileURL.lastPathComponent)
+                Text(note.fileURL.lastPathComponent)
                     .minimumScaleFactor(0.5)
                 Divider()
-                Text(dataFormatter.string(from: document.entity.createdDate))
+                Text(dataFormatter.string(from: note.entity.createdDate))
                 Divider()
-                Text(dataFormatter.string(from: document.entity.updatedDate))
+                Text(dataFormatter.string(from: note.entity.updatedDate))
                 Divider()
-                Text(document.isArchived ? "Archived" : "Inbox")
+                Text(note.isArchived ? "Archived" : "Inbox")
                 Divider()
-                if document.entity.tags.isEmpty {
+                if note.entity.tags.isEmpty {
                     Text("No tag")
                 } else {
                     ScrollView(.horizontal) {
-                        TagHStack(tags: document.entity.tags)
+                        TagHStack(tags: note.entity.tags)
                     }
                 }
             }
@@ -81,5 +81,5 @@ struct NoteInformationView: View {
 }
 
 #Preview {
-    NoteInformationView(document: NoteDocument.createTestData())
+    NoteInformationView(note: NoteData.createTestData())
 }

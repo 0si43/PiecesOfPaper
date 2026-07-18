@@ -9,15 +9,9 @@
 import UIKit
 import PencilKit
 
-final class NoteDocument: UIDocument, Identifiable {
+final class NoteDocument: UIDocument {
     var entity: NoteEntity
-    var id: UUID { entity.id }
     private var stateObserver: NSObjectProtocol?
-
-    var isArchived: Bool {
-        guard let archivedUrl = FilePath.archivedUrl else { return false }
-        return fileURL.path.hasPrefix(archivedUrl.path)
-    }
 
     override init(fileURL: URL) {
         self.entity = NoteEntity(drawing: PKDrawing())
@@ -71,13 +65,6 @@ final class NoteDocument: UIDocument, Identifiable {
         }
     }
 
-    static func createTestData() -> NoteDocument {
-        guard let url = URL(string: "file:///test") else {
-            fatalError()
-        }
-
-        return NoteDocument(fileURL: url, entity: NoteEntity(drawing: PKDrawing()))
-    }
 }
 
 enum NoteDocumentError: LocalizedError {
