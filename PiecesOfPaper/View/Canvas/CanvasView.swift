@@ -21,6 +21,9 @@ struct CanvasView: View {
     @State private var hideExceptPaper = true
     @State private var isShowActivityView = false
     @State private var showUnsavedAlert = false
+    @State private var windowSize = CGSize.zero
+    @State private var isDrawingLoaded = false
+    @State private var hasAppliedInitialContentSize = false
 
     private var tapGesture: some Gesture {
         TapGesture(count: 1)
@@ -36,18 +39,25 @@ struct CanvasView: View {
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            canvas(windowSize: geometry.size)
-        }
+        // Not a GeometryReader: wrapping the canvas in one breaks Apple Pencil
+        // input and stroke rendering on device (#187).
+        canvas
+            .onGeometryChange(for: CGSize.self) { proxy in
+                proxy.size
+            } action: { size in
+                windowSize = size
+                applyInitialContentSizeIfNeeded()
+            }
     }
 
-    private func canvas(windowSize: CGSize) -> some View {
+    private var canvas: some View {
         PKCanvasViewWrapper(canvasView: $canvasView,
                             toolPicker: $toolPicker,
                             saveAction: { canvasViewModel.save(drawing: $0) })
         .onAppear {
             canvasView.drawing = canvasViewModel.note.entity.drawing
-            initialContentSize(windowSize: windowSize)
+            isDrawingLoaded = true
+            applyInitialContentSizeIfNeeded()
             hideExceptPaper = true
         }
         .gesture(tapGesture)
@@ -96,6 +106,12 @@ struct CanvasView: View {
 
     private func isDrawingHigher(than windowSize: CGSize) -> Bool {
         windowSize.height < canvasView.drawing.bounds.maxY
+    }
+
+    private func applyInitialContentSizeIfNeeded() {
+        guard isDrawingLoaded, windowSize != .zero, !hasAppliedInitialContentSize else { return }
+        hasAppliedInitialContentSize = true
+        initialContentSize(windowSize: windowSize)
     }
 
     private func initialContentSize(windowSize: CGSize) {
