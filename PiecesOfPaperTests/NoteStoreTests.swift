@@ -8,6 +8,7 @@
 
 import UIKit
 import Testing
+import PencilKit
 @testable import Pieces_of_Paper
 
 @MainActor
@@ -72,6 +73,36 @@ struct NoteStoreTests {
         noteStore.addTag(tag, to: target)
         #expect(noteStore.note(id: target.id)?.entity.tags.isEmpty == true)
         #expect(noteStore.showAlert)
+    }
+
+    @Test func test_noteById_looksUpFetchedNote() async {
+        await noteStore.incrementalFetch(directory: .inbox)
+        #expect(noteStore.note(id: notes[1].id) == notes[1])
+        #expect(noteStore.note(id: UUID()) == nil)
+    }
+
+    @Test func test_upsert_replacesExistingNote() async {
+        await noteStore.incrementalFetch(directory: .inbox)
+        var updated = notes[0]
+        updated.entity.updatedDate = Date()
+        noteStore.upsert(updated)
+        #expect(noteStore.note(id: updated.id) == updated)
+        #expect(noteStore.inboxNotes.count == 3)
+    }
+
+    @Test func test_upsert_insertsUnknownNoteIntoInbox() {
+        let note = NoteData.createTestData()
+        noteStore.upsert(note)
+        #expect(noteStore.inboxNotes == [note])
+    }
+
+    @Test func test_upsert_thenIncrementalFetchDoesNotDuplicate() async {
+        let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
+                            fileURL: NoteRepositoryMock.TestFile.file1.url)
+        noteStore.upsert(note)
+        await noteStore.incrementalFetch(directory: .inbox)
+        #expect(noteStore.inboxNotes.count == 3)
+        #expect(noteStore.inboxNotes.filter { $0.fileURL == NoteRepositoryMock.TestFile.file1.url }.count == 1)
     }
 }
 
