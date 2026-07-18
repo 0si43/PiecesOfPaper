@@ -140,6 +140,14 @@ struct NoteStoreTests {
         #expect(noteStore.inboxNotes == [note])
     }
 
+    @Test func test_upsert_insertsUnknownArchivedNoteIntoArchivedList() throws {
+        let archivedUrl = try #require(FilePath.archivedUrl).appendingPathComponent("archived-note.plist")
+        let note = NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: archivedUrl)
+        noteStore.upsert(note)
+        #expect(noteStore.archivedNotes == [note])
+        #expect(noteStore.inboxNotes.isEmpty)
+    }
+
     @Test func test_upsert_thenIncrementalFetchDoesNotDuplicate() async {
         let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
                             fileURL: NoteRepositoryMock.TestFile.file1.url)

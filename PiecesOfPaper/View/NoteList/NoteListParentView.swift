@@ -108,15 +108,6 @@ struct NoteListParentView: View {
                     return Text(error.localizedDescription)
                 }
         }
-        .onReceive(
-            NotificationCenter.default.publisher(
-                for: .dismissCanvasView
-            )
-        ) { _ in
-            Task {
-                await noteStore.incrementalFetch(directory: directory)
-            }
-        }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:

@@ -165,7 +165,6 @@ struct CanvasView: View {
     private func closeCanvas() {
         dismiss()
         reviewRequest()
-        NotificationCenter.default.post(name: .dismissCanvasView, object: nil)
     }
 
     private func reviewRequest() {
