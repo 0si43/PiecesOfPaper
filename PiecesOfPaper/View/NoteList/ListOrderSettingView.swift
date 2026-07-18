@@ -10,15 +10,15 @@ import SwiftUI
 
 struct ListOrderSettingView: View {
     @Binding var listOrder: ListOrder
-    let tags: [TagEntity]
+    @Environment(TagStore.self) private var tagStore
     @Environment(\.dismiss) private var dismiss
 
     private var filteringTags: [TagEntity] {
-        tags.filter { listOrder.filterBy.contains($0) }
+        tagStore.filteringTags(from: listOrder.filterBy)
     }
 
     private var nonFilteringTags: [TagEntity] {
-        tags.filter { !listOrder.filterBy.contains($0) }
+        tagStore.nonFilteringTags(from: listOrder.filterBy)
     }
 
     var body: some View {
@@ -92,5 +92,6 @@ struct ListOrderSettingView: View {
 
 #Preview {
     @Previewable @State var listOrder = ListOrder()
-    ListOrderSettingView(listOrder: $listOrder, tags: [])
+    ListOrderSettingView(listOrder: $listOrder)
+        .environment(TagStore())
 }

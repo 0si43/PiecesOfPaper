@@ -12,7 +12,6 @@ import PencilKit
 struct NoteListParentView: View {
     let directory: NoteDirectory
     @Environment(NoteStore.self) private var noteStore
-    @Environment(TagStore.self) private var tagStore
     @Environment(PreferenceStore.self) private var preferenceStore
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.displayScale) private var displayScale
@@ -66,8 +65,7 @@ struct NoteListParentView: View {
                     listOrder: Binding(
                         get: { noteStore.listOrder(for: directory) },
                         set: { noteStore.setListOrder($0, for: directory) }
-                    ),
-                    tags: tagStore.tags
+                    )
                 )
             }
         }
