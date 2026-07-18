@@ -14,10 +14,10 @@ import Testing
 struct NoteStoreTests {
     var noteStore: NoteStore
     let repositoryMock: NoteRepositoryMock
-    let documents = (0...2).map { _ in NoteDocument.createTestData() }
+    let notes = (0...2).map { _ in NoteData.createTestData() }
 
     init() {
-        repositoryMock = NoteRepositoryMock(documents: documents)
+        repositoryMock = NoteRepositoryMock(notes: notes)
         noteStore = NoteStore(
             noteRepository: repositoryMock,
             preferenceRepository: PreferenceRepositoryMock()
@@ -26,7 +26,7 @@ struct NoteStoreTests {
 
     @Test func test_incrementalFetch() async throws {
         await noteStore.incrementalFetch(directory: .inbox)
-        #expect(noteStore.displayInboxDocuments == documents.reversed())
+        #expect(noteStore.displayInboxDocuments.map(\.noteData) == notes.reversed())
     }
 
     @Test func test_incrementalFetch_skipsUnreadableFileAndShowsError() async {
@@ -93,12 +93,12 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         // swiftlint:enable force_unwrapping
     }
 
-    var documents: [NoteDocument]
+    var notes: [NoteData]
     var failingUrls: Set<URL> = []
     var moveShouldThrow = false
 
-    init(documents: [NoteDocument]) {
-        self.documents = documents
+    init(notes: [NoteData]) {
+        self.notes = notes
     }
 
     func getFileUrls(directory: NoteDirectory) -> [URL] {
@@ -106,27 +106,23 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     }
 
     @MainActor
-    func open(fileUrl: URL) async throws -> NoteDocument {
+    func open(fileUrl: URL) async throws -> NoteData {
         if failingUrls.contains(fileUrl) {
             throw NoteRepositoryError.fileOpenFailed(path: fileUrl.path)
         }
         switch fileUrl.lastPathComponent {
         case "file1":
-            return documents[0]
+            return notes[0]
         case "file2":
-            return documents[1]
+            return notes[1]
         case "file3":
-            return documents[2]
+            return notes[2]
         default:
             fatalError()
         }
     }
 
     var saveShouldSucceed = true
-    func save(document: NoteDocument, completion: @escaping (Bool) -> Void) {
-        completion(saveShouldSucceed)
-    }
-
     func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void) {
         completion(saveShouldSucceed)
     }
@@ -140,8 +136,8 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         return fileUrl
     }
 
-    func duplicate(document: NoteDocument, in directory: NoteDirectory,
-                   completion: @escaping (NoteDocument?) -> Void) {
+    func duplicate(_ note: NoteData, in directory: NoteDirectory,
+                   completion: @escaping (NoteData?) -> Void) {
         completion(nil)
     }
 }

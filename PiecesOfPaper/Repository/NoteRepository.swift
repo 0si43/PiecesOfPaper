@@ -21,13 +21,12 @@ enum NoteDirectory: String {
 
 protocol NoteRepositoryProtocol: AnyObject {
     func getFileUrls(directory: NoteDirectory) -> [URL]
-    @MainActor func open(fileUrl: URL) async throws -> NoteDocument
-    func save(document: NoteDocument, completion: @escaping (Bool) -> Void)
+    @MainActor func open(fileUrl: URL) async throws -> NoteData
     func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void)
     func delete(fileUrl: URL) throws
     func move(fileUrl: URL, to directory: NoteDirectory) throws -> URL
-    func duplicate(document: NoteDocument, in directory: NoteDirectory,
-                   completion: @escaping (NoteDocument?) -> Void)
+    func duplicate(_ note: NoteData, in directory: NoteDirectory,
+                   completion: @escaping (NoteData?) -> Void)
 }
 
 final class NoteRepository: NoteRepositoryProtocol {
@@ -39,7 +38,7 @@ final class NoteRepository: NoteRepositoryProtocol {
     }
 
     @MainActor
-    func open(fileUrl: URL) async throws -> NoteDocument {
+    func open(fileUrl: URL) async throws -> NoteData {
         guard FileManager.default.fileExists(atPath: fileUrl.path) else {
             throw NoteRepositoryError.fileNotExist(path: fileUrl.path)
         }
@@ -47,23 +46,19 @@ final class NoteRepository: NoteRepositoryProtocol {
         let isSuccess = await document.open()
         await document.close()
         if isSuccess {
-            return document
+            return NoteData(entity: document.entity, fileURL: fileUrl)
         } else {
             throw NoteRepositoryError.fileOpenFailed(path: fileUrl.path)
         }
-    }
-
-    func save(document: NoteDocument, completion: @escaping (Bool) -> Void) {
-        let saveOperation: UIDocument.SaveOperation =
-            FileManager.default.fileExists(atPath: document.fileURL.path) ? .forOverwriting : .forCreating
-        document.save(to: document.fileURL, for: saveOperation, completionHandler: completion)
     }
 
     func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void) {
         // The transient document lives until the completion handler fires,
         // which keeps its conflict observer active for the whole save.
         let document = NoteDocument(fileURL: fileUrl, entity: entity)
-        save(document: document, completion: completion)
+        let saveOperation: UIDocument.SaveOperation =
+            FileManager.default.fileExists(atPath: fileUrl.path) ? .forOverwriting : .forCreating
+        document.save(to: fileUrl, for: saveOperation, completionHandler: completion)
     }
 
     func delete(fileUrl: URL) throws {
@@ -79,17 +74,17 @@ final class NoteRepository: NoteRepositoryProtocol {
         return toUrl
     }
 
-    func duplicate(document: NoteDocument, in directory: NoteDirectory,
-                   completion: @escaping (NoteDocument?) -> Void) {
+    func duplicate(_ note: NoteData, in directory: NoteDirectory,
+                   completion: @escaping (NoteData?) -> Void) {
         guard let directoryUrl = directory.url else {
             completion(nil)
             return
         }
         let newUrl = directoryUrl.appendingPathComponent(FilePath.fileName)
-        let entity = NoteEntity(drawing: document.entity.drawing)
+        let entity = NoteEntity(drawing: note.entity.drawing)
         let newDocument = NoteDocument(fileURL: newUrl, entity: entity)
         newDocument.save(to: newUrl, for: .forCreating) { success in
-            completion(success ? newDocument : nil)
+            completion(success ? NoteData(entity: entity, fileURL: newUrl) : nil)
         }
     }
 }

@@ -125,7 +125,7 @@ final class NoteStore {
 
     private func updateDocuments(addedUrls: [URL], removedUrls: [URL], directory: NoteDirectory) async {
         let (newDocuments, failedUrls) = await withTaskGroup(
-            of: (url: URL, document: NoteDocument?).self
+            of: (url: URL, note: NoteData?).self
         ) { group -> ([NoteDocument], [URL]) in
             for url in addedUrls {
                 group.addTask {
@@ -136,8 +136,8 @@ final class NoteStore {
             var documents: [NoteDocument] = []
             var failed: [URL] = []
             for await result in group {
-                if let document = result.document {
-                    documents.append(document)
+                if let note = result.note {
+                    documents.append(NoteDocument(fileURL: note.fileURL, entity: note.entity))
                 } else {
                     failed.append(result.url)
                 }
@@ -197,13 +197,14 @@ final class NoteStore {
     // MARK: - Data operations
 
     func duplicate(_ document: NoteDocument, in directory: NoteDirectory) {
-        noteRepository.duplicate(document: document, in: directory) { [weak self] newDocument in
+        noteRepository.duplicate(document.noteData, in: directory) { [weak self] newNote in
             guard let self else { return }
-            guard let newDocument else {
+            guard let newNote else {
                 self.alertType = .error(NoteStoreError.saveFailed)
                 self.showAlert = true
                 return
             }
+            let newDocument = NoteDocument(fileURL: newNote.fileURL, entity: newNote.entity)
             switch directory {
             case .inbox:
                 self.inboxCachedUrls.append(newDocument.fileURL)
@@ -269,7 +270,7 @@ final class NoteStore {
 
     func addTag(_ tag: TagEntity, to document: NoteDocument) {
         document.entity.tags.append(tag)
-        noteRepository.save(document: document) { [weak self] success in
+        noteRepository.save(document.entity, to: document.fileURL) { [weak self] success in
             guard let self else { return }
             if success {
                 self.updateDocumentInArray(document)
@@ -283,7 +284,7 @@ final class NoteStore {
 
     func removeTag(_ tag: TagEntity, from document: NoteDocument) {
         document.entity.tags.removeAll { $0 == tag }
-        noteRepository.save(document: document) { [weak self] success in
+        noteRepository.save(document.entity, to: document.fileURL) { [weak self] success in
             guard let self else { return }
             if success {
                 self.updateDocumentInArray(document)

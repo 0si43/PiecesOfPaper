@@ -13,7 +13,7 @@ import PencilKit
 
 @MainActor
 struct CanvasViewModelTests {
-    let repositoryMock = NoteRepositoryMock(documents: [])
+    let repositoryMock = NoteRepositoryMock(notes: [])
     let viewModel: CanvasViewModel
 
     init() {
