@@ -11,7 +11,6 @@ import PencilKit
 
 struct NoteView: View {
     private(set) var note: NoteData
-    @Environment(NoteStore.self) private var noteStore
     @State private var showCanvasView = false
     @State private var thumbnail: UIImage?
 
@@ -38,15 +37,9 @@ struct NoteView: View {
         }
         .fullScreenCover(isPresented: $showCanvasView) {
             NavigationView {
-                CanvasView(canvasViewModel: makeCanvasViewModel())
+                CanvasView(note: note)
             }
         }
-    }
-
-    private func makeCanvasViewModel() -> CanvasViewModel {
-        let canvasViewModel = CanvasViewModel(note: note)
-        canvasViewModel.onPersisted = { noteStore.upsert($0) }
-        return canvasViewModel
     }
 }
 

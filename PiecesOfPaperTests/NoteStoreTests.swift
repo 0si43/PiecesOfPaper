@@ -148,6 +148,58 @@ struct NoteStoreTests {
         #expect(noteStore.inboxNotes.isEmpty)
     }
 
+    private func makeDrawing() -> PKDrawing {
+        let point = PKStrokePoint(location: .zero,
+                                  timeOffset: 0,
+                                  size: CGSize(width: 1, height: 1),
+                                  opacity: 1,
+                                  force: 1,
+                                  azimuth: 0,
+                                  altitude: 0)
+        let path = PKStrokePath(controlPoints: [point], creationDate: Date())
+        return PKDrawing(strokes: [PKStroke(ink: PKInk(.pen, color: .black), path: path)])
+    }
+
+    @Test func test_saveDrawing_skipsWhenDrawingUnchanged() {
+        let note = NoteData.createTestData()
+        var saved: NoteData?
+        noteStore.save(drawing: note.entity.drawing, to: note) { saved = $0 }
+        #expect(saved == note)
+        #expect(noteStore.inboxNotes.isEmpty)
+    }
+
+    @Test func test_saveDrawing_persistsAndUpsertsOnSuccess() throws {
+        let note = NoteData.createTestData()
+        let drawing = makeDrawing()
+        var result: NoteData?
+        noteStore.save(drawing: drawing, to: note) { result = $0 }
+        let saved = try #require(result)
+        #expect(saved.entity.drawing == drawing)
+        #expect(saved.entity.updatedDate > note.entity.updatedDate)
+        #expect(noteStore.note(id: note.id) == saved)
+    }
+
+    @Test func test_saveDrawing_returnsNilAndKeepsStoreOnFailure() {
+        repositoryMock.saveShouldSucceed = false
+        let note = NoteData.createTestData()
+        var completionCalled = false
+        var saved: NoteData?
+        noteStore.save(drawing: makeDrawing(), to: note) {
+            saved = $0
+            completionCalled = true
+        }
+        #expect(completionCalled)
+        #expect(saved == nil)
+        #expect(noteStore.note(id: note.id) == nil)
+    }
+
+    @Test func test_canRequestReview_requiresFiveInboxFiles() {
+        repositoryMock.fileUrls = (0..<4).map { URL(fileURLWithPath: "/path/to/note\($0).plist") }
+        #expect(!noteStore.canRequestReview)
+        repositoryMock.fileUrls = (0..<5).map { URL(fileURLWithPath: "/path/to/note\($0).plist") }
+        #expect(noteStore.canRequestReview)
+    }
+
     @Test func test_upsert_thenIncrementalFetchDoesNotDuplicate() async {
         let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
                             fileURL: NoteRepositoryMock.TestFile.file1.url)
@@ -179,13 +231,14 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     var notes: [NoteData]
     var failingUrls: Set<URL> = []
     var moveShouldThrow = false
+    var fileUrls: [URL]?
 
     init(notes: [NoteData]) {
         self.notes = notes
     }
 
     func getFileUrls(directory: NoteDirectory) -> [URL] {
-        TestFile.allCases.map { $0.url }
+        fileUrls ?? TestFile.allCases.map { $0.url }
     }
 
     @MainActor

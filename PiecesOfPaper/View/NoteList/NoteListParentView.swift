@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import PencilKit
 
 struct NoteListParentView: View {
     let directory: NoteDirectory
@@ -55,7 +56,7 @@ struct NoteListParentView: View {
         .fullScreenCover(isPresented: $noteStore.showCanvasView) {
             if let path = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) {
                 NavigationStack {
-                    CanvasView(canvasViewModel: makeNewNoteCanvasViewModel(path: path))
+                    CanvasView(note: NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: path))
                 }
             }
         }
@@ -195,12 +196,6 @@ struct NoteListParentView: View {
                 proxy.scrollTo(lastNote.id, anchor: .bottom)
             }
         }
-    }
-
-    private func makeNewNoteCanvasViewModel(path: URL) -> CanvasViewModel {
-        let canvasViewModel = CanvasViewModel(newNoteAt: path)
-        canvasViewModel.onPersisted = { noteStore.upsert($0) }
-        return canvasViewModel
     }
 
     private func activityViewController(note: NoteData) -> UIActivityViewControllerWrapper {
