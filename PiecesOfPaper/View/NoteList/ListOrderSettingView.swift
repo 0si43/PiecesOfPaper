@@ -9,13 +9,16 @@
 import SwiftUI
 
 struct ListOrderSettingView: View {
-    @State private var viewModel: ListOrderSettingViewModel
-    @Binding private var parentListOrder: ListOrder
+    @Binding var listOrder: ListOrder
+    let tags: [TagEntity]
     @Environment(\.dismiss) private var dismiss
 
-    init(listOrder: Binding<ListOrder>, tags: [TagEntity]) {
-        self._parentListOrder = listOrder
-        self._viewModel = State(initialValue: ListOrderSettingViewModel(listOrder: listOrder.wrappedValue, tags: tags))
+    private var filteringTags: [TagEntity] {
+        tags.filter { listOrder.filterBy.contains($0) }
+    }
+
+    private var nonFilteringTags: [TagEntity] {
+        tags.filter { !listOrder.filterBy.contains($0) }
     }
 
     var body: some View {
@@ -26,7 +29,7 @@ struct ListOrderSettingView: View {
                 Spacer()
             }
             .padding(.horizontal)
-            Picker("", selection: $viewModel.listOrder.sortBy) {
+            Picker("", selection: $listOrder.sortBy) {
                 ForEach(ListOrder.SortBy.allCases) { sortBy in
                     Text(sortBy.rawValue)
                         .tag(sortBy)
@@ -34,16 +37,13 @@ struct ListOrderSettingView: View {
             }
             .pickerStyle(.segmented)
             .padding()
-            .onChange(of: viewModel.listOrder.sortBy) { _, newValue in
-                viewModel.updateSortBy(newValue)
-            }
             HStack {
                 Image(systemName: "arrow.up.arrow.down.circle")
                 Text("Sort Order")
                 Spacer()
             }
             .padding(.horizontal)
-            Picker("", selection: $viewModel.listOrder.sortOrder) {
+            Picker("", selection: $listOrder.sortOrder) {
                 ForEach(ListOrder.SortOrder.allCases) { sortOrder in
                     Text(sortOrder.rawValue)
                         .tag(sortOrder)
@@ -51,16 +51,15 @@ struct ListOrderSettingView: View {
             }
             .pickerStyle(.segmented)
             .padding()
-            .onChange(of: viewModel.listOrder.sortOrder) { _, newValue in
-                viewModel.updateSortOrder(newValue)
-            }
             HStack {
                 Image(systemName: "line.3.horizontal.decrease.circle")
                 Text("Filter by")
                 Spacer()
             }
             .padding(.horizontal)
-            TagHStack(tags: viewModel.filteringTag, action: viewModel.remove, deletable: true)
+            TagHStack(tags: filteringTags,
+                      action: { removed in listOrder.filterBy.removeAll { $0 == removed } },
+                      deletable: true)
                 .padding(.horizontal)
             VStack {
                 HStack {
@@ -69,18 +68,13 @@ struct ListOrderSettingView: View {
                     Spacer()
                 }
                 .padding(.horizontal)
-                TagHStack(tags: viewModel.nonFilteringTag, action: viewModel.add)
+                TagHStack(tags: nonFilteringTags, action: { listOrder.filterBy.append($0) })
                     .padding(.horizontal)
             }
             .background(Color.gray.opacity(0.2))
             .padding()
             Spacer()
 
-        }
-        .onAppear {
-            viewModel.onListOrderChanged = { [self] newListOrder in
-                self.parentListOrder = newListOrder
-            }
         }
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {

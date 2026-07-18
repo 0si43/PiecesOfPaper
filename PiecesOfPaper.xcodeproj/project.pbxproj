@@ -17,7 +17,6 @@
 		A63C9590275E111500822461 /* AddTagFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C958F275E111500822461 /* AddTagFooter.swift */; };
 		A63C9593276444CF00822461 /* ListOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9592276444CF00822461 /* ListOrder.swift */; };
 		A63C9595276447BD00822461 /* ListOrderSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C9594276447BD00822461 /* ListOrderSettingView.swift */; };
-		A63C95972764589F00822461 /* ListOrderSettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C95962764589F00822461 /* ListOrderSettingViewModel.swift */; };
 		A63C959B2765A5D500822461 /* NoteInformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C959A2765A5D500822461 /* NoteInformationView.swift */; };
 		A6484FCE272B923B00676ED8 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FCD272B923B00676ED8 /* CanvasView.swift */; };
 		A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */; };
@@ -74,7 +73,6 @@
 		A63C958F275E111500822461 /* AddTagFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTagFooter.swift; sourceTree = "<group>"; };
 		A63C9592276444CF00822461 /* ListOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrder.swift; sourceTree = "<group>"; };
 		A63C9594276447BD00822461 /* ListOrderSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrderSettingView.swift; sourceTree = "<group>"; };
-		A63C95962764589F00822461 /* ListOrderSettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrderSettingViewModel.swift; sourceTree = "<group>"; };
 		A63C959A2765A5D500822461 /* NoteInformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteInformationView.swift; sourceTree = "<group>"; };
 		A6484FCD272B923B00676ED8 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKCanvasViewWrapper.swift; sourceTree = "<group>"; };
@@ -151,7 +149,6 @@
 			isa = PBXGroup;
 			children = (
 				A6620E2B2748ABE400C708A2 /* CanvasViewModel.swift */,
-				A63C95962764589F00822461 /* ListOrderSettingViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -455,7 +452,6 @@
 				A62EEAF2273248A300D513B8 /* PiecesOfPaperApp.swift in Sources */,
 				A63C9582275D1C2E00822461 /* TagHStack.swift in Sources */,
 				A63C9595276447BD00822461 /* ListOrderSettingView.swift in Sources */,
-				A63C95972764589F00822461 /* ListOrderSettingViewModel.swift in Sources */,
 				A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */,
 				A6484FD6272E63B000676ED8 /* NoteListView.swift in Sources */,
 				A70000000000000000000041 /* NoteData.swift in Sources */,
