@@ -26,51 +26,51 @@ struct NoteStoreTests {
 
     @Test func test_incrementalFetch() async throws {
         await noteStore.incrementalFetch(directory: .inbox)
-        #expect(noteStore.displayInboxDocuments.map(\.noteData) == notes.reversed())
+        #expect(noteStore.displayInboxNotes == notes.reversed())
     }
 
     @Test func test_incrementalFetch_skipsUnreadableFileAndShowsError() async {
         repositoryMock.failingUrls = [NoteRepositoryMock.TestFile.file2.url]
         await noteStore.incrementalFetch(directory: .inbox)
-        #expect(noteStore.displayInboxDocuments.count == 2)
+        #expect(noteStore.displayInboxNotes.count == 2)
         #expect(noteStore.showAlert)
     }
 
     @Test func test_incrementalFetch_retriesFailedFileOnNextFetch() async {
         repositoryMock.failingUrls = [NoteRepositoryMock.TestFile.file2.url]
         await noteStore.incrementalFetch(directory: .inbox)
-        #expect(noteStore.displayInboxDocuments.count == 2)
+        #expect(noteStore.displayInboxNotes.count == 2)
 
         repositoryMock.failingUrls = []
         await noteStore.incrementalFetch(directory: .inbox)
-        #expect(noteStore.displayInboxDocuments.count == 3)
+        #expect(noteStore.displayInboxNotes.count == 3)
     }
 
-    @Test func test_archive_keepsDocumentWhenMoveFails() async {
+    @Test func test_archive_keepsNoteWhenMoveFails() async {
         await noteStore.incrementalFetch(directory: .inbox)
         repositoryMock.moveShouldThrow = true
-        let target = noteStore.displayInboxDocuments[0]
+        let target = noteStore.displayInboxNotes[0]
         noteStore.archive(target)
-        #expect(noteStore.displayInboxDocuments.count == 3)
-        #expect(noteStore.displayArchivedDocuments.isEmpty)
+        #expect(noteStore.displayInboxNotes.count == 3)
+        #expect(noteStore.displayArchivedNotes.isEmpty)
     }
 
     @Test func test_addTag_persistsTagOnSuccessfulSave() async {
         await noteStore.incrementalFetch(directory: .inbox)
-        let target = noteStore.displayInboxDocuments[0]
+        let target = noteStore.displayInboxNotes[0]
         let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
         noteStore.addTag(tag, to: target)
-        #expect(target.entity.tags == [tag])
+        #expect(noteStore.note(id: target.id)?.entity.tags == [tag])
         #expect(!noteStore.showAlert)
     }
 
     @Test func test_addTag_rollsBackTagWhenSaveFails() async {
         await noteStore.incrementalFetch(directory: .inbox)
         repositoryMock.saveShouldSucceed = false
-        let target = noteStore.displayInboxDocuments[0]
+        let target = noteStore.displayInboxNotes[0]
         let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
         noteStore.addTag(tag, to: target)
-        #expect(target.entity.tags.isEmpty)
+        #expect(noteStore.note(id: target.id)?.entity.tags.isEmpty == true)
         #expect(noteStore.showAlert)
     }
 }

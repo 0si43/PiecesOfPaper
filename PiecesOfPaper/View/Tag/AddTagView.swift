@@ -9,11 +9,22 @@
 import SwiftUI
 
 struct AddTagView: View {
-    private(set) var document: NoteDocument
+    // Snapshot from sheet(item:); read the latest state through the store by id
+    let note: NoteData
     @Environment(NoteStore.self) private var noteStore
     @Environment(TagStore.self) private var tagStore
-    @State private var tagsToNote: [TagEntity] = []
-    @State private var tagsNotToNote: [TagEntity] = []
+
+    private var currentNote: NoteData {
+        noteStore.note(id: note.id) ?? note
+    }
+
+    private var tagsToNote: [TagEntity] {
+        tagStore.tagsFor(note: currentNote)
+    }
+
+    private var tagsNotToNote: [TagEntity] {
+        tagStore.tagsNotFor(note: currentNote)
+    }
 
     var body: some View {
         List {
@@ -33,28 +44,20 @@ struct AddTagView: View {
         }
         .onAppear {
             tagStore.reload()
-            updateFilteredTags()
         }
     }
 
-    private func updateFilteredTags() {
-        tagsToNote = tagStore.tagsFor(document: document)
-        tagsNotToNote = tagStore.tagsNotFor(document: document)
-    }
-
     private func add(_ tag: TagEntity) {
-        noteStore.addTag(tag, to: document)
-        updateFilteredTags()
+        noteStore.addTag(tag, to: currentNote)
     }
 
     private func remove(_ tag: TagEntity) {
-        noteStore.removeTag(tag, from: document)
-        updateFilteredTags()
+        noteStore.removeTag(tag, from: currentNote)
     }
 }
 
 #Preview {
-    AddTagView(document: NoteDocument.createTestData())
+    AddTagView(note: NoteData.createTestData())
         .environment(NoteStore())
         .environment(TagStore())
 }

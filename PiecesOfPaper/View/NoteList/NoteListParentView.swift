@@ -27,7 +27,7 @@ struct NoteListParentView: View {
             if noteStore.isLoading {
                 ProgressView()
             } else {
-                if noteStore.displayDocuments(for: directory).isEmpty {
+                if noteStore.displayNotes(for: directory).isEmpty {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {
@@ -70,16 +70,16 @@ struct NoteListParentView: View {
                 )
             }
         }
-        .sheet(item: $noteStore.documentToShare) { document in
-            activityViewController(document: document)
+        .sheet(item: $noteStore.noteToShare) { note in
+            activityViewController(note: note)
         }
-        .sheet(item: $noteStore.documentToTag,
+        .sheet(item: $noteStore.noteToTag,
                onDismiss: {
                    Task {
                        await noteStore.incrementalFetch(directory: directory)
                    }
-               }, content: { document in
-            AddTagView(document: document)
+               }, content: { note in
+            AddTagView(note: note)
         })
         .alert("",
                isPresented: $noteStore.showAlert,
@@ -99,7 +99,7 @@ struct NoteListParentView: View {
                     return Text("The app could not access your iCloud Drive. You should change setting")
                 case .archive:
                     let operationText = isTargetDirectoryArchived ? "unarchived" : "archived"
-                    let countText = noteStore.displayDocuments(for: directory).count
+                    let countText = noteStore.displayNotes(for: directory).count
                     let alertText = """
                         Are you sure you want to \(operationText) \(countText) notes?
                     """
@@ -199,9 +199,9 @@ struct NoteListParentView: View {
         }
 
         func scrollToBottom(proxy: ScrollViewProxy) {
-            guard let lastDocument = noteStore.displayDocuments(for: directory).last else { return }
+            guard let lastNote = noteStore.displayNotes(for: directory).last else { return }
             withAnimation {
-                proxy.scrollTo(lastDocument.id, anchor: .bottom)
+                proxy.scrollTo(lastNote.id, anchor: .bottom)
             }
         }
     }
@@ -212,8 +212,8 @@ struct NoteListParentView: View {
         return canvasViewModel
     }
 
-    private func activityViewController(document: NoteDocument) -> UIActivityViewControllerWrapper {
-        let drawing = document.entity.drawing
+    private func activityViewController(note: NoteData) -> UIActivityViewControllerWrapper {
+        let drawing = note.entity.drawing
         var image = UIImage()
         let trait = UITraitCollection(userInterfaceStyle: .light)
         trait.performAsCurrent {

@@ -15,13 +15,13 @@ final class ThumbnailCache {
     static let shared = ThumbnailCache()
     private let cache = NSCache<NSString, UIImage>()
 
-    func thumbnail(for document: NoteDocument) async -> UIImage {
-        let key = "\(document.entity.id.uuidString)-\(document.entity.updatedDate.timeIntervalSince1970)" as NSString
+    func thumbnail(for note: NoteData) async -> UIImage {
+        let key = "\(note.entity.id.uuidString)-\(note.entity.updatedDate.timeIntervalSince1970)" as NSString
         if let cached = cache.object(forKey: key) {
             return cached
         }
 
-        let drawing = document.entity.drawing
+        let drawing = note.entity.drawing
         guard !drawing.bounds.isNull else { return UIImage() }
 
         let image = await Task.detached(priority: .userInitiated) {

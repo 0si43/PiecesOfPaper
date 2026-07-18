@@ -10,7 +10,7 @@ import SwiftUI
 import PencilKit
 
 struct NoteView: View {
-    private(set) var document: NoteDocument
+    private(set) var note: NoteData
     @Environment(NoteStore.self) private var noteStore
     @State private var showCanvasView = false
     @State private var thumbnail: UIImage?
@@ -33,8 +33,8 @@ struct NoteView: View {
             .shadow(radius: 5)
         })
         .accessibilityLabel("Note")
-        .task(id: document.entity.updatedDate) {
-            thumbnail = await ThumbnailCache.shared.thumbnail(for: document)
+        .task(id: note.entity.updatedDate) {
+            thumbnail = await ThumbnailCache.shared.thumbnail(for: note)
         }
         .fullScreenCover(isPresented: $showCanvasView) {
             NavigationView {
@@ -44,12 +44,13 @@ struct NoteView: View {
     }
 
     private func makeCanvasViewModel() -> CanvasViewModel {
-        let canvasViewModel = CanvasViewModel(note: document.noteData)
+        let canvasViewModel = CanvasViewModel(note: note)
         canvasViewModel.onPersisted = { noteStore.upsert($0) }
         return canvasViewModel
     }
 }
 
 #Preview {
-    NoteView(document: NoteDocument.createTestData())
+    NoteView(note: NoteData.createTestData())
+        .environment(NoteStore())
 }
