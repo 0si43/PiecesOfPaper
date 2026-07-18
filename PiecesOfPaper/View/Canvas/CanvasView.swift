@@ -14,16 +14,12 @@ import LinkPresentation
 struct CanvasView: View {
     @State var canvasViewModel: CanvasViewModel
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.displayScale) private var displayScale
     @AppStorage("review_requested") private var reviewRequested = false
     @State private var canvasView = PKCanvasView()
     @State private var toolPicker = PKToolPicker()
     @State private var hideExceptPaper = true
     @State private var isShowActivityView = false
     @State private var showUnsavedAlert = false
-    @State private var windowSize = CGSize.zero
-    @State private var isDrawingLoaded = false
-    @State private var hasAppliedInitialContentSize = false
 
     private var tapGesture: some Gesture {
         TapGesture(count: 1)
@@ -39,25 +35,14 @@ struct CanvasView: View {
     }
 
     var body: some View {
-        // Not a GeometryReader: wrapping the canvas in one breaks Apple Pencil
-        // input and stroke rendering on device (#187).
-        canvas
-            .onGeometryChange(for: CGSize.self) { proxy in
-                proxy.size
-            } action: { size in
-                windowSize = size
-                applyInitialContentSizeIfNeeded()
-            }
-    }
-
-    private var canvas: some View {
+        // No GeometryReader or geometry observation here: wrapping the canvas in
+        // size-reading machinery breaks Apple Pencil input on device (#187).
         PKCanvasViewWrapper(canvasView: $canvasView,
                             toolPicker: $toolPicker,
                             saveAction: { canvasViewModel.save(drawing: $0) })
         .onAppear {
             canvasView.drawing = canvasViewModel.note.entity.drawing
-            isDrawingLoaded = true
-            applyInitialContentSizeIfNeeded()
+            initialContentSize(windowSize: screenSize)
             hideExceptPaper = true
         }
         .gesture(tapGesture)
@@ -100,18 +85,20 @@ struct CanvasView: View {
 
     // MARK: - Window Adjustment
 
+    private var windowScene: UIWindowScene? {
+        UIApplication.shared.connectedScenes.first as? UIWindowScene
+    }
+
+    private var screenSize: CGSize {
+        windowScene?.screen.bounds.size ?? .zero
+    }
+
     private func isDrawingWider(than windowSize: CGSize) -> Bool {
         windowSize.width < canvasView.drawing.bounds.maxX
     }
 
     private func isDrawingHigher(than windowSize: CGSize) -> Bool {
         windowSize.height < canvasView.drawing.bounds.maxY
-    }
-
-    private func applyInitialContentSizeIfNeeded() {
-        guard isDrawingLoaded, windowSize != .zero, !hasAppliedInitialContentSize else { return }
-        hasAppliedInitialContentSize = true
-        initialContentSize(windowSize: windowSize)
     }
 
     private func initialContentSize(windowSize: CGSize) {
@@ -161,7 +148,7 @@ struct CanvasView: View {
         trait.performAsCurrent {
             image = canvasViewModel.note.entity.drawing.image(
                 from: canvasViewModel.note.entity.drawing.bounds,
-                scale: displayScale
+                scale: windowScene?.screen.scale ?? 2.0
             )
         }
 
