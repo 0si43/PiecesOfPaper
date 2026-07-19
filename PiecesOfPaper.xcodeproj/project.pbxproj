@@ -35,6 +35,10 @@
 		A70000000000000000000058 /* NoteEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F3275B203A002C66F7 /* NoteEntity.swift */; };
 		A70000000000000000000059 /* TagEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C956C275C7CF300822461 /* TagEntity.swift */; };
 		A7000000000000000000005A /* ThumbnailExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A70000000000000000000055 /* ThumbnailExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A70000000000000000000069 /* PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000065 /* PreviewProvider.swift */; };
+		A7000000000000000000006A /* NoteEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F3275B203A002C66F7 /* NoteEntity.swift */; };
+		A7000000000000000000006B /* TagEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C956C275C7CF300822461 /* TagEntity.swift */; };
+		A7000000000000000000006C /* PreviewExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A70000000000000000000067 /* PreviewExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A6BB3DCF2D460C7000FFCB62 /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BB3DCE2D460C7000FFCB62 /* TutorialView.swift */; };
 		A6CADA51276752E600657E9E /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA50276752E600657E9E /* SettingView.swift */; };
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
@@ -70,6 +74,13 @@
 			remoteGlobalIDString = A7000000000000000000005E;
 			remoteInfo = ThumbnailExtension;
 		};
+		A70000000000000000000071 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A6DE5BAF2437167C006D3D47 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A70000000000000000000070;
+			remoteInfo = PreviewExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -80,6 +91,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				A7000000000000000000005A /* ThumbnailExtension.appex in Embed App Extensions */,
+				A7000000000000000000006C /* PreviewExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -114,6 +126,9 @@
 		A70000000000000000000053 /* ThumbnailProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailProvider.swift; sourceTree = "<group>"; };
 		A70000000000000000000054 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A70000000000000000000055 /* ThumbnailExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ThumbnailExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A70000000000000000000065 /* PreviewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewProvider.swift; sourceTree = "<group>"; };
+		A70000000000000000000066 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A70000000000000000000067 /* PreviewExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PreviewExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6675A37251D89BA00343151 /* PiecesOfPaper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PiecesOfPaper.entitlements; sourceTree = "<group>"; };
 		A66E7512253531440026B9A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A66E7513253538E00026B9A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
@@ -157,6 +172,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A7000000000000000000005C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7000000000000000000006E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -288,12 +310,22 @@
 			path = ThumbnailExtension;
 			sourceTree = "<group>";
 		};
+		A70000000000000000000068 /* PreviewExtension */ = {
+			isa = PBXGroup;
+			children = (
+				A70000000000000000000065 /* PreviewProvider.swift */,
+				A70000000000000000000066 /* Info.plist */,
+			);
+			path = PreviewExtension;
+			sourceTree = "<group>";
+		};
 		A6DE5BAE2437167C006D3D47 = {
 			isa = PBXGroup;
 			children = (
 				A6DE5BB92437167C006D3D47 /* PiecesOfPaper */,
 				A6A16EC325B1673500DF323F /* PiecesOfPaperTests */,
 				A70000000000000000000056 /* ThumbnailExtension */,
+				A70000000000000000000068 /* PreviewExtension */,
 				A6DE5BB82437167C006D3D47 /* Products */,
 				A66E7512253531440026B9A8 /* README.md */,
 				A66E7513253538E00026B9A8 /* LICENSE.md */,
@@ -306,6 +338,7 @@
 				A6DE5BB72437167C006D3D47 /* Pieces of Paper.app */,
 				A6A16EC225B1673500DF323F /* PiecesOfPaperTests.xctest */,
 				A70000000000000000000055 /* ThumbnailExtension.appex */,
+				A70000000000000000000067 /* PreviewExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -363,6 +396,7 @@
 			);
 			dependencies = (
 				A70000000000000000000061 /* PBXTargetDependency */,
+				A70000000000000000000072 /* PBXTargetDependency */,
 			);
 			name = PiecesOfPaper;
 			productName = LikeAPaper;
@@ -384,6 +418,23 @@
 			name = ThumbnailExtension;
 			productName = ThumbnailExtension;
 			productReference = A70000000000000000000055 /* ThumbnailExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		A70000000000000000000070 /* PreviewExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A70000000000000000000075 /* Build configuration list for PBXNativeTarget "PreviewExtension" */;
+			buildPhases = (
+				A7000000000000000000006D /* Sources */,
+				A7000000000000000000006E /* Frameworks */,
+				A7000000000000000000006F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PreviewExtension;
+			productName = PreviewExtension;
+			productReference = A70000000000000000000067 /* PreviewExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -421,6 +472,7 @@
 				A6DE5BB62437167C006D3D47 /* PiecesOfPaper */,
 				A6A16EC125B1673500DF323F /* PiecesOfPaperTests */,
 				A7000000000000000000005E /* ThumbnailExtension */,
+				A70000000000000000000070 /* PreviewExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -443,6 +495,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A7000000000000000000005D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7000000000000000000006F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -480,6 +539,16 @@
 				A70000000000000000000057 /* ThumbnailProvider.swift in Sources */,
 				A70000000000000000000058 /* NoteEntity.swift in Sources */,
 				A70000000000000000000059 /* TagEntity.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7000000000000000000006D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A70000000000000000000069 /* PreviewProvider.swift in Sources */,
+				A7000000000000000000006A /* NoteEntity.swift in Sources */,
+				A7000000000000000000006B /* TagEntity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -549,6 +618,11 @@
 			isa = PBXTargetDependency;
 			target = A7000000000000000000005E /* ThumbnailExtension */;
 			targetProxy = A70000000000000000000060 /* PBXContainerItemProxy */;
+		};
+		A70000000000000000000072 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A70000000000000000000070 /* PreviewExtension */;
+			targetProxy = A70000000000000000000071 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -813,6 +887,56 @@
 			};
 			name = Release;
 		};
+		A70000000000000000000073 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 18;
+				DEVELOPMENT_TEAM = JDTR4Y333X;
+				INFOPLIST_FILE = PreviewExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 3.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper.PreviewExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A70000000000000000000074 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 18;
+				DEVELOPMENT_TEAM = JDTR4Y333X;
+				INFOPLIST_FILE = PreviewExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 3.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper.PreviewExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -848,6 +972,15 @@
 			buildConfigurations = (
 				A70000000000000000000062 /* Debug */,
 				A70000000000000000000063 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A70000000000000000000075 /* Build configuration list for PBXNativeTarget "PreviewExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A70000000000000000000073 /* Debug */,
+				A70000000000000000000074 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
