@@ -25,9 +25,13 @@ final class PreviewProvider: QLPreviewProvider, QLPreviewingController {
         // The trait collection carries no display scale in the extension
         // context; every device on this deployment target is at least 2x.
         let displayScale = max(UITraitCollection.current.displayScale, 2)
-        // Cap the longest side in pixels to bound the bitmap (extension memory limit).
-        let maxPixelDimension: CGFloat = 3_072
-        let pixelRatio = min(displayScale, maxPixelDimension / max(contentSize.width, contentSize.height))
+        // Cap the total pixel count, not the longest side: device verification
+        // showed renders around 3.4M pixels get jetsammed in this extension
+        // while ~1M-pixel renders survive. Screen-sized drawings hit full
+        // display scale under a dimension cap and were exactly the ones dying.
+        let maxPixelCount: CGFloat = 2_000_000
+        let areaCap = (maxPixelCount / (contentSize.width * contentSize.height)).squareRoot()
+        let pixelRatio = min(displayScale, areaCap)
         let pixelSize = CGSize(width: contentSize.width * pixelRatio,
                                height: contentSize.height * pixelRatio)
 
@@ -35,20 +39,25 @@ final class PreviewProvider: QLPreviewProvider, QLPreviewingController {
             // Off-main PKDrawing.image is safe here: the extension is a separate
             // process with no PKCanvasView, so the app-side constraint from #187
             // does not apply.
-            var image = UIImage()
-            if hasContent {
-                // Fixed light style so ink drawn in dark mode stays visible on white.
-                UITraitCollection(userInterfaceStyle: .light).performAsCurrent {
-                    image = drawing.image(from: bounds, scale: pixelRatio)
-                }
-            }
-            let format = UIGraphicsImageRendererFormat()
-            format.scale = 1
-            let rendered = UIGraphicsImageRenderer(size: pixelSize, format: format).image { context in
-                UIColor.white.setFill()
-                context.fill(CGRect(origin: .zero, size: pixelSize))
+            var rendered = UIImage()
+            // The pool releases the intermediate PKDrawing bitmap before PNG
+            // encoding, which allocates its own buffer on top.
+            autoreleasepool {
+                var image = UIImage()
                 if hasContent {
-                    image.draw(in: CGRect(origin: .zero, size: pixelSize))
+                    // Fixed light style so ink drawn in dark mode stays visible on white.
+                    UITraitCollection(userInterfaceStyle: .light).performAsCurrent {
+                        image = drawing.image(from: bounds, scale: pixelRatio)
+                    }
+                }
+                let format = UIGraphicsImageRendererFormat()
+                format.scale = 1
+                rendered = UIGraphicsImageRenderer(size: pixelSize, format: format).image { context in
+                    UIColor.white.setFill()
+                    context.fill(CGRect(origin: .zero, size: pixelSize))
+                    if hasContent {
+                        image.draw(in: CGRect(origin: .zero, size: pixelSize))
+                    }
                 }
             }
             guard let pngData = rendered.pngData() else {
