@@ -29,9 +29,14 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
 
     func makeUIView(context: Context) -> PKCanvasView {
         canvasView.maximumZoomScale = 8.0
+        #if targetEnvironment(simulator)
+        // The Simulator has no Apple Pencil; allow mouse (finger) input so drawing is testable
+        canvasView.drawingPolicy = .anyInput
+        #else
         if UIDevice.current.userInterfaceIdiom == .pad {
             canvasView.drawingPolicy = .pencilOnly
         }
+        #endif
         toolPicker.showsDrawingPolicyControls = false
         toolPicker.addObserver(canvasView)
         toolPicker.setVisible(false, forFirstResponder: canvasView)
