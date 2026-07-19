@@ -27,6 +27,7 @@ xcodebuild -project <absolute path>/PiecesOfPaper.xcodeproj -scheme PiecesOfPape
 - Toggling the tool picker / navigation bar in the Simulator is a **two-finger tap = Option+click** (Simulator-only gesture). Single taps start strokes under `.anyInput` and never reach the `TapGesture` that toggles the UI on device.
 - iCloud: run day-to-day Simulator checks with iCloud disabled in the app's settings — `FilePath.savingUrl` falls back to the local Documents directory and all save/load/archive paths work without an iCloud account. For real sync, sign into an Apple ID in the Simulator and use Features > Trigger iCloud Sync (unreliable; smoke checks only).
 - Unit tests build non-empty drawings with `PKDrawing.stub()` (`PiecesOfPaperTests/PKDrawingStub.swift`); constructing `PKDrawing` needs no Pencil input.
+- Command-line E2E (drawing injection, accessibility assertions) via idb: see [docs/SIMULATOR_E2E.md](docs/SIMULATOR_E2E.md).
 
 ## Progress workflow
 
