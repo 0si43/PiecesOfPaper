@@ -54,6 +54,10 @@ final class NoteStore {
         self.preferenceRepository = preferenceRepository
         self.inboxListOrder = preferenceRepository.getListOrder(directoryName: NoteDirectory.inbox.rawValue)
         self.archivedListOrder = preferenceRepository.getListOrder(directoryName: NoteDirectory.archived.rawValue)
+        noteRepository.setCloudUpdateHandler { [weak self] in
+            guard let self else { return }
+            Task { await self.applyCloudUpdate() }
+        }
     }
 
     // MARK: - Computed display notes (replaces dual-management)
@@ -89,11 +93,18 @@ final class NoteStore {
 
     // MARK: - Fetch
 
-    func incrementalFetch(directory: NoteDirectory) async {
-        defer { isLoading = false }
-        isLoading = true
-        let (added, removed) = fetchChangedFileUrls(directory: directory)
-        await updateNotes(addedUrls: added, removedUrls: removed, directory: directory)
+    func incrementalFetch(directory: NoteDirectory, background: Bool = false) async {
+        defer { if !background { isLoading = false } }
+        if !background { isLoading = true }
+        let (added, removed) = await fetchChangedFileUrls(directory: directory)
+        await updateNotes(addedUrls: added, removedUrls: removed, directory: directory, background: background)
+    }
+
+    /// Called when the iCloud metadata query reports remote changes,
+    /// so the list follows sync progress without a manual reload.
+    func applyCloudUpdate() async {
+        await incrementalFetch(directory: .inbox, background: true)
+        await incrementalFetch(directory: .archived, background: true)
     }
 
     func reload(directory: NoteDirectory) async {
@@ -108,8 +119,8 @@ final class NoteStore {
         await incrementalFetch(directory: directory)
     }
 
-    private func fetchChangedFileUrls(directory: NoteDirectory) -> (addedUrls: [URL], removedUrls: [URL]) {
-        let latestUrls = noteRepository.getFileUrls(directory: directory)
+    private func fetchChangedFileUrls(directory: NoteDirectory) async -> (addedUrls: [URL], removedUrls: [URL]) {
+        let latestUrls = await noteRepository.getFileUrls(directory: directory)
         let cachedUrls = directory == .inbox ? inboxCachedUrls : archivedCachedUrls
         let oldSet = Set(cachedUrls)
         let latestSet = Set(latestUrls)
@@ -124,7 +135,8 @@ final class NoteStore {
         return (Array(added), Array(removed))
     }
 
-    private func updateNotes(addedUrls: [URL], removedUrls: [URL], directory: NoteDirectory) async {
+    private func updateNotes(addedUrls: [URL], removedUrls: [URL],
+                             directory: NoteDirectory, background: Bool) async {
         let (newNotes, failedUrls) = await withTaskGroup(
             of: (url: URL, note: NoteData?).self
         ) { group -> ([NoteData], [URL]) in
@@ -149,21 +161,25 @@ final class NoteStore {
 
         switch directory {
         case .inbox:
-            inboxNotes += newNotes
+            // Filter re-appends: a cloud update and a user-initiated fetch can
+            // overlap across the awaited opens and resolve the same added URL
+            inboxNotes += newNotes.filter { note in !inboxNotes.contains { $0.id == note.id } }
             // Drop failed URLs from the cache so the next fetch retries them
             inboxCachedUrls.removeAll { failedUrls.contains($0) }
             removedUrls.forEach { url in
                 inboxNotes.removeAll { $0.fileURL == url }
             }
         case .archived:
-            archivedNotes += newNotes
+            archivedNotes += newNotes.filter { note in !archivedNotes.contains { $0.id == note.id } }
             archivedCachedUrls.removeAll { failedUrls.contains($0) }
             removedUrls.forEach { url in
                 archivedNotes.removeAll { $0.fileURL == url }
             }
         }
 
-        if !failedUrls.isEmpty {
+        // Background updates retry failed files on the next query update,
+        // so surfacing an alert for them would only interrupt the user.
+        if !failedUrls.isEmpty && !background {
             alertType = .error(NoteStoreError.openFailed(count: failedUrls.count))
             showAlert = true
         }
@@ -313,7 +329,7 @@ final class NoteStore {
     // MARK: - Canvas support
 
     var canRequestReview: Bool {
-        noteRepository.getFileUrls(directory: .inbox).count >= 5
+        inboxNotes.count >= 5
     }
 
     func save(drawing: PKDrawing, to note: NoteData, completion: @escaping (NoteData?) -> Void) {

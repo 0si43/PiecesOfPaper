@@ -37,6 +37,7 @@
 		A6F6ED4B27C77A7500DD3296 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F6ED4A27C77A7500DD3296 /* RootView.swift */; };
 		A6FD03422D3FAD8600224B03 /* NoteListTagHStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FD03412D3FAD8600224B03 /* NoteListTagHStack.swift */; };
 		A70000000000000000000011 /* NoteRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000001 /* NoteRepository.swift */; };
+		A70000000000000000000061 /* CloudNoteMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000051 /* CloudNoteMonitor.swift */; };
 		A70000000000000000000012 /* TagRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000002 /* TagRepository.swift */; };
 		A70000000000000000000013 /* PreferenceRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000003 /* PreferenceRepository.swift */; };
 		A70000000000000000000014 /* NoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000004 /* NoteStore.swift */; };
@@ -108,6 +109,7 @@
 		A7000000000000000000000B /* PreferenceStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceStoreTests.swift; sourceTree = "<group>"; };
 		A7000000000000000000000C /* TagStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagStoreTests.swift; sourceTree = "<group>"; };
 		A70000000000000000000031 /* NoteData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteData.swift; sourceTree = "<group>"; };
+		A70000000000000000000051 /* CloudNoteMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudNoteMonitor.swift; sourceTree = "<group>"; };
 		A70000000000000000000032 /* NoteDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDataTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -209,6 +211,7 @@
 			isa = PBXGroup;
 			children = (
 				A70000000000000000000001 /* NoteRepository.swift */,
+				A70000000000000000000051 /* CloudNoteMonitor.swift */,
 				A70000000000000000000002 /* TagRepository.swift */,
 				A70000000000000000000003 /* PreferenceRepository.swift */,
 			);
@@ -442,6 +445,7 @@
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,
 				A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */,
 				A70000000000000000000011 /* NoteRepository.swift in Sources */,
+				A70000000000000000000061 /* CloudNoteMonitor.swift in Sources */,
 				A70000000000000000000012 /* TagRepository.swift in Sources */,
 				A70000000000000000000013 /* PreferenceRepository.swift in Sources */,
 				A70000000000000000000014 /* NoteStore.swift in Sources */,
