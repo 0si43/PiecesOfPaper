@@ -11,7 +11,9 @@ import QuickLook
 import PencilKit
 import UniformTypeIdentifiers
 
-final class PreviewProvider: QLPreviewProvider {
+// QLPreviewingController conformance is what exposes providePreview(for:) to
+// the Quick Look host; without it the extension loads but never renders.
+final class PreviewProvider: QLPreviewProvider, QLPreviewingController {
     func providePreview(for request: QLFilePreviewRequest) async throws -> QLPreviewReply {
         let data = try Data(contentsOf: request.fileURL)
         let entity = try PropertyListDecoder().decode(NoteEntity.self, from: data)
