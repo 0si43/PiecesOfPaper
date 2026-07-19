@@ -1,0 +1,4 @@
+- [x] Make drawing and storage flows testable in the iOS Simulator (issue #196, PR #197)
+  - Simulator builds set `drawingPolicy = .anyInput` so mouse drags draw; device keeps `.pencilOnly`
+  - Shared `PKDrawing.stub()` test fixture; non-empty drawing plist round-trip covered in NoteDocumentTests
+  - `NoteDocument` conflict resolution stays untestable on iOS (`NSFileVersion.addOfItem` is macOS-only) — recorded in docs/GOTCHAS.md
