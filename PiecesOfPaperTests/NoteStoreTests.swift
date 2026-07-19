@@ -141,7 +141,7 @@ struct NoteStoreTests {
     }
 
     @Test func test_upsert_insertsUnknownArchivedNoteIntoArchivedList() throws {
-        let archivedUrl = try #require(FilePath.archivedUrl).appendingPathComponent("archived-note.plist")
+        let archivedUrl = try #require(FilePath.archivedUrl).appendingPathComponent("archived-note.pop")
         let note = NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: archivedUrl)
         noteStore.upsert(note)
         #expect(noteStore.archivedNotes == [note])
@@ -223,9 +223,9 @@ struct NoteStoreTests {
     }
 
     @Test func test_canRequestReview_requiresFiveInboxFiles() {
-        repositoryMock.fileUrls = (0..<4).map { URL(fileURLWithPath: "/path/to/note\($0).plist") }
+        repositoryMock.fileUrls = (0..<4).map { URL(fileURLWithPath: "/path/to/note\($0).pop") }
         #expect(!noteStore.canRequestReview)
-        repositoryMock.fileUrls = (0..<5).map { URL(fileURLWithPath: "/path/to/note\($0).plist") }
+        repositoryMock.fileUrls = (0..<5).map { URL(fileURLWithPath: "/path/to/note\($0).pop") }
         #expect(noteStore.canRequestReview)
     }
 
