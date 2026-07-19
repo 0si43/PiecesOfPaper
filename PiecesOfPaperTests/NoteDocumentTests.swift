@@ -13,12 +13,12 @@ import PencilKit
 
 @MainActor
 struct NoteDocumentTests {
-    private func makeDocument() -> NoteDocument {
+    private func makeDocument(drawing: PKDrawing = PKDrawing()) -> NoteDocument {
         guard let url = URL(string: "file:///test") else {
             fatalError()
         }
 
-        return NoteDocument(fileURL: url, entity: NoteEntity(drawing: PKDrawing()))
+        return NoteDocument(fileURL: url, entity: NoteEntity(drawing: drawing))
     }
 
     @Test func contents_encodesEntity() throws {
@@ -34,6 +34,15 @@ struct NoteDocumentTests {
         let other = makeDocument()
         try other.load(fromContents: data, ofType: nil)
         #expect(other.entity.id == document.entity.id)
+    }
+
+    @Test func load_roundTripsNonEmptyDrawing() throws {
+        let document = makeDocument(drawing: .stub())
+        let data = try #require(try document.contents(forType: "") as? Data)
+        let other = makeDocument()
+        try other.load(fromContents: data, ofType: nil)
+        #expect(!other.entity.drawing.strokes.isEmpty)
+        #expect(other.entity.drawing == document.entity.drawing)
     }
 
     @Test func load_throwsOnGarbageData() {

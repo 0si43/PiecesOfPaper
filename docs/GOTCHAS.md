@@ -9,6 +9,10 @@ Each entry links to the issue/PR where the details live.
 - **Don't trust a single on-device OK/NG observation while bisecting**: during the #187 bisect, wrapping `CanvasView` in `GeometryReader` looked like an independent cause, but an isolation build (main + thumbnail fix only) drew fine — the observation was flaky. Before shipping a fix, back each suspected cause with an isolation build that adds/removes only that element.
 - **`PKDrawing(strokes:)` crashes in the macOS `swift` interpreter**: PKReplicaManager touches CFPreferences and crashes when a drawing with strokes is created from a script. When seeding note files from macOS, use an empty `PKDrawing()` — thumbnails come out blank, but that is enough to exercise the list pipeline.
 
+## iCloud / UIDocument
+
+- **`NoteDocument`'s conflict resolution is not unit-testable on iOS**: `NSFileVersion.addOfItem(at:withContentsOf:)` — the only API that fabricates file versions — is macOS-only, so iOS tests cannot create conflicting versions locally. Verify conflict handling with two devices syncing over real iCloud. Background: issue #196, PR #197.
+
 ## SwiftUI
 
 - **Alerts attached below a `fullScreenCover` never show while the cover is up**: `NoteListParentView` has `.alert(isPresented: $noteStore.showAlert)`, but while `CanvasView` is presented via `.fullScreenCover`, that alert is not displayed. Do not refactor cover-side errors onto the store's `showAlert`/`alertType` pattern — errors shown on top of a cover must live in a view-local `@State` + `.alert` inside the cover. The store alert pattern is for the list screens only. Background: PR #186 review.

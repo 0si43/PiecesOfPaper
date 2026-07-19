@@ -148,18 +148,6 @@ struct NoteStoreTests {
         #expect(noteStore.inboxNotes.isEmpty)
     }
 
-    private func makeDrawing() -> PKDrawing {
-        let point = PKStrokePoint(location: .zero,
-                                  timeOffset: 0,
-                                  size: CGSize(width: 1, height: 1),
-                                  opacity: 1,
-                                  force: 1,
-                                  azimuth: 0,
-                                  altitude: 0)
-        let path = PKStrokePath(controlPoints: [point], creationDate: Date())
-        return PKDrawing(strokes: [PKStroke(ink: PKInk(.pen, color: .black), path: path)])
-    }
-
     @Test func test_saveDrawing_skipsWhenDrawingUnchanged() {
         let note = NoteData.createTestData()
         var saved: NoteData?
@@ -170,7 +158,7 @@ struct NoteStoreTests {
 
     @Test func test_saveDrawing_persistsAndUpsertsOnSuccess() throws {
         let note = NoteData.createTestData()
-        let drawing = makeDrawing()
+        let drawing = PKDrawing.stub()
         var result: NoteData?
         noteStore.save(drawing: drawing, to: note) { result = $0 }
         let saved = try #require(result)
@@ -184,7 +172,7 @@ struct NoteStoreTests {
         let note = NoteData.createTestData()
         var completionCalled = false
         var saved: NoteData?
-        noteStore.save(drawing: makeDrawing(), to: note) {
+        noteStore.save(drawing: PKDrawing.stub(), to: note) {
             saved = $0
             completionCalled = true
         }
@@ -200,7 +188,7 @@ struct NoteStoreTests {
         noteStore.addTag(tag, to: staleSnapshot)
 
         var result: NoteData?
-        noteStore.save(drawing: makeDrawing(), to: staleSnapshot) { result = $0 }
+        noteStore.save(drawing: PKDrawing.stub(), to: staleSnapshot) { result = $0 }
 
         let saved = try #require(result)
         #expect(saved.entity.tags == [tag])
@@ -210,7 +198,7 @@ struct NoteStoreTests {
     @Test func test_saveDrawing_skipsWhenStoreCopyAlreadyHasDrawing() async {
         await noteStore.incrementalFetch(directory: .inbox)
         let staleSnapshot = notes[0]
-        let drawing = makeDrawing()
+        let drawing = PKDrawing.stub()
         var first: NoteData?
         noteStore.save(drawing: drawing, to: staleSnapshot) { first = $0 }
         let callsAfterFirst = repositoryMock.saveCallCount
