@@ -10,9 +10,11 @@ import Foundation
 
 enum FilePath {
     static var savingUrl: URL? {
-        PreferenceRepository().getEnablediCloud()
-            ? iCloudUrl ?? documentDirectoryUrl
-            : documentDirectoryUrl
+        isiCloudActive ? iCloudUrl : documentDirectoryUrl
+    }
+
+    static var isiCloudActive: Bool {
+        PreferenceRepository().getEnablediCloud() && iCloudUrl != nil
     }
 
     // url(forUbiquityContainerIdentifier:) is slow and not meant for the main thread,
