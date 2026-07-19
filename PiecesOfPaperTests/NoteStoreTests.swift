@@ -141,7 +141,7 @@ struct NoteStoreTests {
     }
 
     @Test func test_upsert_insertsUnknownArchivedNoteIntoArchivedList() throws {
-        let archivedUrl = try #require(FilePath.archivedUrl).appendingPathComponent("archived-note.plist")
+        let archivedUrl = try #require(FilePath.archivedUrl).appendingPathComponent("archived-note.pop")
         let note = NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: archivedUrl)
         noteStore.upsert(note)
         #expect(noteStore.archivedNotes == [note])

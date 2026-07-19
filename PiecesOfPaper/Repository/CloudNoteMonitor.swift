@@ -22,7 +22,11 @@ final class CloudNoteMonitor {
 
     init() {
         query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
-        query.predicate = NSPredicate(format: "%K LIKE '*.plist'", NSMetadataItemFSNameKey)
+        query.predicate = NSPredicate(format: "%K LIKE %@ OR %K LIKE %@",
+                                      NSMetadataItemFSNameKey,
+                                      "*." + FilePath.noteFileExtension,
+                                      NSMetadataItemFSNameKey,
+                                      "*." + FilePath.legacyNoteFileExtension)
         let center = NotificationCenter.default
         observers.append(center.addObserver(forName: .NSMetadataQueryDidFinishGathering,
                                             object: query,

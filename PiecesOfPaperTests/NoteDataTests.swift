@@ -20,14 +20,14 @@ struct NoteDataTests {
     @Test func isArchived_trueForFileUnderArchivedDirectory() throws {
         let archivedUrl = try #require(FilePath.archivedUrl)
         let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
-                            fileURL: archivedUrl.appendingPathComponent("test.plist"))
+                            fileURL: archivedUrl.appendingPathComponent("test.pop"))
         #expect(note.isArchived)
     }
 
     @Test func isArchived_falseForFileOutsideArchivedDirectory() throws {
         let inboxUrl = try #require(FilePath.inboxUrl)
         let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
-                            fileURL: inboxUrl.appendingPathComponent("test.plist"))
+                            fileURL: inboxUrl.appendingPathComponent("test.pop"))
         #expect(!note.isArchived)
     }
 

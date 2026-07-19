@@ -30,6 +30,15 @@
 		A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */; };
 		A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E39274C8FA400C708A2 /* NoteDocument.swift */; };
 		A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E3B274CD88000C708A2 /* FilePath.swift */; };
+		A70000000000000000000052 /* LegacyNoteMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000078 /* LegacyNoteMigrator.swift */; };
+		A70000000000000000000057 /* ThumbnailProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000053 /* ThumbnailProvider.swift */; };
+		A70000000000000000000058 /* NoteEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F3275B203A002C66F7 /* NoteEntity.swift */; };
+		A70000000000000000000059 /* TagEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C956C275C7CF300822461 /* TagEntity.swift */; };
+		A7000000000000000000005A /* ThumbnailExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A70000000000000000000055 /* ThumbnailExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A70000000000000000000069 /* PreviewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000065 /* PreviewProvider.swift */; };
+		A7000000000000000000006A /* NoteEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F3275B203A002C66F7 /* NoteEntity.swift */; };
+		A7000000000000000000006B /* TagEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63C956C275C7CF300822461 /* TagEntity.swift */; };
+		A7000000000000000000006C /* PreviewExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A70000000000000000000067 /* PreviewExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A6BB3DCF2D460C7000FFCB62 /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BB3DCE2D460C7000FFCB62 /* TutorialView.swift */; };
 		A6CADA51276752E600657E9E /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA50276752E600657E9E /* SettingView.swift */; };
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
@@ -49,6 +58,8 @@
 		A7000000000000000000001C /* TagStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000000C /* TagStoreTests.swift */; };
 		A70000000000000000000041 /* NoteData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000031 /* NoteData.swift */; };
 		A70000000000000000000042 /* NoteDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000032 /* NoteDataTests.swift */; };
+		A70000000000000000000077 /* LegacyNoteMigratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000076 /* LegacyNoteMigratorTests.swift */; };
+		A7000000000000000000007B /* NoteRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000007A /* NoteRepositoryTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,7 +70,36 @@
 			remoteGlobalIDString = A6DE5BB62437167C006D3D47;
 			remoteInfo = PiecesOfPaper;
 		};
+		A70000000000000000000060 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A6DE5BAF2437167C006D3D47 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A7000000000000000000005E;
+			remoteInfo = ThumbnailExtension;
+		};
+		A70000000000000000000071 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A6DE5BAF2437167C006D3D47 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A70000000000000000000070;
+			remoteInfo = PreviewExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A7000000000000000000005F /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A7000000000000000000005A /* ThumbnailExtension.appex in Embed App Extensions */,
+				A7000000000000000000006C /* PreviewExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A62EEAF1273248A300D513B8 /* PiecesOfPaperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesOfPaperApp.swift; sourceTree = "<group>"; };
@@ -85,6 +125,13 @@
 		A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteListParentView.swift; sourceTree = "<group>"; };
 		A6620E39274C8FA400C708A2 /* NoteDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocument.swift; sourceTree = "<group>"; };
 		A6620E3B274CD88000C708A2 /* FilePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePath.swift; sourceTree = "<group>"; };
+		A70000000000000000000078 /* LegacyNoteMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyNoteMigrator.swift; sourceTree = "<group>"; };
+		A70000000000000000000053 /* ThumbnailProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailProvider.swift; sourceTree = "<group>"; };
+		A70000000000000000000054 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A70000000000000000000055 /* ThumbnailExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ThumbnailExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A70000000000000000000065 /* PreviewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewProvider.swift; sourceTree = "<group>"; };
+		A70000000000000000000066 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A70000000000000000000067 /* PreviewExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PreviewExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6675A37251D89BA00343151 /* PiecesOfPaper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PiecesOfPaper.entitlements; sourceTree = "<group>"; };
 		A66E7512253531440026B9A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A66E7513253538E00026B9A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
@@ -111,6 +158,8 @@
 		A70000000000000000000031 /* NoteData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteData.swift; sourceTree = "<group>"; };
 		A70000000000000000000051 /* CloudNoteMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudNoteMonitor.swift; sourceTree = "<group>"; };
 		A70000000000000000000032 /* NoteDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDataTests.swift; sourceTree = "<group>"; };
+		A70000000000000000000076 /* LegacyNoteMigratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyNoteMigratorTests.swift; sourceTree = "<group>"; };
+		A7000000000000000000007A /* NoteRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteRepositoryTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +171,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A6DE5BB42437167C006D3D47 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7000000000000000000005C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7000000000000000000006E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -147,6 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				A6620E3B274CD88000C708A2 /* FilePath.swift */,
+				A70000000000000000000078 /* LegacyNoteMigrator.swift */,
 				A63C9592276444CF00822461 /* ListOrder.swift */,
 				A70000000000000000000031 /* NoteData.swift */,
 				A6620E39274C8FA400C708A2 /* NoteDocument.swift */,
@@ -198,6 +262,8 @@
 			isa = PBXGroup;
 			children = (
 				A70000000000000000000032 /* NoteDataTests.swift */,
+				A70000000000000000000076 /* LegacyNoteMigratorTests.swift */,
+				A7000000000000000000007A /* NoteRepositoryTests.swift */,
 				A70000000000000000000007 /* NoteStoreTests.swift */,
 				A70000000000000000000008 /* NoteDocumentTests.swift */,
 				A7000000000000000000000B /* PreferenceStoreTests.swift */,
@@ -244,11 +310,31 @@
 			path = Setting;
 			sourceTree = "<group>";
 		};
+		A70000000000000000000056 /* ThumbnailExtension */ = {
+			isa = PBXGroup;
+			children = (
+				A70000000000000000000053 /* ThumbnailProvider.swift */,
+				A70000000000000000000054 /* Info.plist */,
+			);
+			path = ThumbnailExtension;
+			sourceTree = "<group>";
+		};
+		A70000000000000000000068 /* PreviewExtension */ = {
+			isa = PBXGroup;
+			children = (
+				A70000000000000000000065 /* PreviewProvider.swift */,
+				A70000000000000000000066 /* Info.plist */,
+			);
+			path = PreviewExtension;
+			sourceTree = "<group>";
+		};
 		A6DE5BAE2437167C006D3D47 = {
 			isa = PBXGroup;
 			children = (
 				A6DE5BB92437167C006D3D47 /* PiecesOfPaper */,
 				A6A16EC325B1673500DF323F /* PiecesOfPaperTests */,
+				A70000000000000000000056 /* ThumbnailExtension */,
+				A70000000000000000000068 /* PreviewExtension */,
 				A6DE5BB82437167C006D3D47 /* Products */,
 				A66E7512253531440026B9A8 /* README.md */,
 				A66E7513253538E00026B9A8 /* LICENSE.md */,
@@ -260,6 +346,8 @@
 			children = (
 				A6DE5BB72437167C006D3D47 /* Pieces of Paper.app */,
 				A6A16EC225B1673500DF323F /* PiecesOfPaperTests.xctest */,
+				A70000000000000000000055 /* ThumbnailExtension.appex */,
+				A70000000000000000000067 /* PreviewExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -310,16 +398,53 @@
 				A6DE5BB32437167C006D3D47 /* Sources */,
 				A6DE5BB42437167C006D3D47 /* Frameworks */,
 				A6DE5BB52437167C006D3D47 /* Resources */,
+				A7000000000000000000005F /* Embed App Extensions */,
 				A64AE9F7275C6F00002C66F7 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A70000000000000000000079 /* PBXTargetDependency */,
+				A70000000000000000000072 /* PBXTargetDependency */,
 			);
 			name = PiecesOfPaper;
 			productName = LikeAPaper;
 			productReference = A6DE5BB72437167C006D3D47 /* Pieces of Paper.app */;
 			productType = "com.apple.product-type.application";
+		};
+		A7000000000000000000005E /* ThumbnailExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A70000000000000000000064 /* Build configuration list for PBXNativeTarget "ThumbnailExtension" */;
+			buildPhases = (
+				A7000000000000000000005B /* Sources */,
+				A7000000000000000000005C /* Frameworks */,
+				A7000000000000000000005D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ThumbnailExtension;
+			productName = ThumbnailExtension;
+			productReference = A70000000000000000000055 /* ThumbnailExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		A70000000000000000000070 /* PreviewExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A70000000000000000000075 /* Build configuration list for PBXNativeTarget "PreviewExtension" */;
+			buildPhases = (
+				A7000000000000000000006D /* Sources */,
+				A7000000000000000000006E /* Frameworks */,
+				A7000000000000000000006F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PreviewExtension;
+			productName = PreviewExtension;
+			productReference = A70000000000000000000067 /* PreviewExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -355,6 +480,8 @@
 			targets = (
 				A6DE5BB62437167C006D3D47 /* PiecesOfPaper */,
 				A6A16EC125B1673500DF323F /* PiecesOfPaperTests */,
+				A7000000000000000000005E /* ThumbnailExtension */,
+				A70000000000000000000070 /* PreviewExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -373,6 +500,20 @@
 			files = (
 				A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */,
 				A70000000000000000000019 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7000000000000000000005D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7000000000000000000006F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,11 +541,33 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A7000000000000000000005B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A70000000000000000000057 /* ThumbnailProvider.swift in Sources */,
+				A70000000000000000000058 /* NoteEntity.swift in Sources */,
+				A70000000000000000000059 /* TagEntity.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7000000000000000000006D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A70000000000000000000069 /* PreviewProvider.swift in Sources */,
+				A7000000000000000000006A /* NoteEntity.swift in Sources */,
+				A7000000000000000000006B /* TagEntity.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A6A16EBE25B1673500DF323F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				A70000000000000000000042 /* NoteDataTests.swift in Sources */,
+				A70000000000000000000077 /* LegacyNoteMigratorTests.swift in Sources */,
+				A7000000000000000000007B /* NoteRepositoryTests.swift in Sources */,
 				A70000000000000000000017 /* NoteStoreTests.swift in Sources */,
 				A70000000000000000000018 /* NoteDocumentTests.swift in Sources */,
 				A7000000000000000000001B /* PreferenceStoreTests.swift in Sources */,
@@ -423,6 +586,7 @@
 				A64AE9F22759A963002C66F7 /* NoteView.swift in Sources */,
 				A7000000000000000000001A /* ThumbnailCache.swift in Sources */,
 				A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */,
+				A70000000000000000000052 /* LegacyNoteMigrator.swift in Sources */,
 				A63C9588275DB97900822461 /* DeletableTag.swift in Sources */,
 				A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */,
 				A63C9593276444CF00822461 /* ListOrder.swift in Sources */,
@@ -461,6 +625,16 @@
 			isa = PBXTargetDependency;
 			target = A6DE5BB62437167C006D3D47 /* PiecesOfPaper */;
 			targetProxy = A6A16EC725B1673500DF323F /* PBXContainerItemProxy */;
+		};
+		A70000000000000000000079 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A7000000000000000000005E /* ThumbnailExtension */;
+			targetProxy = A70000000000000000000060 /* PBXContainerItemProxy */;
+		};
+		A70000000000000000000072 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A70000000000000000000070 /* PreviewExtension */;
+			targetProxy = A70000000000000000000071 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -675,6 +849,106 @@
 			};
 			name = Release;
 		};
+		A70000000000000000000062 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 18;
+				DEVELOPMENT_TEAM = JDTR4Y333X;
+				INFOPLIST_FILE = ThumbnailExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 3.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper.ThumbnailExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A70000000000000000000063 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 18;
+				DEVELOPMENT_TEAM = JDTR4Y333X;
+				INFOPLIST_FILE = ThumbnailExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 3.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper.ThumbnailExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A70000000000000000000073 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 18;
+				DEVELOPMENT_TEAM = JDTR4Y333X;
+				INFOPLIST_FILE = PreviewExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 3.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper.PreviewExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A70000000000000000000074 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 18;
+				DEVELOPMENT_TEAM = JDTR4Y333X;
+				INFOPLIST_FILE = PreviewExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 3.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Individual.LikeAPaper.PreviewExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -701,6 +975,24 @@
 			buildConfigurations = (
 				A6DE5BE22437167E006D3D47 /* Debug */,
 				A6DE5BE32437167E006D3D47 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A70000000000000000000064 /* Build configuration list for PBXNativeTarget "ThumbnailExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A70000000000000000000062 /* Debug */,
+				A70000000000000000000063 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A70000000000000000000075 /* Build configuration list for PBXNativeTarget "PreviewExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A70000000000000000000073 /* Debug */,
+				A70000000000000000000074 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

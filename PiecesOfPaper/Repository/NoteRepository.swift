@@ -37,14 +37,29 @@ final class NoteRepository: NoteRepositoryProtocol {
     @MainActor
     func getFileUrls(directory: NoteDirectory) async -> [URL] {
         guard let directoryUrl = directory.url else { return [] }
+        LegacyNoteMigrator.migrate(in: directoryUrl)
         guard FilePath.isiCloudActive else {
             stopCloudMonitor()
             return localFileUrls(in: directoryUrl)
         }
         let directoryPath = directoryUrl.resolvingSymlinksInPath().path
-        return await monitor().urls().filter {
-            $0.resolvingSymlinksInPath().deletingLastPathComponent().path == directoryPath
-        }
+        var seen = Set<URL>()
+        return await monitor().urls()
+            .filter { $0.resolvingSymlinksInPath().deletingLastPathComponent().path == directoryPath }
+            .map(resolveMigratedUrl)
+            .filter { seen.insert($0).inserted }
+    }
+
+    // The metadata query and already-open notes can still hold a pre-rename
+    // .plist URL after LegacyNoteMigrator moved the file. Point such URLs at
+    // the renamed file so enumeration and saves never target a path that no
+    // longer exists (a save to the stale path would fork the note).
+    private func resolveMigratedUrl(_ fileUrl: URL) -> URL {
+        guard fileUrl.pathExtension == FilePath.legacyNoteFileExtension,
+              !FileManager.default.fileExists(atPath: fileUrl.path) else { return fileUrl }
+        let migratedUrl = fileUrl.deletingPathExtension()
+            .appendingPathExtension(FilePath.noteFileExtension)
+        return FileManager.default.fileExists(atPath: migratedUrl.path) ? migratedUrl : fileUrl
     }
 
     @MainActor
@@ -56,7 +71,10 @@ final class NoteRepository: NoteRepositoryProtocol {
     // where NSMetadataQuery finds nothing.
     private func localFileUrls(in directoryUrl: URL) -> [URL] {
         guard var fileNames = try? FileManager.default.contentsOfDirectory(atPath: directoryUrl.path) else { return [] }
-        fileNames = fileNames.filter { $0.hasSuffix(".plist") }
+        fileNames = fileNames.filter {
+            $0.hasSuffix("." + FilePath.noteFileExtension)
+                || $0.hasSuffix("." + FilePath.legacyNoteFileExtension)
+        }
         return fileNames.map { directoryUrl.appendingPathComponent($0) }
     }
 
@@ -91,12 +109,13 @@ final class NoteRepository: NoteRepositoryProtocol {
     }
 
     func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void) {
+        let targetUrl = resolveMigratedUrl(fileUrl)
         // The transient document lives until the completion handler fires,
         // which keeps its conflict observer active for the whole save.
-        let document = NoteDocument(fileURL: fileUrl, entity: entity)
+        let document = NoteDocument(fileURL: targetUrl, entity: entity)
         let saveOperation: UIDocument.SaveOperation =
-            FileManager.default.fileExists(atPath: fileUrl.path) ? .forOverwriting : .forCreating
-        document.save(to: fileUrl, for: saveOperation, completionHandler: completion)
+            FileManager.default.fileExists(atPath: targetUrl.path) ? .forOverwriting : .forCreating
+        document.save(to: targetUrl, for: saveOperation, completionHandler: completion)
     }
 
     func delete(fileUrl: URL) throws {
