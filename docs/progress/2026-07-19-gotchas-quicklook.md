@@ -1,3 +1,3 @@
-- [x] Document QuickLook extension and pbxproj merge pitfalls in GOTCHAS (issue #205)
+- [x] Document QuickLook extension and pbxproj merge pitfalls in GOTCHAS (issue #205, PR #206)
   - Parallel-branch pbxproj ID collisions merge cleanly in git but leave the project unopenable; added a post-merge duplicate-ID check
   - QLPreviewingController conformance requirement and the total-pixel render cap came out of the PR #193 device debugging
