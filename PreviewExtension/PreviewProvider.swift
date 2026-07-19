@@ -21,14 +21,17 @@ final class PreviewProvider: QLPreviewProvider, QLPreviewingController {
         let bounds = drawing.bounds
 
         let hasContent = !bounds.isNull && bounds.width > 0 && bounds.height > 0
-        // Cap the longest side to bound the bitmap size (extension memory limit).
-        let maxDimension: CGFloat = 2_048
-        let ratio = hasContent ? min(1.0, maxDimension / max(bounds.width, bounds.height)) : 1.0
-        let contextSize = hasContent
-            ? CGSize(width: bounds.width * ratio, height: bounds.height * ratio)
-            : CGSize(width: 1_024, height: 768)
+        let contentSize = hasContent ? bounds.size : CGSize(width: 1_024, height: 768)
+        // The trait collection carries no display scale in the extension
+        // context; every device on this deployment target is at least 2x.
+        let displayScale = max(UITraitCollection.current.displayScale, 2)
+        // Cap the longest side in pixels to bound the bitmap (extension memory limit).
+        let maxPixelDimension: CGFloat = 3_072
+        let pixelRatio = min(displayScale, maxPixelDimension / max(contentSize.width, contentSize.height))
+        let pixelSize = CGSize(width: contentSize.width * pixelRatio,
+                               height: contentSize.height * pixelRatio)
 
-        return QLPreviewReply(dataOfContentType: .png, contentSize: contextSize) { _ in
+        return QLPreviewReply(dataOfContentType: .png, contentSize: contentSize) { _ in
             // Off-main PKDrawing.image is safe here: the extension is a separate
             // process with no PKCanvasView, so the app-side constraint from #187
             // does not apply.
@@ -36,16 +39,16 @@ final class PreviewProvider: QLPreviewProvider, QLPreviewingController {
             if hasContent {
                 // Fixed light style so ink drawn in dark mode stays visible on white.
                 UITraitCollection(userInterfaceStyle: .light).performAsCurrent {
-                    image = drawing.image(from: bounds, scale: ratio)
+                    image = drawing.image(from: bounds, scale: pixelRatio)
                 }
             }
             let format = UIGraphicsImageRendererFormat()
             format.scale = 1
-            let rendered = UIGraphicsImageRenderer(size: contextSize, format: format).image { context in
+            let rendered = UIGraphicsImageRenderer(size: pixelSize, format: format).image { context in
                 UIColor.white.setFill()
-                context.fill(CGRect(origin: .zero, size: contextSize))
+                context.fill(CGRect(origin: .zero, size: pixelSize))
                 if hasContent {
-                    image.draw(in: CGRect(origin: .zero, size: contextSize))
+                    image.draw(in: CGRect(origin: .zero, size: pixelSize))
                 }
             }
             guard let pngData = rendered.pngData() else {
