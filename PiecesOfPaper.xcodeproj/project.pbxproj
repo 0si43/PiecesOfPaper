@@ -59,6 +59,7 @@
 		A70000000000000000000041 /* NoteData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000031 /* NoteData.swift */; };
 		A70000000000000000000042 /* NoteDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000032 /* NoteDataTests.swift */; };
 		A70000000000000000000077 /* LegacyNoteMigratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000076 /* LegacyNoteMigratorTests.swift */; };
+		A7000000000000000000007B /* NoteRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000007A /* NoteRepositoryTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -158,6 +159,7 @@
 		A70000000000000000000051 /* CloudNoteMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudNoteMonitor.swift; sourceTree = "<group>"; };
 		A70000000000000000000032 /* NoteDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDataTests.swift; sourceTree = "<group>"; };
 		A70000000000000000000076 /* LegacyNoteMigratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyNoteMigratorTests.swift; sourceTree = "<group>"; };
+		A7000000000000000000007A /* NoteRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteRepositoryTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -261,6 +263,7 @@
 			children = (
 				A70000000000000000000032 /* NoteDataTests.swift */,
 				A70000000000000000000076 /* LegacyNoteMigratorTests.swift */,
+				A7000000000000000000007A /* NoteRepositoryTests.swift */,
 				A70000000000000000000007 /* NoteStoreTests.swift */,
 				A70000000000000000000008 /* NoteDocumentTests.swift */,
 				A7000000000000000000000B /* PreferenceStoreTests.swift */,
@@ -564,6 +567,7 @@
 			files = (
 				A70000000000000000000042 /* NoteDataTests.swift in Sources */,
 				A70000000000000000000077 /* LegacyNoteMigratorTests.swift in Sources */,
+				A7000000000000000000007B /* NoteRepositoryTests.swift in Sources */,
 				A70000000000000000000017 /* NoteStoreTests.swift in Sources */,
 				A70000000000000000000018 /* NoteDocumentTests.swift in Sources */,
 				A7000000000000000000001B /* PreferenceStoreTests.swift in Sources */,
