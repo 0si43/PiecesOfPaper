@@ -13,16 +13,19 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
     @Binding private var canvasView: PKCanvasView
     @Binding private var toolPicker: PKToolPicker
     private let saveAction: (PKDrawing) -> Void
+    private let onToggleUI: (() -> Void)?
     private var defaultTool = PKInkingTool(.pen, color: .black, width: 1)
     private var previousTool: PKTool
     private var currentTool: PKTool
 
     init(canvasView: Binding<PKCanvasView>,
          toolPicker: Binding<PKToolPicker>,
-         saveAction: @escaping (PKDrawing) -> Void) {
+         saveAction: @escaping (PKDrawing) -> Void,
+         onToggleUI: (() -> Void)? = nil) {
         self._canvasView = canvasView
         self._toolPicker = toolPicker
         self.saveAction = saveAction
+        self.onToggleUI = onToggleUI
         self.previousTool = defaultTool
         self.currentTool = defaultTool
     }
@@ -61,7 +64,22 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
             let pencilInteraction = UIPencilInteraction()
             pencilInteraction.delegate = self
             parent.canvasView.addInteraction(pencilInteraction)
+
+            #if targetEnvironment(simulator)
+            // Under .anyInput a single tap starts a stroke and never reaches
+            // CanvasView's TapGesture, so the Simulator toggles the UI with a
+            // two-finger tap instead (Option+click)
+            let twoFingerTap = UITapGestureRecognizer(target: self, action: #selector(toggleUI))
+            twoFingerTap.numberOfTouchesRequired = 2
+            parent.canvasView.addGestureRecognizer(twoFingerTap)
+            #endif
         }
+
+        #if targetEnvironment(simulator)
+        @objc private func toggleUI() {
+            parent.onToggleUI?()
+        }
+        #endif
     }
 }
 

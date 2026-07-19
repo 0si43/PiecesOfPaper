@@ -34,9 +34,13 @@ struct CanvasView: View {
     private var tapGesture: some Gesture {
         TapGesture(count: 1)
             .onEnded { _ in
-                hideExceptPaper.toggle()
-                setToolPickerVisible(!hideExceptPaper)
+                toggleUIVisibility()
             }
+    }
+
+    private func toggleUIVisibility() {
+        hideExceptPaper.toggle()
+        setToolPickerVisible(!hideExceptPaper)
     }
 
     private func setToolPickerVisible(_ isVisible: Bool) {
@@ -83,7 +87,8 @@ struct CanvasView: View {
     private func canvas(windowSize: CGSize) -> some View {
         PKCanvasViewWrapper(canvasView: $canvasView,
                             toolPicker: $toolPicker,
-                            saveAction: { save(drawing: $0) })
+                            saveAction: { save(drawing: $0) },
+                            onToggleUI: { toggleUIVisibility() })
         .onAppear {
             canvasView.drawing = note.entity.drawing
             initialContentSize(windowSize: windowSize)
