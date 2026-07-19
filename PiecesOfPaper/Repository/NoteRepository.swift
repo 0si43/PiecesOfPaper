@@ -31,9 +31,13 @@ protocol NoteRepositoryProtocol: AnyObject {
 
 final class NoteRepository: NoteRepositoryProtocol {
     func getFileUrls(directory: NoteDirectory) -> [URL] {
-        guard let directoryUrl = directory.url,
-              var fileNames = try? FileManager.default.contentsOfDirectory(atPath: directoryUrl.path) else { return [] }
-        fileNames = fileNames.filter { $0.hasSuffix(".plist") }
+        guard let directoryUrl = directory.url else { return [] }
+        LegacyNoteMigrator.migrate(in: directoryUrl)
+        guard var fileNames = try? FileManager.default.contentsOfDirectory(atPath: directoryUrl.path) else { return [] }
+        fileNames = fileNames.filter {
+            $0.hasSuffix("." + FilePath.noteFileExtension)
+                || $0.hasSuffix("." + FilePath.legacyNoteFileExtension)
+        }
         return fileNames.map { directoryUrl.appendingPathComponent($0) }
     }
 

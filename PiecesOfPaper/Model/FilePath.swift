@@ -45,10 +45,13 @@ enum FilePath {
         savingUrl?.appendingPathComponent("Library")
     }
 
+    static let noteFileExtension = "pop"
+    static let legacyNoteFileExtension = "plist"
+
     static var fileName: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ssSSSS"
-        return dateFormatter.string(from: Date()) + ".plist"
+        return dateFormatter.string(from: Date()) + "." + noteFileExtension
     }
 
     static var tagListFileUrl: URL? {

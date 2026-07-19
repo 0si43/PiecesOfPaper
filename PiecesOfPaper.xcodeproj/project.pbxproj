@@ -30,6 +30,7 @@
 		A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */; };
 		A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E39274C8FA400C708A2 /* NoteDocument.swift */; };
 		A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E3B274CD88000C708A2 /* FilePath.swift */; };
+		A70000000000000000000052 /* LegacyNoteMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000051 /* LegacyNoteMigrator.swift */; };
 		A6BB3DCF2D460C7000FFCB62 /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BB3DCE2D460C7000FFCB62 /* TutorialView.swift */; };
 		A6CADA51276752E600657E9E /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CADA50276752E600657E9E /* SettingView.swift */; };
 		A6DE5BC42437167E006D3D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6DE5BC32437167E006D3D47 /* Assets.xcassets */; };
@@ -84,6 +85,7 @@
 		A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteListParentView.swift; sourceTree = "<group>"; };
 		A6620E39274C8FA400C708A2 /* NoteDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocument.swift; sourceTree = "<group>"; };
 		A6620E3B274CD88000C708A2 /* FilePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePath.swift; sourceTree = "<group>"; };
+		A70000000000000000000051 /* LegacyNoteMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyNoteMigrator.swift; sourceTree = "<group>"; };
 		A6675A37251D89BA00343151 /* PiecesOfPaper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PiecesOfPaper.entitlements; sourceTree = "<group>"; };
 		A66E7512253531440026B9A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A66E7513253538E00026B9A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				A6620E3B274CD88000C708A2 /* FilePath.swift */,
+				A70000000000000000000051 /* LegacyNoteMigrator.swift */,
 				A63C9592276444CF00822461 /* ListOrder.swift */,
 				A70000000000000000000031 /* NoteData.swift */,
 				A6620E39274C8FA400C708A2 /* NoteDocument.swift */,
@@ -420,6 +423,7 @@
 				A64AE9F22759A963002C66F7 /* NoteView.swift in Sources */,
 				A7000000000000000000001A /* ThumbnailCache.swift in Sources */,
 				A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */,
+				A70000000000000000000052 /* LegacyNoteMigrator.swift in Sources */,
 				A63C9588275DB97900822461 /* DeletableTag.swift in Sources */,
 				A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */,
 				A63C9593276444CF00822461 /* ListOrder.swift in Sources */,
