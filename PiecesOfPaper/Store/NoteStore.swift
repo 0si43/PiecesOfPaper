@@ -161,20 +161,24 @@ final class NoteStore {
 
         switch directory {
         case .inbox:
+            // Remove before appending: a migration rename arrives as
+            // added(.pop) + removed(.plist) for the same entity id, and the id
+            // filter below would drop the added copy while the old entry is
+            // still in the list.
+            removedUrls.forEach { url in
+                inboxNotes.removeAll { $0.fileURL == url }
+            }
             // Filter re-appends: a cloud update and a user-initiated fetch can
             // overlap across the awaited opens and resolve the same added URL
             inboxNotes += newNotes.filter { note in !inboxNotes.contains { $0.id == note.id } }
             // Drop failed URLs from the cache so the next fetch retries them
             inboxCachedUrls.removeAll { failedUrls.contains($0) }
-            removedUrls.forEach { url in
-                inboxNotes.removeAll { $0.fileURL == url }
-            }
         case .archived:
-            archivedNotes += newNotes.filter { note in !archivedNotes.contains { $0.id == note.id } }
-            archivedCachedUrls.removeAll { failedUrls.contains($0) }
             removedUrls.forEach { url in
                 archivedNotes.removeAll { $0.fileURL == url }
             }
+            archivedNotes += newNotes.filter { note in !archivedNotes.contains { $0.id == note.id } }
+            archivedCachedUrls.removeAll { failedUrls.contains($0) }
         }
 
         // Background updates retry failed files on the next query update,
