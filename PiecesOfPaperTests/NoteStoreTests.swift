@@ -222,11 +222,33 @@ struct NoteStoreTests {
         #expect(repositoryMock.saveCallCount == callsAfterFirst)
     }
 
-    @Test func test_canRequestReview_requiresFiveInboxFiles() {
-        repositoryMock.fileUrls = (0..<4).map { URL(fileURLWithPath: "/path/to/note\($0).plist") }
+    @Test func test_canRequestReview_requiresFiveInboxNotes() {
+        (0..<4).forEach { _ in noteStore.upsert(NoteData.createTestData()) }
         #expect(!noteStore.canRequestReview)
-        repositoryMock.fileUrls = (0..<5).map { URL(fileURLWithPath: "/path/to/note\($0).plist") }
+        noteStore.upsert(NoteData.createTestData())
         #expect(noteStore.canRequestReview)
+    }
+
+    @Test func test_init_registersCloudUpdateHandler() {
+        #expect(repositoryMock.cloudUpdateHandler != nil)
+    }
+
+    @Test func test_applyCloudUpdate_fetchesNotesWithoutTouchingLoadingState() async {
+        #expect(noteStore.isLoading)
+        await noteStore.applyCloudUpdate()
+        #expect(noteStore.displayInboxNotes.count == 3)
+        #expect(noteStore.isLoading)
+    }
+
+    @Test func test_applyCloudUpdate_suppressesErrorAlertAndRetriesLater() async {
+        repositoryMock.failingUrls = [NoteRepositoryMock.TestFile.file2.url]
+        await noteStore.applyCloudUpdate()
+        #expect(noteStore.displayInboxNotes.count == 2)
+        #expect(!noteStore.showAlert)
+
+        repositoryMock.failingUrls = []
+        await noteStore.applyCloudUpdate()
+        #expect(noteStore.displayInboxNotes.count == 3)
     }
 
     @Test func test_upsert_thenIncrementalFetchDoesNotDuplicate() async {
@@ -261,13 +283,21 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     var failingUrls: Set<URL> = []
     var moveShouldThrow = false
     var fileUrls: [URL]?
+    private(set) var cloudUpdateHandler: (@MainActor () -> Void)?
 
     init(notes: [NoteData]) {
         self.notes = notes
     }
 
-    func getFileUrls(directory: NoteDirectory) -> [URL] {
-        fileUrls ?? TestFile.allCases.map { $0.url }
+    @MainActor
+    func getFileUrls(directory: NoteDirectory) async -> [URL] {
+        guard directory == .inbox else { return [] }
+        return fileUrls ?? TestFile.allCases.map { $0.url }
+    }
+
+    @MainActor
+    func setCloudUpdateHandler(_ handler: @escaping @MainActor () -> Void) {
+        cloudUpdateHandler = handler
     }
 
     @MainActor
