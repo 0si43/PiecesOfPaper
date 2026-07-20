@@ -31,6 +31,19 @@ struct NoteDataTests {
         #expect(!note.isArchived)
     }
 
+    @Test func isInInbox_trueForFileUnderInboxDirectory() throws {
+        let inboxUrl = try #require(FilePath.inboxUrl)
+        let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
+                            fileURL: inboxUrl.appendingPathComponent("test.pop"))
+        #expect(note.isInInbox)
+    }
+
+    @Test func isInInbox_falseForFileOutsideInboxDirectory() throws {
+        let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
+                            fileURL: URL(fileURLWithPath: "/external/test.pop"))
+        #expect(!note.isInInbox)
+    }
+
     @Test func equatable_detectsEntityChange() {
         let note = NoteData.createTestData()
         var modified = note
