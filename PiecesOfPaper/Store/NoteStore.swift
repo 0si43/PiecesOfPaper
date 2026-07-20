@@ -30,7 +30,9 @@ final class NoteStore {
 
     // MARK: - UI state
     var isLoading = true
-    var showCanvasView = false
+    /// Single source of truth for canvas presentation: new notes, thumbnail
+    /// taps, and external opens all present by assigning this
+    var openedNote: NoteData?
     var showAlert = false
     var alertType: AlertType?
     var noteToShare: NoteData?
@@ -324,10 +326,25 @@ final class NoteStore {
         } else if note.isArchived {
             archivedCachedUrls.append(note.fileURL)
             archivedNotes.append(note)
-        } else {
+        } else if note.isInInbox {
             inboxCachedUrls.append(note.fileURL)
             inboxNotes.append(note)
         }
+        // Notes outside both directories (opened in place from the Files app)
+        // are edited at their own URL and never listed
+    }
+
+    // MARK: - Canvas presentation
+
+    func openNewNote() {
+        guard let url = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) else { return }
+        openedNote = NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: url)
+    }
+
+    /// scenePhase .active hook: never stomp an already-open note
+    func openBlankNoteIfIdle() {
+        guard openedNote == nil else { return }
+        openNewNote()
     }
 
     // MARK: - Canvas support

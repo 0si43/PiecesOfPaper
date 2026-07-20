@@ -239,6 +239,33 @@ struct NoteStoreTests {
         #expect(noteStore.displayInboxNotes.count == 3)
     }
 
+    @Test func test_upsert_ignoresFileOutsideManagedDirectories() {
+        let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
+                            fileURL: URL(fileURLWithPath: "/external/note.pop"))
+        noteStore.upsert(note)
+        #expect(noteStore.inboxNotes.isEmpty)
+        #expect(noteStore.archivedNotes.isEmpty)
+    }
+
+    @Test func test_openNewNote_presentsBlankNoteInInbox() throws {
+        noteStore.openNewNote()
+        let opened = try #require(noteStore.openedNote)
+        #expect(opened.isInInbox)
+        #expect(opened.entity.drawing.strokes.isEmpty)
+    }
+
+    @Test func test_openBlankNoteIfIdle_opensBlankNoteWhenIdle() {
+        noteStore.openBlankNoteIfIdle()
+        #expect(noteStore.openedNote != nil)
+    }
+
+    @Test func test_openBlankNoteIfIdle_skipsWhenNoteAlreadyOpen() {
+        let note = NoteData.createTestData()
+        noteStore.openedNote = note
+        noteStore.openBlankNoteIfIdle()
+        #expect(noteStore.openedNote == note)
+    }
+
     @Test func test_upsert_thenIncrementalFetchDoesNotDuplicate() async {
         let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
                             fileURL: NoteRepositoryMock.TestFile.file1.url)
@@ -253,15 +280,17 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     enum TestFile: CaseIterable {
         case file1, file2, file3
 
+        // Fixture URLs live under the inbox directory so upsert treats them as
+        // managed notes (foreign URLs are intentionally never listed)
         // swiftlint:disable force_unwrapping
         var url: URL {
             switch self {
             case .file1:
-                URL(string: "file:///path/to/file1")!
+                FilePath.inboxUrl!.appendingPathComponent("file1")
             case .file2:
-                URL(string: "file:///path/to/file2")!
+                FilePath.inboxUrl!.appendingPathComponent("file2")
             case .file3:
-                URL(string: "file:///path/to/file3")!
+                FilePath.inboxUrl!.appendingPathComponent("file3")
             }
         }
         // swiftlint:enable force_unwrapping
