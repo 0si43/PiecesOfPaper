@@ -22,6 +22,7 @@
 		A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */; };
 		A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */; };
 		A6484FD6272E63B000676ED8 /* NoteGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD5272E63B000676ED8 /* NoteGridView.swift */; };
+		A70000000000000000000091 /* NoteListPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000090 /* NoteListPresentation.swift */; };
 		A64AE9F22759A963002C66F7 /* NoteThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F12759A963002C66F7 /* NoteThumbnailView.swift */; };
 		A7000000000000000000001A /* ThumbnailCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000000A /* ThumbnailCache.swift */; };
 		A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F3275B203A002C66F7 /* NoteEntity.swift */; };
@@ -70,6 +71,7 @@
 		A7000000000000000000008D /* NoteStoreFilterHydrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000008C /* NoteStoreFilterHydrationTests.swift */; };
 		A7000000000000000000007D /* TagRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000007C /* TagRepositoryTests.swift */; };
 		A7000000000000000000008F /* NoteStoreCanvasPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000008E /* NoteStoreCanvasPresentationTests.swift */; };
+		A70000000000000000000093 /* NoteListPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000092 /* NoteListPresentationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,6 +129,7 @@
 		A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKCanvasViewWrapper.swift; sourceTree = "<group>"; };
 		A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
 		A6484FD5272E63B000676ED8 /* NoteGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteGridView.swift; sourceTree = "<group>"; };
+		A70000000000000000000090 /* NoteListPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteListPresentation.swift; sourceTree = "<group>"; };
 		A64AE9F12759A963002C66F7 /* NoteThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteThumbnailView.swift; sourceTree = "<group>"; };
 		A7000000000000000000000A /* ThumbnailCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCache.swift; sourceTree = "<group>"; };
 		A64AE9F3275B203A002C66F7 /* NoteEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEntity.swift; sourceTree = "<group>"; };
@@ -180,6 +183,7 @@
 		A7000000000000000000008C /* NoteStoreFilterHydrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreFilterHydrationTests.swift; sourceTree = "<group>"; };
 		A7000000000000000000007C /* TagRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagRepositoryTests.swift; sourceTree = "<group>"; };
 		A7000000000000000000008E /* NoteStoreCanvasPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreCanvasPresentationTests.swift; sourceTree = "<group>"; };
+		A70000000000000000000092 /* NoteListPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteListPresentationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -257,6 +261,7 @@
 			children = (
 				A6620E35274C7A3D00C708A2 /* NoteListScreen.swift */,
 				A6484FD5272E63B000676ED8 /* NoteGridView.swift */,
+				A70000000000000000000090 /* NoteListPresentation.swift */,
 				A64AE9F12759A963002C66F7 /* NoteThumbnailView.swift */,
 				A7000000000000000000000A /* ThumbnailCache.swift */,
 				A63C9594276447BD00822461 /* ListOrderSettingView.swift */,
@@ -289,6 +294,7 @@
 				A7000000000000000000007C /* TagRepositoryTests.swift */,
 				A70000000000000000000007 /* NoteStoreTests.swift */,
 				A7000000000000000000008E /* NoteStoreCanvasPresentationTests.swift */,
+				A70000000000000000000092 /* NoteListPresentationTests.swift */,
 				A7000000000000000000008C /* NoteStoreFilterHydrationTests.swift */,
 				A70000000000000000000008 /* NoteDocumentTests.swift */,
 				A7000000000000000000000D /* PKDrawingStub.swift */,
@@ -603,6 +609,7 @@
 				A7000000000000000000007D /* TagRepositoryTests.swift in Sources */,
 				A70000000000000000000017 /* NoteStoreTests.swift in Sources */,
 				A7000000000000000000008F /* NoteStoreCanvasPresentationTests.swift in Sources */,
+				A70000000000000000000093 /* NoteListPresentationTests.swift in Sources */,
 				A7000000000000000000008D /* NoteStoreFilterHydrationTests.swift in Sources */,
 				A70000000000000000000018 /* NoteDocumentTests.swift in Sources */,
 				A7000000000000000000001D /* PKDrawingStub.swift in Sources */,
@@ -641,6 +648,7 @@
 				A63C9595276447BD00822461 /* ListOrderSettingView.swift in Sources */,
 				A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */,
 				A6484FD6272E63B000676ED8 /* NoteGridView.swift in Sources */,
+				A70000000000000000000091 /* NoteListPresentation.swift in Sources */,
 				A70000000000000000000041 /* NoteData.swift in Sources */,
 				A70000000000000000000083 /* NoteIndexEntry.swift in Sources */,
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,

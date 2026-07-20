@@ -58,30 +58,6 @@ extension NoteStore {
         validMetadata(for: entry)?.tags ?? []
     }
 
-    func requestShare(_ entry: NoteIndexEntry) {
-        Task {
-            if let note = await loadNote(entry) {
-                noteToShare = note
-            } else {
-                presentOpenFailedAlert()
-            }
-        }
-    }
-
-    func requestTag(_ entry: NoteIndexEntry) {
-        Task {
-            if let note = await loadNote(entry) {
-                noteToTag = note
-            } else {
-                presentOpenFailedAlert()
-            }
-        }
-    }
-
-    func presentOpenFailedAlert() {
-        alertType = .error(NoteStoreError.openFailed(count: 1))
-        showAlert = true
-    }
 }
 
 // MARK: - Tag-filter hydration

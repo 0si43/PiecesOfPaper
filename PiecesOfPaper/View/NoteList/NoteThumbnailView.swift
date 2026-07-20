@@ -4,6 +4,7 @@ import PencilKit
 struct NoteThumbnailView: View {
     let entry: NoteIndexEntry
     @Environment(NoteStore.self) private var noteStore
+    @Environment(NoteListPresentation.self) private var presentation
     @State private var thumbnail: UIImage?
     @State private var isOpening = false
 
@@ -55,7 +56,7 @@ struct NoteThumbnailView: View {
             if let note {
                 noteStore.openedNote = note
             } else {
-                noteStore.presentOpenFailedAlert()
+                presentation.presentOpenFailed()
             }
         }
     }
@@ -66,4 +67,5 @@ struct NoteThumbnailView: View {
                                             creationDate: nil,
                                             contentModificationDate: nil))
         .environment(NoteStore())
+        .environment(NoteListPresentation())
 }

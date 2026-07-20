@@ -8,13 +8,14 @@ struct NoteListScreen: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.displayScale) private var displayScale
     @State private var showListOrderSettingView = false
+    @State private var presentation = NoteListPresentation()
 
     private var isTargetDirectoryArchived: Bool {
         directory == .archived
     }
 
     var body: some View {
-        @Bindable var noteStore = noteStore
+        @Bindable var presentation = presentation
         Group {
             if noteStore.isLoading {
                 ProgressView()
@@ -36,8 +37,7 @@ struct NoteListScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             guard !preferenceStore.shouldGrantiCloud else {
-                noteStore.alertType = .iCloudDenied
-                noteStore.showAlert = true
+                presentation.alert = .iCloudDenied
                 return
             }
 
@@ -59,10 +59,10 @@ struct NoteListScreen: View {
                 )
             }
         }
-        .sheet(item: $noteStore.noteToShare) { note in
+        .sheet(item: $presentation.noteToShare) { note in
             activityViewController(note: note)
         }
-        .sheet(item: $noteStore.noteToTag,
+        .sheet(item: $presentation.noteToTag,
                onDismiss: {
                    Task {
                        await noteStore.fetch(directory: directory, background: true)
@@ -71,22 +71,22 @@ struct NoteListScreen: View {
             AddTagView(note: note)
         })
         .alert("",
-               isPresented: $noteStore.showAlert,
-               presenting: noteStore.alertType) { type in
-                switch type {
+               isPresented: $presentation.isAlertPresented,
+               presenting: presentation.alert) { alert in
+                switch alert {
                 case .iCloudDenied:
                     iCloudButton
                     localStorageButton
-                case .archive:
+                case .archiveAll:
                     archiveActionButton
                 case .error:
                     Text("OK")
                 }
-            } message: { type in
-                switch type {
+            } message: { alert in
+                switch alert {
                 case .iCloudDenied:
                     return Text("The app could not access your iCloud Drive. You should change setting")
-                case .archive:
+                case .archiveAll:
                     let operationText = isTargetDirectoryArchived ? "unarchived" : "archived"
                     let countText = noteStore.displayEntries(for: directory).count
                     let alertText = """
@@ -106,14 +106,15 @@ struct NoteListScreen: View {
                 break
             }
         }
+        // Outermost so the grid, its cells, and the sheets above all see it
+        .environment(presentation)
     }
 
     private var toolbarItems: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             Menu {
                 Button {
-                    noteStore.alertType = .archive
-                    noteStore.showAlert = true
+                    presentation.alert = .archiveAll
                 } label: {
                     Label(isTargetDirectoryArchived
                           ? "Move all to Inbox"

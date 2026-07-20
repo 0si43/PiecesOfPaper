@@ -4,6 +4,7 @@ struct NoteGridView: View {
     let directory: NoteDirectory
     @Environment(NoteStore.self) private var noteStore
     @Environment(TagStore.self) private var tagStore
+    @Environment(NoteListPresentation.self) private var presentation
     private let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
 
     var body: some View {
@@ -19,7 +20,7 @@ struct NoteGridView: View {
                         NoteListTagHStack(
                             tags: tagStore.tagsMatching(noteStore.tags(for: entry)),
                             action: {
-                                noteStore.requestTag(entry)
+                                presentation.requestTag(entry, from: noteStore)
                             }
                         )
                             .padding(.horizontal)
@@ -33,7 +34,13 @@ struct NoteGridView: View {
     func contextMenu(entry: NoteIndexEntry) -> some View {
         Group {
             Button {
-                noteStore.duplicate(entry, in: directory)
+                Task {
+                    do {
+                        try await noteStore.duplicate(entry, in: directory)
+                    } catch {
+                        presentation.alert = .error(error)
+                    }
+                }
             } label: {
                 Label("Duplicate", systemImage: "doc.on.doc")
             }
@@ -44,7 +51,11 @@ struct NoteGridView: View {
                     Label("Move to Inbox", systemImage: "tray")
                 }
                 Button(role: .destructive) {
-                    noteStore.delete(entry)
+                    do {
+                        try noteStore.delete(entry)
+                    } catch {
+                        presentation.alert = .error(error)
+                    }
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
@@ -56,12 +67,12 @@ struct NoteGridView: View {
                 }
             }
             Button {
-                noteStore.requestShare(entry)
+                presentation.requestShare(entry, from: noteStore)
             } label: {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             Button {
-                noteStore.requestTag(entry)
+                presentation.requestTag(entry, from: noteStore)
             } label: {
                 Label("Tag", systemImage: "tag")
             }

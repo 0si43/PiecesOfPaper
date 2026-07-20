@@ -29,17 +29,9 @@ final class NoteStore {
     private(set) var isHandlingExternalOpen = false
     private(set) var externalOpenTask: Task<Void, Never>?
     private var securityScopedUrl: URL?
-    /// Separate from showAlert: external opens can fail while NoteListScreen
-    /// (the showAlert host) is unmounted, so SideBarListView presents this one
+    /// External opens can fail while no note list is mounted, so this one is
+    /// presented by SideBarListView rather than by a list screen
     var showExternalOpenAlert = false
-    var showAlert = false
-    var alertType: AlertType?
-    var noteToShare: NoteData?
-    var noteToTag: NoteData?
-
-    enum AlertType {
-        case iCloudDenied, archive, error(Error)
-    }
 
     // MARK: - Dependencies
     private let noteRepository: NoteRepositoryProtocol
@@ -144,34 +136,26 @@ final class NoteStore {
 // MARK: - Data operations
 
 extension NoteStore {
-    func duplicate(_ entry: NoteIndexEntry, in directory: NoteDirectory) {
-        Task {
-            guard let note = await loadNote(entry) else {
-                presentOpenFailedAlert()
-                return
-            }
-            noteRepository.duplicate(note, in: directory) { [weak self] newNote in
-                guard let self else { return }
-                guard let newNote else {
-                    self.alertType = .error(NoteStoreError.saveFailed)
-                    self.showAlert = true
-                    return
-                }
-                self.applySaved(newNote)
-            }
+    func duplicate(_ entry: NoteIndexEntry, in directory: NoteDirectory) async throws {
+        guard let note = await loadNote(entry) else {
+            throw NoteStoreError.openFailed(count: 1)
         }
+        let newNote: NoteData? = await withCheckedContinuation { continuation in
+            noteRepository.duplicate(note, in: directory) { continuation.resume(returning: $0) }
+        }
+        guard let newNote else { throw NoteStoreError.saveFailed }
+        applySaved(newNote)
     }
 
-    func delete(_ entry: NoteIndexEntry) {
+    func delete(_ entry: NoteIndexEntry) throws {
         do {
             try noteRepository.delete(fileUrl: entry.fileURL)
-            inboxIndex.removeAll { $0.fileURL == entry.fileURL }
-            archivedIndex.removeAll { $0.fileURL == entry.fileURL }
-            metadataByUrl[entry.fileURL] = nil
         } catch {
-            alertType = .error(NoteStoreError.deleteFailed)
-            showAlert = true
+            throw NoteStoreError.deleteFailed
         }
+        inboxIndex.removeAll { $0.fileURL == entry.fileURL }
+        archivedIndex.removeAll { $0.fileURL == entry.fileURL }
+        metadataByUrl[entry.fileURL] = nil
     }
 
     func archive(_ entry: NoteIndexEntry) {
@@ -209,12 +193,12 @@ extension NoteStore {
 
     // MARK: - Tag operations
 
-    func addTag(_ tag: TagEntity, to note: NoteData) {
-        updateTags(of: note) { $0 + [tag] }
+    func addTag(_ tag: TagEntity, to note: NoteData) async throws {
+        try await updateTags(of: note) { $0 + [tag] }
     }
 
-    func removeTag(_ tag: TagEntity, from note: NoteData) {
-        updateTags(of: note) { tags in tags.filter { $0 != tag } }
+    func removeTag(_ tag: TagEntity, from note: NoteData) async throws {
+        try await updateTags(of: note) { tags in tags.filter { $0 != tag } }
     }
 
     /// The caller's snapshot may predate tag edits made elsewhere; the
@@ -223,7 +207,7 @@ extension NoteStore {
         metadataByUrl[note.fileURL]?.tags ?? note.entity.tags
     }
 
-    private func updateTags(of note: NoteData, _ transform: ([TagEntity]) -> [TagEntity]) {
+    private func updateTags(of note: NoteData, _ transform: ([TagEntity]) -> [TagEntity]) async throws {
         let previous = metadataByUrl[note.fileURL]
         var updated = note
         updated.entity.tags = transform(currentTags(for: note))
@@ -234,16 +218,14 @@ extension NoteStore {
             tags: updated.entity.tags,
             updatedDate: previous?.updatedDate ?? entry(for: note.fileURL)?.updatedDate ?? note.entity.updatedDate
         )
-        noteRepository.save(updated.entity, to: updated.fileURL) { [weak self] success in
-            guard let self else { return }
-            if success {
-                self.applySaved(updated)
-            } else {
-                self.metadataByUrl[note.fileURL] = previous
-                self.alertType = .error(NoteStoreError.saveFailed)
-                self.showAlert = true
-            }
+        let success: Bool = await withCheckedContinuation { continuation in
+            noteRepository.save(updated.entity, to: updated.fileURL) { continuation.resume(returning: $0) }
         }
+        guard success else {
+            metadataByUrl[note.fileURL] = previous
+            throw NoteStoreError.saveFailed
+        }
+        applySaved(updated)
     }
 
 }
