@@ -9,21 +9,22 @@
 import SwiftUI
 
 struct AddTagView: View {
-    // Snapshot from sheet(item:); read the latest state through the store by id
+    // Snapshot from sheet(item:); the latest tags come from the store's
+    // metadata cache, which tag edits update optimistically
     let note: NoteData
     @Environment(NoteStore.self) private var noteStore
     @Environment(TagStore.self) private var tagStore
 
-    private var currentNote: NoteData {
-        noteStore.note(id: note.id) ?? note
+    private var currentTags: [TagEntity] {
+        noteStore.currentTags(for: note)
     }
 
     private var tagsToNote: [TagEntity] {
-        tagStore.tagsFor(note: currentNote)
+        tagStore.tagsMatching(currentTags)
     }
 
     private var tagsNotToNote: [TagEntity] {
-        tagStore.tagsNotFor(note: currentNote)
+        tagStore.tagsNotMatching(currentTags)
     }
 
     var body: some View {
@@ -48,11 +49,11 @@ struct AddTagView: View {
     }
 
     private func add(_ tag: TagEntity) {
-        noteStore.addTag(tag, to: currentNote)
+        noteStore.addTag(tag, to: note)
     }
 
     private func remove(_ tag: TagEntity) {
-        noteStore.removeTag(tag, from: currentNote)
+        noteStore.removeTag(tag, from: note)
     }
 }
 

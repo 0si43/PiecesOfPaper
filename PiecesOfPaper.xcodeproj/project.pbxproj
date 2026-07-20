@@ -64,6 +64,8 @@
 		A70000000000000000000081 /* FilePathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000080 /* FilePathTests.swift */; };
 		A70000000000000000000083 /* NoteIndexEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000082 /* NoteIndexEntry.swift */; };
 		A70000000000000000000085 /* NoteIndexEntryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000084 /* NoteIndexEntryTests.swift */; };
+		A70000000000000000000087 /* NoteStoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000086 /* NoteStoreError.swift */; };
+		A70000000000000000000089 /* RepositoryMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000088 /* RepositoryMocks.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -168,6 +170,8 @@
 		A70000000000000000000080 /* FilePathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePathTests.swift; sourceTree = "<group>"; };
 		A70000000000000000000082 /* NoteIndexEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteIndexEntry.swift; sourceTree = "<group>"; };
 		A70000000000000000000084 /* NoteIndexEntryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteIndexEntryTests.swift; sourceTree = "<group>"; };
+		A70000000000000000000086 /* NoteStoreError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreError.swift; sourceTree = "<group>"; };
+		A70000000000000000000088 /* RepositoryMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryMocks.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -278,6 +282,7 @@
 				A70000000000000000000007 /* NoteStoreTests.swift */,
 				A70000000000000000000008 /* NoteDocumentTests.swift */,
 				A7000000000000000000000D /* PKDrawingStub.swift */,
+				A70000000000000000000088 /* RepositoryMocks.swift */,
 				A7000000000000000000000B /* PreferenceStoreTests.swift */,
 				A7000000000000000000000C /* TagStoreTests.swift */,
 				A6A16EC625B1673500DF323F /* Info.plist */,
@@ -300,6 +305,7 @@
 			isa = PBXGroup;
 			children = (
 				A70000000000000000000004 /* NoteStore.swift */,
+				A70000000000000000000086 /* NoteStoreError.swift */,
 				A70000000000000000000005 /* TagStore.swift */,
 				A70000000000000000000006 /* PreferenceStore.swift */,
 			);
@@ -585,6 +591,7 @@
 				A70000000000000000000017 /* NoteStoreTests.swift in Sources */,
 				A70000000000000000000018 /* NoteDocumentTests.swift in Sources */,
 				A7000000000000000000001D /* PKDrawingStub.swift in Sources */,
+				A70000000000000000000089 /* RepositoryMocks.swift in Sources */,
 				A7000000000000000000001B /* PreferenceStoreTests.swift in Sources */,
 				A7000000000000000000001C /* TagStoreTests.swift in Sources */,
 			);
@@ -629,6 +636,7 @@
 				A70000000000000000000012 /* TagRepository.swift in Sources */,
 				A70000000000000000000013 /* PreferenceRepository.swift in Sources */,
 				A70000000000000000000014 /* NoteStore.swift in Sources */,
+				A70000000000000000000087 /* NoteStoreError.swift in Sources */,
 				A70000000000000000000015 /* TagStore.swift in Sources */,
 				A70000000000000000000016 /* PreferenceStore.swift in Sources */,
 			);

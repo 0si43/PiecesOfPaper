@@ -8,6 +8,15 @@
 
 import Foundation
 
+/// Listing metadata learned from a document open. Valid while its updatedDate
+/// still matches the index entry's, i.e. the file on disk has not changed
+/// since the open.
+struct NoteMetadata: Equatable {
+    let id: UUID
+    var tags: [TagEntity]
+    var updatedDate: Date
+}
+
 /// A note's listing metadata, built from file enumeration alone — no document open.
 struct NoteIndexEntry: Identifiable, Equatable {
     let fileURL: URL
@@ -35,5 +44,9 @@ struct NoteIndexEntry: Identifiable, Equatable {
         self.fileURL = fileURL
         self.createdDate = createdDate
         self.updatedDate = updatedDate
+    }
+
+    func moved(to fileURL: URL) -> NoteIndexEntry {
+        NoteIndexEntry(fileURL: fileURL, createdDate: createdDate, updatedDate: updatedDate)
     }
 }

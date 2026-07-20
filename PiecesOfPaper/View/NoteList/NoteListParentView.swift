@@ -27,7 +27,7 @@ struct NoteListParentView: View {
             if noteStore.isLoading {
                 ProgressView()
             } else {
-                if noteStore.displayNotes(for: directory).isEmpty {
+                if noteStore.displayEntries(for: directory).isEmpty {
                     Text("No Data")
                         .font(.largeTitle)
                 } else {
@@ -42,12 +42,10 @@ struct NoteListParentView: View {
                 return
             }
 
-            await noteStore.incrementalFetch(directory: directory)
+            await noteStore.fetch(directory: directory)
         }
         .refreshable {
-            Task {
-                await noteStore.reload(directory: directory)
-            }
+            await noteStore.fetch(directory: directory, background: true)
         }
         .toolbar {
             toolbarItems
@@ -75,7 +73,7 @@ struct NoteListParentView: View {
         .sheet(item: $noteStore.noteToTag,
                onDismiss: {
                    Task {
-                       await noteStore.incrementalFetch(directory: directory)
+                       await noteStore.fetch(directory: directory, background: true)
                    }
                }, content: { note in
             AddTagView(note: note)
@@ -98,7 +96,7 @@ struct NoteListParentView: View {
                     return Text("The app could not access your iCloud Drive. You should change setting")
                 case .archive:
                     let operationText = isTargetDirectoryArchived ? "unarchived" : "archived"
-                    let countText = noteStore.displayNotes(for: directory).count
+                    let countText = noteStore.displayEntries(for: directory).count
                     let alertText = """
                         Are you sure you want to \(operationText) \(countText) notes?
                     """
@@ -140,7 +138,7 @@ struct NoteListParentView: View {
                 }
                 Button {
                     Task {
-                        await noteStore.reload(directory: directory)
+                        await noteStore.fetch(directory: directory)
                     }
                 } label: {
                     Label("Reload", systemImage: "arrow.triangle.2.circlepath")
@@ -189,9 +187,9 @@ struct NoteListParentView: View {
         }
 
         func scrollToBottom(proxy: ScrollViewProxy) {
-            guard let lastNote = noteStore.displayNotes(for: directory).last else { return }
+            guard let lastEntry = noteStore.displayEntries(for: directory).last else { return }
             withAnimation {
-                proxy.scrollTo(lastNote.id, anchor: .bottom)
+                proxy.scrollTo(lastEntry.id, anchor: .bottom)
             }
         }
     }
@@ -222,7 +220,7 @@ struct NoteListParentView: View {
         Button {
             preferenceStore.enablediCloud = false
             Task {
-                await noteStore.incrementalFetch(directory: directory)
+                await noteStore.fetch(directory: directory)
             }
         } label: {
             Text("Use device storage")

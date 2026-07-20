@@ -22,11 +22,7 @@ struct NoteData: Identifiable, Equatable {
 }
 
 extension NoteData {
-    static func createTestData() -> NoteData {
-        guard let url = URL(string: "file:///test") else {
-            fatalError()
-        }
-
-        return NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: url)
+    static func createTestData(fileURL: URL = URL(fileURLWithPath: "/test")) -> NoteData {
+        NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: fileURL)
     }
 }

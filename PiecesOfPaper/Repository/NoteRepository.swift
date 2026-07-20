@@ -28,6 +28,7 @@ struct NoteFileAttributes: Equatable {
 protocol NoteRepositoryProtocol: AnyObject {
     @MainActor func getFileUrls(directory: NoteDirectory) async -> [URL]
     @MainActor func getFileAttributes(directory: NoteDirectory) async -> [NoteFileAttributes]
+    func fileAttributes(at fileUrl: URL) -> NoteFileAttributes?
     @MainActor func setCloudUpdateHandler(_ handler: @escaping @MainActor () -> Void)
     @MainActor func open(fileUrl: URL) async throws -> NoteData
     func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void)
@@ -92,6 +93,15 @@ final class NoteRepository: NoteRepositoryProtocol {
                 || $0.hasSuffix("." + FilePath.legacyNoteFileExtension)
         }
         return fileNames.map { directoryUrl.appendingPathComponent($0) }
+    }
+
+    func fileAttributes(at fileUrl: URL) -> NoteFileAttributes? {
+        guard let values = try? fileUrl.resourceValues(forKeys: [.creationDateKey, .contentModificationDateKey]) else {
+            return nil
+        }
+        return NoteFileAttributes(fileURL: fileUrl,
+                                  creationDate: values.creationDate,
+                                  contentModificationDate: values.contentModificationDate)
     }
 
     func localFileAttributes(in directoryUrl: URL) -> [NoteFileAttributes] {

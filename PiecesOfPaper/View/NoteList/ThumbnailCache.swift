@@ -10,18 +10,26 @@ import UIKit
 import PencilKit
 
 /// Renders note thumbnails asynchronously and caches them.
-/// The cache key includes updatedDate, so an edited note is re-rendered automatically.
+/// The key is derivable from a NoteIndexEntry alone, so a cache hit needs no
+/// document open; it includes updatedDate, so an edited note re-renders, and
+/// uses the file name (stable across archive/unarchive moves) instead of the
+/// entity id, which is unknown before the document is opened.
 final class ThumbnailCache {
     static let shared = ThumbnailCache()
     private let cache = NSCache<NSString, UIImage>()
 
-    func thumbnail(for note: NoteData) async -> UIImage {
-        let key = "\(note.entity.id.uuidString)-\(note.entity.updatedDate.timeIntervalSince1970)" as NSString
-        if let cached = cache.object(forKey: key) {
+    static func key(for entry: NoteIndexEntry) -> String {
+        "\(entry.fileURL.lastPathComponent)-\(entry.updatedDate.timeIntervalSince1970)"
+    }
+
+    func cached(key: String) -> UIImage? {
+        cache.object(forKey: key as NSString)
+    }
+
+    func thumbnail(for drawing: PKDrawing, key: String) async -> UIImage {
+        if let cached = cached(key: key) {
             return cached
         }
-
-        let drawing = note.entity.drawing
         guard !drawing.bounds.isNull else { return UIImage() }
 
         // Not Task.detached: rendering PKDrawing off the main thread breaks
@@ -29,7 +37,7 @@ final class ThumbnailCache {
         let image = await MainActor.run {
             drawing.image(from: drawing.bounds, scale: 1.0)
         }
-        cache.setObject(image, forKey: key)
+        cache.setObject(image, forKey: key as NSString)
         return image
     }
 }
