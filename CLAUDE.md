@@ -29,6 +29,10 @@ xcodebuild -project <absolute path>/PiecesOfPaper.xcodeproj -scheme PiecesOfPape
 - Unit tests build non-empty drawings with `PKDrawing.stub()` (`PiecesOfPaperTests/PKDrawingStub.swift`); constructing `PKDrawing` needs no Pencil input.
 - Command-line E2E (drawing injection, accessibility assertions) via idb: see [docs/SIMULATOR_E2E.md](docs/SIMULATOR_E2E.md).
 
+## Repository-wide mechanical changes
+
+- A commit that rewrites many files mechanically (header removal, reformatting) must have its SHA appended to `.git-blame-ignore-revs`, in a follow-up commit within the same PR. GitHub honors the file automatically; locally it needs `git config blame.ignoreRevsFile .git-blame-ignore-revs`.
+
 ## Progress workflow
 
 - Every PR includes one new fragment file `docs/progress/YYYY-MM-DD-<slug>.md` instead of editing `docs/PROGRESS.md` directly (format: [docs/progress/README.md](docs/progress/README.md)).
