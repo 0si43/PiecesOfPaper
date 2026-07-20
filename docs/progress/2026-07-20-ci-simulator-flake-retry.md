@@ -1,0 +1,3 @@
+- [x] Harden CI against the empty simulator device-list flake (issue #211, PR #212)
+  - `test.yml` waits for `simctl` to list the target device, logs the device list, and retries `xcodebuild test` up to 3 times — but only when the failure log matches the placeholder-only destination signature, so genuine test failures still fail fast
+  - Flake signature and remedy recorded in docs/GOTCHAS.md
