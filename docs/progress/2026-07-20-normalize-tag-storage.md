@@ -1,0 +1,5 @@
+- [x] Normalize tag storage so notes reference tags by id (issue #203, PR #232)
+  - `NoteEntity.tags: [TagEntity]` became `tagIds: [UUID]`; decoding accepts the legacy embedded-copy format and encoding writes the new key only, so notes migrate on their next save
+  - Tags embedded in a legacy note are restored into `taglist.json` only while the tag list is empty; adopting them unconditionally would resurrect deleted tags every time an unmigrated note is opened
+  - `TagEntity.name`/`color` are now `var`, making rename/recolor a `TagStore` edit that applies to every note (editing UI is a follow-up)
+  - `ListOrder.filterBy` deliberately stays `[TagEntity]`: a UserDefaults preference whose display already resolves through `TagStore`
