@@ -15,7 +15,7 @@ final class NoteStore {
     // MARK: - Primary data (Single Source of Truth)
     private(set) var inboxIndex = [NoteIndexEntry]()
     private(set) var archivedIndex = [NoteIndexEntry]()
-    private(set) var metadataByUrl = [URL: NoteMetadata]()
+    private(set) var metadataByFileName = [String: NoteMetadata]()
 
     // MARK: - Sort & filter settings (auto-persist on change)
     var inboxListOrder: ListOrder {
@@ -134,15 +134,15 @@ final class NoteStore {
         let note = await load.value
         inFlightLoads[entry.fileURL] = nil
         if let note {
-            metadataByUrl[entry.fileURL] = NoteMetadata(id: note.entity.id,
-                                                        tags: note.entity.tags,
-                                                        updatedDate: entry.updatedDate)
+            metadataByFileName[entry.fileName] = NoteMetadata(id: note.entity.id,
+                                                              tags: note.entity.tags,
+                                                              updatedDate: entry.updatedDate)
         }
         return note
     }
 
     func validMetadata(for entry: NoteIndexEntry) -> NoteMetadata? {
-        guard let metadata = metadataByUrl[entry.fileURL],
+        guard let metadata = metadataByFileName[entry.fileName],
               metadata.updatedDate == entry.updatedDate else { return nil }
         return metadata
     }
@@ -175,7 +175,7 @@ extension NoteStore {
             try noteRepository.delete(fileUrl: entry.fileURL)
             inboxIndex.removeAll { $0.fileURL == entry.fileURL }
             archivedIndex.removeAll { $0.fileURL == entry.fileURL }
-            metadataByUrl[entry.fileURL] = nil
+            metadataByFileName[entry.fileName] = nil
         } catch {
             alertType = .error(NoteStoreError.deleteFailed)
             showAlert = true
@@ -199,7 +199,8 @@ extension NoteStore {
             case .inbox: upsertEntry(entry.moved(to: newUrl), into: &inboxIndex)
             case .archived: upsertEntry(entry.moved(to: newUrl), into: &archivedIndex)
             }
-            rekeyMetadata(from: entry.fileURL, to: newUrl)
+            // The metadata cache is keyed by file name, which a move preserves,
+            // so the moved note keeps its tags without a re-open
         } catch {
             print("Could not move note: ", error.localizedDescription)
         }
@@ -228,16 +229,16 @@ extension NoteStore {
     /// The caller's snapshot may predate tag edits made elsewhere; the
     /// metadata cache holds the latest known tags for the file.
     func currentTags(for note: NoteData) -> [TagEntity] {
-        metadataByUrl[note.fileURL]?.tags ?? note.entity.tags
+        metadataByFileName[note.fileName]?.tags ?? note.entity.tags
     }
 
     private func updateTags(of note: NoteData, _ transform: ([TagEntity]) -> [TagEntity]) {
-        let previous = metadataByUrl[note.fileURL]
+        let previous = metadataByFileName[note.fileName]
         var updated = note
         updated.entity.tags = transform(currentTags(for: note))
         // Optimistic cache update so the tag sheet and list rows reflect
         // the change before the save lands; rolled back on failure.
-        metadataByUrl[note.fileURL] = NoteMetadata(
+        metadataByFileName[note.fileName] = NoteMetadata(
             id: previous?.id ?? note.entity.id,
             tags: updated.entity.tags,
             updatedDate: previous?.updatedDate ?? entry(for: note.fileURL)?.updatedDate ?? note.entity.updatedDate
@@ -247,7 +248,7 @@ extension NoteStore {
             if success {
                 self.applySaved(updated)
             } else {
-                self.metadataByUrl[note.fileURL] = previous
+                self.metadataByFileName[note.fileName] = previous
                 self.alertType = .error(NoteStoreError.saveFailed)
                 self.showAlert = true
             }
@@ -356,9 +357,9 @@ extension NoteStore {
         let entry = NoteIndexEntry(fileURL: note.fileURL,
                                    creationDate: attributes?.creationDate ?? note.entity.createdDate,
                                    contentModificationDate: attributes?.contentModificationDate ?? note.entity.updatedDate)
-        metadataByUrl[note.fileURL] = NoteMetadata(id: note.entity.id,
-                                                   tags: note.entity.tags,
-                                                   updatedDate: entry.updatedDate)
+        metadataByFileName[note.fileName] = NoteMetadata(id: note.entity.id,
+                                                         tags: note.entity.tags,
+                                                         updatedDate: entry.updatedDate)
         if note.isArchived {
             upsertEntry(entry, into: &archivedIndex)
         } else if note.isInInbox {
@@ -376,11 +377,6 @@ extension NoteStore {
         } else {
             index.append(entry)
         }
-    }
-
-    private func rekeyMetadata(from oldUrl: URL, to newUrl: URL) {
-        guard oldUrl != newUrl else { return }
-        metadataByUrl[newUrl] = metadataByUrl.removeValue(forKey: oldUrl)
     }
 
     private func entry(for fileUrl: URL) -> NoteIndexEntry? {

@@ -27,6 +27,11 @@ struct NoteIndexEntry: Identifiable, Equatable {
     // is the file URL, which is unique on disk.
     var id: URL { fileURL }
 
+    /// Key for caches that must survive archive/unarchive moves and container
+    /// path changes across installs. Names are microsecond timestamps
+    /// (FilePath.fileName), so they stay unique on their own.
+    var fileName: String { fileURL.lastPathComponent }
+
     // Same resolved-path comparison as NoteData.isUnder: metadata-query URLs
     // can carry the /private symlink prefix that FilePath's URLs lack
     var isArchived: Bool {
