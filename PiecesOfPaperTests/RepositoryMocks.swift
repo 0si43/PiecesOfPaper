@@ -54,6 +54,12 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     var notes: [NoteData]
     var failingUrls: Set<URL> = []
     var moveShouldThrow = false
+    var deleteShouldThrow = false
+    @MainActor private(set) var deletedUrls: [URL] = []
+    @MainActor private(set) var movedUrls: [URL] = []
+    @MainActor var suspendFileOperations = false
+    @MainActor private var pendingFileOperations: [CheckedContinuation<Void, Never>] = []
+    @MainActor var hasPendingFileOperation: Bool { !pendingFileOperations.isEmpty }
     var duplicateShouldSucceed = true
     var enumeratedAttributes: [NoteFileAttributes] = TestFile.allCases.map(\.attributes)
     var savedFileAttributes: [URL: NoteFileAttributes] = [:]
@@ -67,6 +73,12 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     func resumePendingOpens() {
         pendingOpens.forEach { $0.resume() }
         pendingOpens.removeAll()
+    }
+
+    @MainActor
+    func resumePendingFileOperations() {
+        pendingFileOperations.forEach { $0.resume() }
+        pendingFileOperations.removeAll()
     }
 
     init(notes: [NoteData]) {
@@ -117,13 +129,33 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         completion(saveShouldSucceed)
     }
 
-    func delete(fileUrl: URL) throws {}
+    @MainActor
+    func delete(fileUrl: URL) async throws {
+        await suspendFileOperationIfNeeded()
+        if deleteShouldThrow {
+            throw NoteRepositoryError.directoryNotAvailable
+        }
+        deletedUrls.append(fileUrl)
+    }
 
-    func move(fileUrl: URL, to directory: NoteDirectory) throws -> URL {
+    @MainActor
+    func move(fileUrl: URL, to directory: NoteDirectory) async throws -> URL {
+        await suspendFileOperationIfNeeded()
         if moveShouldThrow {
             throw NoteRepositoryError.directoryNotAvailable
         }
+        movedUrls.append(fileUrl)
         return URL(fileURLWithPath: "/moved/\(fileUrl.lastPathComponent)")
+    }
+
+    @MainActor
+    private func suspendFileOperationIfNeeded() async {
+        // Suspend once so the store's optimistic index update is observable
+        // before the operation lands
+        await Task.yield()
+        if suspendFileOperations {
+            await withCheckedContinuation { pendingFileOperations.append($0) }
+        }
     }
 
     func duplicate(_ note: NoteData, in directory: NoteDirectory,
