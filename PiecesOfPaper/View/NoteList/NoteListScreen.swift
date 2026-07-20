@@ -50,7 +50,7 @@ struct NoteListScreen: View {
             toolbarItems
         }
         .sheet(isPresented: $showListOrderSettingView) {
-            NavigationView {
+            NavigationStack {
                 ListOrderSettingView(
                     listOrder: Binding(
                         get: { noteStore.listOrder(for: directory) },
