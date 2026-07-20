@@ -27,6 +27,7 @@ Each entry links to the issue/PR where the details live.
 - **Xcode 26.6 (iOS 26.5 SDK) fails asset catalog compilation without the matching simulator runtime**: actool's `CompileAssetCatalogVariant thinned` step always fails when the iOS 26.5 simulator runtime is not installed, even though Swift compilation succeeds. Fix: `xcodebuild -downloadPlatform iOS` (~8.5 GB).
 - **Checking out commits older than mid-2026 loses the shared scheme**: `PiecesOfPaper.xcodeproj/xcshareddata/xcschemes/PiecesOfPaper.xcscheme` was untracked (excluded by `.gitignore`) until July 2026. Checking out an older commit (e.g. tag 3.3.0) leaves Xcode with "No Scheme". Recover with `git show <newer-commit>:PiecesOfPaper.xcodeproj/xcshareddata/xcschemes/PiecesOfPaper.xcscheme` — the target IDs are unchanged. When switching back, delete the now-untracked scheme first or it blocks the checkout.
 - **The bundle ID is `Individual.LikeAPaper`**, kept from the app's previous name. Anything keyed by bundle ID (simulator `defaults`, app containers) uses this, not `PiecesOfPaper`.
+- **Tests import the app as `Pieces_of_Paper`**: the product name is "Pieces of Paper", so the module name substitutes underscores for the spaces. `@testable import PiecesOfPaper` — the name of the target, the project, and the source directory — fails with "unable to resolve module dependency". Copy the import block from an existing test file when adding one.
 
 ## project.pbxproj
 
@@ -35,6 +36,7 @@ Each entry links to the issue/PR where the details live.
 - **Object IDs look sequential but have gaps**: IDs of the form `A700000000000000000000XX` skip values that are already in use. Before assigning a new one, confirm it is unused with `rg`.
 - **Pass `-project` as an absolute path in worktree sessions**: both the main checkout and worktrees contain `PiecesOfPaper.xcodeproj`, and the shell cwd can silently revert to the launch directory, making xcodebuild build the wrong tree — especially dangerous for background runs.
 - **Re-check object-ID uniqueness after merging main into a branch with hand-added pbxproj objects**: two branches can pick the same "unused" `A700...XX` IDs in parallel (PR #192 and PR #193 both took 51/61). Git merges the text cleanly, but duplicate IDs make Xcode refuse to open the project ("The project is damaged"). After the merge, list duplicate definitions with `rg -o '^\t\t(A[0-9A-F]{24})' -r '$1' project.pbxproj | sort | uniq -d` and renumber your side — published main keeps its IDs. Background: PR #193.
+  - Prevention: start a branch's new objects a few values above main's highest ID instead of at the next free one. PR #210 began at `...80` while main's highest was `...7B`, and the branches merged in the meantime took `...7C`–`...7E` — no collision.
 
 ## QuickLook extensions
 
