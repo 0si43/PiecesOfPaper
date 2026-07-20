@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SideBarListView: View {
+struct RootSplitView: View {
     @State private var noteStore = NoteStore()
     @State private var tagStore = TagStore()
     @State private var preferenceStore = PreferenceStore()
@@ -115,4 +115,8 @@ struct SideBarListView: View {
         }
         .navigationTitle("Pieces of Paper")
     }
+}
+
+#Preview {
+    RootSplitView()
 }
