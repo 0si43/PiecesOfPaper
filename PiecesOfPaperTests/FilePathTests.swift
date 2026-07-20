@@ -40,6 +40,22 @@ struct FilePathTests {
         #expect(FilePath.parseTimestamp(fromFileName: "2021-11-23-09-15-301234.plist") != nil)
     }
 
+    // The metadata cache is derived data: it belongs in Caches, never under the
+    // synced savingUrl, and is written to a real, writable location
+    @Test func noteMetadataCacheFileUrl_isAWritableFileInCaches() throws {
+        let url = try #require(FilePath.noteMetadataCacheFileUrl)
+        let cachesPath = try #require(
+            FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+        ).path
+        #expect(url.deletingLastPathComponent().path == cachesPath)
+        #expect(["note-metadata-cache-local.json", "note-metadata-cache-icloud.json"]
+            .contains(url.lastPathComponent))
+
+        try Data("{}".utf8).write(to: url)
+        #expect(FileManager.default.fileExists(atPath: url.path))
+        try FileManager.default.removeItem(at: url)
+    }
+
     // Non-timestamp names return nil instead of a garbage date
     @Test func parseTimestamp_returnsNilForNonTimestampName() {
         #expect(FilePath.parseTimestamp(fromFileName: "IMG_1234.pop") == nil)
