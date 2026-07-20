@@ -1,0 +1,3 @@
+- [x] Document the test module name and pbxproj ID-gap prevention in GOTCHAS (issue #226, PR #TBD)
+  - `@testable import` needs `Pieces_of_Paper`, not the target/project name; cost a build cycle during PR #210
+  - The existing duplicate-ID entry now carries the prevention that worked in PR #210: start a branch's IDs above main's highest
