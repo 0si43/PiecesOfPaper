@@ -8,6 +8,56 @@
 
 import Foundation
 
+// MARK: - Display ordering
+
+extension NoteStore {
+    var displayInboxEntries: [NoteIndexEntry] {
+        reorderEntries(inboxIndex, listOrder: inboxListOrder)
+    }
+
+    var displayArchivedEntries: [NoteIndexEntry] {
+        reorderEntries(archivedIndex, listOrder: archivedListOrder)
+    }
+
+    func displayEntries(for directory: NoteDirectory) -> [NoteIndexEntry] {
+        switch directory {
+        case .inbox: displayInboxEntries
+        case .archived: displayArchivedEntries
+        }
+    }
+
+    private func reorderEntries(_ entries: [NoteIndexEntry], listOrder: ListOrder) -> [NoteIndexEntry] {
+        var filtered = entries
+        if !listOrder.filterBy.isEmpty {
+            // Tags live inside each document, so only notes with loaded
+            // metadata can match while a filter is active.
+            filtered = filtered.filter { entry in
+                guard let metadata = validMetadata(for: entry) else { return false }
+                return listOrder.filterBy.allSatisfy { metadata.tags.contains($0) }
+            }
+        }
+        let ascending = listOrder.sortOrder == .ascending
+        filtered.sort { lhs, rhs in
+            let lhsDate = sortDate(of: lhs, by: listOrder.sortBy)
+            let rhsDate = sortDate(of: rhs, by: listOrder.sortBy)
+            guard lhsDate != rhsDate else {
+                return ascending
+                    ? lhs.fileURL.lastPathComponent < rhs.fileURL.lastPathComponent
+                    : lhs.fileURL.lastPathComponent > rhs.fileURL.lastPathComponent
+            }
+            return ascending ? lhsDate < rhsDate : lhsDate > rhsDate
+        }
+        return filtered
+    }
+
+    private func sortDate(of entry: NoteIndexEntry, by sortBy: ListOrder.SortBy) -> Date {
+        switch sortBy {
+        case .updatedDate: entry.updatedDate
+        case .createdDate: entry.createdDate
+        }
+    }
+}
+
 // MARK: - Load-on-demand accessors
 
 extension NoteStore {

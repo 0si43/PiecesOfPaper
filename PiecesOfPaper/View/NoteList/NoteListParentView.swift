@@ -56,13 +56,6 @@ struct NoteListParentView: View {
         .toolbar {
             toolbarItems
         }
-        .fullScreenCover(isPresented: $noteStore.showCanvasView) {
-            if let path = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) {
-                NavigationStack {
-                    CanvasView(note: NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: path))
-                }
-            }
-        }
         .sheet(isPresented: $showListOrderSettingView) {
             NavigationView {
                 ListOrderSettingView(
@@ -115,7 +108,7 @@ struct NoteListParentView: View {
             switch phase {
             case .active:
                 guard !preferenceStore.shouldGrantiCloud else { return }
-                noteStore.showCanvasView = true
+                noteStore.openBlankNoteIfIdle()
             default:
                 break
             }
@@ -155,7 +148,7 @@ struct NoteListParentView: View {
             }
             .accessibilityLabel("More Actions")
             Button {
-                noteStore.showCanvasView = true
+                noteStore.openNewNote()
             } label: {
                 Image(systemName: "square.and.pencil")
             }

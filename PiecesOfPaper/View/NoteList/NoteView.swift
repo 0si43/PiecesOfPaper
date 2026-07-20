@@ -13,7 +13,6 @@ struct NoteView: View {
     let entry: NoteIndexEntry
     @Environment(NoteStore.self) private var noteStore
     @State private var thumbnail: UIImage?
-    @State private var loadedNote: NoteData?
     @State private var isOpening = false
 
     var body: some View {
@@ -51,11 +50,6 @@ struct NoteView: View {
             guard !Task.isCancelled else { return }
             thumbnail = await ThumbnailCache.shared.thumbnail(for: note.entity.drawing, key: key)
         }
-        .fullScreenCover(item: $loadedNote) { note in
-            NavigationView {
-                CanvasView(note: note)
-            }
-        }
     }
 
     // Open-then-present: CanvasView reads the drawing synchronously in
@@ -67,7 +61,7 @@ struct NoteView: View {
             let note = await noteStore.loadNote(entry)
             isOpening = false
             if let note {
-                loadedNote = note
+                noteStore.openedNote = note
             } else {
                 noteStore.presentOpenFailedAlert()
             }

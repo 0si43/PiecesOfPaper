@@ -264,6 +264,13 @@ struct NoteStoreTests {
         #expect(noteStore.inboxIndex.isEmpty)
     }
 
+    @Test func test_applySaved_ignoresFileOutsideManagedDirectories() {
+        let note = NoteData.createTestData(fileURL: URL(fileURLWithPath: "/external/note.pop"))
+        noteStore.applySaved(note)
+        #expect(noteStore.inboxIndex.isEmpty)
+        #expect(noteStore.archivedIndex.isEmpty)
+    }
+
     @Test func test_applySaved_thenFetchDoesNotDuplicate() async {
         noteStore.applySaved(NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url))
         await noteStore.fetch(directory: .inbox)
@@ -272,11 +279,11 @@ struct NoteStoreTests {
     }
 
     @Test func test_canRequestReview_requiresFiveInboxEntries() {
-        (0..<4).forEach { index in
-            noteStore.applySaved(NoteData.createTestData(fileURL: URL(fileURLWithPath: "/inbox/note\(index).pop")))
+        (0..<4).forEach { _ in
+            noteStore.applySaved(NoteData.createTestData())
         }
         #expect(!noteStore.canRequestReview)
-        noteStore.applySaved(NoteData.createTestData(fileURL: URL(fileURLWithPath: "/inbox/note4.pop")))
+        noteStore.applySaved(NoteData.createTestData())
         #expect(noteStore.canRequestReview)
     }
 

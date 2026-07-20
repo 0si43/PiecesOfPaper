@@ -31,7 +31,15 @@ final class NoteStore {
 
     // MARK: - UI state
     var isLoading = true
-    var showCanvasView = false
+    /// Single source of truth for canvas presentation: new notes, thumbnail
+    /// taps, and external opens all present by assigning this
+    var openedNote: NoteData?
+    private(set) var isHandlingExternalOpen = false
+    private(set) var externalOpenTask: Task<Void, Never>?
+    private var securityScopedUrl: URL?
+    /// Separate from showAlert: external opens can fail while NoteListParentView
+    /// (the showAlert host) is unmounted, so SideBarListView presents this one
+    var showExternalOpenAlert = false
     var showAlert = false
     var alertType: AlertType?
     var noteToShare: NoteData?
@@ -62,23 +70,6 @@ final class NoteStore {
         noteRepository.setCloudUpdateHandler { [weak self] in
             guard let self else { return }
             Task { await self.applyCloudUpdate() }
-        }
-    }
-
-    // MARK: - Computed display entries
-
-    var displayInboxEntries: [NoteIndexEntry] {
-        reorderEntries(inboxIndex, listOrder: inboxListOrder)
-    }
-
-    var displayArchivedEntries: [NoteIndexEntry] {
-        reorderEntries(archivedIndex, listOrder: archivedListOrder)
-    }
-
-    func displayEntries(for directory: NoteDirectory) -> [NoteIndexEntry] {
-        switch directory {
-        case .inbox: displayInboxEntries
-        case .archived: displayArchivedEntries
         }
     }
 
@@ -156,38 +147,6 @@ final class NoteStore {
         return metadata
     }
 
-    // MARK: - Reorder helper
-
-    private func reorderEntries(_ entries: [NoteIndexEntry], listOrder: ListOrder) -> [NoteIndexEntry] {
-        var filtered = entries
-        if !listOrder.filterBy.isEmpty {
-            // Tags live inside each document, so only notes with loaded
-            // metadata can match while a filter is active.
-            filtered = filtered.filter { entry in
-                guard let metadata = validMetadata(for: entry) else { return false }
-                return listOrder.filterBy.allSatisfy { metadata.tags.contains($0) }
-            }
-        }
-        let ascending = listOrder.sortOrder == .ascending
-        filtered.sort { lhs, rhs in
-            let lhsDate = sortDate(of: lhs, by: listOrder.sortBy)
-            let rhsDate = sortDate(of: rhs, by: listOrder.sortBy)
-            guard lhsDate != rhsDate else {
-                return ascending
-                    ? lhs.fileURL.lastPathComponent < rhs.fileURL.lastPathComponent
-                    : lhs.fileURL.lastPathComponent > rhs.fileURL.lastPathComponent
-            }
-            return ascending ? lhsDate < rhsDate : lhsDate > rhsDate
-        }
-        return filtered
-    }
-
-    private func sortDate(of entry: NoteIndexEntry, by sortBy: ListOrder.SortBy) -> Date {
-        switch sortBy {
-        case .updatedDate: entry.updatedDate
-        case .createdDate: entry.createdDate
-        }
-    }
 }
 
 // MARK: - Data operations
@@ -297,6 +256,69 @@ extension NoteStore {
 
 }
 
+// MARK: - Canvas presentation & external open
+
+extension NoteStore {
+    func openNewNote() {
+        guard let url = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) else { return }
+        openedNote = NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: url)
+    }
+
+    /// scenePhase .active hook: never stomp an already-open note or an
+    /// in-flight external open
+    func openBlankNoteIfIdle() {
+        guard openedNote == nil, !isHandlingExternalOpen else { return }
+        openNewNote()
+    }
+
+    /// Synchronous onOpenURL entry point. Sets the suppression flag before any
+    /// await so a later-arriving scenePhase .active cannot race in a blank canvas
+    func handleIncomingURL(_ url: URL) {
+        guard url.pathExtension == FilePath.noteFileExtension else { return }
+        externalOpenTask?.cancel()
+        isHandlingExternalOpen = true
+        externalOpenTask = Task { await openExternalNote(url: url) }
+    }
+
+    func openExternalNote(url: URL) async {
+        // A cancelled task no longer owns the flag — the newer external open does
+        defer { if !Task.isCancelled { isHandlingExternalOpen = false } }
+        guard openedNote?.fileURL != url else { return }
+        let noteBeforeOpen = openedNote
+        // false means the URL is not security-scoped (the app's own container),
+        // so reading can proceed without holding a scope
+        let scopedUrl: URL? = url.startAccessingSecurityScopedResource() ? url : nil
+        do {
+            let note = try await noteRepository.open(fileUrl: url)
+            // Discard a superseded result: a newer external open cancelled this
+            // task, or the user opened another note while the open was awaiting
+            // a potentially long iCloud download
+            guard !Task.isCancelled, openedNote?.id == noteBeforeOpen?.id else {
+                scopedUrl?.stopAccessingSecurityScopedResource()
+                return
+            }
+            // Swap scopes only after a successful open: releasing earlier would
+            // break autosave of the still-presented previous note on failure
+            releaseSecurityScope()
+            securityScopedUrl = scopedUrl
+            openedNote = note
+        } catch {
+            scopedUrl?.stopAccessingSecurityScopedResource()
+            guard !Task.isCancelled else { return }
+            showExternalOpenAlert = true
+        }
+    }
+
+    /// Held while the note is open (autosave writes back to the scoped URL) and
+    /// released only when the next external open succeeds. Dismissal keeps it:
+    /// releasing there would race the final in-flight autosave, whose sandboxed
+    /// write the revoked scope would deny
+    private func releaseSecurityScope() {
+        securityScopedUrl?.stopAccessingSecurityScopedResource()
+        securityScopedUrl = nil
+    }
+}
+
 // MARK: - Canvas support & index write-back
 
 extension NoteStore {
@@ -339,9 +361,11 @@ extension NoteStore {
                                                    updatedDate: entry.updatedDate)
         if note.isArchived {
             upsertEntry(entry, into: &archivedIndex)
-        } else {
+        } else if note.isInInbox {
             upsertEntry(entry, into: &inboxIndex)
         }
+        // Notes outside both directories (opened in place from the Files app)
+        // are edited at their own URL and never listed
     }
 
     // MARK: - Private helpers

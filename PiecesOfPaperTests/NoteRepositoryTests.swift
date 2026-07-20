@@ -60,6 +60,33 @@ struct NoteRepositoryTests {
         #expect(attribute.creationDate != nil)
     }
 
+    @Test func open_readsSavedEntity() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let fileUrl = directory.appendingPathComponent("note.pop")
+        let entity = NoteEntity(drawing: PKDrawing.stub())
+        try PropertyListEncoder().encode(entity).write(to: fileUrl)
+
+        let note = try await NoteRepository().open(fileUrl: fileUrl)
+
+        #expect(note.entity.id == entity.id)
+        #expect(note.entity.drawing == entity.drawing)
+        #expect(note.fileURL == fileUrl)
+    }
+
+    // A missing file is not testable here: open intentionally treats it as an
+    // undownloaded iCloud item and waits for the download indefinitely
+    @Test func open_throwsForCorruptFile() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let corruptUrl = directory.appendingPathComponent("corrupt.pop")
+        try Data("not a property list".utf8).write(to: corruptUrl)
+
+        await #expect(throws: NoteRepositoryError.self) {
+            _ = try await NoteRepository().open(fileUrl: corruptUrl)
+        }
+    }
+
     @Test func save_writesToLegacyUrlWhileItStillExists() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }

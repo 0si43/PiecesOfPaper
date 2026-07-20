@@ -27,9 +27,12 @@ struct NoteIndexEntry: Identifiable, Equatable {
     // is the file URL, which is unique on disk.
     var id: URL { fileURL }
 
+    // Same resolved-path comparison as NoteData.isUnder: metadata-query URLs
+    // can carry the /private symlink prefix that FilePath's URLs lack
     var isArchived: Bool {
         guard let archivedUrl = FilePath.archivedUrl else { return false }
-        return fileURL.path.hasPrefix(archivedUrl.path)
+        return fileURL.resolvingSymlinksInPath().path
+            .hasPrefix(archivedUrl.resolvingSymlinksInPath().path + "/")
     }
 
     init(fileURL: URL, creationDate: Date?, contentModificationDate: Date?) {

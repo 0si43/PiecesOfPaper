@@ -129,8 +129,10 @@ final class NoteRepository: NoteRepositoryProtocol {
         try? FileManager.default.startDownloadingUbiquitousItem(at: fileUrl)
         let document = NoteDocument(fileURL: fileUrl)
         let isSuccess = await document.open()
-        await document.close()
+        // Close only after a successful open: close() on a failed document
+        // never calls its completion handler and hangs the caller forever
         if isSuccess {
+            await document.close()
             return NoteData(entity: document.entity, fileURL: fileUrl)
         } else {
             throw NoteRepositoryError.fileOpenFailed(path: fileUrl.path)

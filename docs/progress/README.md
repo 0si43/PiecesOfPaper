@@ -8,6 +8,9 @@ appending to PROGRESS.md directly, so parallel PRs never conflict on the same fi
 
 - File name: `YYYY-MM-DD-<slug>.md` — the date is the work date, the slug is a short identifier such as the branch name.
 - Body: bullet list only, same format as the Work Log. No headings (`#`).
+- The PR number is not known until the PR exists: push the code commits first, create
+  the PR, then commit the fragment with the number taken from the `gh pr create`
+  output URL. Never guess the next number.
 
 ```markdown
 - [x] Add some feature (issue #N, PR #M)

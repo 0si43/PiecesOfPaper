@@ -68,6 +68,17 @@ Verified example: two swipes (`100 300 300 500`, `300 500 150 650`), then `descr
 returned two "Pen, black" elements with matching frames and a new plist appeared in
 InboxFolder.
 
+## Opening a note file via URL (onOpenURL path)
+
+```sh
+xcrun simctl openurl $UDID "file://$(xcrun simctl get_app_container $UDID Individual.LikeAPaper data)/Documents/InboxFolder/<note>.pop"
+```
+
+delivers the file URL to the app's `onOpenURL` handler — both while the app is running
+(canvas swap) and from a cold launch — without automating the Files app. It cannot
+exercise the security-scope path (files outside the app container); that still needs a
+device and the real Files app. Background: PR #208.
+
 ## Limitations
 
 - **No multi-touch**: idb's HID surface is single-touch (`multi-tap` is sequential taps at

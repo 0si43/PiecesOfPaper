@@ -14,16 +14,20 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     enum TestFile: CaseIterable {
         case file1, file2, file3
 
+        // Fixture URLs live under the inbox directory so applySaved treats
+        // them as managed notes (foreign URLs are intentionally never listed)
+        // swiftlint:disable force_unwrapping
         var url: URL {
             switch self {
             case .file1:
-                URL(fileURLWithPath: "/path/to/2024-01-01-00-00-000000.pop")
+                FilePath.inboxUrl!.appendingPathComponent("2024-01-01-00-00-000000.pop")
             case .file2:
-                URL(fileURLWithPath: "/path/to/2024-01-02-00-00-000000.pop")
+                FilePath.inboxUrl!.appendingPathComponent("2024-01-02-00-00-000000.pop")
             case .file3:
-                URL(fileURLWithPath: "/path/to/2024-01-03-00-00-000000.pop")
+                FilePath.inboxUrl!.appendingPathComponent("2024-01-03-00-00-000000.pop")
             }
         }
+        // swiftlint:enable force_unwrapping
 
         // Reverse of the filename (created) order so tests can tell the sort keys apart
         var contentModificationDate: Date {
@@ -42,6 +46,11 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         }
     }
 
+    // Outside TestFile: getFileAttributes returns TestFile.allCases, and these
+    // URLs must never appear in a directory listing
+    static let externalUrl = URL(fileURLWithPath: "/external/file1.pop")
+    static let externalUrl2 = URL(fileURLWithPath: "/external/file2.pop")
+
     var notes: [NoteData]
     var failingUrls: Set<URL> = []
     var moveShouldThrow = false
@@ -49,7 +58,16 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     var enumeratedAttributes: [NoteFileAttributes] = TestFile.allCases.map(\.attributes)
     var savedFileAttributes: [URL: NoteFileAttributes] = [:]
     @MainActor private(set) var openCallCount = 0
+    @MainActor var suspendOpens = false
+    @MainActor private var pendingOpens: [CheckedContinuation<Void, Never>] = []
+    @MainActor var hasPendingOpen: Bool { !pendingOpens.isEmpty }
     private(set) var cloudUpdateHandler: (@MainActor () -> Void)?
+
+    @MainActor
+    func resumePendingOpens() {
+        pendingOpens.forEach { $0.resume() }
+        pendingOpens.removeAll()
+    }
 
     init(notes: [NoteData]) {
         self.notes = notes
@@ -74,8 +92,17 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         openCallCount += 1
         // Suspend once so overlapping loads actually overlap on the main actor
         await Task.yield()
+        if suspendOpens {
+            await withCheckedContinuation { pendingOpens.append($0) }
+        }
         if failingUrls.contains(fileUrl) {
             throw NoteRepositoryError.fileOpenFailed(path: fileUrl.path)
+        }
+        if fileUrl == Self.externalUrl {
+            return notes[0]
+        }
+        if fileUrl == Self.externalUrl2 {
+            return notes[1]
         }
         guard let note = notes.first(where: { $0.fileURL == fileUrl }) else {
             fatalError()
@@ -101,11 +128,12 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
 
     func duplicate(_ note: NoteData, in directory: NoteDirectory,
                    completion: @escaping (NoteData?) -> Void) {
-        guard duplicateShouldSucceed else {
+        guard duplicateShouldSucceed,
+              let newUrl = FilePath.inboxUrl?
+                  .appendingPathComponent("duplicated-\(note.fileURL.lastPathComponent)") else {
             completion(nil)
             return
         }
-        let newUrl = URL(fileURLWithPath: "/path/to/duplicated-\(note.fileURL.lastPathComponent)")
         completion(NoteData(entity: NoteEntity(drawing: note.entity.drawing), fileURL: newUrl))
     }
 }

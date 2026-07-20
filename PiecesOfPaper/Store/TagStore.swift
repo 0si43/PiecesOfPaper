@@ -13,10 +13,15 @@ import Foundation
 final class TagStore {
     private(set) var tags: [TagEntity]
     private let repository: TagRepositoryProtocol
+    @ObservationIgnored private var cloudMonitor: TagListCloudMonitor?
 
     init(repository: TagRepositoryProtocol = TagRepository()) {
         self.repository = repository
         self.tags = repository.fetchAll()
+        if FilePath.isiCloudActive {
+            cloudMonitor = TagListCloudMonitor()
+            cloudMonitor?.onUpdate = { [weak self] in self?.reload() }
+        }
     }
 
     func add(_ tag: TagEntity) {
