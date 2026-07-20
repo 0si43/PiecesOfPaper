@@ -1,0 +1,6 @@
+- [x] Stop `TagRepository.fetchAll` from overwriting the tag list with defaults while the iCloud copy is undownloaded (issue #199, PR #209)
+  - `TagListFileState` distinguishes downloaded / in-cloud-only (`.taglist.json.icloud` placeholder) / absent; fetch never writes to disk
+  - Defaults get fixed UUIDs and are persisted lazily on the first user edit (id-based `TagEntity` equality would otherwise detach notes from default tags)
+  - `saveAll` refuses to write over an undownloaded placeholder, writes `.atomic`, and owns Library-directory creation
+  - `TagListCloudMonitor` (NSMetadataQuery on `taglist.json`) reloads `TagStore` when the download lands or another device edits tags
+  - Prerequisite for tag-model normalization (#203); residual fresh-install race documented in the PR

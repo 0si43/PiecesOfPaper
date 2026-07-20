@@ -47,6 +47,7 @@
 		A6FD03422D3FAD8600224B03 /* NoteListTagHStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6FD03412D3FAD8600224B03 /* NoteListTagHStack.swift */; };
 		A70000000000000000000011 /* NoteRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000001 /* NoteRepository.swift */; };
 		A70000000000000000000061 /* CloudNoteMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000051 /* CloudNoteMonitor.swift */; };
+		A7000000000000000000007F /* TagListCloudMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000007E /* TagListCloudMonitor.swift */; };
 		A70000000000000000000012 /* TagRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000002 /* TagRepository.swift */; };
 		A70000000000000000000013 /* PreferenceRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000003 /* PreferenceRepository.swift */; };
 		A70000000000000000000014 /* NoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000004 /* NoteStore.swift */; };
@@ -61,6 +62,7 @@
 		A70000000000000000000042 /* NoteDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000032 /* NoteDataTests.swift */; };
 		A70000000000000000000077 /* LegacyNoteMigratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000076 /* LegacyNoteMigratorTests.swift */; };
 		A7000000000000000000007B /* NoteRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000007A /* NoteRepositoryTests.swift */; };
+		A7000000000000000000007D /* TagRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000007C /* TagRepositoryTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -159,9 +161,11 @@
 		A7000000000000000000000C /* TagStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagStoreTests.swift; sourceTree = "<group>"; };
 		A70000000000000000000031 /* NoteData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteData.swift; sourceTree = "<group>"; };
 		A70000000000000000000051 /* CloudNoteMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudNoteMonitor.swift; sourceTree = "<group>"; };
+		A7000000000000000000007E /* TagListCloudMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListCloudMonitor.swift; sourceTree = "<group>"; };
 		A70000000000000000000032 /* NoteDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDataTests.swift; sourceTree = "<group>"; };
 		A70000000000000000000076 /* LegacyNoteMigratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyNoteMigratorTests.swift; sourceTree = "<group>"; };
 		A7000000000000000000007A /* NoteRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteRepositoryTests.swift; sourceTree = "<group>"; };
+		A7000000000000000000007C /* TagRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagRepositoryTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -266,6 +270,7 @@
 				A70000000000000000000032 /* NoteDataTests.swift */,
 				A70000000000000000000076 /* LegacyNoteMigratorTests.swift */,
 				A7000000000000000000007A /* NoteRepositoryTests.swift */,
+				A7000000000000000000007C /* TagRepositoryTests.swift */,
 				A70000000000000000000007 /* NoteStoreTests.swift */,
 				A70000000000000000000008 /* NoteDocumentTests.swift */,
 				A7000000000000000000000D /* PKDrawingStub.swift */,
@@ -281,6 +286,7 @@
 			children = (
 				A70000000000000000000001 /* NoteRepository.swift */,
 				A70000000000000000000051 /* CloudNoteMonitor.swift */,
+				A7000000000000000000007E /* TagListCloudMonitor.swift */,
 				A70000000000000000000002 /* TagRepository.swift */,
 				A70000000000000000000003 /* PreferenceRepository.swift */,
 			);
@@ -571,6 +577,7 @@
 				A70000000000000000000042 /* NoteDataTests.swift in Sources */,
 				A70000000000000000000077 /* LegacyNoteMigratorTests.swift in Sources */,
 				A7000000000000000000007B /* NoteRepositoryTests.swift in Sources */,
+				A7000000000000000000007D /* TagRepositoryTests.swift in Sources */,
 				A70000000000000000000017 /* NoteStoreTests.swift in Sources */,
 				A70000000000000000000018 /* NoteDocumentTests.swift in Sources */,
 				A7000000000000000000001D /* PKDrawingStub.swift in Sources */,
@@ -614,6 +621,7 @@
 				A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */,
 				A70000000000000000000011 /* NoteRepository.swift in Sources */,
 				A70000000000000000000061 /* CloudNoteMonitor.swift in Sources */,
+				A7000000000000000000007F /* TagListCloudMonitor.swift in Sources */,
 				A70000000000000000000012 /* TagRepository.swift in Sources */,
 				A70000000000000000000013 /* PreferenceRepository.swift in Sources */,
 				A70000000000000000000014 /* NoteStore.swift in Sources */,
