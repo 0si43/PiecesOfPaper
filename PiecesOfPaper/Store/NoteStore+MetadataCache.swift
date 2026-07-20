@@ -1,11 +1,3 @@
-//
-//  NoteStore+MetadataCache.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2026/07/20.
-//  Copyright © 2026 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import Foundation
 
 // MARK: - Metadata cache persistence
