@@ -12,10 +12,13 @@ Each entry links to the issue/PR where the details live.
 ## iCloud / UIDocument
 
 - **`NoteDocument`'s conflict resolution is not unit-testable on iOS**: `NSFileVersion.addOfItem(at:withContentsOf:)` — the only API that fabricates file versions — is macOS-only, so iOS tests cannot create conflicting versions locally. Verify conflict handling with two devices syncing over real iCloud. Background: issue #196, PR #197.
+- **Never `close()` a `UIDocument` whose `open()` failed**: the close completion handler is never invoked for a document that never opened, so the caller awaits forever. `NoteRepository.open` closes only after a successful open. Symptom that found it: the test runner printed "Restarting after unexpected exit, crash, or test timeout" with **no crash report (.ips) and a minutes-long gap** — a hang, not a crash. Trace how far the document got with `xcrun simctl spawn <udid> log show --predicate 'eventMessage CONTAINS "<file>"'` (UIDocumentLog logs every phase). Background: issue #198, PR #208.
+- **`UIDocument.open()` on a missing file waits forever by design**: the coordinated read treats it as an undownloaded iCloud item and waits for the download. Don't write a "missing file throws" test — use a corrupt file to exercise the failure path. Background: PR #208.
 
 ## SwiftUI
 
 - **Alerts attached below a `fullScreenCover` never show while the cover is up**: `NoteListParentView` has `.alert(isPresented: $noteStore.showAlert)`, but while `CanvasView` is presented via `.fullScreenCover`, that alert is not displayed. Do not refactor cover-side errors onto the store's `showAlert`/`alertType` pattern — errors shown on top of a cover must live in a view-local `@State` + `.alert` inside the cover. The store alert pattern is for the list screens only. Background: PR #186 review.
+- **`fullScreenCover`/`sheet` content only inherits environment values injected *outside* the modifier's attachment point**: attaching a cover after `.environment(store)` in the chain (i.e. outside it) crashes at presentation with "No Observable object of type NoteStore found". Attach presentation modifiers *inside* the `.environment` chain — `SideBarListView` does this deliberately. Background: PR #208.
 
 ## Xcode / build
 
