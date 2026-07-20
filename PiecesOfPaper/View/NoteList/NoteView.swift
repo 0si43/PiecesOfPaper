@@ -11,12 +11,12 @@ import PencilKit
 
 struct NoteView: View {
     private(set) var note: NoteData
-    @State private var showCanvasView = false
+    @Environment(NoteStore.self) private var noteStore
     @State private var thumbnail: UIImage?
 
     var body: some View {
         Button(action: {
-            showCanvasView = true
+            noteStore.openedNote = note
         }, label: {
             Group {
                 if let thumbnail {
@@ -34,11 +34,6 @@ struct NoteView: View {
         .accessibilityLabel("Note")
         .task(id: note.entity.updatedDate) {
             thumbnail = await ThumbnailCache.shared.thumbnail(for: note)
-        }
-        .fullScreenCover(isPresented: $showCanvasView) {
-            NavigationView {
-                CanvasView(note: note)
-            }
         }
     }
 }

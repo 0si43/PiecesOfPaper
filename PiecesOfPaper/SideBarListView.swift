@@ -51,6 +51,24 @@ struct SideBarListView: View {
                 Text("Unknown page")
             }
         }
+        // Inside the .environment chain: cover content only inherits values
+        // injected outside its attachment point
+        .fullScreenCover(item: $noteStore.openedNote) { note in
+            NavigationStack {
+                CanvasView(note: note)
+            }
+            // CanvasView seeds its @State from init, so an identity change is
+            // what swaps the drawing when openedNote is replaced mid-cover
+            .id(note.id)
+        }
+        .onOpenURL { url in
+            noteStore.handleIncomingURL(url)
+        }
+        .alert("", isPresented: $noteStore.showExternalOpenAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(NoteStoreError.openFailed(count: 1).localizedDescription)
+        }
         .environment(noteStore)
         .environment(tagStore)
         .environment(preferenceStore)

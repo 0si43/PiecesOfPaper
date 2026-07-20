@@ -239,6 +239,93 @@ struct NoteStoreTests {
         #expect(noteStore.displayInboxNotes.count == 3)
     }
 
+    @Test func test_upsert_ignoresFileOutsideManagedDirectories() {
+        let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
+                            fileURL: URL(fileURLWithPath: "/external/note.pop"))
+        noteStore.upsert(note)
+        #expect(noteStore.inboxNotes.isEmpty)
+        #expect(noteStore.archivedNotes.isEmpty)
+    }
+
+    @Test func test_openNewNote_presentsBlankNoteInInbox() throws {
+        noteStore.openNewNote()
+        let opened = try #require(noteStore.openedNote)
+        #expect(opened.isInInbox)
+        #expect(opened.entity.drawing.strokes.isEmpty)
+    }
+
+    @Test func test_openBlankNoteIfIdle_opensBlankNoteWhenIdle() {
+        noteStore.openBlankNoteIfIdle()
+        #expect(noteStore.openedNote != nil)
+    }
+
+    @Test func test_openBlankNoteIfIdle_skipsWhenNoteAlreadyOpen() {
+        let note = NoteData.createTestData()
+        noteStore.openedNote = note
+        noteStore.openBlankNoteIfIdle()
+        #expect(noteStore.openedNote == note)
+    }
+
+    @Test func test_handleIncomingURL_ignoresNonPopExtension() {
+        noteStore.handleIncomingURL(URL(fileURLWithPath: "/external/legacy.plist"))
+        #expect(noteStore.externalOpenTask == nil)
+        #expect(!noteStore.isHandlingExternalOpen)
+        #expect(noteStore.openedNote == nil)
+    }
+
+    @Test func test_handleIncomingURL_opensPopFileOnCanvas() async {
+        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl)
+        #expect(noteStore.isHandlingExternalOpen)
+        await noteStore.externalOpenTask?.value
+        #expect(noteStore.openedNote == notes[0])
+        #expect(!noteStore.isHandlingExternalOpen)
+    }
+
+    @Test func test_openExternalNote_showsAlertOnFailure() async {
+        repositoryMock.failingUrls = [NoteRepositoryMock.externalUrl]
+        await noteStore.openExternalNote(url: NoteRepositoryMock.externalUrl)
+        #expect(noteStore.openedNote == nil)
+        #expect(noteStore.showExternalOpenAlert)
+    }
+
+    @Test func test_openExternalNote_replacesOpenedNote() async {
+        noteStore.openNewNote()
+        await noteStore.openExternalNote(url: NoteRepositoryMock.externalUrl)
+        #expect(noteStore.openedNote == notes[0])
+    }
+
+    @Test func test_handleIncomingURL_secondRapidOpenWins() async {
+        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl)
+        let firstTask = noteStore.externalOpenTask
+        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl2)
+        await firstTask?.value
+        await noteStore.externalOpenTask?.value
+        #expect(noteStore.openedNote == notes[1])
+        #expect(!noteStore.isHandlingExternalOpen)
+    }
+
+    @Test func test_openExternalNote_keepsNoteTheUserOpenedDuringSlowOpen() async {
+        repositoryMock.suspendOpens = true
+        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl)
+        while !repositoryMock.hasPendingOpen { await Task.yield() }
+
+        let userNote = NoteData.createTestData()
+        noteStore.openedNote = userNote
+        repositoryMock.suspendOpens = false
+        repositoryMock.resumePendingOpens()
+        await noteStore.externalOpenTask?.value
+
+        #expect(noteStore.openedNote == userNote)
+        #expect(!noteStore.isHandlingExternalOpen)
+    }
+
+    @Test func test_openBlankNoteIfIdle_skipsWhileHandlingExternalOpen() async {
+        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl)
+        noteStore.openBlankNoteIfIdle()
+        await noteStore.externalOpenTask?.value
+        #expect(noteStore.openedNote == notes[0])
+    }
+
     @Test func test_upsert_thenIncrementalFetchDoesNotDuplicate() async {
         let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
                             fileURL: NoteRepositoryMock.TestFile.file1.url)
@@ -253,22 +340,37 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     enum TestFile: CaseIterable {
         case file1, file2, file3
 
+        // Fixture URLs live under the inbox directory so upsert treats them as
+        // managed notes (foreign URLs are intentionally never listed)
         // swiftlint:disable force_unwrapping
         var url: URL {
             switch self {
             case .file1:
-                URL(string: "file:///path/to/file1")!
+                FilePath.inboxUrl!.appendingPathComponent("file1")
             case .file2:
-                URL(string: "file:///path/to/file2")!
+                FilePath.inboxUrl!.appendingPathComponent("file2")
             case .file3:
-                URL(string: "file:///path/to/file3")!
+                FilePath.inboxUrl!.appendingPathComponent("file3")
             }
         }
         // swiftlint:enable force_unwrapping
     }
 
+    // Outside TestFile: getFileUrls returns TestFile.allCases, and these URLs
+    // must never appear in a directory listing
+    static let externalUrl = URL(fileURLWithPath: "/external/file1.pop")
+    static let externalUrl2 = URL(fileURLWithPath: "/external/file2.pop")
+
     var notes: [NoteData]
     var failingUrls: Set<URL> = []
+    var suspendOpens = false
+    private var pendingOpens: [CheckedContinuation<Void, Never>] = []
+    var hasPendingOpen: Bool { !pendingOpens.isEmpty }
+
+    func resumePendingOpens() {
+        pendingOpens.forEach { $0.resume() }
+        pendingOpens.removeAll()
+    }
     var moveShouldThrow = false
     var fileUrls: [URL]?
     private(set) var cloudUpdateHandler: (@MainActor () -> Void)?
@@ -290,8 +392,17 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
 
     @MainActor
     func open(fileUrl: URL) async throws -> NoteData {
+        if suspendOpens {
+            await withCheckedContinuation { pendingOpens.append($0) }
+        }
         if failingUrls.contains(fileUrl) {
             throw NoteRepositoryError.fileOpenFailed(path: fileUrl.path)
+        }
+        if fileUrl == Self.externalUrl {
+            return notes[0]
+        }
+        if fileUrl == Self.externalUrl2 {
+            return notes[1]
         }
         switch fileUrl.lastPathComponent {
         case "file1":
