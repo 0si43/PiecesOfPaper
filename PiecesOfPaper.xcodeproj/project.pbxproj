@@ -26,7 +26,6 @@
 		A7000000000000000000001A /* ThumbnailCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000000A /* ThumbnailCache.swift */; };
 		A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F3275B203A002C66F7 /* NoteEntity.swift */; };
 		A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E2D274C6E8E00C708A2 /* SideBarListView.swift */; };
-		A6620E34274C774D00C708A2 /* ScrollButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E33274C774D00C708A2 /* ScrollButton.swift */; };
 		A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */; };
 		A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E39274C8FA400C708A2 /* NoteDocument.swift */; };
 		A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E3B274CD88000C708A2 /* FilePath.swift */; };
@@ -62,7 +61,15 @@
 		A70000000000000000000042 /* NoteDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000032 /* NoteDataTests.swift */; };
 		A70000000000000000000077 /* LegacyNoteMigratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000076 /* LegacyNoteMigratorTests.swift */; };
 		A7000000000000000000007B /* NoteRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000007A /* NoteRepositoryTests.swift */; };
+		A70000000000000000000081 /* FilePathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000080 /* FilePathTests.swift */; };
+		A70000000000000000000083 /* NoteIndexEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000082 /* NoteIndexEntry.swift */; };
+		A70000000000000000000085 /* NoteIndexEntryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000084 /* NoteIndexEntryTests.swift */; };
+		A70000000000000000000087 /* NoteStoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000086 /* NoteStoreError.swift */; };
+		A70000000000000000000089 /* RepositoryMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000088 /* RepositoryMocks.swift */; };
+		A7000000000000000000008B /* NoteStore+Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000008A /* NoteStore+Loading.swift */; };
+		A7000000000000000000008D /* NoteStoreFilterHydrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000008C /* NoteStoreFilterHydrationTests.swift */; };
 		A7000000000000000000007D /* TagRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000007C /* TagRepositoryTests.swift */; };
+		A7000000000000000000008F /* NoteStoreCanvasPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000008E /* NoteStoreCanvasPresentationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -124,7 +131,6 @@
 		A7000000000000000000000A /* ThumbnailCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCache.swift; sourceTree = "<group>"; };
 		A64AE9F3275B203A002C66F7 /* NoteEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEntity.swift; sourceTree = "<group>"; };
 		A6620E2D274C6E8E00C708A2 /* SideBarListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarListView.swift; sourceTree = "<group>"; };
-		A6620E33274C774D00C708A2 /* ScrollButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollButton.swift; sourceTree = "<group>"; };
 		A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteListParentView.swift; sourceTree = "<group>"; };
 		A6620E39274C8FA400C708A2 /* NoteDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocument.swift; sourceTree = "<group>"; };
 		A6620E3B274CD88000C708A2 /* FilePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePath.swift; sourceTree = "<group>"; };
@@ -165,7 +171,15 @@
 		A70000000000000000000032 /* NoteDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDataTests.swift; sourceTree = "<group>"; };
 		A70000000000000000000076 /* LegacyNoteMigratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyNoteMigratorTests.swift; sourceTree = "<group>"; };
 		A7000000000000000000007A /* NoteRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteRepositoryTests.swift; sourceTree = "<group>"; };
+		A70000000000000000000080 /* FilePathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePathTests.swift; sourceTree = "<group>"; };
+		A70000000000000000000082 /* NoteIndexEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteIndexEntry.swift; sourceTree = "<group>"; };
+		A70000000000000000000084 /* NoteIndexEntryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteIndexEntryTests.swift; sourceTree = "<group>"; };
+		A70000000000000000000086 /* NoteStoreError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreError.swift; sourceTree = "<group>"; };
+		A70000000000000000000088 /* RepositoryMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryMocks.swift; sourceTree = "<group>"; };
+		A7000000000000000000008A /* NoteStore+Loading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteStore+Loading.swift"; sourceTree = "<group>"; };
+		A7000000000000000000008C /* NoteStoreFilterHydrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreFilterHydrationTests.swift; sourceTree = "<group>"; };
 		A7000000000000000000007C /* TagRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagRepositoryTests.swift; sourceTree = "<group>"; };
+		A7000000000000000000008E /* NoteStoreCanvasPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreCanvasPresentationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -219,6 +233,7 @@
 				A70000000000000000000078 /* LegacyNoteMigrator.swift */,
 				A63C9592276444CF00822461 /* ListOrder.swift */,
 				A70000000000000000000031 /* NoteData.swift */,
+				A70000000000000000000082 /* NoteIndexEntry.swift */,
 				A6620E39274C8FA400C708A2 /* NoteDocument.swift */,
 				A64AE9F3275B203A002C66F7 /* NoteEntity.swift */,
 				A63C956C275C7CF300822461 /* TagEntity.swift */,
@@ -244,7 +259,6 @@
 				A6484FD5272E63B000676ED8 /* NoteListView.swift */,
 				A64AE9F12759A963002C66F7 /* NoteView.swift */,
 				A7000000000000000000000A /* ThumbnailCache.swift */,
-				A6620E33274C774D00C708A2 /* ScrollButton.swift */,
 				A63C9594276447BD00822461 /* ListOrderSettingView.swift */,
 			);
 			path = NoteList;
@@ -267,13 +281,18 @@
 		A6A16EC325B1673500DF323F /* PiecesOfPaperTests */ = {
 			isa = PBXGroup;
 			children = (
+				A70000000000000000000080 /* FilePathTests.swift */,
 				A70000000000000000000032 /* NoteDataTests.swift */,
+				A70000000000000000000084 /* NoteIndexEntryTests.swift */,
 				A70000000000000000000076 /* LegacyNoteMigratorTests.swift */,
 				A7000000000000000000007A /* NoteRepositoryTests.swift */,
 				A7000000000000000000007C /* TagRepositoryTests.swift */,
 				A70000000000000000000007 /* NoteStoreTests.swift */,
+				A7000000000000000000008E /* NoteStoreCanvasPresentationTests.swift */,
+				A7000000000000000000008C /* NoteStoreFilterHydrationTests.swift */,
 				A70000000000000000000008 /* NoteDocumentTests.swift */,
 				A7000000000000000000000D /* PKDrawingStub.swift */,
+				A70000000000000000000088 /* RepositoryMocks.swift */,
 				A7000000000000000000000B /* PreferenceStoreTests.swift */,
 				A7000000000000000000000C /* TagStoreTests.swift */,
 				A6A16EC625B1673500DF323F /* Info.plist */,
@@ -297,6 +316,8 @@
 			isa = PBXGroup;
 			children = (
 				A70000000000000000000004 /* NoteStore.swift */,
+				A7000000000000000000008A /* NoteStore+Loading.swift */,
+				A70000000000000000000086 /* NoteStoreError.swift */,
 				A70000000000000000000005 /* TagStore.swift */,
 				A70000000000000000000006 /* PreferenceStore.swift */,
 			);
@@ -574,13 +595,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A70000000000000000000081 /* FilePathTests.swift in Sources */,
 				A70000000000000000000042 /* NoteDataTests.swift in Sources */,
+				A70000000000000000000085 /* NoteIndexEntryTests.swift in Sources */,
 				A70000000000000000000077 /* LegacyNoteMigratorTests.swift in Sources */,
 				A7000000000000000000007B /* NoteRepositoryTests.swift in Sources */,
 				A7000000000000000000007D /* TagRepositoryTests.swift in Sources */,
 				A70000000000000000000017 /* NoteStoreTests.swift in Sources */,
+				A7000000000000000000008F /* NoteStoreCanvasPresentationTests.swift in Sources */,
+				A7000000000000000000008D /* NoteStoreFilterHydrationTests.swift in Sources */,
 				A70000000000000000000018 /* NoteDocumentTests.swift in Sources */,
 				A7000000000000000000001D /* PKDrawingStub.swift in Sources */,
+				A70000000000000000000089 /* RepositoryMocks.swift in Sources */,
 				A7000000000000000000001B /* PreferenceStoreTests.swift in Sources */,
 				A7000000000000000000001C /* TagStoreTests.swift in Sources */,
 			);
@@ -605,7 +631,6 @@
 				A6CADA51276752E600657E9E /* SettingView.swift in Sources */,
 				A63C9590275E111500822461 /* AddTagFooter.swift in Sources */,
 				A63C9584275DB67700822461 /* Tag.swift in Sources */,
-				A6620E34274C774D00C708A2 /* ScrollButton.swift in Sources */,
 				A6F6ED4B27C77A7500DD3296 /* RootView.swift in Sources */,
 				A63C9578275C8F4A00822461 /* TagList.swift in Sources */,
 				A6FD03422D3FAD8600224B03 /* NoteListTagHStack.swift in Sources */,
@@ -617,6 +642,7 @@
 				A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */,
 				A6484FD6272E63B000676ED8 /* NoteListView.swift in Sources */,
 				A70000000000000000000041 /* NoteData.swift in Sources */,
+				A70000000000000000000083 /* NoteIndexEntry.swift in Sources */,
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,
 				A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */,
 				A70000000000000000000011 /* NoteRepository.swift in Sources */,
@@ -625,6 +651,8 @@
 				A70000000000000000000012 /* TagRepository.swift in Sources */,
 				A70000000000000000000013 /* PreferenceRepository.swift in Sources */,
 				A70000000000000000000014 /* NoteStore.swift in Sources */,
+				A7000000000000000000008B /* NoteStore+Loading.swift in Sources */,
+				A70000000000000000000087 /* NoteStoreError.swift in Sources */,
 				A70000000000000000000015 /* TagStore.swift in Sources */,
 				A70000000000000000000016 /* PreferenceStore.swift in Sources */,
 			);

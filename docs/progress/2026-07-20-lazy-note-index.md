@@ -1,0 +1,5 @@
+- [x] Lazy-load the note list from a metadata index instead of retaining every PKDrawing (issue #204 Phase A, PR #210)
+  - NoteStore now holds NoteIndexEntry (URL + dates from enumeration) per note; documents open per cell on appearance, render the thumbnail, and discard the drawing, so memory stays bounded by visible cells + the NSCache
+  - createdDate parses from the filename timestamp (new FilePath.parseTimestamp), updatedDate comes from fs contentModificationDate (URLResourceValues locally, NSMetadataQuery attributes for iCloud incl. undownloaded items)
+  - Tags live inside the plist, so an active tag filter hydrates metadata in the background (width-4 opens, drawings discarded); Phase B (persistent metadata cache) is a follow-up
+  - Behavior changes: canvas open is open-then-present (one document open on tap), tagging now bumps the updated-date sort key (fs modDate), the aggregated "Failed to load N note(s)" alert on fetch is gone (per-cell retry on reappearance)

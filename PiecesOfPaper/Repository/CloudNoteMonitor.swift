@@ -8,6 +8,12 @@
 
 import Foundation
 
+struct CloudNoteItem: Equatable {
+    let fileURL: URL
+    let creationDate: Date?
+    let contentModificationDate: Date?
+}
+
 /// Enumerates note files through the iCloud metadata index instead of the
 /// local file system, so notes that exist in iCloud but are not downloaded
 /// yet (placeholder `.icloud` files) are still visible.
@@ -17,7 +23,7 @@ final class CloudNoteMonitor {
     private var observers: [NSObjectProtocol] = []
     private var hasGathered = false
     private var gatherWaiters: [CheckedContinuation<Void, Never>] = []
-    private(set) var fileUrls: [URL] = []
+    private(set) var noteItems: [CloudNoteItem] = []
     var onUpdate: (@MainActor () -> Void)?
 
     init() {
@@ -47,11 +53,11 @@ final class CloudNoteMonitor {
 
     /// Waits for the initial gathering so that an in-progress query is never
     /// mistaken for an empty note list.
-    func urls() async -> [URL] {
+    func items() async -> [CloudNoteItem] {
         if !hasGathered {
             await withCheckedContinuation { gatherWaiters.append($0) }
         }
-        return fileUrls
+        return noteItems
     }
 
     func stop() {
@@ -78,8 +84,14 @@ final class CloudNoteMonitor {
     private func refreshResults() {
         query.disableUpdates()
         defer { query.enableUpdates() }
-        fileUrls = query.results.compactMap {
-            ($0 as? NSMetadataItem)?.value(forAttribute: NSMetadataItemURLKey) as? URL
+        noteItems = query.results.compactMap {
+            guard let item = $0 as? NSMetadataItem,
+                  let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL else { return nil }
+            return CloudNoteItem(
+                fileURL: url,
+                creationDate: item.value(forAttribute: NSMetadataItemFSCreationDateKey) as? Date,
+                contentModificationDate: item.value(forAttribute: NSMetadataItemFSContentChangeDateKey) as? Date
+            )
         }
     }
 }

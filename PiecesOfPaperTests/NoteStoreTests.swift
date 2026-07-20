@@ -1,6 +1,6 @@
 //
 //  NoteStoreTests.swift
-//  PiecesOfPaperTests
+//  PiecesOfPaper
 //
 //  Created by Nakajima on 2022/05/28.
 //  Copyright © 2022 Tsuyoshi Nakajima. All rights reserved.
@@ -16,7 +16,7 @@ struct NoteStoreTests {
     var noteStore: NoteStore
     let repositoryMock: NoteRepositoryMock
     let preferenceRepositoryMock: PreferenceRepositoryMock
-    let notes = (0...2).map { _ in NoteData.createTestData() }
+    let notes = NoteRepositoryMock.TestFile.allCases.map { NoteData.createTestData(fileURL: $0.url) }
 
     init() {
         repositoryMock = NoteRepositoryMock(notes: notes)
@@ -27,45 +27,183 @@ struct NoteStoreTests {
         )
     }
 
-    @Test func test_incrementalFetch() async throws {
-        await noteStore.incrementalFetch(directory: .inbox)
-        #expect(noteStore.displayInboxNotes == notes.reversed())
+    // MARK: - Index fetch & sorting
+
+    @Test func test_fetch_buildsIndexWithoutOpeningDocuments() async {
+        await noteStore.fetch(directory: .inbox)
+        #expect(noteStore.inboxIndex.map(\.fileURL) == NoteRepositoryMock.TestFile.allCases.map(\.url))
+        #expect(repositoryMock.openCallCount == 0)
+        #expect(!noteStore.isLoading)
     }
 
-    @Test func test_incrementalFetch_skipsUnreadableFileAndShowsError() async {
-        repositoryMock.failingUrls = [NoteRepositoryMock.TestFile.file2.url]
-        await noteStore.incrementalFetch(directory: .inbox)
-        #expect(noteStore.displayInboxNotes.count == 2)
+    @Test func test_fetch_dropsEntriesRemovedFromEnumeration() async {
+        await noteStore.fetch(directory: .inbox)
+        repositoryMock.enumeratedAttributes = [NoteRepositoryMock.TestFile.file1.attributes]
+        await noteStore.fetch(directory: .inbox)
+        #expect(noteStore.inboxIndex.map(\.fileURL) == [NoteRepositoryMock.TestFile.file1.url])
+    }
+
+    // file1 has the oldest filename timestamp (created) but the newest
+    // modification date (updated), so the two sort keys produce opposite orders
+    @Test func test_displayEntries_sortsBothKeysAndOrdersOnIndexAlone() async {
+        await noteStore.fetch(directory: .inbox)
+        let file1 = NoteRepositoryMock.TestFile.file1.url
+        let file2 = NoteRepositoryMock.TestFile.file2.url
+        let file3 = NoteRepositoryMock.TestFile.file3.url
+
+        #expect(noteStore.displayInboxEntries.map(\.fileURL) == [file1, file2, file3])
+
+        var order = ListOrder()
+        order.sortBy = .updatedDate
+        order.sortOrder = .ascending
+        noteStore.inboxListOrder = order
+        #expect(noteStore.displayInboxEntries.map(\.fileURL) == [file3, file2, file1])
+
+        order.sortBy = .createdDate
+        order.sortOrder = .descending
+        noteStore.inboxListOrder = order
+        #expect(noteStore.displayInboxEntries.map(\.fileURL) == [file3, file2, file1])
+
+        order.sortOrder = .ascending
+        noteStore.inboxListOrder = order
+        #expect(noteStore.displayInboxEntries.map(\.fileURL) == [file1, file2, file3])
+
+        #expect(repositoryMock.openCallCount == 0)
+    }
+
+    @Test func test_displayEntries_tagFilterShowsOnlyLoadedMatchingNotes() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let tag = TagEntity(name: "work", color: CodableUIColor(uiColor: .blue))
+        var order = ListOrder()
+        order.filterBy = [tag]
+        noteStore.inboxListOrder = order
+        #expect(noteStore.displayInboxEntries.isEmpty)
+
+        noteStore.addTag(tag, to: notes[0])
+        #expect(noteStore.displayInboxEntries.map(\.fileURL) == [notes[0].fileURL])
+    }
+
+    // MARK: - Lazy note loading
+
+    @Test func test_loadNote_cachesMetadataAndRetriesAfterFailure() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let entry = try #require(noteStore.inboxIndex.first)
+        repositoryMock.failingUrls = [entry.fileURL]
+
+        let failed = await noteStore.loadNote(entry)
+        #expect(failed == nil)
+        #expect(!noteStore.showAlert)
+        #expect(noteStore.metadataByUrl[entry.fileURL] == nil)
+
+        repositoryMock.failingUrls = []
+        let loaded = await noteStore.loadNote(entry)
+        #expect(loaded != nil)
+        #expect(noteStore.metadataByUrl[entry.fileURL]?.id == loaded?.entity.id)
+        #expect(repositoryMock.openCallCount == 2)
+    }
+
+    @Test func test_loadNote_dedupesOverlappingOpens() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let entry = try #require(noteStore.inboxIndex.first)
+        async let first = noteStore.loadNote(entry)
+        async let second = noteStore.loadNote(entry)
+        let results = await [first, second]
+        #expect(results.compactMap { $0 }.count == 2)
+        #expect(repositoryMock.openCallCount == 1)
+    }
+
+    @Test func test_requestTag_opensNoteAndPresentsSheet() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let entry = try #require(noteStore.inboxIndex.first)
+        noteStore.requestTag(entry)
+        for _ in 0..<100 where noteStore.noteToTag == nil {
+            await Task.yield()
+        }
+        #expect(noteStore.noteToTag?.fileURL == entry.fileURL)
+    }
+
+    @Test func test_requestShare_alertsWhenOpenFails() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let entry = try #require(noteStore.inboxIndex.first)
+        repositoryMock.failingUrls = [entry.fileURL]
+        noteStore.requestShare(entry)
+        for _ in 0..<100 where !noteStore.showAlert {
+            await Task.yield()
+        }
+        #expect(noteStore.showAlert)
+        #expect(noteStore.noteToShare == nil)
+    }
+
+    // MARK: - Data operations
+
+    @Test func test_duplicate_appendsEntryForTheNewFile() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let entry = try #require(noteStore.inboxIndex.first)
+        noteStore.duplicate(entry, in: .inbox)
+        for _ in 0..<100 where noteStore.inboxIndex.count < 4 {
+            await Task.yield()
+        }
+        #expect(noteStore.inboxIndex.count == 4)
+        let newEntry = try #require(
+            noteStore.inboxIndex.first { $0.fileURL.lastPathComponent.hasPrefix("duplicated-") }
+        )
+        #expect(noteStore.metadataByUrl[newEntry.fileURL] != nil)
+    }
+
+    @Test func test_delete_removesEntryAndMetadata() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let entry = try #require(noteStore.inboxIndex.first)
+        _ = await noteStore.loadNote(entry)
+        noteStore.delete(entry)
+        #expect(noteStore.inboxIndex.count == 2)
+        #expect(noteStore.metadataByUrl[entry.fileURL] == nil)
+    }
+
+    @Test func test_archive_movesEntryAndRekeysMetadataWithoutReopening() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let entry = try #require(noteStore.inboxIndex.first)
+        _ = await noteStore.loadNote(entry)
+
+        noteStore.archive(entry)
+
+        #expect(noteStore.inboxIndex.count == 2)
+        let moved = try #require(noteStore.archivedIndex.first)
+        #expect(moved.fileURL.lastPathComponent == entry.fileURL.lastPathComponent)
+        #expect(moved.updatedDate == entry.updatedDate)
+        #expect(noteStore.metadataByUrl[moved.fileURL] != nil)
+        #expect(noteStore.metadataByUrl[entry.fileURL] == nil)
+        #expect(repositoryMock.openCallCount == 1)
+    }
+
+    @Test func test_archive_keepsEntryWhenMoveFails() async {
+        await noteStore.fetch(directory: .inbox)
+        repositoryMock.moveShouldThrow = true
+        let target = noteStore.displayInboxEntries[0]
+        noteStore.archive(target)
+        #expect(noteStore.displayInboxEntries.count == 3)
+        #expect(noteStore.displayArchivedEntries.isEmpty)
+    }
+
+    // MARK: - Tag operations
+
+    @Test func test_addTag_updatesMetadataOnSuccessfulSave() async {
+        await noteStore.fetch(directory: .inbox)
+        let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
+        noteStore.addTag(tag, to: notes[0])
+        #expect(noteStore.currentTags(for: notes[0]) == [tag])
+        #expect(!noteStore.showAlert)
+    }
+
+    @Test func test_addTag_rollsBackTagWhenSaveFails() async {
+        await noteStore.fetch(directory: .inbox)
+        repositoryMock.saveShouldSucceed = false
+        let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
+        noteStore.addTag(tag, to: notes[0])
+        #expect(noteStore.currentTags(for: notes[0]).isEmpty)
         #expect(noteStore.showAlert)
     }
 
-    @Test func test_incrementalFetch_retriesFailedFileOnNextFetch() async {
-        repositoryMock.failingUrls = [NoteRepositoryMock.TestFile.file2.url]
-        await noteStore.incrementalFetch(directory: .inbox)
-        #expect(noteStore.displayInboxNotes.count == 2)
-
-        repositoryMock.failingUrls = []
-        await noteStore.incrementalFetch(directory: .inbox)
-        #expect(noteStore.displayInboxNotes.count == 3)
-    }
-
-    @Test func test_archive_keepsNoteWhenMoveFails() async {
-        await noteStore.incrementalFetch(directory: .inbox)
-        repositoryMock.moveShouldThrow = true
-        let target = noteStore.displayInboxNotes[0]
-        noteStore.archive(target)
-        #expect(noteStore.displayInboxNotes.count == 3)
-        #expect(noteStore.displayArchivedNotes.isEmpty)
-    }
-
-    @Test func test_addTag_persistsTagOnSuccessfulSave() async {
-        await noteStore.incrementalFetch(directory: .inbox)
-        let target = noteStore.displayInboxNotes[0]
-        let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
-        noteStore.addTag(tag, to: target)
-        #expect(noteStore.note(id: target.id)?.entity.tags == [tag])
-        #expect(!noteStore.showAlert)
-    }
+    // MARK: - List order settings
 
     @Test func test_inboxListOrder_persistsOnChange() {
         var order = ListOrder()
@@ -109,67 +247,101 @@ struct NoteStoreTests {
         #expect(preferenceMock.setListOrderCalls.isEmpty)
     }
 
-    @Test func test_addTag_rollsBackTagWhenSaveFails() async {
-        await noteStore.incrementalFetch(directory: .inbox)
-        repositoryMock.saveShouldSucceed = false
-        let target = noteStore.displayInboxNotes[0]
-        let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
-        noteStore.addTag(tag, to: target)
-        #expect(noteStore.note(id: target.id)?.entity.tags.isEmpty == true)
-        #expect(noteStore.showAlert)
+    // MARK: - Index write-back
+
+    @Test func test_applySaved_insertsEntryAndMetadata() {
+        let note = NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url)
+        noteStore.applySaved(note)
+        #expect(noteStore.inboxIndex.map(\.fileURL) == [note.fileURL])
+        #expect(noteStore.metadataByUrl[note.fileURL]?.id == note.entity.id)
     }
 
-    @Test func test_noteById_looksUpFetchedNote() async {
-        await noteStore.incrementalFetch(directory: .inbox)
-        #expect(noteStore.note(id: notes[1].id) == notes[1])
-        #expect(noteStore.note(id: UUID()) == nil)
+    @Test func test_applySaved_insertsArchivedNoteIntoArchivedIndex() throws {
+        let archivedUrl = try #require(FilePath.archivedUrl).appendingPathComponent("2024-05-06-07-08-090000.pop")
+        let note = NoteData.createTestData(fileURL: archivedUrl)
+        noteStore.applySaved(note)
+        #expect(noteStore.archivedIndex.map(\.fileURL) == [archivedUrl])
+        #expect(noteStore.inboxIndex.isEmpty)
     }
 
-    @Test func test_upsert_replacesExistingNote() async {
-        await noteStore.incrementalFetch(directory: .inbox)
-        var updated = notes[0]
-        updated.entity.updatedDate = Date()
-        noteStore.upsert(updated)
-        #expect(noteStore.note(id: updated.id) == updated)
-        #expect(noteStore.inboxNotes.count == 3)
+    @Test func test_applySaved_ignoresFileOutsideManagedDirectories() {
+        let note = NoteData.createTestData(fileURL: URL(fileURLWithPath: "/external/note.pop"))
+        noteStore.applySaved(note)
+        #expect(noteStore.inboxIndex.isEmpty)
+        #expect(noteStore.archivedIndex.isEmpty)
     }
 
-    @Test func test_upsert_insertsUnknownNoteIntoInbox() {
-        let note = NoteData.createTestData()
-        noteStore.upsert(note)
-        #expect(noteStore.inboxNotes == [note])
+    @Test func test_applySaved_thenFetchDoesNotDuplicate() async {
+        noteStore.applySaved(NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url))
+        await noteStore.fetch(directory: .inbox)
+        #expect(noteStore.inboxIndex.count == 3)
+        #expect(noteStore.inboxIndex.filter { $0.fileURL == NoteRepositoryMock.TestFile.file1.url }.count == 1)
     }
 
-    @Test func test_upsert_insertsUnknownArchivedNoteIntoArchivedList() throws {
-        let archivedUrl = try #require(FilePath.archivedUrl).appendingPathComponent("archived-note.pop")
-        let note = NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: archivedUrl)
-        noteStore.upsert(note)
-        #expect(noteStore.archivedNotes == [note])
-        #expect(noteStore.inboxNotes.isEmpty)
+    @Test func test_canRequestReview_requiresFiveInboxEntries() {
+        (0..<4).forEach { _ in
+            noteStore.applySaved(NoteData.createTestData())
+        }
+        #expect(!noteStore.canRequestReview)
+        noteStore.applySaved(NoteData.createTestData())
+        #expect(noteStore.canRequestReview)
+    }
+
+    // MARK: - Cloud updates
+
+    @Test func test_init_registersCloudUpdateHandler() {
+        #expect(repositoryMock.cloudUpdateHandler != nil)
+    }
+
+    @Test func test_applyCloudUpdate_fetchesIndexWithoutTouchingLoadingState() async {
+        #expect(noteStore.isLoading)
+        await noteStore.applyCloudUpdate()
+        #expect(noteStore.displayInboxEntries.count == 3)
+        #expect(noteStore.isLoading)
+    }
+}
+
+// The canvas save path has its own suite: it feeds the index through
+// applySaved rather than enumeration
+@MainActor
+struct NoteStoreSaveDrawingTests {
+    var noteStore: NoteStore
+    let repositoryMock: NoteRepositoryMock
+    let notes = NoteRepositoryMock.TestFile.allCases.map { NoteData.createTestData(fileURL: $0.url) }
+
+    init() {
+        repositoryMock = NoteRepositoryMock(notes: notes)
+        noteStore = NoteStore(
+            noteRepository: repositoryMock,
+            preferenceRepository: PreferenceRepositoryMock()
+        )
     }
 
     @Test func test_saveDrawing_skipsWhenDrawingUnchanged() {
-        let note = NoteData.createTestData()
+        let note = NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url)
         var saved: NoteData?
         noteStore.save(drawing: note.entity.drawing, to: note) { saved = $0 }
         #expect(saved == note)
-        #expect(noteStore.inboxNotes.isEmpty)
+        #expect(noteStore.inboxIndex.isEmpty)
+        #expect(repositoryMock.saveCallCount == 0)
     }
 
-    @Test func test_saveDrawing_persistsAndUpsertsOnSuccess() throws {
-        let note = NoteData.createTestData()
+    @Test func test_saveDrawing_persistsAndUpdatesIndexOnSuccess() throws {
+        let note = NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url)
         let drawing = PKDrawing.stub()
         var result: NoteData?
         noteStore.save(drawing: drawing, to: note) { result = $0 }
         let saved = try #require(result)
         #expect(saved.entity.drawing == drawing)
         #expect(saved.entity.updatedDate > note.entity.updatedDate)
-        #expect(noteStore.note(id: note.id) == saved)
+        let entry = try #require(noteStore.inboxIndex.first { $0.fileURL == note.fileURL })
+        #expect(entry.updatedDate == saved.entity.updatedDate)
+        #expect(noteStore.metadataByUrl[note.fileURL]?.id == note.entity.id)
     }
 
-    @Test func test_saveDrawing_returnsNilAndKeepsStoreOnFailure() {
+    @Test func test_saveDrawing_returnsNilAndKeepsIndexOnFailure() {
         repositoryMock.saveShouldSucceed = false
-        let note = NoteData.createTestData()
+        let note = NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url)
         var completionCalled = false
         var saved: NoteData?
         noteStore.save(drawing: PKDrawing.stub(), to: note) {
@@ -178,11 +350,11 @@ struct NoteStoreTests {
         }
         #expect(completionCalled)
         #expect(saved == nil)
-        #expect(noteStore.note(id: note.id) == nil)
+        #expect(noteStore.inboxIndex.isEmpty)
     }
 
-    @Test func test_saveDrawing_basesPayloadOnStoreCopyNotStaleSnapshot() async throws {
-        await noteStore.incrementalFetch(directory: .inbox)
+    @Test func test_saveDrawing_mergesTagsFromMetadataCache() async throws {
+        await noteStore.fetch(directory: .inbox)
         let staleSnapshot = notes[0]
         let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
         noteStore.addTag(tag, to: staleSnapshot)
@@ -192,289 +364,6 @@ struct NoteStoreTests {
 
         let saved = try #require(result)
         #expect(saved.entity.tags == [tag])
-        #expect(noteStore.note(id: staleSnapshot.id)?.entity.tags == [tag])
-    }
-
-    @Test func test_saveDrawing_skipsWhenStoreCopyAlreadyHasDrawing() async {
-        await noteStore.incrementalFetch(directory: .inbox)
-        let staleSnapshot = notes[0]
-        let drawing = PKDrawing.stub()
-        var first: NoteData?
-        noteStore.save(drawing: drawing, to: staleSnapshot) { first = $0 }
-        let callsAfterFirst = repositoryMock.saveCallCount
-
-        var second: NoteData?
-        noteStore.save(drawing: drawing, to: staleSnapshot) { second = $0 }
-
-        #expect(second == first)
-        #expect(repositoryMock.saveCallCount == callsAfterFirst)
-    }
-
-    @Test func test_canRequestReview_requiresFiveInboxNotes() {
-        (0..<4).forEach { _ in noteStore.upsert(NoteData.createTestData()) }
-        #expect(!noteStore.canRequestReview)
-        noteStore.upsert(NoteData.createTestData())
-        #expect(noteStore.canRequestReview)
-    }
-
-    @Test func test_init_registersCloudUpdateHandler() {
-        #expect(repositoryMock.cloudUpdateHandler != nil)
-    }
-
-    @Test func test_applyCloudUpdate_fetchesNotesWithoutTouchingLoadingState() async {
-        #expect(noteStore.isLoading)
-        await noteStore.applyCloudUpdate()
-        #expect(noteStore.displayInboxNotes.count == 3)
-        #expect(noteStore.isLoading)
-    }
-
-    @Test func test_applyCloudUpdate_suppressesErrorAlertAndRetriesLater() async {
-        repositoryMock.failingUrls = [NoteRepositoryMock.TestFile.file2.url]
-        await noteStore.applyCloudUpdate()
-        #expect(noteStore.displayInboxNotes.count == 2)
-        #expect(!noteStore.showAlert)
-
-        repositoryMock.failingUrls = []
-        await noteStore.applyCloudUpdate()
-        #expect(noteStore.displayInboxNotes.count == 3)
-    }
-
-    @Test func test_upsert_ignoresFileOutsideManagedDirectories() {
-        let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
-                            fileURL: URL(fileURLWithPath: "/external/note.pop"))
-        noteStore.upsert(note)
-        #expect(noteStore.inboxNotes.isEmpty)
-        #expect(noteStore.archivedNotes.isEmpty)
-    }
-
-    @Test func test_openNewNote_presentsBlankNoteInInbox() throws {
-        noteStore.openNewNote()
-        let opened = try #require(noteStore.openedNote)
-        #expect(opened.isInInbox)
-        #expect(opened.entity.drawing.strokes.isEmpty)
-    }
-
-    @Test func test_openBlankNoteIfIdle_opensBlankNoteWhenIdle() {
-        noteStore.openBlankNoteIfIdle()
-        #expect(noteStore.openedNote != nil)
-    }
-
-    @Test func test_openBlankNoteIfIdle_skipsWhenNoteAlreadyOpen() {
-        let note = NoteData.createTestData()
-        noteStore.openedNote = note
-        noteStore.openBlankNoteIfIdle()
-        #expect(noteStore.openedNote == note)
-    }
-
-    @Test func test_handleIncomingURL_ignoresNonPopExtension() {
-        noteStore.handleIncomingURL(URL(fileURLWithPath: "/external/legacy.plist"))
-        #expect(noteStore.externalOpenTask == nil)
-        #expect(!noteStore.isHandlingExternalOpen)
-        #expect(noteStore.openedNote == nil)
-    }
-
-    @Test func test_handleIncomingURL_opensPopFileOnCanvas() async {
-        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl)
-        #expect(noteStore.isHandlingExternalOpen)
-        await noteStore.externalOpenTask?.value
-        #expect(noteStore.openedNote == notes[0])
-        #expect(!noteStore.isHandlingExternalOpen)
-    }
-
-    @Test func test_openExternalNote_showsAlertOnFailure() async {
-        repositoryMock.failingUrls = [NoteRepositoryMock.externalUrl]
-        await noteStore.openExternalNote(url: NoteRepositoryMock.externalUrl)
-        #expect(noteStore.openedNote == nil)
-        #expect(noteStore.showExternalOpenAlert)
-    }
-
-    @Test func test_openExternalNote_replacesOpenedNote() async {
-        noteStore.openNewNote()
-        await noteStore.openExternalNote(url: NoteRepositoryMock.externalUrl)
-        #expect(noteStore.openedNote == notes[0])
-    }
-
-    @Test func test_handleIncomingURL_secondRapidOpenWins() async {
-        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl)
-        let firstTask = noteStore.externalOpenTask
-        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl2)
-        await firstTask?.value
-        await noteStore.externalOpenTask?.value
-        #expect(noteStore.openedNote == notes[1])
-        #expect(!noteStore.isHandlingExternalOpen)
-    }
-
-    @Test func test_openExternalNote_keepsNoteTheUserOpenedDuringSlowOpen() async {
-        repositoryMock.suspendOpens = true
-        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl)
-        while !repositoryMock.hasPendingOpen { await Task.yield() }
-
-        let userNote = NoteData.createTestData()
-        noteStore.openedNote = userNote
-        repositoryMock.suspendOpens = false
-        repositoryMock.resumePendingOpens()
-        await noteStore.externalOpenTask?.value
-
-        #expect(noteStore.openedNote == userNote)
-        #expect(!noteStore.isHandlingExternalOpen)
-    }
-
-    @Test func test_openBlankNoteIfIdle_skipsWhileHandlingExternalOpen() async {
-        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl)
-        noteStore.openBlankNoteIfIdle()
-        await noteStore.externalOpenTask?.value
-        #expect(noteStore.openedNote == notes[0])
-    }
-
-    @Test func test_upsert_thenIncrementalFetchDoesNotDuplicate() async {
-        let note = NoteData(entity: NoteEntity(drawing: PKDrawing()),
-                            fileURL: NoteRepositoryMock.TestFile.file1.url)
-        noteStore.upsert(note)
-        await noteStore.incrementalFetch(directory: .inbox)
-        #expect(noteStore.inboxNotes.count == 3)
-        #expect(noteStore.inboxNotes.filter { $0.fileURL == NoteRepositoryMock.TestFile.file1.url }.count == 1)
-    }
-}
-
-final class NoteRepositoryMock: NoteRepositoryProtocol {
-    enum TestFile: CaseIterable {
-        case file1, file2, file3
-
-        // Fixture URLs live under the inbox directory so upsert treats them as
-        // managed notes (foreign URLs are intentionally never listed)
-        // swiftlint:disable force_unwrapping
-        var url: URL {
-            switch self {
-            case .file1:
-                FilePath.inboxUrl!.appendingPathComponent("file1")
-            case .file2:
-                FilePath.inboxUrl!.appendingPathComponent("file2")
-            case .file3:
-                FilePath.inboxUrl!.appendingPathComponent("file3")
-            }
-        }
-        // swiftlint:enable force_unwrapping
-    }
-
-    // Outside TestFile: getFileUrls returns TestFile.allCases, and these URLs
-    // must never appear in a directory listing
-    static let externalUrl = URL(fileURLWithPath: "/external/file1.pop")
-    static let externalUrl2 = URL(fileURLWithPath: "/external/file2.pop")
-
-    var notes: [NoteData]
-    var failingUrls: Set<URL> = []
-    var suspendOpens = false
-    private var pendingOpens: [CheckedContinuation<Void, Never>] = []
-    var hasPendingOpen: Bool { !pendingOpens.isEmpty }
-
-    func resumePendingOpens() {
-        pendingOpens.forEach { $0.resume() }
-        pendingOpens.removeAll()
-    }
-    var moveShouldThrow = false
-    var fileUrls: [URL]?
-    private(set) var cloudUpdateHandler: (@MainActor () -> Void)?
-
-    init(notes: [NoteData]) {
-        self.notes = notes
-    }
-
-    @MainActor
-    func getFileUrls(directory: NoteDirectory) async -> [URL] {
-        guard directory == .inbox else { return [] }
-        return fileUrls ?? TestFile.allCases.map { $0.url }
-    }
-
-    @MainActor
-    func setCloudUpdateHandler(_ handler: @escaping @MainActor () -> Void) {
-        cloudUpdateHandler = handler
-    }
-
-    @MainActor
-    func open(fileUrl: URL) async throws -> NoteData {
-        if suspendOpens {
-            await withCheckedContinuation { pendingOpens.append($0) }
-        }
-        if failingUrls.contains(fileUrl) {
-            throw NoteRepositoryError.fileOpenFailed(path: fileUrl.path)
-        }
-        if fileUrl == Self.externalUrl {
-            return notes[0]
-        }
-        if fileUrl == Self.externalUrl2 {
-            return notes[1]
-        }
-        switch fileUrl.lastPathComponent {
-        case "file1":
-            return notes[0]
-        case "file2":
-            return notes[1]
-        case "file3":
-            return notes[2]
-        default:
-            fatalError()
-        }
-    }
-
-    var saveShouldSucceed = true
-    private(set) var saveCallCount = 0
-    func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void) {
-        saveCallCount += 1
-        completion(saveShouldSucceed)
-    }
-
-    func delete(fileUrl: URL) throws {}
-
-    func move(fileUrl: URL, to directory: NoteDirectory) throws -> URL {
-        if moveShouldThrow {
-            throw NoteRepositoryError.directoryNotAvailable
-        }
-        return fileUrl
-    }
-
-    func duplicate(_ note: NoteData, in directory: NoteDirectory,
-                   completion: @escaping (NoteData?) -> Void) {
-        completion(nil)
-    }
-}
-
-final class PreferenceRepositoryMock: PreferenceRepositoryProtocol {
-    var enablediCloud = false
-    var enabledAutoSave = true
-    var enabledInfiniteScroll = true
-    var listOrders: [String: ListOrder] = [:]
-    private(set) var setEnablediCloudCalls: [Bool] = []
-    private(set) var setEnabledAutoSaveCalls: [Bool] = []
-    private(set) var setEnabledInfiniteScrollCalls: [Bool] = []
-    private(set) var setListOrderCalls: [(directoryName: String, listOrder: ListOrder)] = []
-
-    func getEnablediCloud() -> Bool { enablediCloud }
-
-    func setEnablediCloud(_ value: Bool) {
-        enablediCloud = value
-        setEnablediCloudCalls.append(value)
-    }
-
-    func getEnabledAutoSave() -> Bool { enabledAutoSave }
-
-    func setEnabledAutoSave(_ value: Bool) {
-        enabledAutoSave = value
-        setEnabledAutoSaveCalls.append(value)
-    }
-
-    func getEnabledInfiniteScroll() -> Bool { enabledInfiniteScroll }
-
-    func setEnabledInfiniteScroll(_ value: Bool) {
-        enabledInfiniteScroll = value
-        setEnabledInfiniteScrollCalls.append(value)
-    }
-
-    func getListOrder(directoryName: String) -> ListOrder {
-        listOrders[directoryName] ?? ListOrder()
-    }
-
-    func setListOrder(directoryName: String, listOrder: ListOrder) {
-        listOrders[directoryName] = listOrder
-        setListOrderCalls.append((directoryName, listOrder))
+        #expect(noteStore.currentTags(for: staleSnapshot) == [tag])
     }
 }

@@ -13,8 +13,9 @@ import PencilKit
 @MainActor
 final class NoteStore {
     // MARK: - Primary data (Single Source of Truth)
-    private(set) var inboxNotes = [NoteData]()
-    private(set) var archivedNotes = [NoteData]()
+    private(set) var inboxIndex = [NoteIndexEntry]()
+    private(set) var archivedIndex = [NoteIndexEntry]()
+    private(set) var metadataByUrl = [URL: NoteMetadata]()
 
     // MARK: - Sort & filter settings (auto-persist on change)
     var inboxListOrder: ListOrder {
@@ -52,9 +53,13 @@ final class NoteStore {
     private let noteRepository: NoteRepositoryProtocol
     private let preferenceRepository: PreferenceRepositoryProtocol
 
-    // MARK: - Cache for incremental fetch
-    private var inboxCachedUrls: [URL] = []
-    private var archivedCachedUrls: [URL] = []
+    // Cell tasks, canvas taps, and filter hydration can request the same file
+    // at once; one UIDocument open serves all of them.
+    private var inFlightLoads: [URL: Task<NoteData?, Never>] = [:]
+
+    // Tag-filter hydration state, driven by NoteStore+Loading
+    var hydrationTasks: [NoteDirectory: Task<Void, Never>] = [:]
+    var hydratingDirectories: Set<NoteDirectory> = []
 
     init(noteRepository: NoteRepositoryProtocol = NoteRepository(),
          preferenceRepository: PreferenceRepositoryProtocol = PreferenceRepository()) {
@@ -65,23 +70,6 @@ final class NoteStore {
         noteRepository.setCloudUpdateHandler { [weak self] in
             guard let self else { return }
             Task { await self.applyCloudUpdate() }
-        }
-    }
-
-    // MARK: - Computed display notes (replaces dual-management)
-
-    var displayInboxNotes: [NoteData] {
-        reorderNotes(inboxNotes, listOrder: inboxListOrder)
-    }
-
-    var displayArchivedNotes: [NoteData] {
-        reorderNotes(archivedNotes, listOrder: archivedListOrder)
-    }
-
-    func displayNotes(for directory: NoteDirectory) -> [NoteData] {
-        switch directory {
-        case .inbox: displayInboxNotes
-        case .archived: displayArchivedNotes
         }
     }
 
@@ -97,251 +85,180 @@ final class NoteStore {
         case .inbox: inboxListOrder = listOrder
         case .archived: archivedListOrder = listOrder
         }
+        ensureMetadataForFilter(directory: directory)
     }
 
     // MARK: - Fetch
 
-    func incrementalFetch(directory: NoteDirectory, background: Bool = false) async {
+    func fetch(directory: NoteDirectory, background: Bool = false) async {
         defer { if !background { isLoading = false } }
         if !background { isLoading = true }
-        let (added, removed) = await fetchChangedFileUrls(directory: directory)
-        await updateNotes(addedUrls: added, removedUrls: removed, directory: directory, background: background)
+        let entries = await noteRepository.getFileAttributes(directory: directory).map {
+            NoteIndexEntry(fileURL: $0.fileURL,
+                           creationDate: $0.creationDate,
+                           contentModificationDate: $0.contentModificationDate)
+        }
+        // Wholesale assignment keeps overlapping fetches last-writer-wins; the
+        // equality guard avoids re-rendering (and re-running cell load tasks)
+        // when nothing changed.
+        switch directory {
+        case .inbox:
+            if entries != inboxIndex { inboxIndex = entries }
+        case .archived:
+            if entries != archivedIndex { archivedIndex = entries }
+        }
+        if !listOrder(for: directory).filterBy.isEmpty {
+            ensureMetadataForFilter(directory: directory)
+        }
     }
 
     /// Called when the iCloud metadata query reports remote changes,
     /// so the list follows sync progress without a manual reload.
     func applyCloudUpdate() async {
-        await incrementalFetch(directory: .inbox, background: true)
-        await incrementalFetch(directory: .archived, background: true)
+        await fetch(directory: .inbox, background: true)
+        await fetch(directory: .archived, background: true)
     }
 
-    func reload(directory: NoteDirectory) async {
-        switch directory {
-        case .inbox:
-            inboxNotes.removeAll()
-            inboxCachedUrls.removeAll()
-        case .archived:
-            archivedNotes.removeAll()
-            archivedCachedUrls.removeAll()
+    // MARK: - Lazy note loading
+
+    /// Opens one document, records its listing metadata, and hands the loaded
+    /// note to the caller to use and discard. The store never retains the drawing.
+    func loadNote(_ entry: NoteIndexEntry) async -> NoteData? {
+        if let inFlight = inFlightLoads[entry.fileURL] {
+            return await inFlight.value
         }
-        await incrementalFetch(directory: directory)
+        let load = Task { [noteRepository] in
+            try? await noteRepository.open(fileUrl: entry.fileURL)
+        }
+        inFlightLoads[entry.fileURL] = load
+        let note = await load.value
+        inFlightLoads[entry.fileURL] = nil
+        if let note {
+            metadataByUrl[entry.fileURL] = NoteMetadata(id: note.entity.id,
+                                                        tags: note.entity.tags,
+                                                        updatedDate: entry.updatedDate)
+        }
+        return note
     }
 
-    private func fetchChangedFileUrls(directory: NoteDirectory) async -> (addedUrls: [URL], removedUrls: [URL]) {
-        let latestUrls = await noteRepository.getFileUrls(directory: directory)
-        let cachedUrls = directory == .inbox ? inboxCachedUrls : archivedCachedUrls
-        let oldSet = Set(cachedUrls)
-        let latestSet = Set(latestUrls)
-        let added = latestSet.subtracting(oldSet)
-        let removed = oldSet.subtracting(latestSet)
-
-        switch directory {
-        case .inbox: inboxCachedUrls = latestUrls
-        case .archived: archivedCachedUrls = latestUrls
-        }
-
-        return (Array(added), Array(removed))
+    func validMetadata(for entry: NoteIndexEntry) -> NoteMetadata? {
+        guard let metadata = metadataByUrl[entry.fileURL],
+              metadata.updatedDate == entry.updatedDate else { return nil }
+        return metadata
     }
 
-    private func updateNotes(addedUrls: [URL], removedUrls: [URL],
-                             directory: NoteDirectory, background: Bool) async {
-        let (newNotes, failedUrls) = await withTaskGroup(
-            of: (url: URL, note: NoteData?).self
-        ) { group -> ([NoteData], [URL]) in
-            for url in addedUrls {
-                group.addTask {
-                    (url, try? await self.noteRepository.open(fileUrl: url))
-                }
-            }
+}
 
-            var notes: [NoteData] = []
-            var failed: [URL] = []
-            for await result in group {
-                if let note = result.note {
-                    notes.append(note)
-                } else {
-                    failed.append(result.url)
-                }
-            }
+// MARK: - Data operations
 
-            return (notes, failed)
-        }
-
-        switch directory {
-        case .inbox:
-            // Remove before appending: a migration rename arrives as
-            // added(.pop) + removed(.plist) for the same entity id, and the id
-            // filter below would drop the added copy while the old entry is
-            // still in the list.
-            removedUrls.forEach { url in
-                inboxNotes.removeAll { $0.fileURL == url }
-            }
-            // Filter re-appends: a cloud update and a user-initiated fetch can
-            // overlap across the awaited opens and resolve the same added URL
-            inboxNotes += newNotes.filter { note in !inboxNotes.contains { $0.id == note.id } }
-            // Drop failed URLs from the cache so the next fetch retries them
-            inboxCachedUrls.removeAll { failedUrls.contains($0) }
-        case .archived:
-            removedUrls.forEach { url in
-                archivedNotes.removeAll { $0.fileURL == url }
-            }
-            archivedNotes += newNotes.filter { note in !archivedNotes.contains { $0.id == note.id } }
-            archivedCachedUrls.removeAll { failedUrls.contains($0) }
-        }
-
-        // Background updates retry failed files on the next query update,
-        // so surfacing an alert for them would only interrupt the user.
-        if !failedUrls.isEmpty && !background {
-            alertType = .error(NoteStoreError.openFailed(count: failedUrls.count))
-            showAlert = true
-        }
-    }
-
-    // MARK: - Reorder helper
-
-    private func reorderNotes(_ notes: [NoteData], listOrder: ListOrder) -> [NoteData] {
-        var filtered = notes
-        listOrder.filterBy.forEach { filteringTag in
-            filtered = filtered.filter { $0.entity.tags.contains(filteringTag) }
-        }
-        switch listOrder.sortOrder {
-        case .ascending:
-            switch listOrder.sortBy {
-            case .updatedDate:
-                filtered.sort { $0.entity.updatedDate < $1.entity.updatedDate }
-            case .createdDate:
-                filtered.sort { $0.entity.createdDate < $1.entity.createdDate }
-            }
-        case .descending:
-            switch listOrder.sortBy {
-            case .updatedDate:
-                filtered.sort { $0.entity.updatedDate > $1.entity.updatedDate }
-            case .createdDate:
-                filtered.sort { $0.entity.createdDate > $1.entity.createdDate }
-            }
-        }
-        return filtered
-    }
-
-    // MARK: - Data operations
-
-    func duplicate(_ note: NoteData, in directory: NoteDirectory) {
-        noteRepository.duplicate(note, in: directory) { [weak self] newNote in
-            guard let self else { return }
-            guard let newNote else {
-                self.alertType = .error(NoteStoreError.saveFailed)
-                self.showAlert = true
+extension NoteStore {
+    func duplicate(_ entry: NoteIndexEntry, in directory: NoteDirectory) {
+        Task {
+            guard let note = await loadNote(entry) else {
+                presentOpenFailedAlert()
                 return
             }
-            switch directory {
-            case .inbox:
-                self.inboxCachedUrls.append(newNote.fileURL)
-                self.inboxNotes.append(newNote)
-            case .archived:
-                self.archivedCachedUrls.append(newNote.fileURL)
-                self.archivedNotes.append(newNote)
+            noteRepository.duplicate(note, in: directory) { [weak self] newNote in
+                guard let self else { return }
+                guard let newNote else {
+                    self.alertType = .error(NoteStoreError.saveFailed)
+                    self.showAlert = true
+                    return
+                }
+                self.applySaved(newNote)
             }
         }
     }
 
-    func delete(_ note: NoteData) {
+    func delete(_ entry: NoteIndexEntry) {
         do {
-            try noteRepository.delete(fileUrl: note.fileURL)
-            removeNoteFromArrays(note)
+            try noteRepository.delete(fileUrl: entry.fileURL)
+            inboxIndex.removeAll { $0.fileURL == entry.fileURL }
+            archivedIndex.removeAll { $0.fileURL == entry.fileURL }
+            metadataByUrl[entry.fileURL] = nil
         } catch {
             alertType = .error(NoteStoreError.deleteFailed)
             showAlert = true
         }
     }
 
-    func archive(_ note: NoteData) {
-        do {
-            let newUrl = try noteRepository.move(fileUrl: note.fileURL, to: .archived)
-            inboxCachedUrls.removeAll { $0 == note.fileURL }
-            inboxNotes.removeAll { $0.id == note.id }
-            archivedCachedUrls.append(newUrl)
-            archivedNotes.append(NoteData(entity: note.entity, fileURL: newUrl))
-        } catch {
-            print("Could not archive: ", error.localizedDescription)
-        }
+    func archive(_ entry: NoteIndexEntry) {
+        moveEntry(entry, to: .archived)
     }
 
-    func unarchive(_ note: NoteData) {
+    func unarchive(_ entry: NoteIndexEntry) {
+        moveEntry(entry, to: .inbox)
+    }
+
+    private func moveEntry(_ entry: NoteIndexEntry, to directory: NoteDirectory) {
         do {
-            let newUrl = try noteRepository.move(fileUrl: note.fileURL, to: .inbox)
-            archivedCachedUrls.removeAll { $0 == note.fileURL }
-            archivedNotes.removeAll { $0.id == note.id }
-            inboxCachedUrls.append(newUrl)
-            inboxNotes.append(NoteData(entity: note.entity, fileURL: newUrl))
+            let newUrl = try noteRepository.move(fileUrl: entry.fileURL, to: directory)
+            inboxIndex.removeAll { $0.fileURL == entry.fileURL }
+            archivedIndex.removeAll { $0.fileURL == entry.fileURL }
+            switch directory {
+            case .inbox: upsertEntry(entry.moved(to: newUrl), into: &inboxIndex)
+            case .archived: upsertEntry(entry.moved(to: newUrl), into: &archivedIndex)
+            }
+            rekeyMetadata(from: entry.fileURL, to: newUrl)
         } catch {
-            print("Could not unarchive: ", error.localizedDescription)
+            print("Could not move note: ", error.localizedDescription)
         }
     }
 
     func allArchive() {
-        let notes = inboxNotes
-        notes.forEach { archive($0) }
+        let entries = inboxIndex
+        entries.forEach { archive($0) }
     }
 
     func allUnarchive() {
-        let notes = archivedNotes
-        notes.forEach { unarchive($0) }
+        let entries = archivedIndex
+        entries.forEach { unarchive($0) }
     }
 
-    // MARK: - Tag operations on notes
+    // MARK: - Tag operations
 
     func addTag(_ tag: TagEntity, to note: NoteData) {
-        guard let current = self.note(id: note.id) else { return }
-        var updated = current
-        updated.entity.tags.append(tag)
-        replace(updated)
-        noteRepository.save(updated.entity, to: updated.fileURL) { [weak self] success in
-            guard let self else { return }
-            if !success {
-                self.replace(current)
-                self.alertType = .error(NoteStoreError.saveFailed)
-                self.showAlert = true
-            }
-        }
+        updateTags(of: note) { $0 + [tag] }
     }
 
     func removeTag(_ tag: TagEntity, from note: NoteData) {
-        guard let current = self.note(id: note.id) else { return }
-        var updated = current
-        updated.entity.tags.removeAll { $0 == tag }
-        replace(updated)
+        updateTags(of: note) { tags in tags.filter { $0 != tag } }
+    }
+
+    /// The caller's snapshot may predate tag edits made elsewhere; the
+    /// metadata cache holds the latest known tags for the file.
+    func currentTags(for note: NoteData) -> [TagEntity] {
+        metadataByUrl[note.fileURL]?.tags ?? note.entity.tags
+    }
+
+    private func updateTags(of note: NoteData, _ transform: ([TagEntity]) -> [TagEntity]) {
+        let previous = metadataByUrl[note.fileURL]
+        var updated = note
+        updated.entity.tags = transform(currentTags(for: note))
+        // Optimistic cache update so the tag sheet and list rows reflect
+        // the change before the save lands; rolled back on failure.
+        metadataByUrl[note.fileURL] = NoteMetadata(
+            id: previous?.id ?? note.entity.id,
+            tags: updated.entity.tags,
+            updatedDate: previous?.updatedDate ?? entry(for: note.fileURL)?.updatedDate ?? note.entity.updatedDate
+        )
         noteRepository.save(updated.entity, to: updated.fileURL) { [weak self] success in
             guard let self else { return }
-            if !success {
-                self.replace(current)
+            if success {
+                self.applySaved(updated)
+            } else {
+                self.metadataByUrl[note.fileURL] = previous
                 self.alertType = .error(NoteStoreError.saveFailed)
                 self.showAlert = true
             }
         }
     }
 
-    // MARK: - Note lookup & write-back
+}
 
-    func note(id: UUID) -> NoteData? {
-        inboxNotes.first { $0.id == id } ?? archivedNotes.first { $0.id == id }
-    }
+// MARK: - Canvas presentation & external open
 
-    func upsert(_ note: NoteData) {
-        if self.note(id: note.id) != nil {
-            replace(note)
-        } else if note.isArchived {
-            archivedCachedUrls.append(note.fileURL)
-            archivedNotes.append(note)
-        } else if note.isInInbox {
-            inboxCachedUrls.append(note.fileURL)
-            inboxNotes.append(note)
-        }
-        // Notes outside both directories (opened in place from the Files app)
-        // are edited at their own URL and never listed
-    }
-
-    // MARK: - Canvas presentation
-
+extension NoteStore {
     func openNewNote() {
         guard let url = FilePath.inboxUrl?.appendingPathComponent(FilePath.fileName) else { return }
         openedNote = NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: url)
@@ -400,66 +317,73 @@ final class NoteStore {
         securityScopedUrl?.stopAccessingSecurityScopedResource()
         securityScopedUrl = nil
     }
+}
 
-    // MARK: - Canvas support
+// MARK: - Canvas support & index write-back
 
+extension NoteStore {
     var canRequestReview: Bool {
-        inboxNotes.count >= 5
+        inboxIndex.count >= 5
     }
 
     func save(drawing: PKDrawing, to note: NoteData, completion: @escaping (NoteData?) -> Void) {
-        // Base on the store's copy, not the caller's snapshot: the caller may hold a
-        // stale note while an earlier save is in flight
-        let current = self.note(id: note.id) ?? note
-        guard drawing != current.entity.drawing else {
-            completion(current)
+        var payload = note
+        // Tags edited from the list while the canvas held this snapshot live
+        // in the metadata cache, not in the snapshot
+        payload.entity.tags = currentTags(for: note)
+        guard drawing != payload.entity.drawing else {
+            completion(payload)
             return
         }
-        var updated = current
-        updated.entity.drawing = drawing
-        updated.entity.updatedDate = Date()
-        noteRepository.save(updated.entity, to: updated.fileURL) { [weak self] success in
+        payload.entity.drawing = drawing
+        payload.entity.updatedDate = Date()
+        noteRepository.save(payload.entity, to: payload.fileURL) { [weak self] success in
             if success {
-                self?.upsert(updated)
-                completion(updated)
+                self?.applySaved(payload)
+                completion(payload)
             } else {
                 completion(nil)
             }
         }
     }
 
+    /// Refreshes the index entry and metadata for a note just written to disk.
+    /// Dates are read back from the file so the entry matches what the next
+    /// enumeration reports; a mismatch would invalidate the thumbnail and
+    /// force one extra document open per saved note.
+    func applySaved(_ note: NoteData) {
+        let attributes = noteRepository.fileAttributes(at: note.fileURL)
+        let entry = NoteIndexEntry(fileURL: note.fileURL,
+                                   creationDate: attributes?.creationDate ?? note.entity.createdDate,
+                                   contentModificationDate: attributes?.contentModificationDate ?? note.entity.updatedDate)
+        metadataByUrl[note.fileURL] = NoteMetadata(id: note.entity.id,
+                                                   tags: note.entity.tags,
+                                                   updatedDate: entry.updatedDate)
+        if note.isArchived {
+            upsertEntry(entry, into: &archivedIndex)
+        } else if note.isInInbox {
+            upsertEntry(entry, into: &inboxIndex)
+        }
+        // Notes outside both directories (opened in place from the Files app)
+        // are edited at their own URL and never listed
+    }
+
     // MARK: - Private helpers
 
-    private func replace(_ note: NoteData) {
-        if let idx = inboxNotes.firstIndex(where: { $0.id == note.id }) {
-            inboxNotes[idx] = note
-        }
-        if let idx = archivedNotes.firstIndex(where: { $0.id == note.id }) {
-            archivedNotes[idx] = note
+    private func upsertEntry(_ entry: NoteIndexEntry, into index: inout [NoteIndexEntry]) {
+        if let existing = index.firstIndex(where: { $0.fileURL == entry.fileURL }) {
+            index[existing] = entry
+        } else {
+            index.append(entry)
         }
     }
 
-    private func removeNoteFromArrays(_ note: NoteData) {
-        inboxCachedUrls.removeAll { $0 == note.fileURL }
-        archivedCachedUrls.removeAll { $0 == note.fileURL }
-        inboxNotes.removeAll { $0.id == note.id }
-        archivedNotes.removeAll { $0.id == note.id }
+    private func rekeyMetadata(from oldUrl: URL, to newUrl: URL) {
+        guard oldUrl != newUrl else { return }
+        metadataByUrl[newUrl] = metadataByUrl.removeValue(forKey: oldUrl)
     }
-}
 
-enum NoteStoreError: LocalizedError {
-    case openFailed(count: Int)
-    case saveFailed
-    case deleteFailed
-
-    var errorDescription: String? {
-        switch self {
-        case .openFailed(let count):
-            "Failed to load \(count) note(s). The files may be corrupted or not downloaded yet."
-        case .saveFailed:
-            "Failed to save the note."
-        case .deleteFailed:
-            "Failed to delete the note."
-        }
+    private func entry(for fileUrl: URL) -> NoteIndexEntry? {
+        inboxIndex.first { $0.fileURL == fileUrl } ?? archivedIndex.first { $0.fileURL == fileUrl }
     }
 }

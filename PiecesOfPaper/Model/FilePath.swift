@@ -50,10 +50,21 @@ enum FilePath {
     static let noteFileExtension = "pop"
     static let legacyNoteFileExtension = "plist"
 
-    static var fileName: String {
+    // Shared by generation and parsing so historical filenames written with the
+    // device's default locale/calendar stay parseable by the same configuration.
+    private static let fileNameTimestampFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ssSSSS"
-        return dateFormatter.string(from: Date()) + "." + noteFileExtension
+        return dateFormatter
+    }()
+
+    static var fileName: String {
+        fileNameTimestampFormatter.string(from: Date()) + "." + noteFileExtension
+    }
+
+    static func parseTimestamp(fromFileName name: String) -> Date? {
+        let stem = (name as NSString).deletingPathExtension
+        return fileNameTimestampFormatter.date(from: stem)
     }
 
     static var tagListFileUrl: URL? {

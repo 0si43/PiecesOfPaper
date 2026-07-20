@@ -34,8 +34,8 @@ struct NoteData: Identifiable, Equatable {
 }
 
 extension NoteData {
-    static func createTestData() -> NoteData {
-        guard let url = FilePath.inboxUrl?
+    static func createTestData(fileURL: URL? = nil) -> NoteData {
+        guard let url = fileURL ?? FilePath.inboxUrl?
             .appendingPathComponent("test-\(UUID().uuidString).pop") else {
             fatalError()
         }
