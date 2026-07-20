@@ -294,6 +294,31 @@ struct NoteStoreTests {
         #expect(noteStore.openedNote == notes[0])
     }
 
+    @Test func test_handleIncomingURL_secondRapidOpenWins() async {
+        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl)
+        let firstTask = noteStore.externalOpenTask
+        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl2)
+        await firstTask?.value
+        await noteStore.externalOpenTask?.value
+        #expect(noteStore.openedNote == notes[1])
+        #expect(!noteStore.isHandlingExternalOpen)
+    }
+
+    @Test func test_openExternalNote_keepsNoteTheUserOpenedDuringSlowOpen() async {
+        repositoryMock.suspendOpens = true
+        noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl)
+        while !repositoryMock.hasPendingOpen { await Task.yield() }
+
+        let userNote = NoteData.createTestData()
+        noteStore.openedNote = userNote
+        repositoryMock.suspendOpens = false
+        repositoryMock.resumePendingOpens()
+        await noteStore.externalOpenTask?.value
+
+        #expect(noteStore.openedNote == userNote)
+        #expect(!noteStore.isHandlingExternalOpen)
+    }
+
     @Test func test_openBlankNoteIfIdle_skipsWhileHandlingExternalOpen() async {
         noteStore.handleIncomingURL(NoteRepositoryMock.externalUrl)
         noteStore.openBlankNoteIfIdle()
@@ -331,12 +356,21 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         // swiftlint:enable force_unwrapping
     }
 
-    // Outside TestFile: getFileUrls returns TestFile.allCases, and this URL
+    // Outside TestFile: getFileUrls returns TestFile.allCases, and these URLs
     // must never appear in a directory listing
     static let externalUrl = URL(fileURLWithPath: "/external/file1.pop")
+    static let externalUrl2 = URL(fileURLWithPath: "/external/file2.pop")
 
     var notes: [NoteData]
     var failingUrls: Set<URL> = []
+    var suspendOpens = false
+    private var pendingOpens: [CheckedContinuation<Void, Never>] = []
+    var hasPendingOpen: Bool { !pendingOpens.isEmpty }
+
+    func resumePendingOpens() {
+        pendingOpens.forEach { $0.resume() }
+        pendingOpens.removeAll()
+    }
     var moveShouldThrow = false
     var fileUrls: [URL]?
     private(set) var cloudUpdateHandler: (@MainActor () -> Void)?
@@ -358,11 +392,17 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
 
     @MainActor
     func open(fileUrl: URL) async throws -> NoteData {
+        if suspendOpens {
+            await withCheckedContinuation { pendingOpens.append($0) }
+        }
         if failingUrls.contains(fileUrl) {
             throw NoteRepositoryError.fileOpenFailed(path: fileUrl.path)
         }
         if fileUrl == Self.externalUrl {
             return notes[0]
+        }
+        if fileUrl == Self.externalUrl2 {
+            return notes[1]
         }
         switch fileUrl.lastPathComponent {
         case "file1":

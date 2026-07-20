@@ -355,31 +355,46 @@ final class NoteStore {
     /// await so a later-arriving scenePhase .active cannot race in a blank canvas
     func handleIncomingURL(_ url: URL) {
         guard url.pathExtension == FilePath.noteFileExtension else { return }
+        externalOpenTask?.cancel()
         isHandlingExternalOpen = true
         externalOpenTask = Task { await openExternalNote(url: url) }
     }
 
     func openExternalNote(url: URL) async {
-        defer { isHandlingExternalOpen = false }
+        // A cancelled task no longer owns the flag — the newer external open does
+        defer { if !Task.isCancelled { isHandlingExternalOpen = false } }
         guard openedNote?.fileURL != url else { return }
-        releaseSecurityScope()
+        let noteBeforeOpen = openedNote
         // false means the URL is not security-scoped (the app's own container),
         // so reading can proceed without holding a scope
-        if url.startAccessingSecurityScopedResource() {
-            securityScopedUrl = url
-        }
+        let scopedUrl: URL? = url.startAccessingSecurityScopedResource() ? url : nil
         do {
-            openedNote = try await noteRepository.open(fileUrl: url)
-        } catch {
+            let note = try await noteRepository.open(fileUrl: url)
+            // Discard a superseded result: a newer external open cancelled this
+            // task, or the user opened another note while the open was awaiting
+            // a potentially long iCloud download
+            guard !Task.isCancelled, openedNote?.id == noteBeforeOpen?.id else {
+                scopedUrl?.stopAccessingSecurityScopedResource()
+                return
+            }
+            // Swap scopes only after a successful open: releasing earlier would
+            // break autosave of the still-presented previous note on failure
             releaseSecurityScope()
+            securityScopedUrl = scopedUrl
+            openedNote = note
+        } catch {
+            scopedUrl?.stopAccessingSecurityScopedResource()
+            guard !Task.isCancelled else { return }
             alertType = .error(NoteStoreError.openFailed(count: 1))
             showAlert = true
         }
     }
 
-    /// The scope is held while the note is open: autosave writes back to the
-    /// scoped URL for the whole canvas lifetime
-    func releaseSecurityScope() {
+    /// Held while the note is open (autosave writes back to the scoped URL) and
+    /// released only when the next external open succeeds. Dismissal keeps it:
+    /// releasing there would race the final in-flight autosave, whose sandboxed
+    /// write the revoked scope would deny
+    private func releaseSecurityScope() {
         securityScopedUrl?.stopAccessingSecurityScopedResource()
         securityScopedUrl = nil
     }

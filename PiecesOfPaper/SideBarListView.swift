@@ -53,8 +53,7 @@ struct SideBarListView: View {
         }
         // Inside the .environment chain: cover content only inherits values
         // injected outside its attachment point
-        .fullScreenCover(item: $noteStore.openedNote,
-                         onDismiss: { noteStore.releaseSecurityScope() }) { note in
+        .fullScreenCover(item: $noteStore.openedNote) { note in
             NavigationStack {
                 CanvasView(note: note)
             }
