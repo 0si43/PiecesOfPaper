@@ -11,9 +11,32 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - name: Wait for simulator device list
+        run: |
+          for i in $(seq 1 12); do
+            if xcrun simctl list devices available | grep -q "iPhone 16"; then
+              break
+            fi
+            echo "Simulator device list not ready yet (attempt $i)"
+            sleep 10
+          done
+          xcrun simctl list devices available
       - name: Run tests
         run: |
-          xcodebuild -project PiecesOfPaper.xcodeproj \
-            -scheme PiecesOfPaper \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
-            test
+          set -o pipefail
+          for attempt in 1 2 3; do
+            if xcodebuild -project PiecesOfPaper.xcodeproj \
+              -scheme PiecesOfPaper \
+              -destination 'platform=iOS Simulator,name=iPhone 16' \
+              test 2>&1 | tee "xcodebuild-attempt-$attempt.log"; then
+              exit 0
+            fi
+            if ! grep -q "Unable to find a device matching the provided destination specifier" \
+              "xcodebuild-attempt-$attempt.log"; then
+              exit 1
+            fi
+            echo "Destination resolution flake detected (attempt $attempt); retrying..."
+            xcrun simctl list devices available
+            sleep 30
+          done
+          exit 1
