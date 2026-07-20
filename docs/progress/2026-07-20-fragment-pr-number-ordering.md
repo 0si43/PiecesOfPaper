@@ -1,0 +1,2 @@
+- [x] Document fragment PR-number ordering in docs/progress/README.md (issue #214, PR #215)
+  - Push code commits first, create the PR, then commit the fragment with the number from the `gh pr create` output URL
