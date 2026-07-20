@@ -28,8 +28,14 @@ struct NoteListParentView: View {
                 ProgressView()
             } else {
                 if noteStore.displayEntries(for: directory).isEmpty {
-                    Text("No Data")
-                        .font(.largeTitle)
+                    // While a tag filter hydrates, nothing may match yet;
+                    // "No Data" would be premature
+                    if noteStore.isFilterHydrating(for: directory) {
+                        ProgressView()
+                    } else {
+                        Text("No Data")
+                            .font(.largeTitle)
+                    }
                 } else {
                     NoteScrollView(directory: directory)
                 }

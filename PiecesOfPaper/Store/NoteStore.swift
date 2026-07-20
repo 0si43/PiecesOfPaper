@@ -49,6 +49,10 @@ final class NoteStore {
     // at once; one UIDocument open serves all of them.
     private var inFlightLoads: [URL: Task<NoteData?, Never>] = [:]
 
+    // Tag-filter hydration state, driven by NoteStore+Loading
+    var hydrationTasks: [NoteDirectory: Task<Void, Never>] = [:]
+    var hydratingDirectories: Set<NoteDirectory> = []
+
     init(noteRepository: NoteRepositoryProtocol = NoteRepository(),
          preferenceRepository: PreferenceRepositoryProtocol = PreferenceRepository()) {
         self.noteRepository = noteRepository
@@ -90,6 +94,7 @@ final class NoteStore {
         case .inbox: inboxListOrder = listOrder
         case .archived: archivedListOrder = listOrder
         }
+        ensureMetadataForFilter(directory: directory)
     }
 
     // MARK: - Fetch
@@ -110,6 +115,9 @@ final class NoteStore {
             if entries != inboxIndex { inboxIndex = entries }
         case .archived:
             if entries != archivedIndex { archivedIndex = entries }
+        }
+        if !listOrder(for: directory).filterBy.isEmpty {
+            ensureMetadataForFilter(directory: directory)
         }
     }
 
@@ -146,36 +154,6 @@ final class NoteStore {
         guard let metadata = metadataByUrl[entry.fileURL],
               metadata.updatedDate == entry.updatedDate else { return nil }
         return metadata
-    }
-
-    /// Tags for a list row; empty until the row's document has been opened.
-    func tags(for entry: NoteIndexEntry) -> [TagEntity] {
-        validMetadata(for: entry)?.tags ?? []
-    }
-
-    func requestShare(_ entry: NoteIndexEntry) {
-        Task {
-            if let note = await loadNote(entry) {
-                noteToShare = note
-            } else {
-                presentOpenFailedAlert()
-            }
-        }
-    }
-
-    func requestTag(_ entry: NoteIndexEntry) {
-        Task {
-            if let note = await loadNote(entry) {
-                noteToTag = note
-            } else {
-                presentOpenFailedAlert()
-            }
-        }
-    }
-
-    func presentOpenFailedAlert() {
-        alertType = .error(NoteStoreError.openFailed(count: 1))
-        showAlert = true
     }
 
     // MARK: - Reorder helper
