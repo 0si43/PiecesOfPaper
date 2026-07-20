@@ -1,0 +1,5 @@
+- [x] Open the tapped note on the canvas when a `.pop` file is opened from the Files app (issue #198, PR #208)
+  - Canvas presentation unified onto a single `fullScreenCover(item: NoteStore.openedNote)` at `SideBarListView`; new note, thumbnail tap, and external open all present by assigning `openedNote`, which removes the onOpenURL vs scenePhase race by construction
+  - Security scope for out-of-container URLs is held by the store while the note is open (autosave writes back to the scoped URL) and released on dismissal
+  - Foreign files (outside Inbox/Archived) open in place and are never inserted into the note lists
+  - Bug fix found by the new tests: `NoteRepository.open` hung forever on unreadable files because `close()` after a failed `open()` never fires its completion handler
