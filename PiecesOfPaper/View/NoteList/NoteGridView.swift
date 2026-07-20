@@ -1,29 +1,33 @@
 import SwiftUI
 
-struct NoteListView: View {
+struct NoteGridView: View {
     let directory: NoteDirectory
     @Environment(NoteStore.self) private var noteStore
     @Environment(TagStore.self) private var tagStore
     private let gridItem = GridItem(.adaptive(minimum: 250), spacing: 50.0)
 
     var body: some View {
-        LazyVGrid(columns: [gridItem]) {
-            ForEach(noteStore.displayEntries(for: directory)) { entry in
-                VStack {
-                    NoteView(entry: entry)
-                    .contextMenu {
-                        contextMenu(entry: entry)
-                    }
-                    NoteListTagHStack(
-                        tags: tagStore.tagsMatching(noteStore.tags(for: entry)),
-                        action: {
-                            noteStore.requestTag(entry)
+        ScrollView {
+            Spacer(minLength: 30.0)
+            LazyVGrid(columns: [gridItem]) {
+                ForEach(noteStore.displayEntries(for: directory)) { entry in
+                    VStack {
+                        NoteThumbnailView(entry: entry)
+                        .contextMenu {
+                            contextMenu(entry: entry)
                         }
-                    )
-                        .padding(.horizontal)
+                        NoteListTagHStack(
+                            tags: tagStore.tagsMatching(noteStore.tags(for: entry)),
+                            action: {
+                                noteStore.requestTag(entry)
+                            }
+                        )
+                            .padding(.horizontal)
+                    }
                 }
             }
         }
+        .padding([.leading, .trailing])
     }
 
     func contextMenu(entry: NoteIndexEntry) -> some View {

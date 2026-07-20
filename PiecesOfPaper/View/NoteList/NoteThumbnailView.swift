@@ -1,7 +1,7 @@
 import SwiftUI
 import PencilKit
 
-struct NoteView: View {
+struct NoteThumbnailView: View {
     let entry: NoteIndexEntry
     @Environment(NoteStore.self) private var noteStore
     @State private var thumbnail: UIImage?
@@ -62,8 +62,8 @@ struct NoteView: View {
 }
 
 #Preview {
-    NoteView(entry: NoteIndexEntry(fileURL: URL(fileURLWithPath: "/preview/2026-01-01-00-00-000000.pop"),
-                                   creationDate: nil,
-                                   contentModificationDate: nil))
+    NoteThumbnailView(entry: NoteIndexEntry(fileURL: URL(fileURLWithPath: "/preview/2026-01-01-00-00-000000.pop"),
+                                            creationDate: nil,
+                                            contentModificationDate: nil))
         .environment(NoteStore())
 }

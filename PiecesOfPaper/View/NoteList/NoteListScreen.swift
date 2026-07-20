@@ -1,7 +1,7 @@
 import SwiftUI
 import PencilKit
 
-struct NoteListParentView: View {
+struct NoteListScreen: View {
     let directory: NoteDirectory
     @Environment(NoteStore.self) private var noteStore
     @Environment(PreferenceStore.self) private var preferenceStore
@@ -29,10 +29,11 @@ struct NoteListParentView: View {
                             .font(.largeTitle)
                     }
                 } else {
-                    NoteScrollView(directory: directory)
+                    NoteGridView(directory: directory)
                 }
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
         .task {
             guard !preferenceStore.shouldGrantiCloud else {
                 noteStore.alertType = .iCloudDenied
@@ -145,19 +146,6 @@ struct NoteListParentView: View {
                 Image(systemName: "square.and.pencil")
             }
             .accessibilityLabel("New Note")
-        }
-    }
-
-    private struct NoteScrollView: View {
-        let directory: NoteDirectory
-
-        var body: some View {
-            ScrollView {
-                Spacer(minLength: 30.0)
-                NoteListView(directory: directory)
-            }
-            .padding([.leading, .trailing])
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 

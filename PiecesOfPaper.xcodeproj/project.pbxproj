@@ -21,12 +21,12 @@
 		A6484FCE272B923B00676ED8 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FCD272B923B00676ED8 /* CanvasView.swift */; };
 		A6484FD2272BB5CA00676ED8 /* PKCanvasViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */; };
 		A6484FD4272CF10800676ED8 /* UIActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */; };
-		A6484FD6272E63B000676ED8 /* NoteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD5272E63B000676ED8 /* NoteListView.swift */; };
-		A64AE9F22759A963002C66F7 /* NoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F12759A963002C66F7 /* NoteView.swift */; };
+		A6484FD6272E63B000676ED8 /* NoteGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6484FD5272E63B000676ED8 /* NoteGridView.swift */; };
+		A64AE9F22759A963002C66F7 /* NoteThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F12759A963002C66F7 /* NoteThumbnailView.swift */; };
 		A7000000000000000000001A /* ThumbnailCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000000A /* ThumbnailCache.swift */; };
 		A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64AE9F3275B203A002C66F7 /* NoteEntity.swift */; };
 		A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E2D274C6E8E00C708A2 /* SideBarListView.swift */; };
-		A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */; };
+		A6620E36274C7A3D00C708A2 /* NoteListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E35274C7A3D00C708A2 /* NoteListScreen.swift */; };
 		A6620E3A274C8FA400C708A2 /* NoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E39274C8FA400C708A2 /* NoteDocument.swift */; };
 		A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6620E3B274CD88000C708A2 /* FilePath.swift */; };
 		A70000000000000000000052 /* LegacyNoteMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000078 /* LegacyNoteMigrator.swift */; };
@@ -126,12 +126,12 @@
 		A6484FCD272B923B00676ED8 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		A6484FD1272BB5CA00676ED8 /* PKCanvasViewWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKCanvasViewWrapper.swift; sourceTree = "<group>"; };
 		A6484FD3272CF10800676ED8 /* UIActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
-		A6484FD5272E63B000676ED8 /* NoteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteListView.swift; sourceTree = "<group>"; };
-		A64AE9F12759A963002C66F7 /* NoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteView.swift; sourceTree = "<group>"; };
+		A6484FD5272E63B000676ED8 /* NoteGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteGridView.swift; sourceTree = "<group>"; };
+		A64AE9F12759A963002C66F7 /* NoteThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteThumbnailView.swift; sourceTree = "<group>"; };
 		A7000000000000000000000A /* ThumbnailCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCache.swift; sourceTree = "<group>"; };
 		A64AE9F3275B203A002C66F7 /* NoteEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEntity.swift; sourceTree = "<group>"; };
 		A6620E2D274C6E8E00C708A2 /* SideBarListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarListView.swift; sourceTree = "<group>"; };
-		A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteListParentView.swift; sourceTree = "<group>"; };
+		A6620E35274C7A3D00C708A2 /* NoteListScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteListScreen.swift; sourceTree = "<group>"; };
 		A6620E39274C8FA400C708A2 /* NoteDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocument.swift; sourceTree = "<group>"; };
 		A6620E3B274CD88000C708A2 /* FilePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePath.swift; sourceTree = "<group>"; };
 		A70000000000000000000078 /* LegacyNoteMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyNoteMigrator.swift; sourceTree = "<group>"; };
@@ -255,9 +255,9 @@
 		A6743E692765B8410075F138 /* NoteList */ = {
 			isa = PBXGroup;
 			children = (
-				A6620E35274C7A3D00C708A2 /* NoteListParentView.swift */,
-				A6484FD5272E63B000676ED8 /* NoteListView.swift */,
-				A64AE9F12759A963002C66F7 /* NoteView.swift */,
+				A6620E35274C7A3D00C708A2 /* NoteListScreen.swift */,
+				A6484FD5272E63B000676ED8 /* NoteGridView.swift */,
+				A64AE9F12759A963002C66F7 /* NoteThumbnailView.swift */,
 				A7000000000000000000000A /* ThumbnailCache.swift */,
 				A63C9594276447BD00822461 /* ListOrderSettingView.swift */,
 			);
@@ -620,7 +620,7 @@
 				A6484FCE272B923B00676ED8 /* CanvasView.swift in Sources */,
 				A63C9586275DB86600822461 /* AddTagView.swift in Sources */,
 				A63C959B2765A5D500822461 /* NoteInformationView.swift in Sources */,
-				A64AE9F22759A963002C66F7 /* NoteView.swift in Sources */,
+				A64AE9F22759A963002C66F7 /* NoteThumbnailView.swift in Sources */,
 				A7000000000000000000001A /* ThumbnailCache.swift in Sources */,
 				A6620E3C274CD88000C708A2 /* FilePath.swift in Sources */,
 				A70000000000000000000052 /* LegacyNoteMigrator.swift in Sources */,
@@ -640,11 +640,11 @@
 				A63C9582275D1C2E00822461 /* TagHStack.swift in Sources */,
 				A63C9595276447BD00822461 /* ListOrderSettingView.swift in Sources */,
 				A6620E2E274C6E8E00C708A2 /* SideBarListView.swift in Sources */,
-				A6484FD6272E63B000676ED8 /* NoteListView.swift in Sources */,
+				A6484FD6272E63B000676ED8 /* NoteGridView.swift in Sources */,
 				A70000000000000000000041 /* NoteData.swift in Sources */,
 				A70000000000000000000083 /* NoteIndexEntry.swift in Sources */,
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,
-				A6620E36274C7A3D00C708A2 /* NoteListParentView.swift in Sources */,
+				A6620E36274C7A3D00C708A2 /* NoteListScreen.swift in Sources */,
 				A70000000000000000000011 /* NoteRepository.swift in Sources */,
 				A70000000000000000000061 /* CloudNoteMonitor.swift in Sources */,
 				A7000000000000000000007F /* TagListCloudMonitor.swift in Sources */,

@@ -30,9 +30,9 @@ struct SideBarListView: View {
         } detail: {
             switch selection {
             case .inbox:
-                NoteListParentView(directory: .inbox)
+                NoteListScreen(directory: .inbox)
             case .trash:
-                NoteListParentView(directory: .archived)
+                NoteListScreen(directory: .archived)
             case .tag:
                 TagList()
             case .tutorial:

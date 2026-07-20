@@ -29,7 +29,7 @@ final class NoteStore {
     private(set) var isHandlingExternalOpen = false
     private(set) var externalOpenTask: Task<Void, Never>?
     private var securityScopedUrl: URL?
-    /// Separate from showAlert: external opens can fail while NoteListParentView
+    /// Separate from showAlert: external opens can fail while NoteListScreen
     /// (the showAlert host) is unmounted, so SideBarListView presents this one
     var showExternalOpenAlert = false
     var showAlert = false
