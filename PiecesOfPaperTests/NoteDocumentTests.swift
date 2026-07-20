@@ -61,3 +61,67 @@ struct NoteDocumentTests {
         }
     }
 }
+
+struct NoteConflictResolverTests {
+    private let base = Date(timeIntervalSinceReferenceDate: 1_000)
+
+    @Test func currentNewest_returnsNil() {
+        let index = NoteConflictResolver.newestVersionIndex(
+            currentModificationDate: base,
+            conflictModificationDates: [base.addingTimeInterval(-10), base.addingTimeInterval(-20)]
+        )
+        #expect(index == nil)
+    }
+
+    @Test func conflictNewest_returnsItsIndex() {
+        let index = NoteConflictResolver.newestVersionIndex(
+            currentModificationDate: base,
+            conflictModificationDates: [base.addingTimeInterval(-10), base.addingTimeInterval(10)]
+        )
+        #expect(index == 1)
+    }
+
+    @Test func newestAmongMultipleConflicts_wins() {
+        let index = NoteConflictResolver.newestVersionIndex(
+            currentModificationDate: base,
+            conflictModificationDates: [
+                base.addingTimeInterval(30),
+                base.addingTimeInterval(50),
+                base.addingTimeInterval(40)
+            ]
+        )
+        #expect(index == 1)
+    }
+
+    @Test func tieWithCurrent_favorsCurrent() {
+        let index = NoteConflictResolver.newestVersionIndex(
+            currentModificationDate: base,
+            conflictModificationDates: [base]
+        )
+        #expect(index == nil)
+    }
+
+    @Test func nilCurrentDate_losesToDatedConflict() {
+        let index = NoteConflictResolver.newestVersionIndex(
+            currentModificationDate: nil,
+            conflictModificationDates: [base]
+        )
+        #expect(index == 0)
+    }
+
+    @Test func nilConflictDates_loseToDatedCurrent() {
+        let index = NoteConflictResolver.newestVersionIndex(
+            currentModificationDate: base,
+            conflictModificationDates: [nil, nil]
+        )
+        #expect(index == nil)
+    }
+
+    @Test func emptyConflictList_returnsNil() {
+        let index = NoteConflictResolver.newestVersionIndex(
+            currentModificationDate: base,
+            conflictModificationDates: []
+        )
+        #expect(index == nil)
+    }
+}

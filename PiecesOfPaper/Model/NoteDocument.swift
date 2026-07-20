@@ -57,14 +57,39 @@ final class NoteDocument: UIDocument {
     // The later is the winner
     private func resolveConflictIfNeeded() {
         guard documentState.contains(.inConflict) else { return }
+        let conflictVersions = NSFileVersion.unresolvedConflictVersionsOfItem(at: fileURL) ?? []
         do {
+            if let winnerIndex = NoteConflictResolver.newestVersionIndex(
+                currentModificationDate: NSFileVersion.currentVersionOfItem(at: fileURL)?.modificationDate,
+                conflictModificationDates: conflictVersions.map(\.modificationDate)
+            ) {
+                try conflictVersions[winnerIndex].replaceItem(at: fileURL)
+            }
             try NSFileVersion.removeOtherVersionsOfItem(at: fileURL)
-            NSFileVersion.currentVersionOfItem(at: fileURL)?.isResolved = true
+            conflictVersions.forEach { $0.isResolved = true }
         } catch {
-            print("failed to delete conflict versions: ", error.localizedDescription)
+            print("failed to resolve conflict versions: ", error.localizedDescription)
         }
     }
 
+}
+
+enum NoteConflictResolver {
+    /// Returns the index of the conflict version that should replace the current
+    /// version, or nil when the current version is the newest (ties favor current,
+    /// so no file replacement happens unless a strictly newer version exists).
+    static func newestVersionIndex(currentModificationDate: Date?,
+                                   conflictModificationDates: [Date?]) -> Int? {
+        let currentDate = currentModificationDate ?? .distantPast
+        var winner: (index: Int, date: Date)?
+        for (index, date) in conflictModificationDates.enumerated() {
+            let date = date ?? .distantPast
+            if date > (winner?.date ?? currentDate) {
+                winner = (index, date)
+            }
+        }
+        return winner?.index
+    }
 }
 
 enum NoteDocumentError: LocalizedError {
