@@ -1,11 +1,3 @@
-//
-//  NoteDocument.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2021/11/23.
-//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import UIKit
 import PencilKit
 

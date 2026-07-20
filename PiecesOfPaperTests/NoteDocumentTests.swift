@@ -1,11 +1,3 @@
-//
-//  NoteDocumentTests.swift
-//  PiecesOfPaperTests
-//
-//  Created by Nakajima on 2026/07/11.
-//  Copyright © 2026 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import Foundation
 import Testing
 import PencilKit

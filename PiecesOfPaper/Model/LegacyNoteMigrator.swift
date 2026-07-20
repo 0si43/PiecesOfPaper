@@ -1,11 +1,3 @@
-//
-//  LegacyNoteMigrator.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2026/07/19.
-//  Copyright © 2026 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import Foundation
 
 /// Renames legacy `.plist` notes to the current note file extension.
