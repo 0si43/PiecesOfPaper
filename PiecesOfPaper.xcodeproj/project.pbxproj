@@ -70,6 +70,8 @@
 		A7000000000000000000008B /* NoteStore+Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000008A /* NoteStore+Loading.swift */; };
 		A70000000000000000000093 /* NoteStore+MetadataCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000092 /* NoteStore+MetadataCache.swift */; };
 		A7000000000000000000008D /* NoteStoreFilterHydrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000008C /* NoteStoreFilterHydrationTests.swift */; };
+		A70000000000000000000095 /* NoteMetadataCacheRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000094 /* NoteMetadataCacheRepositoryTests.swift */; };
+		A70000000000000000000097 /* NoteStoreMetadataCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000096 /* NoteStoreMetadataCacheTests.swift */; };
 		A7000000000000000000007D /* TagRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000007C /* TagRepositoryTests.swift */; };
 		A7000000000000000000008F /* NoteStoreCanvasPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000008E /* NoteStoreCanvasPresentationTests.swift */; };
 /* End PBXBuildFile section */
@@ -182,6 +184,8 @@
 		A7000000000000000000008A /* NoteStore+Loading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteStore+Loading.swift"; sourceTree = "<group>"; };
 		A70000000000000000000092 /* NoteStore+MetadataCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteStore+MetadataCache.swift"; sourceTree = "<group>"; };
 		A7000000000000000000008C /* NoteStoreFilterHydrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreFilterHydrationTests.swift; sourceTree = "<group>"; };
+		A70000000000000000000094 /* NoteMetadataCacheRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMetadataCacheRepositoryTests.swift; sourceTree = "<group>"; };
+		A70000000000000000000096 /* NoteStoreMetadataCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreMetadataCacheTests.swift; sourceTree = "<group>"; };
 		A7000000000000000000007C /* TagRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagRepositoryTests.swift; sourceTree = "<group>"; };
 		A7000000000000000000008E /* NoteStoreCanvasPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreCanvasPresentationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -294,6 +298,8 @@
 				A70000000000000000000007 /* NoteStoreTests.swift */,
 				A7000000000000000000008E /* NoteStoreCanvasPresentationTests.swift */,
 				A7000000000000000000008C /* NoteStoreFilterHydrationTests.swift */,
+				A70000000000000000000094 /* NoteMetadataCacheRepositoryTests.swift */,
+				A70000000000000000000096 /* NoteStoreMetadataCacheTests.swift */,
 				A70000000000000000000008 /* NoteDocumentTests.swift */,
 				A7000000000000000000000D /* PKDrawingStub.swift */,
 				A70000000000000000000088 /* RepositoryMocks.swift */,
@@ -610,6 +616,8 @@
 				A70000000000000000000017 /* NoteStoreTests.swift in Sources */,
 				A7000000000000000000008F /* NoteStoreCanvasPresentationTests.swift in Sources */,
 				A7000000000000000000008D /* NoteStoreFilterHydrationTests.swift in Sources */,
+				A70000000000000000000095 /* NoteMetadataCacheRepositoryTests.swift in Sources */,
+				A70000000000000000000097 /* NoteStoreMetadataCacheTests.swift in Sources */,
 				A70000000000000000000018 /* NoteDocumentTests.swift in Sources */,
 				A7000000000000000000001D /* PKDrawingStub.swift in Sources */,
 				A70000000000000000000089 /* RepositoryMocks.swift in Sources */,

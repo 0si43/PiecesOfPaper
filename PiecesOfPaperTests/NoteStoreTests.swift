@@ -23,7 +23,8 @@ struct NoteStoreTests {
         preferenceRepositoryMock = PreferenceRepositoryMock()
         noteStore = NoteStore(
             noteRepository: repositoryMock,
-            preferenceRepository: preferenceRepositoryMock
+            preferenceRepository: preferenceRepositoryMock,
+            metadataCacheRepository: NoteMetadataCacheRepositoryMock()
         )
     }
 
@@ -239,7 +240,8 @@ struct NoteStoreTests {
 
         let store = NoteStore(
             noteRepository: NoteRepositoryMock(notes: []),
-            preferenceRepository: preferenceMock
+            preferenceRepository: preferenceMock,
+            metadataCacheRepository: NoteMetadataCacheRepositoryMock()
         )
         #expect(store.inboxListOrder.sortBy == .createdDate)
         #expect(store.archivedListOrder.sortOrder == .ascending)
@@ -312,7 +314,8 @@ struct NoteStoreSaveDrawingTests {
         repositoryMock = NoteRepositoryMock(notes: notes)
         noteStore = NoteStore(
             noteRepository: repositoryMock,
-            preferenceRepository: PreferenceRepositoryMock()
+            preferenceRepository: PreferenceRepositoryMock(),
+            metadataCacheRepository: NoteMetadataCacheRepositoryMock()
         )
     }
 

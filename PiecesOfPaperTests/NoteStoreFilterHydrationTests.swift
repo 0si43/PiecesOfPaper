@@ -26,7 +26,8 @@ struct NoteStoreFilterHydrationTests {
         repositoryMock = NoteRepositoryMock(notes: [tagged] + others)
         noteStore = NoteStore(
             noteRepository: repositoryMock,
-            preferenceRepository: PreferenceRepositoryMock()
+            preferenceRepository: PreferenceRepositoryMock(),
+            metadataCacheRepository: NoteMetadataCacheRepositoryMock()
         )
     }
 
