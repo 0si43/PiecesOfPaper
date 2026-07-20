@@ -24,11 +24,12 @@ struct NoteData: Identifiable, Equatable {
     }
 
     // Compare resolved paths: URLs delivered by the Files app carry the
-    // /private symlink prefix that FilePath's URLs lack
+    // /private symlink prefix that FilePath's URLs lack. The separator suffix
+    // keeps sibling directories like "InboxFolder2" from matching
     private func isUnder(_ directoryUrl: URL?) -> Bool {
         guard let directoryUrl else { return false }
         return fileURL.resolvingSymlinksInPath().path
-            .hasPrefix(directoryUrl.resolvingSymlinksInPath().path)
+            .hasPrefix(directoryUrl.resolvingSymlinksInPath().path + "/")
     }
 }
 
