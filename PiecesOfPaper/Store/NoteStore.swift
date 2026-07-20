@@ -36,6 +36,9 @@ final class NoteStore {
     private(set) var isHandlingExternalOpen = false
     private(set) var externalOpenTask: Task<Void, Never>?
     private var securityScopedUrl: URL?
+    /// Separate from showAlert: external opens can fail while NoteListParentView
+    /// (the showAlert host) is unmounted, so SideBarListView presents this one
+    var showExternalOpenAlert = false
     var showAlert = false
     var alertType: AlertType?
     var noteToShare: NoteData?
@@ -385,8 +388,7 @@ final class NoteStore {
         } catch {
             scopedUrl?.stopAccessingSecurityScopedResource()
             guard !Task.isCancelled else { return }
-            alertType = .error(NoteStoreError.openFailed(count: 1))
-            showAlert = true
+            showExternalOpenAlert = true
         }
     }
 

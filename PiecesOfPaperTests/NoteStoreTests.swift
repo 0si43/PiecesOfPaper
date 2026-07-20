@@ -285,7 +285,7 @@ struct NoteStoreTests {
         repositoryMock.failingUrls = [NoteRepositoryMock.externalUrl]
         await noteStore.openExternalNote(url: NoteRepositoryMock.externalUrl)
         #expect(noteStore.openedNote == nil)
-        #expect(noteStore.showAlert)
+        #expect(noteStore.showExternalOpenAlert)
     }
 
     @Test func test_openExternalNote_replacesOpenedNote() async {

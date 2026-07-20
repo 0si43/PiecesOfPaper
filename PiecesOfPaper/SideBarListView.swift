@@ -64,6 +64,11 @@ struct SideBarListView: View {
         .onOpenURL { url in
             noteStore.handleIncomingURL(url)
         }
+        .alert("", isPresented: $noteStore.showExternalOpenAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(NoteStoreError.openFailed(count: 1).localizedDescription)
+        }
         .environment(noteStore)
         .environment(tagStore)
         .environment(preferenceStore)
