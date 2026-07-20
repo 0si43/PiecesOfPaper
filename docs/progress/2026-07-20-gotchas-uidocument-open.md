@@ -1,4 +1,4 @@
-- [x] Document pitfalls surfaced by the Files-app open work (issue #217)
+- [x] Document pitfalls surfaced by the Files-app open work (issue #217, PR #218)
   - GOTCHAS: `UIDocument.close()` after a failed `open()` hangs forever; `open()` on a missing file waits for an iCloud download by design (test the failure path with a corrupt file); a test-runner "Restarting" line with no `.ips` and a minutes-long gap is a hang, traceable via UIDocumentLog
   - GOTCHAS: `fullScreenCover`/`sheet` content only inherits environment values injected outside the attachment point — attach presentation modifiers inside the `.environment` chain
   - SIMULATOR_E2E: `simctl openurl` with a `file://` URL exercises the `onOpenURL` document-open path without automating the Files app
