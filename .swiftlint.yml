@@ -110,7 +110,7 @@ opt_in_rules:
   #- extension_access_modifier # このルールの意味を理解していないため
   - fallthrough
   # - fatal_error_message # メッセージは不要なため
-  #- file_header # このルールの意味を理解していないため
+  - file_header
   - file_name
   - first_where
   - force_unwrapping
@@ -185,6 +185,9 @@ excluded:
   - Carthage
   - SourcePackages
   - Generated
+
+file_header:
+  forbidden_pattern: "\\bCopyright\\b|Created by .+ on \\d{4}/\\d{2}/\\d{2}"
 
 line_length:
   warning: 300

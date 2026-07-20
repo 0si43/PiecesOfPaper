@@ -1,0 +1,4 @@
+- [x] Remove the Xcode default file headers from all Swift files and ban them via SwiftLint (issue #223, PR #228)
+  - `file_header` is not a correctable rule, so `swiftlint --fix` cannot strip the headers; the 55 files were stripped with a one-off script after verifying every one matched the template exactly
+  - `.git-blame-ignore-revs` added so the 55-file removal commit does not obscure `git blame`
+  - `PreviewExtension` / `ThumbnailExtension` are outside `.swiftlint.yml`'s `included:`, so their headers are removed but not enforced

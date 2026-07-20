@@ -1,11 +1,3 @@
-//
-//  UIActivityViewControllerWrapper.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2021/10/30.
-//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import UIKit
 import SwiftUI
 import LinkPresentation
