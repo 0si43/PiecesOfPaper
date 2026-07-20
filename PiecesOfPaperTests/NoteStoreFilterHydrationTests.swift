@@ -19,7 +19,7 @@ struct NoteStoreFilterHydrationTests {
 
     init() {
         var tagged = NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url)
-        tagged.entity.tags = [tag]
+        tagged.entity.tagIds = [tag.id]
         let others = [NoteRepositoryMock.TestFile.file2, .file3].map {
             NoteData.createTestData(fileURL: $0.url)
         }

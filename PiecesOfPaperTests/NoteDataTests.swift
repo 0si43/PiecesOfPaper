@@ -56,7 +56,7 @@ struct NoteDataTests {
         let note = NoteData.createTestData()
         var modified = note
         #expect(note == modified)
-        modified.entity.tags.append(TagEntity(name: "tag", color: CodableUIColor(uiColor: .red)))
+        modified.entity.tagIds.append(UUID())
         #expect(note != modified)
     }
 }

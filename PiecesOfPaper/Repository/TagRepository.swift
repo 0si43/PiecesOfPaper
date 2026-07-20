@@ -39,8 +39,8 @@ enum TagListFileState {
 
 struct TagRepository: TagRepositoryProtocol {
     // Fixed ids so the in-memory defaults stay identical across launches:
-    // TagEntity equality is id-based and notes embed tag copies, so ids
-    // regenerated per launch would detach notes from their default tags.
+    // notes reference tags by id, so ids regenerated per launch would detach
+    // notes from their default tags.
     private var defaultTags = [
         TagEntity(id: UUID(uuidString: "1D9C7A80-1E5B-4A61-9F0A-6C39F1A0D001")!,
                   name: "💡idea", color: CodableUIColor(uiColor: .systemYellow)),

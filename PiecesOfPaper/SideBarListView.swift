@@ -61,6 +61,9 @@ struct SideBarListView: View {
             // what swaps the drawing when openedNote is replaced mid-cover
             .id(note.id)
         }
+        .onAppear {
+            noteStore.onLegacyTagsDecoded = { tagStore.restoreIfEmpty($0) }
+        }
         .onOpenURL { url in
             noteStore.handleIncomingURL(url)
         }

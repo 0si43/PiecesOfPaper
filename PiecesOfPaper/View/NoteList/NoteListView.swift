@@ -23,7 +23,7 @@ struct NoteListView: View {
                         contextMenu(entry: entry)
                     }
                     NoteListTagHStack(
-                        tags: tagStore.tagsMatching(noteStore.tags(for: entry)),
+                        tags: tagStore.tags(ids: noteStore.tagIds(for: entry)),
                         action: {
                             noteStore.requestTag(entry)
                         }

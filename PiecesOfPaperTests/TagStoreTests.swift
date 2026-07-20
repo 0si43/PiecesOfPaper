@@ -59,6 +59,44 @@ struct TagStoreTests {
         tagStore.remove(initialTags[0])
         #expect(tagStore.tags == initialTags)
     }
+
+    @Test func test_restoreIfEmpty_ignoresSalvagedTagsWhileTagListIsNotEmpty() {
+        let salvaged = TagEntity(name: "salvaged", color: CodableUIColor(uiColor: .systemPink))
+        tagStore.restoreIfEmpty([salvaged])
+        #expect(tagStore.tags == initialTags)
+        #expect(repositoryMock.saveAllCalls.isEmpty)
+    }
+}
+
+@MainActor
+struct TagStoreRestoreTests {
+    let repositoryMock = TagRepositoryMock(tags: [])
+    let tagStore: TagStore
+    let salvaged = [
+        TagEntity(name: "salvaged", color: CodableUIColor(uiColor: .systemPink)),
+        TagEntity(name: "another", color: CodableUIColor(uiColor: .systemTeal))
+    ]
+
+    init() {
+        tagStore = TagStore(repository: repositoryMock)
+    }
+
+    @Test func test_restoreIfEmpty_addsAndPersistsSalvagedTags() {
+        tagStore.restoreIfEmpty(salvaged)
+        #expect(tagStore.tags == salvaged)
+        #expect(repositoryMock.saveAllCalls.last == salvaged)
+    }
+
+    @Test func test_restoreIfEmpty_dropsDuplicateIds() {
+        tagStore.restoreIfEmpty([salvaged[0], salvaged[0], salvaged[1]])
+        #expect(tagStore.tags == salvaged)
+    }
+
+    @Test func test_restoreIfEmpty_rollsBackWhenSaveFails() {
+        repositoryMock.saveShouldSucceed = false
+        tagStore.restoreIfEmpty(salvaged)
+        #expect(tagStore.tags.isEmpty)
+    }
 }
 
 final class TagRepositoryMock: TagRepositoryProtocol {

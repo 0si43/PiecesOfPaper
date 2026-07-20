@@ -33,7 +33,7 @@ extension NoteStore {
             // metadata can match while a filter is active.
             filtered = filtered.filter { entry in
                 guard let metadata = validMetadata(for: entry) else { return false }
-                return listOrder.filterBy.allSatisfy { metadata.tags.contains($0) }
+                return listOrder.filterBy.allSatisfy { metadata.tagIds.contains($0.id) }
             }
         }
         let ascending = listOrder.sortOrder == .ascending
@@ -61,9 +61,9 @@ extension NoteStore {
 // MARK: - Load-on-demand accessors
 
 extension NoteStore {
-    /// Tags for a list row; empty until the row's document has been opened.
-    func tags(for entry: NoteIndexEntry) -> [TagEntity] {
-        validMetadata(for: entry)?.tags ?? []
+    /// Tag ids for a list row; empty until the row's document has been opened.
+    func tagIds(for entry: NoteIndexEntry) -> [UUID] {
+        validMetadata(for: entry)?.tagIds ?? []
     }
 
     func requestShare(_ entry: NoteIndexEntry) {
