@@ -9,9 +9,11 @@
 import Foundation
 
 protocol TagRepositoryProtocol {
-    func fetchAll() -> [TagEntity]
-    @discardableResult
-    func saveAll(_ tags: [TagEntity]) -> Bool
+    // Coordination happens off the main actor inside CoordinatedFileAccess, so
+    // these only hop back here to keep callers and the tag list on one actor.
+    @MainActor func fetchAll() async -> [TagEntity]
+    @MainActor @discardableResult
+    func saveAll(_ tags: [TagEntity]) async -> Bool
 }
 
 /// Where the tag list file stands relative to iCloud download state.
@@ -63,22 +65,39 @@ struct TagRepository: TagRepositoryProtocol {
     // Never writes to disk: creating defaults while the iCloud copy is merely
     // undownloaded would sync them back and wipe the user's tag list (#199).
     // Defaults are persisted lazily by the first user edit through saveAll.
-    func fetchAll() -> [TagEntity] {
+    @MainActor
+    func fetchAll() async -> [TagEntity] {
         guard let tagListFileUrl else { return [] }
         syncFile(url: tagListFileUrl)
 
-        switch TagListFileState.check(for: tagListFileUrl, fileManager: fileManager) {
-        case .downloaded:
-            return loadTags(from: tagListFileUrl)
-        case .inCloudOnly:
+        // Checked before coordinating as well: a coordinated read of an
+        // undownloaded item waits for the download, which would hang the tag
+        // list behind an offline device instead of returning the empty list.
+        guard TagListFileState.check(for: tagListFileUrl, fileManager: fileManager) != .inCloudOnly else {
             return []
-        case .absent:
-            return defaultTags
+        }
+
+        let fileManager = self.fileManager
+        let defaultTags = self.defaultTags
+        do {
+            return try await CoordinatedFileAccess.read(at: tagListFileUrl) { url in
+                switch TagListFileState.check(for: url, fileManager: fileManager) {
+                case .downloaded:
+                    return Self.loadTags(from: url, fileManager: fileManager)
+                case .inCloudOnly:
+                    return []
+                case .absent:
+                    return defaultTags
+                }
+            }
+        } catch {
+            print(error.localizedDescription)
+            return []
         }
     }
 
-    @discardableResult
-    func saveAll(_ tags: [TagEntity]) -> Bool {
+    @MainActor @discardableResult
+    func saveAll(_ tags: [TagEntity]) async -> Bool {
         guard let tagListFileUrl else { return false }
         syncFile(url: tagListFileUrl)
 
@@ -89,13 +108,19 @@ struct TagRepository: TagRepositoryProtocol {
             return false
         }
 
+        let fileManager = self.fileManager
         do {
-            let libraryUrl = tagListFileUrl.deletingLastPathComponent()
-            if !fileManager.fileExists(atPath: libraryUrl.path) {
-                try fileManager.createDirectory(at: libraryUrl, withIntermediateDirectories: true)
-            }
             let data = try JSONEncoder().encode(tags)
-            try data.write(to: tagListFileUrl, options: .atomic)
+            try await CoordinatedFileAccess.write(at: tagListFileUrl, options: .forReplacing) { url in
+                let libraryUrl = url.deletingLastPathComponent()
+                if !fileManager.fileExists(atPath: libraryUrl.path) {
+                    try fileManager.createDirectory(at: libraryUrl, withIntermediateDirectories: true)
+                }
+                guard TagListFileState.check(for: url, fileManager: fileManager) != .inCloudOnly else {
+                    throw TagRepositoryError.tagListNotDownloaded
+                }
+                try data.write(to: url, options: .atomic)
+            }
             return true
         } catch {
             print(error.localizedDescription)
@@ -103,7 +128,7 @@ struct TagRepository: TagRepositoryProtocol {
         }
     }
 
-    private func loadTags(from url: URL) -> [TagEntity] {
+    private static func loadTags(from url: URL, fileManager: FileManager) -> [TagEntity] {
         guard fileManager.fileExists(atPath: url.path),
               let content = fileManager.contents(atPath: url.path) else { return [] }
 
@@ -121,6 +146,17 @@ struct TagRepository: TagRepositoryProtocol {
             try fileManager.startDownloadingUbiquitousItem(at: url)
         } catch {
             print(error.localizedDescription)
+        }
+    }
+}
+
+enum TagRepositoryError: LocalizedError {
+    case tagListNotDownloaded
+
+    var errorDescription: String? {
+        switch self {
+        case .tagListNotDownloaded:
+            "The tag list has not been downloaded from iCloud yet."
         }
     }
 }

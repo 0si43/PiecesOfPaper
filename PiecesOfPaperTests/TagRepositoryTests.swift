@@ -10,6 +10,7 @@ import Testing
 import Foundation
 @testable import Pieces_of_Paper
 
+@MainActor
 struct TagRepositoryTests {
     private func makeTemporaryDirectory() throws -> URL {
         let url = FileManager.default.temporaryDirectory
@@ -64,7 +65,7 @@ struct TagRepositoryTests {
 
     // MARK: - fetchAll
 
-    @Test func fetchAll_loadsTags_whenFileExists() throws {
+    @Test func fetchAll_loadsTags_whenFileExists() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let fileUrl = tagListUrl(in: directory)
@@ -73,12 +74,12 @@ struct TagRepositoryTests {
         let tags = makeTags()
         try JSONEncoder().encode(tags).write(to: fileUrl)
 
-        #expect(TagRepository(tagListFileUrl: fileUrl).fetchAll() == tags)
+        #expect(await TagRepository(tagListFileUrl: fileUrl).fetchAll() == tags)
     }
 
     // Regression test for #199: an undownloaded iCloud copy must be treated as
     // "still downloading", not "missing" — no defaults returned, nothing written.
-    @Test func fetchAll_returnsEmptyAndWritesNothing_whenOnlyPlaceholderExists() throws {
+    @Test func fetchAll_returnsEmptyAndWritesNothing_whenOnlyPlaceholderExists() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let placeholder = placeholderUrl(in: directory)
@@ -87,35 +88,35 @@ struct TagRepositoryTests {
         try Data().write(to: placeholder)
         let fileUrl = tagListUrl(in: directory)
 
-        #expect(TagRepository(tagListFileUrl: fileUrl).fetchAll() == [])
+        #expect(await TagRepository(tagListFileUrl: fileUrl).fetchAll() == [])
         #expect(!FileManager.default.fileExists(atPath: fileUrl.path))
     }
 
-    @Test func fetchAll_returnsDefaultsWithoutCreatingFile_whenAbsent() throws {
+    @Test func fetchAll_returnsDefaultsWithoutCreatingFile_whenAbsent() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let fileUrl = tagListUrl(in: directory)
 
-        let tags = TagRepository(tagListFileUrl: fileUrl).fetchAll()
+        let tags = await TagRepository(tagListFileUrl: fileUrl).fetchAll()
 
         #expect(tags.count == 4)
         #expect(!FileManager.default.fileExists(atPath: fileUrl.path))
     }
 
-    @Test func fetchAll_returnsStableDefaultIds_acrossInstances() throws {
+    @Test func fetchAll_returnsStableDefaultIds_acrossInstances() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let fileUrl = tagListUrl(in: directory)
 
-        let first = TagRepository(tagListFileUrl: fileUrl).fetchAll()
-        let second = TagRepository(tagListFileUrl: fileUrl).fetchAll()
+        let first = await TagRepository(tagListFileUrl: fileUrl).fetchAll()
+        let second = await TagRepository(tagListFileUrl: fileUrl).fetchAll()
 
         #expect(first.map(\.id) == second.map(\.id))
     }
 
     // MARK: - saveAll
 
-    @Test func saveAll_refusesToWrite_whenOnlyPlaceholderExists() throws {
+    @Test func saveAll_refusesToWrite_whenOnlyPlaceholderExists() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let placeholder = placeholderUrl(in: directory)
@@ -124,19 +125,19 @@ struct TagRepositoryTests {
         try Data().write(to: placeholder)
         let fileUrl = tagListUrl(in: directory)
 
-        #expect(!TagRepository(tagListFileUrl: fileUrl).saveAll(makeTags()))
+        #expect(await !TagRepository(tagListFileUrl: fileUrl).saveAll(makeTags()))
         #expect(!FileManager.default.fileExists(atPath: fileUrl.path))
         #expect(FileManager.default.fileExists(atPath: placeholder.path))
     }
 
-    @Test func saveAll_createsLibraryDirectoryAndRoundTrips() throws {
+    @Test func saveAll_createsLibraryDirectoryAndRoundTrips() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let fileUrl = tagListUrl(in: directory)
         let repository = TagRepository(tagListFileUrl: fileUrl)
         let tags = makeTags()
 
-        #expect(repository.saveAll(tags))
-        #expect(repository.fetchAll() == tags)
+        #expect(await repository.saveAll(tags))
+        #expect(await repository.fetchAll() == tags)
     }
 }
