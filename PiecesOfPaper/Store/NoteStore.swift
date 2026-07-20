@@ -15,7 +15,8 @@ final class NoteStore {
     // MARK: - Primary data (Single Source of Truth)
     private(set) var inboxIndex = [NoteIndexEntry]()
     private(set) var archivedIndex = [NoteIndexEntry]()
-    private(set) var metadataByFileName = [String: NoteMetadata]()
+    // Written here and by NoteStore+MetadataCache
+    var metadataByFileName = [String: NoteMetadata]()
 
     // MARK: - Sort & filter settings (auto-persist on change)
     var inboxListOrder: ListOrder {
@@ -52,6 +53,7 @@ final class NoteStore {
     // MARK: - Dependencies
     private let noteRepository: NoteRepositoryProtocol
     private let preferenceRepository: PreferenceRepositoryProtocol
+    let metadataCacheRepository: NoteMetadataCacheRepositoryProtocol
 
     // Cell tasks, canvas taps, and filter hydration can request the same file
     // at once; one UIDocument open serves all of them.
@@ -61,16 +63,24 @@ final class NoteStore {
     var hydrationTasks: [NoteDirectory: Task<Void, Never>] = [:]
     var hydratingDirectories: Set<NoteDirectory> = []
 
+    /// Awaited before tag-filter hydration so a cold start filters from the
+    /// persisted cache instead of re-opening every note.
+    private(set) var loadPersistedMetadataTask: Task<Void, Never>?
+    var persistTask: Task<Void, Never>?
+
     init(noteRepository: NoteRepositoryProtocol = NoteRepository(),
-         preferenceRepository: PreferenceRepositoryProtocol = PreferenceRepository()) {
+         preferenceRepository: PreferenceRepositoryProtocol = PreferenceRepository(),
+         metadataCacheRepository: NoteMetadataCacheRepositoryProtocol = NoteMetadataCacheRepository()) {
         self.noteRepository = noteRepository
         self.preferenceRepository = preferenceRepository
+        self.metadataCacheRepository = metadataCacheRepository
         self.inboxListOrder = preferenceRepository.getListOrder(directoryName: NoteDirectory.inbox.rawValue)
         self.archivedListOrder = preferenceRepository.getListOrder(directoryName: NoteDirectory.archived.rawValue)
         noteRepository.setCloudUpdateHandler { [weak self] in
             guard let self else { return }
             Task { await self.applyCloudUpdate() }
         }
+        loadPersistedMetadataTask = makePersistedMetadataLoad()
     }
 
     func listOrder(for directory: NoteDirectory) -> ListOrder {
@@ -137,6 +147,7 @@ final class NoteStore {
             metadataByFileName[entry.fileName] = NoteMetadata(id: note.entity.id,
                                                               tags: note.entity.tags,
                                                               updatedDate: entry.updatedDate)
+            schedulePersist()
         }
         return note
     }
@@ -176,6 +187,7 @@ extension NoteStore {
             inboxIndex.removeAll { $0.fileURL == entry.fileURL }
             archivedIndex.removeAll { $0.fileURL == entry.fileURL }
             metadataByFileName[entry.fileName] = nil
+            schedulePersist()
         } catch {
             alertType = .error(NoteStoreError.deleteFailed)
             showAlert = true
@@ -243,12 +255,14 @@ extension NoteStore {
             tags: updated.entity.tags,
             updatedDate: previous?.updatedDate ?? entry(for: note.fileURL)?.updatedDate ?? note.entity.updatedDate
         )
+        schedulePersist()
         noteRepository.save(updated.entity, to: updated.fileURL) { [weak self] success in
             guard let self else { return }
             if success {
                 self.applySaved(updated)
             } else {
                 self.metadataByFileName[note.fileName] = previous
+                self.schedulePersist()
                 self.alertType = .error(NoteStoreError.saveFailed)
                 self.showAlert = true
             }
@@ -360,6 +374,7 @@ extension NoteStore {
         metadataByFileName[note.fileName] = NoteMetadata(id: note.entity.id,
                                                          tags: note.entity.tags,
                                                          updatedDate: entry.updatedDate)
+        schedulePersist()
         if note.isArchived {
             upsertEntry(entry, into: &archivedIndex)
         } else if note.isInInbox {

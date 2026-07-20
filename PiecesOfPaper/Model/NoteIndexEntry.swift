@@ -11,7 +11,7 @@ import Foundation
 /// Listing metadata learned from a document open. Valid while its updatedDate
 /// still matches the index entry's, i.e. the file on disk has not changed
 /// since the open.
-struct NoteMetadata: Equatable {
+struct NoteMetadata: Equatable, Codable {
     let id: UUID
     var tags: [TagEntity]
     var updatedDate: Date

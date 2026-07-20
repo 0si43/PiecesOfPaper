@@ -71,6 +71,15 @@ enum FilePath {
         libraryUrl?.appendingPathComponent("taglist.json")
     }
 
+    // Caches, not savingUrl: the metadata cache is derived from the notes
+    // themselves and must never sync. The storage mode is part of the name so
+    // toggling iCloud does not read another library's entries.
+    static var noteMetadataCacheFileUrl: URL? {
+        let suffix = isiCloudActive ? "icloud" : "local"
+        return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?
+            .appendingPathComponent("note-metadata-cache-\(suffix).json")
+    }
+
     static func makeDirectoryIfNeeded() {
         guard let inboxUrl = FilePath.inboxUrl, let archivedUrl = FilePath.archivedUrl else { return }
         if !FileManager.default.fileExists(atPath: inboxUrl.path) {

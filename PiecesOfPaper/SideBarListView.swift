@@ -13,6 +13,7 @@ struct SideBarListView: View {
     @State private var tagStore = TagStore()
     @State private var preferenceStore = PreferenceStore()
     @State private var selection: Page? = .inbox
+    @Environment(\.scenePhase) private var scenePhase
     @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
 
     private enum Page: String, CaseIterable {
@@ -68,6 +69,13 @@ struct SideBarListView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(NoteStoreError.openFailed(count: 1).localizedDescription)
+        }
+        // The store owner, so the flush happens once per app, not once per
+        // NoteListParentView
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .background {
+                noteStore.flushMetadataCache()
+            }
         }
         .environment(noteStore)
         .environment(tagStore)

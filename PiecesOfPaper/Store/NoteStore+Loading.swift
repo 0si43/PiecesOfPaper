@@ -108,12 +108,14 @@ extension NoteStore {
         hydrationTasks[directory] = nil
         hydratingDirectories.remove(directory)
         guard !listOrder(for: directory).filterBy.isEmpty else { return }
-        let index = directory == .inbox ? inboxIndex : archivedIndex
-        let pending = index.filter { validMetadata(for: $0) == nil }
-        guard !pending.isEmpty else { return }
 
         hydratingDirectories.insert(directory)
         hydrationTasks[directory] = Task {
+            // The persisted cache usually covers the whole directory, so the
+            // pending set must be computed after it has been read
+            await loadPersistedMetadataTask?.value
+            let index = directory == .inbox ? inboxIndex : archivedIndex
+            let pending = index.filter { validMetadata(for: $0) == nil }
             await withTaskGroup(of: Void.self) { group in
                 var iterator = pending.makeIterator()
                 // Width-limited so only a few drawings are decoded at a time
