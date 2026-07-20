@@ -30,7 +30,6 @@ struct NoteListView: View {
                     )
                         .padding(.horizontal)
                 }
-                .id(entry.id)
             }
         }
     }

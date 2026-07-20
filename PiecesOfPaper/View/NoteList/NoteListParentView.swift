@@ -163,40 +163,16 @@ struct NoteListParentView: View {
         }
     }
 
-    /// This view is for scrolling to the bottom
     private struct NoteScrollView: View {
         let directory: NoteDirectory
-        @Environment(NoteStore.self) private var noteStore
 
         var body: some View {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    Spacer(minLength: 30.0)
-                    NoteListView(directory: directory)
-                }
-                .padding([.leading, .trailing])
-                .navigationBarTitleDisplayMode(.inline)
-                .overlay(
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            ScrollButton(
-                                action: { scrollToBottom(proxy: proxy) },
-                                image: Image(systemName: "arrow.down.circle")
-                            )
-                            .accessibilityLabel("Scroll to Bottom")
-                        }
-                    }
-                )
+            ScrollView {
+                Spacer(minLength: 30.0)
+                NoteListView(directory: directory)
             }
-        }
-
-        func scrollToBottom(proxy: ScrollViewProxy) {
-            guard let lastEntry = noteStore.displayEntries(for: directory).last else { return }
-            withAnimation {
-                proxy.scrollTo(lastEntry.id, anchor: .bottom)
-            }
+            .padding([.leading, .trailing])
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 
