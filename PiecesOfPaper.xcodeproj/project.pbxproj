@@ -61,6 +61,7 @@
 		A70000000000000000000042 /* NoteDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000032 /* NoteDataTests.swift */; };
 		A70000000000000000000077 /* LegacyNoteMigratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000076 /* LegacyNoteMigratorTests.swift */; };
 		A7000000000000000000007B /* NoteRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000007A /* NoteRepositoryTests.swift */; };
+		A70000000000000000000081 /* FilePathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000080 /* FilePathTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -162,6 +163,7 @@
 		A70000000000000000000032 /* NoteDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDataTests.swift; sourceTree = "<group>"; };
 		A70000000000000000000076 /* LegacyNoteMigratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyNoteMigratorTests.swift; sourceTree = "<group>"; };
 		A7000000000000000000007A /* NoteRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteRepositoryTests.swift; sourceTree = "<group>"; };
+		A70000000000000000000080 /* FilePathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePathTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -263,6 +265,7 @@
 		A6A16EC325B1673500DF323F /* PiecesOfPaperTests */ = {
 			isa = PBXGroup;
 			children = (
+				A70000000000000000000080 /* FilePathTests.swift */,
 				A70000000000000000000032 /* NoteDataTests.swift */,
 				A70000000000000000000076 /* LegacyNoteMigratorTests.swift */,
 				A7000000000000000000007A /* NoteRepositoryTests.swift */,
@@ -568,6 +571,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A70000000000000000000081 /* FilePathTests.swift in Sources */,
 				A70000000000000000000042 /* NoteDataTests.swift in Sources */,
 				A70000000000000000000077 /* LegacyNoteMigratorTests.swift in Sources */,
 				A7000000000000000000007B /* NoteRepositoryTests.swift in Sources */,
