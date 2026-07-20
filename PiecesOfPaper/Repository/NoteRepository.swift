@@ -26,7 +26,6 @@ struct NoteFileAttributes: Equatable {
 }
 
 protocol NoteRepositoryProtocol: AnyObject {
-    @MainActor func getFileUrls(directory: NoteDirectory) async -> [URL]
     @MainActor func getFileAttributes(directory: NoteDirectory) async -> [NoteFileAttributes]
     func fileAttributes(at fileUrl: URL) -> NoteFileAttributes?
     @MainActor func setCloudUpdateHandler(_ handler: @escaping @MainActor () -> Void)
@@ -41,11 +40,6 @@ protocol NoteRepositoryProtocol: AnyObject {
 final class NoteRepository: NoteRepositoryProtocol {
     @MainActor private var cloudMonitor: CloudNoteMonitor?
     @MainActor private var cloudUpdateHandler: (@MainActor () -> Void)?
-
-    @MainActor
-    func getFileUrls(directory: NoteDirectory) async -> [URL] {
-        await getFileAttributes(directory: directory).map(\.fileURL)
-    }
 
     @MainActor
     func getFileAttributes(directory: NoteDirectory) async -> [NoteFileAttributes] {

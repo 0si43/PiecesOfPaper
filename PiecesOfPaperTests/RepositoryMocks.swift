@@ -56,11 +56,6 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     }
 
     @MainActor
-    func getFileUrls(directory: NoteDirectory) async -> [URL] {
-        await getFileAttributes(directory: directory).map(\.fileURL)
-    }
-
-    @MainActor
     func getFileAttributes(directory: NoteDirectory) async -> [NoteFileAttributes] {
         directory == .inbox ? enumeratedAttributes : []
     }

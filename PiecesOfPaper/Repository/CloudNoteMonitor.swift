@@ -53,12 +53,6 @@ final class CloudNoteMonitor {
 
     /// Waits for the initial gathering so that an in-progress query is never
     /// mistaken for an empty note list.
-    func urls() async -> [URL] {
-        await items().map(\.fileURL)
-    }
-
-    /// Waits for the initial gathering so that an in-progress query is never
-    /// mistaken for an empty note list.
     func items() async -> [CloudNoteItem] {
         if !hasGathered {
             await withCheckedContinuation { gatherWaiters.append($0) }
