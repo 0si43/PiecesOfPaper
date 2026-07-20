@@ -53,13 +53,17 @@ struct SideBarListView: View {
         }
         // Inside the .environment chain: cover content only inherits values
         // injected outside its attachment point
-        .fullScreenCover(item: $noteStore.openedNote) { note in
+        .fullScreenCover(item: $noteStore.openedNote,
+                         onDismiss: { noteStore.releaseSecurityScope() }) { note in
             NavigationStack {
                 CanvasView(note: note)
             }
             // CanvasView seeds its @State from init, so an identity change is
             // what swaps the drawing when openedNote is replaced mid-cover
             .id(note.id)
+        }
+        .onOpenURL { url in
+            noteStore.handleIncomingURL(url)
         }
         .environment(noteStore)
         .environment(tagStore)

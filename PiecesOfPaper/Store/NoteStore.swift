@@ -33,6 +33,9 @@ final class NoteStore {
     /// Single source of truth for canvas presentation: new notes, thumbnail
     /// taps, and external opens all present by assigning this
     var openedNote: NoteData?
+    private(set) var isHandlingExternalOpen = false
+    private(set) var externalOpenTask: Task<Void, Never>?
+    private var securityScopedUrl: URL?
     var showAlert = false
     var alertType: AlertType?
     var noteToShare: NoteData?
@@ -341,10 +344,44 @@ final class NoteStore {
         openedNote = NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: url)
     }
 
-    /// scenePhase .active hook: never stomp an already-open note
+    /// scenePhase .active hook: never stomp an already-open note or an
+    /// in-flight external open
     func openBlankNoteIfIdle() {
-        guard openedNote == nil else { return }
+        guard openedNote == nil, !isHandlingExternalOpen else { return }
         openNewNote()
+    }
+
+    /// Synchronous onOpenURL entry point. Sets the suppression flag before any
+    /// await so a later-arriving scenePhase .active cannot race in a blank canvas
+    func handleIncomingURL(_ url: URL) {
+        guard url.pathExtension == FilePath.noteFileExtension else { return }
+        isHandlingExternalOpen = true
+        externalOpenTask = Task { await openExternalNote(url: url) }
+    }
+
+    func openExternalNote(url: URL) async {
+        defer { isHandlingExternalOpen = false }
+        guard openedNote?.fileURL != url else { return }
+        releaseSecurityScope()
+        // false means the URL is not security-scoped (the app's own container),
+        // so reading can proceed without holding a scope
+        if url.startAccessingSecurityScopedResource() {
+            securityScopedUrl = url
+        }
+        do {
+            openedNote = try await noteRepository.open(fileUrl: url)
+        } catch {
+            releaseSecurityScope()
+            alertType = .error(NoteStoreError.openFailed(count: 1))
+            showAlert = true
+        }
+    }
+
+    /// The scope is held while the note is open: autosave writes back to the
+    /// scoped URL for the whole canvas lifetime
+    func releaseSecurityScope() {
+        securityScopedUrl?.stopAccessingSecurityScopedResource()
+        securityScopedUrl = nil
     }
 
     // MARK: - Canvas support
