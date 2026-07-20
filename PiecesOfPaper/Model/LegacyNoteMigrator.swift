@@ -24,8 +24,11 @@ enum LegacyNoteMigrator {
                 let destination = source.deletingPathExtension()
                     .appendingPathExtension(FilePath.noteFileExtension)
                 guard !fileManager.fileExists(atPath: destination.path) else { continue }
-                // Uncoordinated moveItem matches NoteRepository.move; failures
-                // are skipped and retried on the next enumeration.
+                // Uncoordinated unlike NoteRepository.move: this runs
+                // synchronously inside enumeration on the main actor, where
+                // waiting for coordination would stall the list. Failures are
+                // skipped and retried on the next enumeration, and URLs left
+                // pointing at the old name are absorbed by resolveMigratedUrl.
                 try? fileManager.moveItem(at: source, to: destination)
             } else if fileName.hasPrefix("."), fileName.hasSuffix(legacySuffix + ".icloud") {
                 // Undownloaded placeholder ".<name>.plist.icloud": request the
