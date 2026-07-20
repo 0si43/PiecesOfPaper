@@ -1,0 +1,5 @@
+# Revisions to skip in `git blame` (GitHub honors this file automatically;
+# locally: git config blame.ignoreRevsFile .git-blame-ignore-revs)
+
+# Remove Xcode default file headers from all Swift files
+bc9d71a738b98617f6ccafc611763db1b146bb2a
