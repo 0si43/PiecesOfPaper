@@ -1,11 +1,3 @@
-//
-//  NoteInformation.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2021/12/12.
-//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import SwiftUI
 
 struct NoteInformationView: View {

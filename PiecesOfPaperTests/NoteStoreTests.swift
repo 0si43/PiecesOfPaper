@@ -1,11 +1,3 @@
-//
-//  NoteStoreTests.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2022/05/28.
-//  Copyright © 2022 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import UIKit
 import Testing
 import PencilKit
