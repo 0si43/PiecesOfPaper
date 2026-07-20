@@ -44,6 +44,22 @@ struct NoteRepositoryTests {
         #expect(saved.id == entity.id)
     }
 
+    @Test func localFileAttributes_readsFileSystemDates() throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let fileUrl = directory.appendingPathComponent("2024-01-02-03-04-051234.pop")
+        try PropertyListEncoder().encode(NoteEntity(drawing: PKDrawing())).write(to: fileUrl)
+
+        let attributes = NoteRepository().localFileAttributes(in: directory)
+
+        #expect(attributes.count == 1)
+        let attribute = try #require(attributes.first)
+        #expect(attribute.fileURL == fileUrl)
+        let modificationDate = try #require(attribute.contentModificationDate)
+        #expect(abs(modificationDate.timeIntervalSinceNow) < 10)
+        #expect(attribute.creationDate != nil)
+    }
+
     @Test func save_writesToLegacyUrlWhileItStillExists() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }

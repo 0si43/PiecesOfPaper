@@ -19,8 +19,15 @@ enum NoteDirectory: String {
     }
 }
 
+struct NoteFileAttributes: Equatable {
+    let fileURL: URL
+    let creationDate: Date?
+    let contentModificationDate: Date?
+}
+
 protocol NoteRepositoryProtocol: AnyObject {
     @MainActor func getFileUrls(directory: NoteDirectory) async -> [URL]
+    @MainActor func getFileAttributes(directory: NoteDirectory) async -> [NoteFileAttributes]
     @MainActor func setCloudUpdateHandler(_ handler: @escaping @MainActor () -> Void)
     @MainActor func open(fileUrl: URL) async throws -> NoteData
     func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void)
@@ -36,18 +43,27 @@ final class NoteRepository: NoteRepositoryProtocol {
 
     @MainActor
     func getFileUrls(directory: NoteDirectory) async -> [URL] {
+        await getFileAttributes(directory: directory).map(\.fileURL)
+    }
+
+    @MainActor
+    func getFileAttributes(directory: NoteDirectory) async -> [NoteFileAttributes] {
         guard let directoryUrl = directory.url else { return [] }
         LegacyNoteMigrator.migrate(in: directoryUrl)
         guard FilePath.isiCloudActive else {
             stopCloudMonitor()
-            return localFileUrls(in: directoryUrl)
+            return localFileAttributes(in: directoryUrl)
         }
         let directoryPath = directoryUrl.resolvingSymlinksInPath().path
         var seen = Set<URL>()
-        return await monitor().urls()
-            .filter { $0.resolvingSymlinksInPath().deletingLastPathComponent().path == directoryPath }
-            .map(resolveMigratedUrl)
-            .filter { seen.insert($0).inserted }
+        return await monitor().items()
+            .filter { $0.fileURL.resolvingSymlinksInPath().deletingLastPathComponent().path == directoryPath }
+            .map {
+                NoteFileAttributes(fileURL: resolveMigratedUrl($0.fileURL),
+                                   creationDate: $0.creationDate,
+                                   contentModificationDate: $0.contentModificationDate)
+            }
+            .filter { seen.insert($0.fileURL).inserted }
     }
 
     // The metadata query and already-open notes can still hold a pre-rename
@@ -76,6 +92,15 @@ final class NoteRepository: NoteRepositoryProtocol {
                 || $0.hasSuffix("." + FilePath.legacyNoteFileExtension)
         }
         return fileNames.map { directoryUrl.appendingPathComponent($0) }
+    }
+
+    func localFileAttributes(in directoryUrl: URL) -> [NoteFileAttributes] {
+        localFileUrls(in: directoryUrl).map { fileUrl in
+            let values = try? fileUrl.resourceValues(forKeys: [.creationDateKey, .contentModificationDateKey])
+            return NoteFileAttributes(fileURL: fileUrl,
+                                      creationDate: values?.creationDate,
+                                      contentModificationDate: values?.contentModificationDate)
+        }
     }
 
     @MainActor

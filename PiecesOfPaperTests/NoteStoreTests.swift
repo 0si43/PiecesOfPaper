@@ -283,6 +283,17 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         return fileUrls ?? TestFile.allCases.map { $0.url }
     }
 
+    var fileAttributes: [NoteFileAttributes]?
+    @MainActor
+    func getFileAttributes(directory: NoteDirectory) async -> [NoteFileAttributes] {
+        if let fileAttributes {
+            return directory == .inbox ? fileAttributes : []
+        }
+        return await getFileUrls(directory: directory).map {
+            NoteFileAttributes(fileURL: $0, creationDate: nil, contentModificationDate: nil)
+        }
+    }
+
     @MainActor
     func setCloudUpdateHandler(_ handler: @escaping @MainActor () -> Void) {
         cloudUpdateHandler = handler
