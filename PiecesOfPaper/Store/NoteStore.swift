@@ -30,17 +30,9 @@ final class NoteStore {
     private(set) var isHandlingExternalOpen = false
     private(set) var externalOpenTask: Task<Void, Never>?
     private var securityScopedUrl: URL?
-    /// Separate from showAlert: external opens can fail while NoteListParentView
-    /// (the showAlert host) is unmounted, so RootSplitView presents this one
+    /// External opens can fail while no note list is mounted, so this one is
+    /// presented by RootSplitView rather than by a list screen
     var showExternalOpenAlert = false
-    var showAlert = false
-    var alertType: AlertType?
-    var noteToShare: NoteData?
-    var noteToTag: NoteData?
-
-    enum AlertType {
-        case iCloudDenied, archive, error(Error)
-    }
 
     // MARK: - Dependencies
     private let noteRepository: NoteRepositoryProtocol
@@ -159,35 +151,27 @@ final class NoteStore {
 // MARK: - Data operations
 
 extension NoteStore {
-    func duplicate(_ entry: NoteIndexEntry, in directory: NoteDirectory) {
-        Task {
-            guard let note = await loadNote(entry) else {
-                presentOpenFailedAlert()
-                return
-            }
-            noteRepository.duplicate(note, in: directory) { [weak self] newNote in
-                guard let self else { return }
-                guard let newNote else {
-                    self.alertType = .error(NoteStoreError.saveFailed)
-                    self.showAlert = true
-                    return
-                }
-                self.applySaved(newNote)
-            }
+    func duplicate(_ entry: NoteIndexEntry, in directory: NoteDirectory) async throws {
+        guard let note = await loadNote(entry) else {
+            throw NoteStoreError.openFailed(count: 1)
         }
+        let newNote: NoteData? = await withCheckedContinuation { continuation in
+            noteRepository.duplicate(note, in: directory) { continuation.resume(returning: $0) }
+        }
+        guard let newNote else { throw NoteStoreError.saveFailed }
+        applySaved(newNote)
     }
 
-    func delete(_ entry: NoteIndexEntry) {
+    func delete(_ entry: NoteIndexEntry) throws {
         do {
             try noteRepository.delete(fileUrl: entry.fileURL)
-            inboxIndex.removeAll { $0.fileURL == entry.fileURL }
-            archivedIndex.removeAll { $0.fileURL == entry.fileURL }
-            metadataByFileName[entry.fileName] = nil
-            schedulePersist()
         } catch {
-            alertType = .error(NoteStoreError.deleteFailed)
-            showAlert = true
+            throw NoteStoreError.deleteFailed
         }
+        inboxIndex.removeAll { $0.fileURL == entry.fileURL }
+        archivedIndex.removeAll { $0.fileURL == entry.fileURL }
+        metadataByFileName[entry.fileName] = nil
+        schedulePersist()
     }
 
     func archive(_ entry: NoteIndexEntry) {
@@ -226,12 +210,12 @@ extension NoteStore {
 
     // MARK: - Tag operations
 
-    func addTag(_ tag: TagEntity, to note: NoteData) {
-        updateTagIds(of: note) { $0 + [tag.id] }
+    func addTag(_ tag: TagEntity, to note: NoteData) async throws {
+        try await updateTagIds(of: note) { $0 + [tag.id] }
     }
 
-    func removeTag(_ tag: TagEntity, from note: NoteData) {
-        updateTagIds(of: note) { tagIds in tagIds.filter { $0 != tag.id } }
+    func removeTag(_ tag: TagEntity, from note: NoteData) async throws {
+        try await updateTagIds(of: note) { tagIds in tagIds.filter { $0 != tag.id } }
     }
 
     /// The caller's snapshot may predate tag edits made elsewhere; the
@@ -240,7 +224,7 @@ extension NoteStore {
         metadataByFileName[note.fileName]?.tagIds ?? note.entity.tagIds
     }
 
-    private func updateTagIds(of note: NoteData, _ transform: ([UUID]) -> [UUID]) {
+    private func updateTagIds(of note: NoteData, _ transform: ([UUID]) -> [UUID]) async throws {
         let previous = metadataByFileName[note.fileName]
         var updated = note
         updated.entity.tagIds = transform(currentTagIds(for: note))
@@ -252,17 +236,15 @@ extension NoteStore {
             updatedDate: previous?.updatedDate ?? entry(for: note.fileURL)?.updatedDate ?? note.entity.updatedDate
         )
         schedulePersist()
-        noteRepository.save(updated.entity, to: updated.fileURL) { [weak self] success in
-            guard let self else { return }
-            if success {
-                self.applySaved(updated)
-            } else {
-                self.metadataByFileName[note.fileName] = previous
-                self.schedulePersist()
-                self.alertType = .error(NoteStoreError.saveFailed)
-                self.showAlert = true
-            }
+        let success: Bool = await withCheckedContinuation { continuation in
+            noteRepository.save(updated.entity, to: updated.fileURL) { continuation.resume(returning: $0) }
         }
+        guard success else {
+            metadataByFileName[note.fileName] = previous
+            schedulePersist()
+            throw NoteStoreError.saveFailed
+        }
+        applySaved(updated)
     }
 
 }

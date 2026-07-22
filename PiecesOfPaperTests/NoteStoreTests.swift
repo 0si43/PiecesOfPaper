@@ -72,7 +72,7 @@ struct NoteStoreTests {
         noteStore.inboxListOrder = order
         #expect(noteStore.displayInboxEntries.isEmpty)
 
-        noteStore.addTag(tag, to: notes[0])
+        try await noteStore.addTag(tag, to: notes[0])
         #expect(noteStore.displayInboxEntries.map(\.fileURL) == [notes[0].fileURL])
     }
 
@@ -85,7 +85,6 @@ struct NoteStoreTests {
 
         let failed = await noteStore.loadNote(entry)
         #expect(failed == nil)
-        #expect(!noteStore.showAlert)
         #expect(noteStore.metadataByFileName[entry.fileName] == nil)
 
         repositoryMock.failingUrls = []
@@ -105,37 +104,12 @@ struct NoteStoreTests {
         #expect(repositoryMock.openCallCount == 1)
     }
 
-    @Test func test_requestTag_opensNoteAndPresentsSheet() async throws {
-        await noteStore.fetch(directory: .inbox)
-        let entry = try #require(noteStore.inboxIndex.first)
-        noteStore.requestTag(entry)
-        for _ in 0..<100 where noteStore.noteToTag == nil {
-            await Task.yield()
-        }
-        #expect(noteStore.noteToTag?.fileURL == entry.fileURL)
-    }
-
-    @Test func test_requestShare_alertsWhenOpenFails() async throws {
-        await noteStore.fetch(directory: .inbox)
-        let entry = try #require(noteStore.inboxIndex.first)
-        repositoryMock.failingUrls = [entry.fileURL]
-        noteStore.requestShare(entry)
-        for _ in 0..<100 where !noteStore.showAlert {
-            await Task.yield()
-        }
-        #expect(noteStore.showAlert)
-        #expect(noteStore.noteToShare == nil)
-    }
-
     // MARK: - Data operations
 
     @Test func test_duplicate_appendsEntryForTheNewFile() async throws {
         await noteStore.fetch(directory: .inbox)
         let entry = try #require(noteStore.inboxIndex.first)
-        noteStore.duplicate(entry, in: .inbox)
-        for _ in 0..<100 where noteStore.inboxIndex.count < 4 {
-            await Task.yield()
-        }
+        try await noteStore.duplicate(entry, in: .inbox)
         #expect(noteStore.inboxIndex.count == 4)
         let newEntry = try #require(
             noteStore.inboxIndex.first { $0.fileURL.lastPathComponent.hasPrefix("duplicated-") }
@@ -147,7 +121,7 @@ struct NoteStoreTests {
         await noteStore.fetch(directory: .inbox)
         let entry = try #require(noteStore.inboxIndex.first)
         _ = await noteStore.loadNote(entry)
-        noteStore.delete(entry)
+        try noteStore.delete(entry)
         #expect(noteStore.inboxIndex.count == 2)
         #expect(noteStore.metadataByFileName[entry.fileName] == nil)
     }
@@ -178,21 +152,21 @@ struct NoteStoreTests {
 
     // MARK: - Tag operations
 
-    @Test func test_addTag_updatesMetadataOnSuccessfulSave() async {
+    @Test func test_addTag_updatesMetadataOnSuccessfulSave() async throws {
         await noteStore.fetch(directory: .inbox)
         let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
-        noteStore.addTag(tag, to: notes[0])
+        try await noteStore.addTag(tag, to: notes[0])
         #expect(noteStore.currentTagIds(for: notes[0]) == [tag.id])
-        #expect(!noteStore.showAlert)
     }
 
     @Test func test_addTag_rollsBackTagWhenSaveFails() async {
         await noteStore.fetch(directory: .inbox)
         repositoryMock.saveShouldSucceed = false
         let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
-        noteStore.addTag(tag, to: notes[0])
+        await #expect(throws: NoteStoreError.saveFailed) {
+            try await noteStore.addTag(tag, to: notes[0])
+        }
         #expect(noteStore.currentTagIds(for: notes[0]).isEmpty)
-        #expect(noteStore.showAlert)
     }
 
     // MARK: - List order settings
@@ -351,7 +325,7 @@ struct NoteStoreSaveDrawingTests {
         await noteStore.fetch(directory: .inbox)
         let staleSnapshot = notes[0]
         let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
-        noteStore.addTag(tag, to: staleSnapshot)
+        try await noteStore.addTag(tag, to: staleSnapshot)
 
         var result: NoteData?
         noteStore.save(drawing: PKDrawing.stub(), to: staleSnapshot) { result = $0 }
