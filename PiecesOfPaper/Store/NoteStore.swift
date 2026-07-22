@@ -30,7 +30,7 @@ final class NoteStore {
     private(set) var externalOpenTask: Task<Void, Never>?
     private var securityScopedUrl: URL?
     /// Separate from showAlert: external opens can fail while NoteListParentView
-    /// (the showAlert host) is unmounted, so SideBarListView presents this one
+    /// (the showAlert host) is unmounted, so RootSplitView presents this one
     var showExternalOpenAlert = false
     var showAlert = false
     var alertType: AlertType?

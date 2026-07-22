@@ -18,7 +18,7 @@ Each entry links to the issue/PR where the details live.
 ## SwiftUI
 
 - **Alerts attached below a `fullScreenCover` never show while the cover is up**: `NoteListParentView` has `.alert(isPresented: $noteStore.showAlert)`, but while `CanvasView` is presented via `.fullScreenCover`, that alert is not displayed. Do not refactor cover-side errors onto the store's `showAlert`/`alertType` pattern — errors shown on top of a cover must live in a view-local `@State` + `.alert` inside the cover. The store alert pattern is for the list screens only. Background: PR #186 review.
-- **`fullScreenCover`/`sheet` content only inherits environment values injected *outside* the modifier's attachment point**: attaching a cover after `.environment(store)` in the chain (i.e. outside it) crashes at presentation with "No Observable object of type NoteStore found". Attach presentation modifiers *inside* the `.environment` chain — `SideBarListView` does this deliberately. Background: PR #208.
+- **`fullScreenCover`/`sheet` content only inherits environment values injected *outside* the modifier's attachment point**: attaching a cover after `.environment(store)` in the chain (i.e. outside it) crashes at presentation with "No Observable object of type NoteStore found". Attach presentation modifiers *inside* the `.environment` chain — `RootSplitView` does this deliberately. Background: PR #208.
 
 ## Xcode / build
 
