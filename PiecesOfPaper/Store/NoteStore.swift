@@ -46,6 +46,12 @@ final class NoteStore {
     // at once; one UIDocument open serves all of them.
     private var inFlightLoads: [URL: Task<NoteData?, Never>] = [:]
 
+    // Coordinated deletes and moves take an unbounded amount of time, so the
+    // index is updated optimistically. The pending set hides files whose
+    // operation has not landed yet from enumeration results, preventing a
+    // concurrent fetch from resurrecting a note mid-operation.
+    private var pendingFileOperationUrls: Set<URL> = []
+
     // Tag-filter hydration state, driven by NoteStore+Loading
     var hydrationTasks: [NoteDirectory: Task<Void, Never>] = [:]
     var hydratingDirectories: Set<NoteDirectory> = []
@@ -90,11 +96,13 @@ final class NoteStore {
     func fetch(directory: NoteDirectory, background: Bool = false) async {
         defer { if !background { isLoading = false } }
         if !background { isLoading = true }
-        let entries = await noteRepository.getFileAttributes(directory: directory).map {
-            NoteIndexEntry(fileURL: $0.fileURL,
-                           creationDate: $0.creationDate,
-                           contentModificationDate: $0.contentModificationDate)
-        }
+        let entries = await noteRepository.getFileAttributes(directory: directory)
+            .filter { !pendingFileOperationUrls.contains($0.fileURL) }
+            .map {
+                NoteIndexEntry(fileURL: $0.fileURL,
+                               creationDate: $0.creationDate,
+                               contentModificationDate: $0.contentModificationDate)
+            }
         // Wholesale assignment keeps overlapping fetches last-writer-wins; the
         // equality guard avoids re-rendering (and re-running cell load tasks)
         // when nothing changed.
@@ -130,7 +138,9 @@ final class NoteStore {
         inFlightLoads[entry.fileURL] = load
         let note = await load.value
         inFlightLoads[entry.fileURL] = nil
-        if let note {
+        // A delete or move started while this open was in flight already dropped
+        // the entry; recording metadata here would resurrect the dead file name.
+        if let note, !pendingFileOperationUrls.contains(entry.fileURL) {
             metadataByFileName[entry.fileName] = NoteMetadata(id: note.entity.id,
                                                               tagIds: note.entity.tagIds,
                                                               updatedDate: entry.updatedDate)
@@ -162,31 +172,50 @@ extension NoteStore {
         applySaved(newNote)
     }
 
-    func delete(_ entry: NoteIndexEntry) throws {
+    // Coordinated delete is async, so the index is updated optimistically and
+    // rolled back on failure; the caller (the view) surfaces the thrown error.
+    // A repeated tap is a no-op: the entry is already gone from the index.
+    func delete(_ entry: NoteIndexEntry) async throws {
+        guard let sourceDirectory = directory(of: entry.fileURL) else { return }
+        let metadata = metadataByFileName[entry.fileName]
+        pendingFileOperationUrls.insert(entry.fileURL)
+        removeEntryFromIndexes(entry.fileURL)
+        metadataByFileName[entry.fileName] = nil
         do {
-            try noteRepository.delete(fileUrl: entry.fileURL)
+            try await noteRepository.delete(fileUrl: entry.fileURL)
         } catch {
+            restoreEntry(entry, to: sourceDirectory, metadata: metadata)
+            pendingFileOperationUrls.remove(entry.fileURL)
             throw NoteStoreError.deleteFailed
         }
-        inboxIndex.removeAll { $0.fileURL == entry.fileURL }
-        archivedIndex.removeAll { $0.fileURL == entry.fileURL }
-        metadataByFileName[entry.fileName] = nil
+        pendingFileOperationUrls.remove(entry.fileURL)
         schedulePersist()
     }
 
-    func archive(_ entry: NoteIndexEntry) {
-        moveEntry(entry, to: .archived)
+    func archive(_ entry: NoteIndexEntry) async throws {
+        try await move(entry, to: .archived)
     }
 
-    func unarchive(_ entry: NoteIndexEntry) {
-        moveEntry(entry, to: .inbox)
+    func unarchive(_ entry: NoteIndexEntry) async throws {
+        try await move(entry, to: .inbox)
     }
 
-    private func moveEntry(_ entry: NoteIndexEntry, to directory: NoteDirectory) {
+    /// Best effort: a note whose move fails stays in place, and the rest still move.
+    func allArchive() async {
+        for entry in inboxIndex { try? await archive(entry) }
+    }
+
+    func allUnarchive() async {
+        for entry in archivedIndex { try? await unarchive(entry) }
+    }
+
+    private func move(_ entry: NoteIndexEntry, to directory: NoteDirectory) async throws {
+        guard let sourceDirectory = self.directory(of: entry.fileURL) else { return }
+        let metadata = metadataByFileName[entry.fileName]
+        pendingFileOperationUrls.insert(entry.fileURL)
+        removeEntryFromIndexes(entry.fileURL)
         do {
-            let newUrl = try noteRepository.move(fileUrl: entry.fileURL, to: directory)
-            inboxIndex.removeAll { $0.fileURL == entry.fileURL }
-            archivedIndex.removeAll { $0.fileURL == entry.fileURL }
+            let newUrl = try await noteRepository.move(fileUrl: entry.fileURL, to: directory)
             switch directory {
             case .inbox: upsertEntry(entry.moved(to: newUrl), into: &inboxIndex)
             case .archived: upsertEntry(entry.moved(to: newUrl), into: &archivedIndex)
@@ -194,18 +223,11 @@ extension NoteStore {
             // The metadata cache is keyed by file name, which a move preserves,
             // so the moved note keeps its tags without a re-open
         } catch {
-            print("Could not move note: ", error.localizedDescription)
+            restoreEntry(entry, to: sourceDirectory, metadata: metadata)
+            pendingFileOperationUrls.remove(entry.fileURL)
+            throw NoteStoreError.moveFailed
         }
-    }
-
-    func allArchive() {
-        let entries = inboxIndex
-        entries.forEach { archive($0) }
-    }
-
-    func allUnarchive() {
-        let entries = archivedIndex
-        entries.forEach { unarchive($0) }
+        pendingFileOperationUrls.remove(entry.fileURL)
     }
 
     // MARK: - Tag operations
@@ -375,5 +397,24 @@ extension NoteStore {
 
     private func entry(for fileUrl: URL) -> NoteIndexEntry? {
         inboxIndex.first { $0.fileURL == fileUrl } ?? archivedIndex.first { $0.fileURL == fileUrl }
+    }
+
+    private func directory(of fileUrl: URL) -> NoteDirectory? {
+        if inboxIndex.contains(where: { $0.fileURL == fileUrl }) { return .inbox }
+        if archivedIndex.contains(where: { $0.fileURL == fileUrl }) { return .archived }
+        return nil
+    }
+
+    private func removeEntryFromIndexes(_ fileUrl: URL) {
+        inboxIndex.removeAll { $0.fileURL == fileUrl }
+        archivedIndex.removeAll { $0.fileURL == fileUrl }
+    }
+
+    private func restoreEntry(_ entry: NoteIndexEntry, to directory: NoteDirectory, metadata: NoteMetadata?) {
+        switch directory {
+        case .inbox: upsertEntry(entry, into: &inboxIndex)
+        case .archived: upsertEntry(entry, into: &archivedIndex)
+        }
+        metadataByFileName[entry.fileName] = metadata
     }
 }

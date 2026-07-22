@@ -23,8 +23,10 @@ protocol NoteRepositoryProtocol: AnyObject {
     @MainActor func setCloudUpdateHandler(_ handler: @escaping @MainActor () -> Void)
     @MainActor func open(fileUrl: URL) async throws -> NoteData
     func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void)
-    func delete(fileUrl: URL) throws
-    func move(fileUrl: URL, to directory: NoteDirectory) throws -> URL
+    // Coordination happens off the main actor inside CoordinatedFileAccess, so
+    // these only hop back here to keep callers and the index on one actor.
+    @MainActor func delete(fileUrl: URL) async throws
+    @MainActor func move(fileUrl: URL, to directory: NoteDirectory) async throws -> URL
     func duplicate(_ note: NoteData, in directory: NoteDirectory,
                    completion: @escaping (NoteData?) -> Void)
 }
@@ -141,17 +143,27 @@ final class NoteRepository: NoteRepositoryProtocol {
         document.save(to: targetUrl, for: saveOperation, completionHandler: completion)
     }
 
-    func delete(fileUrl: URL) throws {
-        try FileManager.default.removeItem(at: fileUrl)
+    @MainActor
+    func delete(fileUrl: URL) async throws {
+        try await CoordinatedFileAccess.write(at: fileUrl, options: .forDeleting) { url in
+            try FileManager.default.removeItem(at: url)
+        }
     }
 
-    func move(fileUrl: URL, to directory: NoteDirectory) throws -> URL {
+    @MainActor
+    func move(fileUrl: URL, to directory: NoteDirectory) async throws -> URL {
         guard let directoryUrl = directory.url else {
             throw NoteRepositoryError.directoryNotAvailable
         }
+        return try await move(fileUrl: fileUrl, toDirectoryAt: directoryUrl)
+    }
+
+    // NoteDirectory resolves to the app container, so tests reach the coordinated
+    // move through this overload with a temporary directory instead.
+    @MainActor
+    func move(fileUrl: URL, toDirectoryAt directoryUrl: URL) async throws -> URL {
         let toUrl = directoryUrl.appendingPathComponent(fileUrl.lastPathComponent)
-        try FileManager.default.moveItem(at: fileUrl, to: toUrl)
-        return toUrl
+        return try await CoordinatedFileAccess.move(from: fileUrl, to: toUrl)
     }
 
     func duplicate(_ note: NoteData, in directory: NoteDirectory,

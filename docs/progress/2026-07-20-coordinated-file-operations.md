@@ -1,0 +1,6 @@
+- [x] Run note file operations and the tag list through NSFileCoordinator (issue #201, PR #236)
+  - `CoordinatedFileAccess` wraps the asynchronous `NSFileAccessIntent` API, so a stalled iCloud sync never blocks a thread; moves coordinate both URLs and bracket the rename with `item(at:willMoveTo:)` / `item(at:didMoveTo:)`
+  - Repository methods became `async`; the stores keep synchronous signatures and drive them from an internal `Task`, so no view code changed
+  - Going asynchronous opened two windows that are closed explicitly: a single task chain per store serializes operations, and `pendingFileOperationUrls` keeps a file whose operation is in flight out of enumeration results so a mid-operation refresh cannot resurrect it
+  - Index updates are optimistic and roll back on failure, so `NoteStoreError.moveFailed` was added — archive/unarchive now alert instead of only printing
+  - `LegacyNoteMigrator` stays uncoordinated on purpose: it runs synchronously on the main actor inside enumeration

@@ -20,6 +20,14 @@ struct NoteStoreTests {
         )
     }
 
+    /// Delete and move run on the store's internal task chain, so assertions
+    /// have to let it drain first.
+    private func waitUntil(_ condition: () -> Bool) async {
+        for _ in 0..<100 where !condition() {
+            await Task.yield()
+        }
+    }
+
     // MARK: - Index fetch & sorting
 
     @Test func test_fetch_buildsIndexWithoutOpeningDocuments() async {
@@ -121,9 +129,51 @@ struct NoteStoreTests {
         await noteStore.fetch(directory: .inbox)
         let entry = try #require(noteStore.inboxIndex.first)
         _ = await noteStore.loadNote(entry)
-        try noteStore.delete(entry)
+        try await noteStore.delete(entry)
         #expect(noteStore.inboxIndex.count == 2)
         #expect(noteStore.metadataByFileName[entry.fileName] == nil)
+    }
+
+    @Test func test_delete_restoresEntryAndThrowsWhenDeleteFails() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let entry = try #require(noteStore.inboxIndex.first)
+        repositoryMock.deleteShouldThrow = true
+
+        await #expect(throws: NoteStoreError.deleteFailed) {
+            try await noteStore.delete(entry)
+        }
+
+        #expect(noteStore.inboxIndex.count == 3)
+        #expect(noteStore.inboxIndex.contains { $0.fileURL == entry.fileURL })
+    }
+
+    @Test func test_delete_ignoresARepeatedTapForTheSameEntry() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let entry = try #require(noteStore.inboxIndex.first)
+
+        try await noteStore.delete(entry)
+        // The entry is already gone, so the second call is a no-op
+        try await noteStore.delete(entry)
+
+        #expect(repositoryMock.deletedUrls == [entry.fileURL])
+        #expect(noteStore.inboxIndex.count == 2)
+    }
+
+    @Test func test_fetch_doesNotResurrectAnEntryWhileItsDeleteIsInFlight() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let entry = try #require(noteStore.inboxIndex.first)
+        repositoryMock.suspendFileOperations = true
+
+        async let deletion: Void = noteStore.delete(entry)
+        await waitUntil { repositoryMock.hasPendingFileOperation }
+        // Enumeration still reports the file: the removal has not landed yet
+        await noteStore.fetch(directory: .inbox)
+
+        #expect(!noteStore.inboxIndex.contains { $0.fileURL == entry.fileURL })
+
+        repositoryMock.resumePendingFileOperations()
+        try await deletion
+        #expect(noteStore.inboxIndex.count == 2)
     }
 
     @Test func test_archive_movesEntryAndKeepsMetadataWithoutReopening() async throws {
@@ -131,7 +181,7 @@ struct NoteStoreTests {
         let entry = try #require(noteStore.inboxIndex.first)
         _ = await noteStore.loadNote(entry)
 
-        noteStore.archive(entry)
+        try await noteStore.archive(entry)
 
         #expect(noteStore.inboxIndex.count == 2)
         let moved = try #require(noteStore.archivedIndex.first)
@@ -145,9 +195,22 @@ struct NoteStoreTests {
         await noteStore.fetch(directory: .inbox)
         repositoryMock.moveShouldThrow = true
         let target = noteStore.displayInboxEntries[0]
-        noteStore.archive(target)
+        await #expect(throws: NoteStoreError.moveFailed) {
+            try await noteStore.archive(target)
+        }
         #expect(noteStore.displayInboxEntries.count == 3)
         #expect(noteStore.displayArchivedEntries.isEmpty)
+    }
+
+    @Test func test_allArchive_movesEveryEntryInOrder() async {
+        await noteStore.fetch(directory: .inbox)
+        let urls = noteStore.inboxIndex.map(\.fileURL)
+
+        await noteStore.allArchive()
+
+        #expect(repositoryMock.movedUrls == urls)
+        #expect(noteStore.inboxIndex.isEmpty)
+        #expect(noteStore.archivedIndex.count == urls.count)
     }
 
     // MARK: - Tag operations

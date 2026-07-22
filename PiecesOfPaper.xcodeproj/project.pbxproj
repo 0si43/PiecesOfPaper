@@ -65,6 +65,7 @@
 		A7000000000000000000007B /* NoteRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000007A /* NoteRepositoryTests.swift */; };
 		A70000000000000000000081 /* FilePathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000080 /* FilePathTests.swift */; };
 		A70000000000000000000083 /* NoteIndexEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000082 /* NoteIndexEntry.swift */; };
+		A7000000000000000000009F /* CoordinatedFileAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7000000000000000000009E /* CoordinatedFileAccess.swift */; };
 		A70000000000000000000085 /* NoteIndexEntryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000084 /* NoteIndexEntryTests.swift */; };
 		A70000000000000000000087 /* NoteStoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000086 /* NoteStoreError.swift */; };
 		A70000000000000000000089 /* RepositoryMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70000000000000000000088 /* RepositoryMocks.swift */; };
@@ -181,6 +182,7 @@
 		A7000000000000000000007A /* NoteRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteRepositoryTests.swift; sourceTree = "<group>"; };
 		A70000000000000000000080 /* FilePathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePathTests.swift; sourceTree = "<group>"; };
 		A70000000000000000000082 /* NoteIndexEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteIndexEntry.swift; sourceTree = "<group>"; };
+		A7000000000000000000009E /* CoordinatedFileAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinatedFileAccess.swift; sourceTree = "<group>"; };
 		A70000000000000000000084 /* NoteIndexEntryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteIndexEntryTests.swift; sourceTree = "<group>"; };
 		A70000000000000000000086 /* NoteStoreError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStoreError.swift; sourceTree = "<group>"; };
 		A70000000000000000000088 /* RepositoryMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryMocks.swift; sourceTree = "<group>"; };
@@ -242,6 +244,7 @@
 		A6620E2A2748A05B00C708A2 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				A7000000000000000000009E /* CoordinatedFileAccess.swift */,
 				A6620E3B274CD88000C708A2 /* FilePath.swift */,
 				A70000000000000000000078 /* LegacyNoteMigrator.swift */,
 				A63C9592276444CF00822461 /* ListOrder.swift */,
@@ -673,6 +676,7 @@
 				A7000000000000000000009B /* NoteListPresentation.swift in Sources */,
 				A70000000000000000000041 /* NoteData.swift in Sources */,
 				A70000000000000000000083 /* NoteIndexEntry.swift in Sources */,
+				A7000000000000000000009F /* CoordinatedFileAccess.swift in Sources */,
 				A64AE9F4275B203A002C66F7 /* NoteEntity.swift in Sources */,
 				A6620E36274C7A3D00C708A2 /* NoteListScreen.swift in Sources */,
 				A70000000000000000000011 /* NoteRepository.swift in Sources */,

@@ -192,9 +192,13 @@ struct NoteListScreen: View {
 
     private var archiveActionButton: some View {
         Button(role: .destructive) {
-            isTargetDirectoryArchived
-            ? noteStore.allUnarchive()
-            : noteStore.allArchive()
+            Task {
+                if isTargetDirectoryArchived {
+                    await noteStore.allUnarchive()
+                } else {
+                    await noteStore.allArchive()
+                }
+            }
         } label: {
             Text(
                 isTargetDirectoryArchived

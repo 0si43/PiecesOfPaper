@@ -46,22 +46,36 @@ struct NoteGridView: View {
             }
             if entry.isArchived {
                 Button {
-                    noteStore.unarchive(entry)
+                    Task {
+                        do {
+                            try await noteStore.unarchive(entry)
+                        } catch {
+                            presentation.alert = .error(error)
+                        }
+                    }
                 } label: {
                     Label("Move to Inbox", systemImage: "tray")
                 }
                 Button(role: .destructive) {
-                    do {
-                        try noteStore.delete(entry)
-                    } catch {
-                        presentation.alert = .error(error)
+                    Task {
+                        do {
+                            try await noteStore.delete(entry)
+                        } catch {
+                            presentation.alert = .error(error)
+                        }
                     }
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
             } else {
                 Button {
-                    noteStore.archive(entry)
+                    Task {
+                        do {
+                            try await noteStore.archive(entry)
+                        } catch {
+                            presentation.alert = .error(error)
+                        }
+                    }
                 } label: {
                     Label("Move to Trash", systemImage: "trash")
                 }
