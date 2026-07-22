@@ -1,0 +1,5 @@
+- [x] Persist the note listing metadata cache locally (issue #204 Phase B, PR #234)
+  - Metadata is keyed by note file name instead of absolute URL: container paths change across installs, and file names are microsecond timestamps that survive archive/unarchive moves — which also removed the metadata re-key on move
+  - The cache file lives in Caches (never synced) with the storage mode in its name; unknown version / corrupt / missing all load as empty, since the notes themselves are the source of truth
+  - Tag-filter hydration awaits the startup read, so a cold start filters from disk and only re-opens notes whose modification date moved
+  - No pre-build at launch and no thumbnail persistence: both would reintroduce the library-wide I/O that Phase A (PR #210) removed

@@ -3,7 +3,7 @@ import Foundation
 /// Listing metadata learned from a document open. Valid while its updatedDate
 /// still matches the index entry's, i.e. the file on disk has not changed
 /// since the open.
-struct NoteMetadata: Equatable {
+struct NoteMetadata: Equatable, Codable {
     let id: UUID
     var tagIds: [UUID]
     var updatedDate: Date
@@ -18,6 +18,11 @@ struct NoteIndexEntry: Identifiable, Equatable {
     // The entity UUID is unknown until the document is opened, so list identity
     // is the file URL, which is unique on disk.
     var id: URL { fileURL }
+
+    /// Key for caches that must survive archive/unarchive moves and container
+    /// path changes across installs. Names are microsecond timestamps
+    /// (FilePath.fileName), so they stay unique on their own.
+    var fileName: String { fileURL.lastPathComponent }
 
     // Same resolved-path comparison as NoteData.isUnder: metadata-query URLs
     // can carry the /private symlink prefix that FilePath's URLs lack
