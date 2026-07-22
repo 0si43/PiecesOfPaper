@@ -1,0 +1,6 @@
+- [x] Convert the project's four top-level folders to file system synchronized folders (issue #241, PR #242)
+  - Source files no longer appear in `project.pbxproj`: adding or removing one produces no diff, which removes the recurring merge conflicts and the parallel-branch object-ID collisions that made the project unopenable
+  - `objectVersion` 54 → 77, so Xcode 16 or later is now required to open the project
+  - Cross-target sharing of `NoteEntity.swift` / `TagEntity.swift` with the QuickLook extensions is now a membership exception instead of duplicate build-file entries
+  - Verified against an unmodified `origin/main` build: identical test results (133 tests in 20 suites), identical per-target source lists, identical app bundle contents
+  - Merging PRs #235 and #236, which added and renamed five source files, needed no pbxproj change at all — the resolved project file is byte-identical to the pre-merge one
