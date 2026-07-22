@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SideBarListView: View {
+struct RootSplitView: View {
     @State private var noteStore = NoteStore()
     @State private var tagStore = TagStore()
     @State private var preferenceStore = PreferenceStore()
@@ -53,6 +53,9 @@ struct SideBarListView: View {
             // CanvasView seeds its @State from init, so an identity change is
             // what swaps the drawing when openedNote is replaced mid-cover
             .id(note.id)
+        }
+        .onAppear {
+            noteStore.onLegacyTagsDecoded = { tagStore.restoreIfEmpty($0) }
         }
         .onOpenURL { url in
             noteStore.handleIncomingURL(url)
@@ -123,4 +126,8 @@ struct SideBarListView: View {
         }
         .navigationTitle("Pieces of Paper")
     }
+}
+
+#Preview {
+    RootSplitView()
 }

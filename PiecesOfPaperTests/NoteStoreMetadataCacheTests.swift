@@ -12,7 +12,7 @@ struct NoteStoreMetadataCacheTests {
         let tag = TagEntity(name: "work", color: CodableUIColor(uiColor: .blue))
         self.tag = tag
         var tagged = NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url)
-        tagged.entity.tags = [tag]
+        tagged.entity.tagIds = [tag.id]
         let others = [NoteRepositoryMock.TestFile.file2, .file3].map {
             NoteData.createTestData(fileURL: $0.url)
         }
@@ -22,7 +22,7 @@ struct NoteStoreMetadataCacheTests {
             entries: Dictionary(uniqueKeysWithValues: NoteRepositoryMock.TestFile.allCases.map { file in
                 (file.url.lastPathComponent,
                  NoteMetadata(id: UUID(),
-                              tags: file == .file1 ? [tag] : [],
+                              tagIds: file == .file1 ? [tag.id] : [],
                               updatedDate: file.contentModificationDate))
             })
         )
@@ -87,7 +87,7 @@ struct NoteStoreMetadataCacheTests {
         await store.persistTask?.value
 
         #expect(cacheMock.saveCount >= 1)
-        #expect(cacheMock.savedEntries[entry.fileName]?.tags == [tag])
+        #expect(cacheMock.savedEntries[entry.fileName]?.tagIds == [tag.id])
     }
 
     @Test func test_flush_dropsEntriesThatAreNoLongerListed() async throws {

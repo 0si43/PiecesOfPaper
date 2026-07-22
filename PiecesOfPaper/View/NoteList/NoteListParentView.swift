@@ -21,12 +21,11 @@ struct NoteListParentView: View {
             } else {
                 if noteStore.displayEntries(for: directory).isEmpty {
                     // While a tag filter hydrates, nothing may match yet;
-                    // "No Data" would be premature
+                    // the empty state would be premature
                     if noteStore.isFilterHydrating(for: directory) {
                         ProgressView()
                     } else {
-                        Text("No Data")
-                            .font(.largeTitle)
+                        emptyStateView
                     }
                 } else {
                     NoteScrollView(directory: directory)
@@ -61,14 +60,9 @@ struct NoteListParentView: View {
         .sheet(item: $noteStore.noteToShare) { note in
             activityViewController(note: note)
         }
-        .sheet(item: $noteStore.noteToTag,
-               onDismiss: {
-                   Task {
-                       await noteStore.fetch(directory: directory, background: true)
-                   }
-               }, content: { note in
+        .sheet(item: $noteStore.noteToTag) { note in
             AddTagView(note: note)
-        })
+        }
         .alert("",
                isPresented: $noteStore.showAlert,
                presenting: noteStore.alertType) { type in
@@ -104,6 +98,19 @@ struct NoteListParentView: View {
             default:
                 break
             }
+        }
+    }
+
+    // Not a bare ContentUnavailableView: `.refreshable` only exposes the
+    // pull-to-refresh gesture inside a scrollable container
+    private var emptyStateView: some View {
+        ScrollView {
+            ContentUnavailableView(
+                "No Notes",
+                systemImage: "note.text",
+                description: Text("Pull down to refresh.")
+            )
+            .containerRelativeFrame(.vertical)
         }
     }
 

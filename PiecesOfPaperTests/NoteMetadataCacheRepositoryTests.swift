@@ -8,7 +8,7 @@ struct NoteMetadataCacheRepositoryTests {
 
     private var metadata: NoteMetadata {
         NoteMetadata(id: UUID(),
-                     tags: [TagEntity(name: "work", color: CodableUIColor(uiColor: .blue))],
+                     tagIds: [UUID()],
                      updatedDate: Date(timeIntervalSince1970: 1_000))
     }
 

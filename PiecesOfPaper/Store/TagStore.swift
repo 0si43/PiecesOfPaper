@@ -38,12 +38,23 @@ final class TagStore {
         }
     }
 
-    func tagsMatching(_ noteTags: [TagEntity]) -> [TagEntity] {
-        tags.filter { noteTags.contains($0) }
+    /// Restores tags salvaged from a legacy note only while the tag list is
+    /// empty, i.e. taglist.json was lost or never written. Upserting them
+    /// unconditionally would resurrect deliberately deleted tags every time an
+    /// unmigrated note is opened.
+    func restoreIfEmpty(_ salvaged: [TagEntity]) {
+        guard tags.isEmpty, !salvaged.isEmpty else { return }
+        var seen = Set<UUID>()
+        tags = salvaged.filter { seen.insert($0.id).inserted }
+        saveOrRollback()
     }
 
-    func tagsNotMatching(_ noteTags: [TagEntity]) -> [TagEntity] {
-        tags.filter { !noteTags.contains($0) }
+    func tags(ids: [UUID]) -> [TagEntity] {
+        tags.filter { ids.contains($0.id) }
+    }
+
+    func tagsNotIn(ids: [UUID]) -> [TagEntity] {
+        tags.filter { !ids.contains($0.id) }
     }
 
     func filteringTags(from filterBy: [TagEntity]) -> [TagEntity] {

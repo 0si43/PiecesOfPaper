@@ -182,7 +182,7 @@ struct NoteStoreTests {
         await noteStore.fetch(directory: .inbox)
         let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
         noteStore.addTag(tag, to: notes[0])
-        #expect(noteStore.currentTags(for: notes[0]) == [tag])
+        #expect(noteStore.currentTagIds(for: notes[0]) == [tag.id])
         #expect(!noteStore.showAlert)
     }
 
@@ -191,7 +191,7 @@ struct NoteStoreTests {
         repositoryMock.saveShouldSucceed = false
         let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
         noteStore.addTag(tag, to: notes[0])
-        #expect(noteStore.currentTags(for: notes[0]).isEmpty)
+        #expect(noteStore.currentTagIds(for: notes[0]).isEmpty)
         #expect(noteStore.showAlert)
     }
 
@@ -357,7 +357,7 @@ struct NoteStoreSaveDrawingTests {
         noteStore.save(drawing: PKDrawing.stub(), to: staleSnapshot) { result = $0 }
 
         let saved = try #require(result)
-        #expect(saved.entity.tags == [tag])
-        #expect(noteStore.currentTags(for: staleSnapshot) == [tag])
+        #expect(saved.entity.tagIds == [tag.id])
+        #expect(noteStore.currentTagIds(for: staleSnapshot) == [tag.id])
     }
 }
