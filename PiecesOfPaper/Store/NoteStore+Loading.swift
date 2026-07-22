@@ -25,7 +25,7 @@ extension NoteStore {
             // metadata can match while a filter is active.
             filtered = filtered.filter { entry in
                 guard let metadata = validMetadata(for: entry) else { return false }
-                return listOrder.filterBy.allSatisfy { metadata.tags.contains($0) }
+                return listOrder.filterBy.allSatisfy { metadata.tagIds.contains($0.id) }
             }
         }
         let ascending = listOrder.sortOrder == .ascending
@@ -53,11 +53,15 @@ extension NoteStore {
 // MARK: - Load-on-demand accessors
 
 extension NoteStore {
-    /// Tags for a list row; empty until the row's document has been opened.
-    func tags(for entry: NoteIndexEntry) -> [TagEntity] {
-        validMetadata(for: entry)?.tags ?? []
+    /// Tag ids for a list row; empty until the row's document has been opened.
+    func tagIds(for entry: NoteIndexEntry) -> [UUID] {
+        validMetadata(for: entry)?.tagIds ?? []
     }
 
+    func salvageLegacyTags(of note: NoteData) {
+        guard !note.entity.legacyTags.isEmpty else { return }
+        onLegacyTagsDecoded?(note.entity.legacyTags)
+    }
 }
 
 // MARK: - Tag-filter hydration
@@ -76,12 +80,14 @@ extension NoteStore {
         hydrationTasks[directory] = nil
         hydratingDirectories.remove(directory)
         guard !listOrder(for: directory).filterBy.isEmpty else { return }
-        let index = directory == .inbox ? inboxIndex : archivedIndex
-        let pending = index.filter { validMetadata(for: $0) == nil }
-        guard !pending.isEmpty else { return }
 
         hydratingDirectories.insert(directory)
         hydrationTasks[directory] = Task {
+            // The persisted cache usually covers the whole directory, so the
+            // pending set must be computed after it has been read
+            await loadPersistedMetadataTask?.value
+            let index = directory == .inbox ? inboxIndex : archivedIndex
+            let pending = index.filter { validMetadata(for: $0) == nil }
             await withTaskGroup(of: Void.self) { group in
                 var iterator = pending.makeIterator()
                 // Width-limited so only a few drawings are decoded at a time

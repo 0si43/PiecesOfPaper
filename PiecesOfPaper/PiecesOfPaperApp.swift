@@ -5,7 +5,7 @@ import PencilKit
 struct PiecesOfPaperApp: App {
     var body: some Scene {
         WindowGroup {
-            RootView()
+            RootSplitView()
         }
     }
 }

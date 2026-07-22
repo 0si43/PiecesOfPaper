@@ -18,7 +18,7 @@ struct NoteGridView: View {
                             contextMenu(entry: entry)
                         }
                         NoteListTagHStack(
-                            tags: tagStore.tagsMatching(noteStore.tags(for: entry)),
+                            tags: tagStore.tags(ids: noteStore.tagIds(for: entry)),
                             action: {
                                 presentation.requestTag(entry, from: noteStore)
                             }

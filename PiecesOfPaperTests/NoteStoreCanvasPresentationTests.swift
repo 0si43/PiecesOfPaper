@@ -13,7 +13,8 @@ struct NoteStoreCanvasPresentationTests {
         repositoryMock = NoteRepositoryMock(notes: notes)
         noteStore = NoteStore(
             noteRepository: repositoryMock,
-            preferenceRepository: PreferenceRepositoryMock()
+            preferenceRepository: PreferenceRepositoryMock(),
+            metadataCacheRepository: NoteMetadataCacheRepositoryMock()
         )
     }
 

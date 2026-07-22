@@ -22,12 +22,11 @@ struct NoteListScreen: View {
             } else {
                 if noteStore.displayEntries(for: directory).isEmpty {
                     // While a tag filter hydrates, nothing may match yet;
-                    // "No Data" would be premature
+                    // the empty state would be premature
                     if noteStore.isFilterHydrating(for: directory) {
                         ProgressView()
                     } else {
-                        Text("No Data")
-                            .font(.largeTitle)
+                        emptyStateView
                     }
                 } else {
                     NoteGridView(directory: directory)
@@ -62,14 +61,9 @@ struct NoteListScreen: View {
         .sheet(item: $presentation.noteToShare) { note in
             activityViewController(note: note)
         }
-        .sheet(item: $presentation.noteToTag,
-               onDismiss: {
-                   Task {
-                       await noteStore.fetch(directory: directory, background: true)
-                   }
-               }, content: { note in
+        .sheet(item: $presentation.noteToTag) { note in
             AddTagView(note: note)
-        })
+        }
         .alert("",
                isPresented: $presentation.isAlertPresented,
                presenting: presentation.alert) { alert in
@@ -108,6 +102,19 @@ struct NoteListScreen: View {
         }
         // Outermost so the grid, its cells, and the sheets above all see it
         .environment(presentation)
+    }
+
+    // Not a bare ContentUnavailableView: `.refreshable` only exposes the
+    // pull-to-refresh gesture inside a scrollable container
+    private var emptyStateView: some View {
+        ScrollView {
+            ContentUnavailableView(
+                "No Notes",
+                systemImage: "note.text",
+                description: Text("Pull down to refresh.")
+            )
+            .containerRelativeFrame(.vertical)
+        }
     }
 
     private var toolbarItems: some ToolbarContent {

@@ -7,6 +7,9 @@ struct NoteData: Identifiable, Equatable {
 
     var id: UUID { entity.id }
 
+    /// Metadata-cache key; see NoteIndexEntry.fileName
+    var fileName: String { fileURL.lastPathComponent }
+
     var isArchived: Bool {
         isUnder(FilePath.archivedUrl)
     }

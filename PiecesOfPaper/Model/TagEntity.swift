@@ -3,8 +3,8 @@ import SwiftUI
 
 struct TagEntity: Codable, Identifiable, Equatable {
     var id = UUID()
-    let name: String
-    let color: CodableUIColor
+    var name: String
+    var color: CodableUIColor
 
     static func == (lhs: TagEntity, rhs: TagEntity) -> Bool {
         lhs.id == rhs.id
