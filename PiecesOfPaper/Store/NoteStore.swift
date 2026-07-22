@@ -44,7 +44,7 @@ final class NoteStore {
     // MARK: - Dependencies
     private let noteRepository: NoteRepositoryProtocol
     private let preferenceRepository: PreferenceRepositoryProtocol
-    /// Receives tags embedded in a legacy note; wired by SideBarListView so the
+    /// Receives tags embedded in a legacy note; wired by RootSplitView so the
     /// store stays independent of TagStore.
     @ObservationIgnored var onLegacyTagsDecoded: (([TagEntity]) -> Void)?
 

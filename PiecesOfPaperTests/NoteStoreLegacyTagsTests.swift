@@ -1,11 +1,3 @@
-//
-//  NoteStoreLegacyTagsTests.swift
-//  PiecesOfPaperTests
-//
-//  Created by Nakajima on 2026/07/20.
-//  Copyright © 2026 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import UIKit
 import Testing
 @testable import Pieces_of_Paper
