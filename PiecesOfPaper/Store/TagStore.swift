@@ -1,11 +1,3 @@
-//
-//  TagStore.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2021/12/05.
-//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import Foundation
 
 @Observable
@@ -63,12 +55,30 @@ final class TagStore {
         }
     }
 
-    func tagsMatching(_ noteTags: [TagEntity]) -> [TagEntity] {
-        tags.filter { noteTags.contains($0) }
+    /// Restores tags salvaged from a legacy note only while the tag list is
+    /// empty, i.e. taglist.json was lost or never written. Upserting them
+    /// unconditionally would resurrect deliberately deleted tags every time an
+    /// unmigrated note is opened.
+    func restoreIfEmpty(_ salvaged: [TagEntity]) {
+        guard !salvaged.isEmpty else { return }
+        // Queued behind the load kicked off in init: the emptiness check has to
+        // see the loaded tag list, not the transient empty state before it lands.
+        enqueueFileOperation {
+            guard self.tags.isEmpty else { return }
+            var seen = Set<UUID>()
+            let deduped = salvaged.filter { seen.insert($0.id).inserted }
+            self.tags = deduped
+            if await self.repository.saveAll(deduped) { return }
+            self.tags = await self.repository.fetchAll()
+        }
     }
 
-    func tagsNotMatching(_ noteTags: [TagEntity]) -> [TagEntity] {
-        tags.filter { !noteTags.contains($0) }
+    func tags(ids: [UUID]) -> [TagEntity] {
+        tags.filter { ids.contains($0.id) }
+    }
+
+    func tagsNotIn(ids: [UUID]) -> [TagEntity] {
+        tags.filter { !ids.contains($0.id) }
     }
 
     func filteringTags(from filterBy: [TagEntity]) -> [TagEntity] {

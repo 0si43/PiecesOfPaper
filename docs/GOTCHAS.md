@@ -18,7 +18,7 @@ Each entry links to the issue/PR where the details live.
 ## SwiftUI
 
 - **Alerts attached below a `fullScreenCover` never show while the cover is up**: `NoteListParentView` has `.alert(isPresented: $noteStore.showAlert)`, but while `CanvasView` is presented via `.fullScreenCover`, that alert is not displayed. Do not refactor cover-side errors onto the store's `showAlert`/`alertType` pattern — errors shown on top of a cover must live in a view-local `@State` + `.alert` inside the cover. The store alert pattern is for the list screens only. Background: PR #186 review.
-- **`fullScreenCover`/`sheet` content only inherits environment values injected *outside* the modifier's attachment point**: attaching a cover after `.environment(store)` in the chain (i.e. outside it) crashes at presentation with "No Observable object of type NoteStore found". Attach presentation modifiers *inside* the `.environment` chain — `SideBarListView` does this deliberately. Background: PR #208.
+- **`fullScreenCover`/`sheet` content only inherits environment values injected *outside* the modifier's attachment point**: attaching a cover after `.environment(store)` in the chain (i.e. outside it) crashes at presentation with "No Observable object of type NoteStore found". Attach presentation modifiers *inside* the `.environment` chain — `RootSplitView` does this deliberately. Background: PR #208.
 
 ## Xcode / build
 
@@ -26,7 +26,9 @@ Each entry links to the issue/PR where the details live.
 - **GitHub Actions runners intermittently report no simulators at all**: the test job fails at destination resolution with an "Available destinations" list containing only the two placeholder rows (`Any iOS Device` / `Any iOS Simulator Device`) — CoreSimulator is not returning its device list. Unrelated to the code under test (has hit docs-only commits); rerunning the same commit passes. `test.yml` waits for `xcrun simctl list devices available` to list the target device and retries `xcodebuild test` only when the failure log matches this signature. If it still fails, rerun the job. Details: issue #211.
 - **Xcode 26.6 (iOS 26.5 SDK) fails asset catalog compilation without the matching simulator runtime**: actool's `CompileAssetCatalogVariant thinned` step always fails when the iOS 26.5 simulator runtime is not installed, even though Swift compilation succeeds. Fix: `xcodebuild -downloadPlatform iOS` (~8.5 GB).
 - **Checking out commits older than mid-2026 loses the shared scheme**: `PiecesOfPaper.xcodeproj/xcshareddata/xcschemes/PiecesOfPaper.xcscheme` was untracked (excluded by `.gitignore`) until July 2026. Checking out an older commit (e.g. tag 3.3.0) leaves Xcode with "No Scheme". Recover with `git show <newer-commit>:PiecesOfPaper.xcodeproj/xcshareddata/xcschemes/PiecesOfPaper.xcscheme` — the target IDs are unchanged. When switching back, delete the now-untracked scheme first or it blocks the checkout.
+- **`Executed 0 tests, with 0 failures` in a `xcodebuild test` log is not a failure**: the tests are written with swift-testing (`import Testing`), so the XCTest-derived summary line always reports 0 and `grep 'Test case .* passed'` matches nothing. The real result is the `✔ Test run with N tests in M suites passed` line — check that for the count.
 - **The bundle ID is `Individual.LikeAPaper`**, kept from the app's previous name. Anything keyed by bundle ID (simulator `defaults`, app containers) uses this, not `PiecesOfPaper`.
+- **Tests import the app as `Pieces_of_Paper`**: the product name is "Pieces of Paper", so the module name substitutes underscores for the spaces. `@testable import PiecesOfPaper` — the name of the target, the project, and the source directory — fails with "unable to resolve module dependency". Copy the import block from an existing test file when adding one.
 
 ## project.pbxproj
 
@@ -35,6 +37,7 @@ Each entry links to the issue/PR where the details live.
 - **Object IDs look sequential but have gaps**: IDs of the form `A700000000000000000000XX` skip values that are already in use. Before assigning a new one, confirm it is unused with `rg`.
 - **Pass `-project` as an absolute path in worktree sessions**: both the main checkout and worktrees contain `PiecesOfPaper.xcodeproj`, and the shell cwd can silently revert to the launch directory, making xcodebuild build the wrong tree — especially dangerous for background runs.
 - **Re-check object-ID uniqueness after merging main into a branch with hand-added pbxproj objects**: two branches can pick the same "unused" `A700...XX` IDs in parallel (PR #192 and PR #193 both took 51/61). Git merges the text cleanly, but duplicate IDs make Xcode refuse to open the project ("The project is damaged"). After the merge, list duplicate definitions with `rg -o '^\t\t(A[0-9A-F]{24})' -r '$1' project.pbxproj | sort | uniq -d` and renumber your side — published main keeps its IDs. Background: PR #193.
+  - Prevention: start a branch's new objects a few values above main's highest ID instead of at the next free one. PR #210 began at `...80` while main's highest was `...7B`, and the branches merged in the meantime took `...7C`–`...7E` — no collision.
 
 ## QuickLook extensions
 

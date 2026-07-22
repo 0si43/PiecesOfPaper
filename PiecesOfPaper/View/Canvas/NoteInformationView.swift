@@ -1,15 +1,8 @@
-//
-//  NoteInformation.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2021/12/12.
-//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import SwiftUI
 
 struct NoteInformationView: View {
     private(set) var note: NoteData
+    @Environment(TagStore.self) private var tagStore
     let dataFormatter: DateFormatter = {
         let dataFormatter = DateFormatter()
         dataFormatter.dateStyle = .medium
@@ -67,11 +60,12 @@ struct NoteInformationView: View {
                 Divider()
                 Text(note.isArchived ? "Archived" : "Inbox")
                 Divider()
-                if note.entity.tags.isEmpty {
+                let tags = tagStore.tags(ids: note.entity.tagIds)
+                if tags.isEmpty {
                     Text("No tag")
                 } else {
                     ScrollView(.horizontal) {
-                        TagHStack(tags: note.entity.tags)
+                        TagHStack(tags: tags)
                     }
                 }
             }
@@ -82,4 +76,5 @@ struct NoteInformationView: View {
 
 #Preview {
     NoteInformationView(note: NoteData.createTestData())
+        .environment(TagStore())
 }

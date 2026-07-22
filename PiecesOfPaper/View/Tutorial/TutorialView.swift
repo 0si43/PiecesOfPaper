@@ -1,11 +1,3 @@
-//
-//  TutorialView.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2025/01/26.
-//  Copyright © 2025 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import SwiftUI
 
 struct TutorialView: View {

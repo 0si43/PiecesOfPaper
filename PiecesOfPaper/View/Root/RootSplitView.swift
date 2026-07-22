@@ -1,18 +1,11 @@
-//
-//  SideBarListView.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2021/11/03.
-//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import SwiftUI
 
-struct SideBarListView: View {
+struct RootSplitView: View {
     @State private var noteStore = NoteStore()
     @State private var tagStore = TagStore()
     @State private var preferenceStore = PreferenceStore()
     @State private var selection: Page? = .inbox
+    @Environment(\.scenePhase) private var scenePhase
     @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
 
     private enum Page: String, CaseIterable {
@@ -61,6 +54,9 @@ struct SideBarListView: View {
             // what swaps the drawing when openedNote is replaced mid-cover
             .id(note.id)
         }
+        .onAppear {
+            noteStore.onLegacyTagsDecoded = { tagStore.restoreIfEmpty($0) }
+        }
         .onOpenURL { url in
             noteStore.handleIncomingURL(url)
         }
@@ -68,6 +64,13 @@ struct SideBarListView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(NoteStoreError.openFailed(count: 1).localizedDescription)
+        }
+        // The store owner, so the flush happens once per app, not once per
+        // NoteListParentView
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .background {
+                noteStore.flushMetadataCache()
+            }
         }
         .environment(noteStore)
         .environment(tagStore)
@@ -123,4 +126,8 @@ struct SideBarListView: View {
         }
         .navigationTitle("Pieces of Paper")
     }
+}
+
+#Preview {
+    RootSplitView()
 }

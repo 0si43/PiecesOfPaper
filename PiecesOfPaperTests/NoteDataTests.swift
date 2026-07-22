@@ -1,11 +1,3 @@
-//
-//  NoteDataTests.swift
-//  PiecesOfPaperTests
-//
-//  Created by Nakajima on 2026/07/18.
-//  Copyright © 2026 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import Foundation
 import Testing
 import PencilKit
@@ -56,7 +48,7 @@ struct NoteDataTests {
         let note = NoteData.createTestData()
         var modified = note
         #expect(note == modified)
-        modified.entity.tags.append(TagEntity(name: "tag", color: CodableUIColor(uiColor: .red)))
+        modified.entity.tagIds.append(UUID())
         #expect(note != modified)
     }
 }

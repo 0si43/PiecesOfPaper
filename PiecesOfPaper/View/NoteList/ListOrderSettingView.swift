@@ -1,11 +1,3 @@
-//
-//  ListOrderSettingView.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2021/12/11.
-//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import SwiftUI
 
 struct ListOrderSettingView: View {

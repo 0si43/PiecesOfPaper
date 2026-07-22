@@ -1,11 +1,3 @@
-//
-//  TagStoreTests.swift
-//  PiecesOfPaperTests
-//
-//  Created by Nakajima on 2026/07/18.
-//  Copyright © 2026 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import UIKit
 import Testing
 @testable import Pieces_of_Paper
@@ -94,6 +86,56 @@ struct TagStoreTests {
         await waitUntil { tagStore.tags == updated }
 
         #expect(tagStore.tags == updated)
+    }
+
+    @Test func test_restoreIfEmpty_ignoresSalvagedTagsWhileTagListIsNotEmpty() async {
+        await waitForInitialLoad()
+        let salvaged = TagEntity(name: "salvaged", color: CodableUIColor(uiColor: .systemPink))
+        tagStore.restoreIfEmpty([salvaged])
+        // Let the enqueued restore drain; it must decline to save
+        for _ in 0..<50 { await Task.yield() }
+        #expect(tagStore.tags == initialTags)
+        #expect(repositoryMock.saveAllCalls.isEmpty)
+    }
+}
+
+@MainActor
+struct TagStoreRestoreTests {
+    let repositoryMock = TagRepositoryMock(tags: [])
+    let tagStore: TagStore
+    let salvaged = [
+        TagEntity(name: "salvaged", color: CodableUIColor(uiColor: .systemPink)),
+        TagEntity(name: "another", color: CodableUIColor(uiColor: .systemTeal))
+    ]
+
+    private func waitUntil(_ condition: () -> Bool) async {
+        for _ in 0..<100 where !condition() {
+            await Task.yield()
+        }
+    }
+
+    init() {
+        tagStore = TagStore(repository: repositoryMock)
+    }
+
+    @Test func test_restoreIfEmpty_addsAndPersistsSalvagedTags() async {
+        tagStore.restoreIfEmpty(salvaged)
+        await waitUntil { !repositoryMock.saveAllCalls.isEmpty }
+        #expect(tagStore.tags == salvaged)
+        #expect(repositoryMock.saveAllCalls.last == salvaged)
+    }
+
+    @Test func test_restoreIfEmpty_dropsDuplicateIds() async {
+        tagStore.restoreIfEmpty([salvaged[0], salvaged[0], salvaged[1]])
+        await waitUntil { tagStore.tags == salvaged }
+        #expect(tagStore.tags == salvaged)
+    }
+
+    @Test func test_restoreIfEmpty_rollsBackWhenSaveFails() async {
+        repositoryMock.saveShouldSucceed = false
+        tagStore.restoreIfEmpty(salvaged)
+        await waitUntil { repositoryMock.saveAllCalls.contains { !$0.isEmpty } }
+        #expect(tagStore.tags.isEmpty)
     }
 }
 

@@ -1,11 +1,3 @@
-//
-//  AddTagView.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2021/12/05.
-//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import SwiftUI
 
 struct AddTagView: View {
@@ -15,16 +7,16 @@ struct AddTagView: View {
     @Environment(NoteStore.self) private var noteStore
     @Environment(TagStore.self) private var tagStore
 
-    private var currentTags: [TagEntity] {
-        noteStore.currentTags(for: note)
+    private var currentTagIds: [UUID] {
+        noteStore.currentTagIds(for: note)
     }
 
     private var tagsToNote: [TagEntity] {
-        tagStore.tagsMatching(currentTags)
+        tagStore.tags(ids: currentTagIds)
     }
 
     private var tagsNotToNote: [TagEntity] {
-        tagStore.tagsNotMatching(currentTags)
+        tagStore.tagsNotIn(ids: currentTagIds)
     }
 
     var body: some View {

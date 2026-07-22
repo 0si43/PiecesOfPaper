@@ -1,11 +1,3 @@
-//
-//  NoteStoreTests.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2022/05/28.
-//  Copyright © 2022 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import UIKit
 import Testing
 import PencilKit
@@ -23,7 +15,8 @@ struct NoteStoreTests {
         preferenceRepositoryMock = PreferenceRepositoryMock()
         noteStore = NoteStore(
             noteRepository: repositoryMock,
-            preferenceRepository: preferenceRepositoryMock
+            preferenceRepository: preferenceRepositoryMock,
+            metadataCacheRepository: NoteMetadataCacheRepositoryMock()
         )
     }
 
@@ -101,12 +94,12 @@ struct NoteStoreTests {
         let failed = await noteStore.loadNote(entry)
         #expect(failed == nil)
         #expect(!noteStore.showAlert)
-        #expect(noteStore.metadataByUrl[entry.fileURL] == nil)
+        #expect(noteStore.metadataByFileName[entry.fileName] == nil)
 
         repositoryMock.failingUrls = []
         let loaded = await noteStore.loadNote(entry)
         #expect(loaded != nil)
-        #expect(noteStore.metadataByUrl[entry.fileURL]?.id == loaded?.entity.id)
+        #expect(noteStore.metadataByFileName[entry.fileName]?.id == loaded?.entity.id)
         #expect(repositoryMock.openCallCount == 2)
     }
 
@@ -155,7 +148,7 @@ struct NoteStoreTests {
         let newEntry = try #require(
             noteStore.inboxIndex.first { $0.fileURL.lastPathComponent.hasPrefix("duplicated-") }
         )
-        #expect(noteStore.metadataByUrl[newEntry.fileURL] != nil)
+        #expect(noteStore.metadataByFileName[newEntry.fileName] != nil)
     }
 
     @Test func test_delete_removesEntryAndMetadata() async throws {
@@ -165,7 +158,7 @@ struct NoteStoreTests {
         noteStore.delete(entry)
         await waitUntil { repositoryMock.deletedUrls.contains(entry.fileURL) }
         #expect(noteStore.inboxIndex.count == 2)
-        #expect(noteStore.metadataByUrl[entry.fileURL] == nil)
+        #expect(noteStore.metadataByFileName[entry.fileName] == nil)
     }
 
     @Test func test_delete_restoresEntryAndAlertsWhenDeleteFails() async throws {
@@ -211,7 +204,7 @@ struct NoteStoreTests {
         #expect(noteStore.inboxIndex.count == 2)
     }
 
-    @Test func test_archive_movesEntryAndRekeysMetadataWithoutReopening() async throws {
+    @Test func test_archive_movesEntryAndKeepsMetadataWithoutReopening() async throws {
         await noteStore.fetch(directory: .inbox)
         let entry = try #require(noteStore.inboxIndex.first)
         _ = await noteStore.loadNote(entry)
@@ -223,8 +216,7 @@ struct NoteStoreTests {
         let moved = try #require(noteStore.archivedIndex.first)
         #expect(moved.fileURL.lastPathComponent == entry.fileURL.lastPathComponent)
         #expect(moved.updatedDate == entry.updatedDate)
-        #expect(noteStore.metadataByUrl[moved.fileURL] != nil)
-        #expect(noteStore.metadataByUrl[entry.fileURL] == nil)
+        #expect(noteStore.metadataByFileName[moved.fileName] != nil)
         #expect(repositoryMock.openCallCount == 1)
     }
 
@@ -256,7 +248,7 @@ struct NoteStoreTests {
         await noteStore.fetch(directory: .inbox)
         let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
         noteStore.addTag(tag, to: notes[0])
-        #expect(noteStore.currentTags(for: notes[0]) == [tag])
+        #expect(noteStore.currentTagIds(for: notes[0]) == [tag.id])
         #expect(!noteStore.showAlert)
     }
 
@@ -265,7 +257,7 @@ struct NoteStoreTests {
         repositoryMock.saveShouldSucceed = false
         let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
         noteStore.addTag(tag, to: notes[0])
-        #expect(noteStore.currentTags(for: notes[0]).isEmpty)
+        #expect(noteStore.currentTagIds(for: notes[0]).isEmpty)
         #expect(noteStore.showAlert)
     }
 
@@ -306,7 +298,8 @@ struct NoteStoreTests {
 
         let store = NoteStore(
             noteRepository: NoteRepositoryMock(notes: []),
-            preferenceRepository: preferenceMock
+            preferenceRepository: preferenceMock,
+            metadataCacheRepository: NoteMetadataCacheRepositoryMock()
         )
         #expect(store.inboxListOrder.sortBy == .createdDate)
         #expect(store.archivedListOrder.sortOrder == .ascending)
@@ -319,7 +312,7 @@ struct NoteStoreTests {
         let note = NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url)
         noteStore.applySaved(note)
         #expect(noteStore.inboxIndex.map(\.fileURL) == [note.fileURL])
-        #expect(noteStore.metadataByUrl[note.fileURL]?.id == note.entity.id)
+        #expect(noteStore.metadataByFileName[note.fileName]?.id == note.entity.id)
     }
 
     @Test func test_applySaved_insertsArchivedNoteIntoArchivedIndex() throws {
@@ -379,7 +372,8 @@ struct NoteStoreSaveDrawingTests {
         repositoryMock = NoteRepositoryMock(notes: notes)
         noteStore = NoteStore(
             noteRepository: repositoryMock,
-            preferenceRepository: PreferenceRepositoryMock()
+            preferenceRepository: PreferenceRepositoryMock(),
+            metadataCacheRepository: NoteMetadataCacheRepositoryMock()
         )
     }
 
@@ -402,7 +396,7 @@ struct NoteStoreSaveDrawingTests {
         #expect(saved.entity.updatedDate > note.entity.updatedDate)
         let entry = try #require(noteStore.inboxIndex.first { $0.fileURL == note.fileURL })
         #expect(entry.updatedDate == saved.entity.updatedDate)
-        #expect(noteStore.metadataByUrl[note.fileURL]?.id == note.entity.id)
+        #expect(noteStore.metadataByFileName[note.fileName]?.id == note.entity.id)
     }
 
     @Test func test_saveDrawing_returnsNilAndKeepsIndexOnFailure() {
@@ -429,7 +423,7 @@ struct NoteStoreSaveDrawingTests {
         noteStore.save(drawing: PKDrawing.stub(), to: staleSnapshot) { result = $0 }
 
         let saved = try #require(result)
-        #expect(saved.entity.tags == [tag])
-        #expect(noteStore.currentTags(for: staleSnapshot) == [tag])
+        #expect(saved.entity.tagIds == [tag.id])
+        #expect(noteStore.currentTagIds(for: staleSnapshot) == [tag.id])
     }
 }

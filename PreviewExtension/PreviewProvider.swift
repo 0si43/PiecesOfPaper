@@ -1,11 +1,3 @@
-//
-//  PreviewProvider.swift
-//  PreviewExtension
-//
-//  Created by Nakajima on 2026/07/19.
-//  Copyright © 2026 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import UIKit
 import QuickLook
 import PencilKit

@@ -1,11 +1,3 @@
-//
-//  CoordinatedFileAccess.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2026/07/20.
-//  Copyright © 2026 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import Foundation
 
 /// Runs file operations under NSFileCoordinator so they do not race the iCloud

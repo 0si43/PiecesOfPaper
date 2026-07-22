@@ -1,11 +1,3 @@
-//
-//  FilePath.swift
-//  PiecesOfPaper
-//
-//  Created by Nakajima on 2021/11/23.
-//  Copyright © 2021 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import Foundation
 
 enum FilePath {
@@ -69,6 +61,15 @@ enum FilePath {
 
     static var tagListFileUrl: URL? {
         libraryUrl?.appendingPathComponent("taglist.json")
+    }
+
+    // Caches, not savingUrl: the metadata cache is derived from the notes
+    // themselves and must never sync. The storage mode is part of the name so
+    // toggling iCloud does not read another library's entries.
+    static var noteMetadataCacheFileUrl: URL? {
+        let suffix = isiCloudActive ? "icloud" : "local"
+        return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?
+            .appendingPathComponent("note-metadata-cache-\(suffix).json")
     }
 
     static func makeDirectoryIfNeeded() {

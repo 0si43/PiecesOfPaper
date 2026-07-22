@@ -1,11 +1,3 @@
-//
-//  FilePathTests.swift
-//  PiecesOfPaperTests
-//
-//  Created by Nakajima on 2026/07/20.
-//  Copyright © 2026 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import Testing
 import Foundation
 @testable import Pieces_of_Paper
@@ -38,6 +30,22 @@ struct FilePathTests {
     // Legacy .plist names share the same timestamp stem
     @Test func parseTimestamp_parsesLegacyPlistName() {
         #expect(FilePath.parseTimestamp(fromFileName: "2021-11-23-09-15-301234.plist") != nil)
+    }
+
+    // The metadata cache is derived data: it belongs in Caches, never under the
+    // synced savingUrl, and is written to a real, writable location
+    @Test func noteMetadataCacheFileUrl_isAWritableFileInCaches() throws {
+        let url = try #require(FilePath.noteMetadataCacheFileUrl)
+        let cachesPath = try #require(
+            FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+        ).path
+        #expect(url.deletingLastPathComponent().path == cachesPath)
+        #expect(["note-metadata-cache-local.json", "note-metadata-cache-icloud.json"]
+            .contains(url.lastPathComponent))
+
+        try Data("{}".utf8).write(to: url)
+        #expect(FileManager.default.fileExists(atPath: url.path))
+        try FileManager.default.removeItem(at: url)
     }
 
     // Non-timestamp names return nil instead of a garbage date

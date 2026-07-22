@@ -1,11 +1,3 @@
-//
-//  NoteDocumentTests.swift
-//  PiecesOfPaperTests
-//
-//  Created by Nakajima on 2026/07/11.
-//  Copyright © 2026 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import Foundation
 import Testing
 import PencilKit
@@ -59,6 +51,75 @@ struct NoteDocumentTests {
         #expect(throws: NoteDocumentError.self) {
             try document.load(fromContents: NSObject(), ofType: nil)
         }
+    }
+}
+
+struct NoteEntityCodingTests {
+    // Shape of a note written before tags were normalized to ids
+    private struct LegacyNoteEntity: Encodable {
+        var id = UUID()
+        var drawing = PKDrawing()
+        var tags: [TagEntity]
+        var createdDate = Date(timeIntervalSince1970: 1_000)
+        var updatedDate = Date(timeIntervalSince1970: 2_000)
+    }
+
+    // Shape of a note whose tag key is absent altogether
+    private struct UntaggedNoteEntity: Encodable {
+        var id = UUID()
+        var drawing = PKDrawing()
+        var createdDate = Date(timeIntervalSince1970: 1_000)
+        var updatedDate = Date(timeIntervalSince1970: 2_000)
+    }
+
+    private let tags = [
+        TagEntity(name: "idea", color: CodableUIColor(uiColor: .systemYellow)),
+        TagEntity(name: "memo", color: CodableUIColor(uiColor: .systemBlue))
+    ]
+
+    @Test func currentFormat_roundTripsTagIds() throws {
+        var entity = NoteEntity(drawing: PKDrawing())
+        entity.tagIds = tags.map(\.id)
+        let data = try PropertyListEncoder().encode(entity)
+        let decoded = try PropertyListDecoder().decode(NoteEntity.self, from: data)
+        #expect(decoded.tagIds == tags.map(\.id))
+        #expect(decoded.legacyTags.isEmpty)
+        #expect(decoded == entity)
+    }
+
+    @Test func legacyFormat_decodesEmbeddedTagsAsIdsAndKeepsCopies() throws {
+        let legacy = LegacyNoteEntity(tags: tags)
+        let data = try PropertyListEncoder().encode(legacy)
+        let decoded = try PropertyListDecoder().decode(NoteEntity.self, from: data)
+        #expect(decoded.id == legacy.id)
+        #expect(decoded.tagIds == tags.map(\.id))
+        #expect(decoded.legacyTags.map(\.name) == ["idea", "memo"])
+    }
+
+    @Test func legacyFormat_reEncodesWithoutEmbeddedCopies() throws {
+        let legacyData = try PropertyListEncoder().encode(LegacyNoteEntity(tags: tags))
+        let decoded = try PropertyListDecoder().decode(NoteEntity.self, from: legacyData)
+        let reEncoded = try PropertyListEncoder().encode(decoded)
+        let plist = try PropertyListSerialization.propertyList(from: reEncoded, format: nil)
+        let dictionary = try #require(plist as? [String: Any])
+        #expect(dictionary["tags"] == nil)
+        #expect(dictionary["tagIds"] as? [String] == tags.map(\.id.uuidString))
+    }
+
+    @Test func missingTagKey_decodesAsUntagged() throws {
+        let data = try PropertyListEncoder().encode(UntaggedNoteEntity())
+        let decoded = try PropertyListDecoder().decode(NoteEntity.self, from: data)
+        #expect(decoded.tagIds.isEmpty)
+        #expect(decoded.legacyTags.isEmpty)
+    }
+
+    @Test func legacyTags_areNotPartOfEquality() throws {
+        var entity = NoteEntity(drawing: PKDrawing())
+        var withLegacyCopies = entity
+        withLegacyCopies.legacyTags = tags
+        entity.tagIds = tags.map(\.id)
+        withLegacyCopies.tagIds = tags.map(\.id)
+        #expect(entity == withLegacyCopies)
     }
 }
 
