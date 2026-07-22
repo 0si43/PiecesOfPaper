@@ -86,8 +86,12 @@ device and the real Files app. Background: PR #208.
   picker / navigation bar (`CanvasView.toggleUIVisibility`) cannot be injected, so Done,
   the note list, and settings are currently unreachable from idb. Planned complement: a
   Simulator-only keyboard shortcut driven by `idb ui key` (issue #196 follow-up).
-- **Companion version**: the brew bottle is idb-companion 1.1.8 (built 2022). Works
-  against the iOS 18.3.1 simulator runtime; not tested against iOS 26.x runtimes.
+  Workaround until then: to exercise the note list, build a throwaway build with the
+  `noteStore.openBlankNoteIfIdle()` call in `NoteListParentView` stubbed out — the app then
+  launches into the list instead of a blank canvas. Revert the stub and rebuild before
+  running the verification that goes into the PR.
+- **Companion version**: the brew bottle is idb-companion 1.1.8 (built 2022). `ui swipe`
+  verified against the iOS 18.3.1 and iOS 26.3 simulator runtimes.
 - idb cannot inject touches into physical devices (iOS restriction); this workflow is
   Simulator-only. Canvas changes still require physical-iPad verification per CLAUDE.md.
 
