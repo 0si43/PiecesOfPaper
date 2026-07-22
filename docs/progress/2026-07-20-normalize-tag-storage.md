@@ -3,3 +3,5 @@
   - Tags embedded in a legacy note are restored into `taglist.json` only while the tag list is empty; adopting them unconditionally would resurrect deleted tags every time an unmigrated note is opened
   - `TagEntity.name`/`color` are now `var`, making rename/recolor a `TagStore` edit that applies to every note (editing UI is a follow-up)
   - `ListOrder.filterBy` deliberately stays `[TagEntity]`: a UserDefaults preference whose display already resolves through `TagStore`
+- [x] Stop the note list from re-fetching when the tag sheet closes (issue #239, PR #232)
+  - The `onDismiss` fetch re-enumerated the just-saved note with its new modification date and invalidated the optimistic metadata until the save landed, making the tag row flicker out; `addTag`/`removeTag` → `save` → `applySaved` already updates the index and metadata, so the fetch was redundant
