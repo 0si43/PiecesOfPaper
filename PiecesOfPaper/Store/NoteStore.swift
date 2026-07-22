@@ -44,6 +44,9 @@ final class NoteStore {
     // MARK: - Dependencies
     private let noteRepository: NoteRepositoryProtocol
     private let preferenceRepository: PreferenceRepositoryProtocol
+    /// Receives tags embedded in a legacy note; wired by RootSplitView so the
+    /// store stays independent of TagStore.
+    @ObservationIgnored var onLegacyTagsDecoded: (([TagEntity]) -> Void)?
 
     // Cell tasks, canvas taps, and filter hydration can request the same file
     // at once; one UIDocument open serves all of them.
@@ -127,10 +130,16 @@ final class NoteStore {
         inFlightLoads[entry.fileURL] = nil
         if let note {
             metadataByUrl[entry.fileURL] = NoteMetadata(id: note.entity.id,
-                                                        tags: note.entity.tags,
+                                                        tagIds: note.entity.tagIds,
                                                         updatedDate: entry.updatedDate)
+            salvageLegacyTags(of: note)
         }
         return note
+    }
+
+    func salvageLegacyTags(of note: NoteData) {
+        guard !note.entity.legacyTags.isEmpty else { return }
+        onLegacyTagsDecoded?(note.entity.legacyTags)
     }
 
     func validMetadata(for entry: NoteIndexEntry) -> NoteMetadata? {
@@ -210,28 +219,28 @@ extension NoteStore {
     // MARK: - Tag operations
 
     func addTag(_ tag: TagEntity, to note: NoteData) {
-        updateTags(of: note) { $0 + [tag] }
+        updateTagIds(of: note) { $0 + [tag.id] }
     }
 
     func removeTag(_ tag: TagEntity, from note: NoteData) {
-        updateTags(of: note) { tags in tags.filter { $0 != tag } }
+        updateTagIds(of: note) { tagIds in tagIds.filter { $0 != tag.id } }
     }
 
     /// The caller's snapshot may predate tag edits made elsewhere; the
     /// metadata cache holds the latest known tags for the file.
-    func currentTags(for note: NoteData) -> [TagEntity] {
-        metadataByUrl[note.fileURL]?.tags ?? note.entity.tags
+    func currentTagIds(for note: NoteData) -> [UUID] {
+        metadataByUrl[note.fileURL]?.tagIds ?? note.entity.tagIds
     }
 
-    private func updateTags(of note: NoteData, _ transform: ([TagEntity]) -> [TagEntity]) {
+    private func updateTagIds(of note: NoteData, _ transform: ([UUID]) -> [UUID]) {
         let previous = metadataByUrl[note.fileURL]
         var updated = note
-        updated.entity.tags = transform(currentTags(for: note))
+        updated.entity.tagIds = transform(currentTagIds(for: note))
         // Optimistic cache update so the tag sheet and list rows reflect
         // the change before the save lands; rolled back on failure.
         metadataByUrl[note.fileURL] = NoteMetadata(
             id: previous?.id ?? note.entity.id,
-            tags: updated.entity.tags,
+            tagIds: updated.entity.tagIds,
             updatedDate: previous?.updatedDate ?? entry(for: note.fileURL)?.updatedDate ?? note.entity.updatedDate
         )
         noteRepository.save(updated.entity, to: updated.fileURL) { [weak self] success in
@@ -294,6 +303,7 @@ extension NoteStore {
             releaseSecurityScope()
             securityScopedUrl = scopedUrl
             openedNote = note
+            salvageLegacyTags(of: note)
         } catch {
             scopedUrl?.stopAccessingSecurityScopedResource()
             guard !Task.isCancelled else { return }
@@ -322,7 +332,7 @@ extension NoteStore {
         var payload = note
         // Tags edited from the list while the canvas held this snapshot live
         // in the metadata cache, not in the snapshot
-        payload.entity.tags = currentTags(for: note)
+        payload.entity.tagIds = currentTagIds(for: note)
         guard drawing != payload.entity.drawing else {
             completion(payload)
             return
@@ -349,7 +359,7 @@ extension NoteStore {
                                    creationDate: attributes?.creationDate ?? note.entity.createdDate,
                                    contentModificationDate: attributes?.contentModificationDate ?? note.entity.updatedDate)
         metadataByUrl[note.fileURL] = NoteMetadata(id: note.entity.id,
-                                                   tags: note.entity.tags,
+                                                   tagIds: note.entity.tagIds,
                                                    updatedDate: entry.updatedDate)
         if note.isArchived {
             upsertEntry(entry, into: &archivedIndex)

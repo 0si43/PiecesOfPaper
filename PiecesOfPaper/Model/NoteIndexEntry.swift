@@ -5,7 +5,7 @@ import Foundation
 /// since the open.
 struct NoteMetadata: Equatable {
     let id: UUID
-    var tags: [TagEntity]
+    var tagIds: [UUID]
     var updatedDate: Date
 }
 
