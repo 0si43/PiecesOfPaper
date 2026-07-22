@@ -1,20 +1,21 @@
 import SwiftUI
 import PencilKit
 
-struct NoteListParentView: View {
+struct NoteListScreen: View {
     let directory: NoteDirectory
     @Environment(NoteStore.self) private var noteStore
     @Environment(PreferenceStore.self) private var preferenceStore
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.displayScale) private var displayScale
     @State private var showListOrderSettingView = false
+    @State private var presentation = NoteListPresentation()
 
     private var isTargetDirectoryArchived: Bool {
         directory == .archived
     }
 
     var body: some View {
-        @Bindable var noteStore = noteStore
+        @Bindable var presentation = presentation
         Group {
             if noteStore.isLoading {
                 ProgressView()
@@ -28,14 +29,14 @@ struct NoteListParentView: View {
                         emptyStateView
                     }
                 } else {
-                    NoteScrollView(directory: directory)
+                    NoteGridView(directory: directory)
                 }
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
         .task {
             guard !preferenceStore.shouldGrantiCloud else {
-                noteStore.alertType = .iCloudDenied
-                noteStore.showAlert = true
+                presentation.alert = .iCloudDenied
                 return
             }
 
@@ -48,7 +49,7 @@ struct NoteListParentView: View {
             toolbarItems
         }
         .sheet(isPresented: $showListOrderSettingView) {
-            NavigationView {
+            NavigationStack {
                 ListOrderSettingView(
                     listOrder: Binding(
                         get: { noteStore.listOrder(for: directory) },
@@ -57,29 +58,29 @@ struct NoteListParentView: View {
                 )
             }
         }
-        .sheet(item: $noteStore.noteToShare) { note in
+        .sheet(item: $presentation.noteToShare) { note in
             activityViewController(note: note)
         }
-        .sheet(item: $noteStore.noteToTag) { note in
+        .sheet(item: $presentation.noteToTag) { note in
             AddTagView(note: note)
         }
         .alert("",
-               isPresented: $noteStore.showAlert,
-               presenting: noteStore.alertType) { type in
-                switch type {
+               isPresented: $presentation.isAlertPresented,
+               presenting: presentation.alert) { alert in
+                switch alert {
                 case .iCloudDenied:
                     iCloudButton
                     localStorageButton
-                case .archive:
+                case .archiveAll:
                     archiveActionButton
                 case .error:
                     Text("OK")
                 }
-            } message: { type in
-                switch type {
+            } message: { alert in
+                switch alert {
                 case .iCloudDenied:
                     return Text("The app could not access your iCloud Drive. You should change setting")
-                case .archive:
+                case .archiveAll:
                     let operationText = isTargetDirectoryArchived ? "unarchived" : "archived"
                     let countText = noteStore.displayEntries(for: directory).count
                     let alertText = """
@@ -99,6 +100,8 @@ struct NoteListParentView: View {
                 break
             }
         }
+        // Outermost so the grid, its cells, and the sheets above all see it
+        .environment(presentation)
     }
 
     // Not a bare ContentUnavailableView: `.refreshable` only exposes the
@@ -118,8 +121,7 @@ struct NoteListParentView: View {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             Menu {
                 Button {
-                    noteStore.alertType = .archive
-                    noteStore.showAlert = true
+                    presentation.alert = .archiveAll
                 } label: {
                     Label(isTargetDirectoryArchived
                           ? "Move all to Inbox"
@@ -152,19 +154,6 @@ struct NoteListParentView: View {
                 Image(systemName: "square.and.pencil")
             }
             .accessibilityLabel("New Note")
-        }
-    }
-
-    private struct NoteScrollView: View {
-        let directory: NoteDirectory
-
-        var body: some View {
-            ScrollView {
-                Spacer(minLength: 30.0)
-                NoteListView(directory: directory)
-            }
-            .padding([.leading, .trailing])
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 
@@ -203,9 +192,13 @@ struct NoteListParentView: View {
 
     private var archiveActionButton: some View {
         Button(role: .destructive) {
-            isTargetDirectoryArchived
-            ? noteStore.allUnarchive()
-            : noteStore.allArchive()
+            Task {
+                if isTargetDirectoryArchived {
+                    await noteStore.allUnarchive()
+                } else {
+                    await noteStore.allArchive()
+                }
+            }
         } label: {
             Text(
                 isTargetDirectoryArchived

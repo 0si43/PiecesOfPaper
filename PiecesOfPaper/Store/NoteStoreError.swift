@@ -1,6 +1,6 @@
 import Foundation
 
-enum NoteStoreError: LocalizedError {
+enum NoteStoreError: LocalizedError, Equatable {
     case openFailed(count: Int)
     case saveFailed
     case deleteFailed

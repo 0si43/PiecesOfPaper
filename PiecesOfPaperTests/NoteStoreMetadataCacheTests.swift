@@ -100,7 +100,7 @@ struct NoteStoreMetadataCacheTests {
                                      creationDate: nil,
                                      contentModificationDate: nil)
         _ = await store.loadNote(foreign)
-        store.delete(entry)
+        try await store.delete(entry)
 
         store.flushMetadataCache()
         await store.persistTask?.value
