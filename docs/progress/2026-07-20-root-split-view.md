@@ -1,0 +1,4 @@
+- [x] Rename `SideBarListView` to `RootSplitView` and remove the `RootView` pass-through (issue #216, PR #233)
+  - The type is the app's root container (owns the `NavigationSplitView`, the three stores, and the app-wide `fullScreenCover`), not just the sidebar list; `RootView` was an empty pass-through occupying the "Root" name
+  - Moved to `View/Root/RootSplitView.swift` so every view lives under `View/`; `PiecesOfPaperApp` calls `RootSplitView()` directly
+  - No logic changes — the body is byte-identical apart from the type name, and the presentation modifiers stay inside the `.environment` chain

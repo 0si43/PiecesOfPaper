@@ -1,11 +1,3 @@
-//
-//  PreferenceStoreTests.swift
-//  PiecesOfPaperTests
-//
-//  Created by Nakajima on 2026/07/18.
-//  Copyright © 2026 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import Testing
 @testable import Pieces_of_Paper
 

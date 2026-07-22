@@ -1,11 +1,3 @@
-//
-//  PKDrawingStub.swift
-//  PiecesOfPaperTests
-//
-//  Created by Nakajima on 2026/07/19.
-//  Copyright © 2026 Tsuyoshi Nakajima. All rights reserved.
-//
-
 import PencilKit
 
 extension PKDrawing {

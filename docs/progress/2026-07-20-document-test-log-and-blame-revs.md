@@ -1,0 +1,2 @@
+- [x] Document the swift-testing log line and the `.git-blame-ignore-revs` upkeep rule (issue #230, PR #231)
+  - `xcodebuild test` always prints `Executed 0 tests, with 0 failures` for this suite because it uses swift-testing; the real count is on the `✔ Test run with N tests in M suites passed` line

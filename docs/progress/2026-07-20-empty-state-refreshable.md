@@ -1,0 +1,3 @@
+- [x] Make the empty note list refreshable with pull-to-refresh (issue #213, PR #229)
+  - `Text("No Data")` → `ContentUnavailableView` inside a `ScrollView`; `.refreshable` only exposes the gesture in a scrollable container
+  - Verified with idb: dropping a `.pop` into `InboxFolder` while the empty state is on screen, then pulling down, loads it
