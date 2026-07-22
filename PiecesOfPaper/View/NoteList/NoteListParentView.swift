@@ -69,14 +69,9 @@ struct NoteListParentView: View {
         .sheet(item: $noteStore.noteToShare) { note in
             activityViewController(note: note)
         }
-        .sheet(item: $noteStore.noteToTag,
-               onDismiss: {
-                   Task {
-                       await noteStore.fetch(directory: directory, background: true)
-                   }
-               }, content: { note in
+        .sheet(item: $noteStore.noteToTag) { note in
             AddTagView(note: note)
-        })
+        }
         .alert("",
                isPresented: $noteStore.showAlert,
                presenting: noteStore.alertType) { type in
