@@ -1,9 +1,10 @@
 import Foundation
 
-enum NoteStoreError: LocalizedError {
+enum NoteStoreError: LocalizedError, Equatable {
     case openFailed(count: Int)
     case saveFailed
     case deleteFailed
+    case moveFailed
 
     var errorDescription: String? {
         switch self {
@@ -13,6 +14,8 @@ enum NoteStoreError: LocalizedError {
             "Failed to save the note."
         case .deleteFailed:
             "Failed to delete the note."
+        case .moveFailed:
+            "Failed to move the note."
         }
     }
 }

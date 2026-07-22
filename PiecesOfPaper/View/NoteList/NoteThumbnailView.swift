@@ -1,9 +1,10 @@
 import SwiftUI
 import PencilKit
 
-struct NoteView: View {
+struct NoteThumbnailView: View {
     let entry: NoteIndexEntry
     @Environment(NoteStore.self) private var noteStore
+    @Environment(NoteListPresentation.self) private var presentation
     @State private var thumbnail: UIImage?
     @State private var isOpening = false
 
@@ -55,15 +56,16 @@ struct NoteView: View {
             if let note {
                 noteStore.openedNote = note
             } else {
-                noteStore.presentOpenFailedAlert()
+                presentation.presentOpenFailed()
             }
         }
     }
 }
 
 #Preview {
-    NoteView(entry: NoteIndexEntry(fileURL: URL(fileURLWithPath: "/preview/2026-01-01-00-00-000000.pop"),
-                                   creationDate: nil,
-                                   contentModificationDate: nil))
+    NoteThumbnailView(entry: NoteIndexEntry(fileURL: URL(fileURLWithPath: "/preview/2026-01-01-00-00-000000.pop"),
+                                            creationDate: nil,
+                                            contentModificationDate: nil))
         .environment(NoteStore())
+        .environment(NoteListPresentation())
 }

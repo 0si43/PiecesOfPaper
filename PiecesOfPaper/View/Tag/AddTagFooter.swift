@@ -29,7 +29,7 @@ struct AddTagFooter: View {
         .accessibilityLabel("Add Tag")
         .accessibilityAddTraits(.isButton)
         .sheet(isPresented: $isTapped) {
-            NavigationView {
+            NavigationStack {
                 VStack {
                     Tag(entity: tagEntity)
                     HStack {

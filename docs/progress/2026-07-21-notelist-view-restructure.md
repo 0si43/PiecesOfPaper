@@ -1,0 +1,7 @@
+- [x] Restructure the NoteList view hierarchy and move presentation state out of NoteStore (issue #219, PR #235)
+  - Sheet/alert state moved from `NoteStore` to a screen-owned `NoteListPresentation`, so modal state is per-screen instead of app-global
+  - `NoteStore` reports failures by throwing: `delete` is `throws`, `duplicate`/`addTag`/`removeTag` are `async throws`, with the completion-based repository calls wrapped in `withCheckedContinuation`
+  - Four layers became three, named by role: `NoteListParentView` → `NoteListScreen`, `NoteListView` → `NoteGridView`, `NoteView` → `NoteThumbnailView`; the nested `NoteScrollView` was folded into the grid
+  - `openedNote` and `showExternalOpenAlert` stayed on `NoteStore` — `openedNote` is shared by three entry points and its security-scope lifecycle lives in the store
+  - `AddTagView` presents its own alert: one raised by the screen behind it would be covered by the sheet
+  - Several #219 proposals were already resolved on main before this work (single `fullScreenCover` via `openedNote`, `.refreshable` awaiting directly, `showCanvasView` removed)

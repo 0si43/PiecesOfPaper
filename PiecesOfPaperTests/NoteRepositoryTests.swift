@@ -79,6 +79,58 @@ struct NoteRepositoryTests {
         }
     }
 
+    @Test func delete_removesTheFile() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let fileUrl = directory.appendingPathComponent("note.pop")
+        try PropertyListEncoder().encode(NoteEntity(drawing: PKDrawing())).write(to: fileUrl)
+
+        try await NoteRepository().delete(fileUrl: fileUrl)
+
+        #expect(!FileManager.default.fileExists(atPath: fileUrl.path))
+    }
+
+    @Test func delete_throwsWhenTheFileIsMissing() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        await #expect(throws: (any Error).self) {
+            try await NoteRepository().delete(fileUrl: directory.appendingPathComponent("missing.pop"))
+        }
+    }
+
+    @Test func move_relocatesTheFileAndReturnsItsNewUrl() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let source = directory.appendingPathComponent("source")
+        let destination = directory.appendingPathComponent("destination")
+        try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
+        let fileUrl = source.appendingPathComponent("note.pop")
+        let entity = NoteEntity(drawing: PKDrawing())
+        try PropertyListEncoder().encode(entity).write(to: fileUrl)
+
+        let newUrl = try await NoteRepository().move(fileUrl: fileUrl, toDirectoryAt: destination)
+
+        #expect(newUrl.lastPathComponent == "note.pop")
+        #expect(newUrl.deletingLastPathComponent().path == destination.path)
+        #expect(!FileManager.default.fileExists(atPath: fileUrl.path))
+        let moved = try PropertyListDecoder().decode(NoteEntity.self, from: Data(contentsOf: newUrl))
+        #expect(moved.id == entity.id)
+    }
+
+    @Test func move_throwsWhenTheSourceIsMissing() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let destination = directory.appendingPathComponent("destination")
+        try FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
+
+        await #expect(throws: (any Error).self) {
+            _ = try await NoteRepository().move(fileUrl: directory.appendingPathComponent("missing.pop"),
+                                                toDirectoryAt: destination)
+        }
+    }
+
     @Test func save_writesToLegacyUrlWhileItStillExists() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
