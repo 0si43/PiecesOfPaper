@@ -2,5 +2,5 @@
   - Merged `DeletableTag` into `Tag` (a `deletable` parameter) and folded `NoteListTagHStack` into `TagHStack`; the strip's frame and whole-strip tap moved to call sites, and the per-tag tap gesture attaches only when an action is provided so a caller's whole-strip gesture is not swallowed
   - Extracted the duplicated share-image rendering into `PKDrawing.lightModeImage(scale:)`, `@MainActor` so the #187 off-main-rendering invariant is compiler-enforced
   - Guarded `NoteData.createTestData()` and its three `#Preview` call sites behind `#if DEBUG` (`#Preview` bodies compile in Release); verified via `nm` the symbol is absent from the Release binary
-  - `LegacyNoteMigrator` move/download failures are now logged via `print` instead of `try?`; retry-next-pass semantics unchanged, no alert (fires every enumeration), `os.Logger` deferred to issue #222
+  - `LegacyNoteMigrator` move/download failures are now logged via `Logger.legacyNoteMigrator` instead of `try?`; retry-next-pass semantics unchanged, no alert (fires every enumeration). Initially `print`, switched to `os.Logger` after PR #246 landed the convention mid-flight
   - The NavigationView → NavigationStack item was found already complete (zero occurrences)
