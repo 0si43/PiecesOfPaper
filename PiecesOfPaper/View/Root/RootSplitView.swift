@@ -65,11 +65,18 @@ struct RootSplitView: View {
         } message: {
             Text(NoteStoreError.openFailed(count: 1).localizedDescription)
         }
-        // The store owner, so the flush happens once per app, not once per
-        // NoteListParentView
+        // The store owner, so each transition is handled once per app, not
+        // once per NoteListScreen instance
         .onChange(of: scenePhase) { _, phase in
-            if phase == .background {
+            switch phase {
+            case .active:
+                guard !preferenceStore.shouldGrantiCloud else { return }
+                noteStore.sceneDidBecomeActive()
+            case .background:
+                noteStore.sceneDidEnterBackground()
                 noteStore.flushMetadataCache()
+            default:
+                break
             }
         }
         .environment(noteStore)
