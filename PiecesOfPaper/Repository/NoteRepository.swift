@@ -1,4 +1,5 @@
 import UIKit
+import os
 
 enum NoteDirectory: String {
     case inbox, archived
@@ -23,7 +24,7 @@ protocol NoteRepositoryProtocol: AnyObject {
     func fileAttributes(at fileUrl: URL) -> NoteFileAttributes?
     @MainActor func setCloudUpdateHandler(_ handler: @escaping @MainActor () -> Void)
     @MainActor func open(fileUrl: URL) async throws -> NoteData
-    func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void)
+    @MainActor func save(_ entity: NoteEntity, to fileUrl: URL) async throws
     // Coordination happens off the main actor inside CoordinatedFileAccess, so
     // these only hop back here to keep callers and the index on one actor.
     @MainActor func delete(fileUrl: URL) async throws
@@ -123,9 +124,23 @@ final class NoteRepository: NoteRepositoryProtocol {
 
     @MainActor
     func open(fileUrl: URL) async throws -> NoteData {
-        // No fileExists guard: an undownloaded iCloud note has no local file yet.
-        // Kick off the download and let UIDocument's coordinated read wait for it.
-        try? FileManager.default.startDownloadingUbiquitousItem(at: fileUrl)
+        // No blanket fileExists guard: an undownloaded iCloud note has no local
+        // file yet. Kick off the download and let UIDocument's coordinated read
+        // wait for it. But a missing file that is not a ubiquitous item can
+        // never arrive, and open() on it waits forever — fail fast instead
+        // (stale index entry, note deleted from another device).
+        if !FileManager.default.fileExists(atPath: fileUrl.path) {
+            do {
+                try FileManager.default.startDownloadingUbiquitousItem(at: fileUrl)
+            } catch {
+                let isUbiquitous = (try? fileUrl.resourceValues(forKeys: [.isUbiquitousItemKey]))?
+                    .isUbiquitousItem ?? false
+                if !isUbiquitous {
+                    Logger.noteRepository.error("Open target missing and not ubiquitous: \(fileUrl.path, privacy: .public)")
+                    throw NoteRepositoryError.fileNotFound(path: fileUrl.path)
+                }
+            }
+        }
         let document = NoteDocument(fileURL: fileUrl)
         let isSuccess = await document.open()
         // Close only after a successful open: close() on a failed document
@@ -149,14 +164,39 @@ final class NoteRepository: NoteRepositoryProtocol {
         return .fileOpenFailed(path: fileUrl.path)
     }
 
-    func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void) {
+    @MainActor
+    func save(_ entity: NoteEntity, to fileUrl: URL) async throws {
         let targetUrl = resolveMigratedUrl(fileUrl)
+        let directoryUrl = targetUrl.deletingLastPathComponent()
+        // .forCreating does not create intermediate directories; without this a
+        // missing parent (fresh container, storage location change) fails the
+        // save with no user-visible reason.
+        if !FileManager.default.fileExists(atPath: directoryUrl.path) {
+            try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
+        }
         // The transient document lives until the completion handler fires,
         // which keeps its conflict observer active for the whole save.
         let document = NoteDocument(fileURL: targetUrl, entity: entity)
         let saveOperation: UIDocument.SaveOperation =
             FileManager.default.fileExists(atPath: targetUrl.path) ? .forOverwriting : .forCreating
-        document.save(to: targetUrl, for: saveOperation, completionHandler: completion)
+        let success = await withCheckedContinuation { continuation in
+            document.save(to: targetUrl, for: saveOperation) { continuation.resume(returning: $0) }
+        }
+        guard success else {
+            Logger.noteRepository.error("""
+            Save failed at \(targetUrl.path, privacy: .public): \
+            \(String(describing: document.lastHandledError), privacy: .public)
+            """)
+            throw NoteRepositoryError.saveFailed(path: targetUrl.path, underlying: document.lastHandledError)
+        }
+        // UIDocument can report success while leaving nothing usable on disk
+        // (issue #225 reports drawings vanishing right after save); trust the
+        // file system over the completion flag.
+        let fileSize = (try? FileManager.default.attributesOfItem(atPath: targetUrl.path))?[.size] as? Int ?? 0
+        guard fileSize > 0 else {
+            Logger.noteRepository.error("Save reported success but no data exists at \(targetUrl.path, privacy: .public)")
+            throw NoteRepositoryError.saveVerificationFailed(path: targetUrl.path)
+        }
     }
 
     @MainActor
@@ -200,6 +240,9 @@ final class NoteRepository: NoteRepositoryProtocol {
 enum NoteRepositoryError: LocalizedError {
     case fileOpenFailed(path: String)
     case fileNotDownloaded(path: String)
+    case fileNotFound(path: String)
+    case saveFailed(path: String, underlying: Error?)
+    case saveVerificationFailed(path: String)
     case directoryNotAvailable
 
     var errorDescription: String? {
@@ -208,6 +251,16 @@ enum NoteRepositoryError: LocalizedError {
             "Failed to open file at \(path)."
         case .fileNotDownloaded(let path):
             "The note at \(path) has not finished downloading from iCloud."
+        case .fileNotFound(let path):
+            "No file exists at \(path)."
+        case let .saveFailed(path, underlying):
+            if let underlying {
+                "Failed to write \(path): \(underlying.localizedDescription)"
+            } else {
+                "Failed to write \(path)."
+            }
+        case .saveVerificationFailed(let path):
+            "The save finished but no data exists at \(path)."
         case .directoryNotAvailable:
             "Directory is not available."
         }

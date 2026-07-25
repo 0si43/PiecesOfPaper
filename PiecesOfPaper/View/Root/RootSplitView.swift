@@ -56,6 +56,11 @@ struct RootSplitView: View {
         }
         .onAppear {
             noteStore.onLegacyTagsDecoded = { tagStore.restoreIfEmpty($0) }
+            FilePath.startObservingUbiquityChanges {
+                FilePath.makeDirectoryIfNeeded()
+                preferenceStore.refreshCloudAvailability()
+                Task { await noteStore.applyCloudUpdate() }
+            }
         }
         .onOpenURL { url in
             noteStore.handleIncomingURL(url)
@@ -71,11 +76,10 @@ struct RootSplitView: View {
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
-                Task {
-                    await FilePath.revalidateiCloudUrl()
-                    preferenceStore.refreshCloudAvailability()
-                    await noteStore.applyCloudUpdate()
-                }
+                // The ubiquity observer already re-resolved the container on
+                // willEnterForeground; this picks up input changes that don't
+                // move the storage location (e.g. the account token)
+                preferenceStore.refreshCloudAvailability()
                 guard !preferenceStore.cloudAvailability.isDegraded else { return }
                 noteStore.sceneDidBecomeActive()
             case .background:

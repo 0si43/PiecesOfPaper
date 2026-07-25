@@ -140,9 +140,12 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
 
     var saveShouldSucceed = true
     private(set) var saveCallCount = 0
-    func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void) {
+    @MainActor
+    func save(_ entity: NoteEntity, to fileUrl: URL) async throws {
         saveCallCount += 1
-        completion(saveShouldSucceed)
+        guard saveShouldSucceed else {
+            throw NoteRepositoryError.saveFailed(path: fileUrl.path, underlying: nil)
+        }
     }
 
     @MainActor

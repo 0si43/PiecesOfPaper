@@ -55,3 +55,47 @@ struct FilePathTests {
         #expect(FilePath.parseTimestamp(fromFileName: "") == nil)
     }
 }
+
+// Serialized: the cases mutate FilePath's shared cache and provider seam
+@Suite(.serialized)
+struct FilePathiCloudCacheTests {
+    private func resetProvider(to original: @escaping () -> URL?) {
+        FilePath.ubiquityContainerProvider = original
+        FilePath.invalidateiCloudUrlCache()
+    }
+
+    // A container appearing after a nil resolution must not flip the storage
+    // location mid-session; only an explicit invalidation re-resolves
+    @Test func iCloudUrl_cachesNilResolutionUntilInvalidated() {
+        let original = FilePath.ubiquityContainerProvider
+        defer { resetProvider(to: original) }
+        FilePath.ubiquityContainerProvider = { nil }
+        FilePath.invalidateiCloudUrlCache()
+
+        #expect(FilePath.iCloudUrl == nil)
+
+        FilePath.ubiquityContainerProvider = { URL(fileURLWithPath: "/container") }
+        #expect(FilePath.iCloudUrl == nil)
+
+        FilePath.invalidateiCloudUrlCache()
+        #expect(FilePath.iCloudUrl?.path == "/container/Documents")
+    }
+
+    // The observer callback fires only when re-resolution actually moves the location
+    @Test func refreshReportingLocationChange_reportsOnlyActualMoves() {
+        let original = FilePath.ubiquityContainerProvider
+        defer { resetProvider(to: original) }
+        FilePath.ubiquityContainerProvider = { nil }
+        FilePath.invalidateiCloudUrlCache()
+
+        // Nothing resolved yet: nothing to report
+        #expect(!FilePath.refreshReportingLocationChange())
+
+        #expect(FilePath.iCloudUrl == nil)
+        #expect(!FilePath.refreshReportingLocationChange())
+
+        FilePath.ubiquityContainerProvider = { URL(fileURLWithPath: "/container") }
+        #expect(FilePath.refreshReportingLocationChange())
+        #expect(!FilePath.refreshReportingLocationChange())
+    }
+}

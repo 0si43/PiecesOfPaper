@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 import os
 
 enum FilePath {
@@ -12,42 +12,74 @@ enum FilePath {
                                     containerUrl: iCloudUrl) == .available
     }
 
-    // url(forUbiquityContainerIdentifier:) is slow and not meant for the main thread,
-    // but it is called from computed properties all over the app. Resolve it once and reuse.
-    // The absent result is cached too (.some(nil)), so the storage mode cannot flip
-    // between two FilePath accesses inside one operation; revalidateiCloudUrl() is
-    // the only way availability changes are picked up mid-session.
-    private static var resolvediCloudUrl: URL??
-    static var iCloudUrl: URL? {
-        if let resolved = resolvediCloudUrl {
-            return resolved
-        }
-        let url = FileManager.default.url(forUbiquityContainerIdentifier: nil)?
-            .appendingPathComponent("Documents")
-        resolvediCloudUrl = .some(url)
-        return url
+    // Seam for tests; production resolves the real ubiquity container.
+    static var ubiquityContainerProvider: () -> URL? = {
+        FileManager.default.url(forUbiquityContainerIdentifier: nil)
     }
 
-    @MainActor
-    static func revalidateiCloudUrl() async {
-        let url = await Task.detached {
-            FileManager.default.url(forUbiquityContainerIdentifier: nil)?
-                .appendingPathComponent("Documents")
-        }.value
-        resolvediCloudUrl = .some(url)
+    // url(forUbiquityContainerIdentifier:) is slow and not meant for the main thread,
+    // but it is called from computed properties all over the app. Resolve it once and reuse.
+    // The nil outcome is cached too: retrying a late-resolving container would flip
+    // savingUrl from local to iCloud mid-session, stranding just-saved notes outside
+    // both listed directories (issue #225). Re-resolution only happens through
+    // invalidateiCloudUrlCache().
+    private static var cachediCloudResolution: URL??
+    static var iCloudUrl: URL? {
+        if let resolution = cachediCloudResolution {
+            return resolution
+        }
+        let documentsUrl = ubiquityContainerProvider()?.appendingPathComponent("Documents")
+        cachediCloudResolution = documentsUrl
+        return documentsUrl
+    }
+
+    static func invalidateiCloudUrlCache() {
+        cachediCloudResolution = nil
+    }
+
+    private static var ubiquityObservers: [NSObjectProtocol] = []
+
+    /// Re-resolves the container when the iCloud identity may have changed
+    /// (account switch, or any change made while the app was backgrounded) and
+    /// reports only actual location changes so the caller can re-fetch.
+    static func startObservingUbiquityChanges(onLocationChanged: @escaping () -> Void) {
+        guard ubiquityObservers.isEmpty else { return }
+        let names: [Notification.Name] = [
+            .NSUbiquityIdentityDidChange,
+            UIApplication.willEnterForegroundNotification
+        ]
+        ubiquityObservers = names.map { name in
+            NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { _ in
+                if refreshReportingLocationChange() {
+                    onLocationChanged()
+                }
+            }
+        }
+    }
+
+    /// Re-resolves the container and reports whether the storage location
+    /// actually moved. A never-resolved cache has no dependents yet, so there
+    /// is nothing to report; the next iCloudUrl access resolves fresh.
+    static func refreshReportingLocationChange() -> Bool {
+        guard let previous = cachediCloudResolution else { return false }
+        invalidateiCloudUrlCache()
+        return iCloudUrl != previous
     }
 
     static var documentDirectoryUrl: URL? {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     }
 
-    // avoided to conflict the name of "Documents/Inbox/"
+    // "InboxFolder", not "Inbox": avoided to conflict the name of "Documents/Inbox/"
+    static let inboxDirectoryName = "InboxFolder"
+    static let archivedDirectoryName = "Archived"
+
     static var inboxUrl: URL? {
-        savingUrl?.appendingPathComponent("InboxFolder")
+        savingUrl?.appendingPathComponent(inboxDirectoryName)
     }
 
     static var archivedUrl: URL? {
-        savingUrl?.appendingPathComponent("Archived")
+        savingUrl?.appendingPathComponent(archivedDirectoryName)
     }
 
     static var libraryUrl: URL? {

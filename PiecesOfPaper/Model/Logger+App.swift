@@ -8,6 +8,8 @@ extension Logger {
     static let tagRepository = Logger(subsystem: subsystem, category: "TagRepository")
     static let noteMetadataCache = Logger(subsystem: subsystem, category: "NoteMetadataCache")
     static let noteDocument = Logger(subsystem: subsystem, category: "NoteDocument")
+    static let noteRepository = Logger(subsystem: subsystem, category: "NoteRepository")
+    static let noteStore = Logger(subsystem: subsystem, category: "NoteStore")
     static let filePath = Logger(subsystem: subsystem, category: "FilePath")
     static let legacyNoteMigrator = Logger(subsystem: subsystem, category: "LegacyNoteMigrator")
 }

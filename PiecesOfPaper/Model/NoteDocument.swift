@@ -4,6 +4,9 @@ import os
 
 final class NoteDocument: UIDocument {
     var entity: NoteEntity
+    /// UIDocument reports the reason a read/write failed only through
+    /// handleError, never through the save/open completion Bool.
+    private(set) var lastHandledError: Error?
     private var stateObserver: NSObjectProtocol?
 
     override init(fileURL: URL) {
@@ -34,6 +37,15 @@ final class NoteDocument: UIDocument {
         ) { [weak self] _ in
             self?.resolveConflictIfNeeded()
         }
+    }
+
+    override func handleError(_ error: Error, userInteractionPermitted: Bool) {
+        lastHandledError = error
+        Logger.noteDocument.error("""
+        UIDocument error for \(self.fileURL.lastPathComponent, privacy: .public): \
+        \(String(describing: error), privacy: .public)
+        """)
+        super.handleError(error, userInteractionPermitted: userInteractionPermitted)
     }
 
     override func contents(forType typeName: String) throws -> Any {
