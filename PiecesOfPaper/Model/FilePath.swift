@@ -6,20 +6,34 @@ enum FilePath {
     }
 
     static var isiCloudActive: Bool {
-        PreferenceRepository().getEnablediCloud() && iCloudUrl != nil
+        CloudAvailability.determine(enablediCloud: PreferenceRepository().getEnablediCloud(),
+                                    hasAccount: FileManager.default.ubiquityIdentityToken != nil,
+                                    containerUrl: iCloudUrl) == .available
     }
 
     // url(forUbiquityContainerIdentifier:) is slow and not meant for the main thread,
     // but it is called from computed properties all over the app. Resolve it once and reuse.
-    private static var cachediCloudUrl: URL?
+    // The absent result is cached too (.some(nil)), so the storage mode cannot flip
+    // between two FilePath accesses inside one operation; revalidateiCloudUrl() is
+    // the only way availability changes are picked up mid-session.
+    private static var resolvediCloudUrl: URL??
     static var iCloudUrl: URL? {
-        if let cachediCloudUrl {
-            return cachediCloudUrl
+        if let resolved = resolvediCloudUrl {
+            return resolved
         }
-        guard let url = FileManager.default.url(forUbiquityContainerIdentifier: nil) else { return nil }
-        let documentsUrl = url.appendingPathComponent("Documents")
-        cachediCloudUrl = documentsUrl
-        return documentsUrl
+        let url = FileManager.default.url(forUbiquityContainerIdentifier: nil)?
+            .appendingPathComponent("Documents")
+        resolvediCloudUrl = .some(url)
+        return url
+    }
+
+    @MainActor
+    static func revalidateiCloudUrl() async {
+        let url = await Task.detached {
+            FileManager.default.url(forUbiquityContainerIdentifier: nil)?
+                .appendingPathComponent("Documents")
+        }.value
+        resolvediCloudUrl = .some(url)
     }
 
     static var documentDirectoryUrl: URL? {

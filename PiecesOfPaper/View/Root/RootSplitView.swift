@@ -68,8 +68,17 @@ struct RootSplitView: View {
         // The store owner, so the flush happens once per app, not once per
         // NoteListParentView
         .onChange(of: scenePhase) { _, phase in
-            if phase == .background {
+            switch phase {
+            case .background:
                 noteStore.flushMetadataCache()
+            case .active:
+                Task {
+                    await FilePath.revalidateiCloudUrl()
+                    preferenceStore.refreshCloudAvailability()
+                    await noteStore.applyCloudUpdate()
+                }
+            default:
+                break
             }
         }
         .environment(noteStore)

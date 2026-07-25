@@ -35,12 +35,12 @@ struct NoteListScreen: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            guard !preferenceStore.shouldGrantiCloud else {
+            switch preferenceStore.cloudAvailability {
+            case .signedOut, .driveUnavailable:
                 presentation.alert = .iCloudDenied
-                return
+            case .available, .userDisabled:
+                await noteStore.fetch(directory: directory)
             }
-
-            await noteStore.fetch(directory: directory)
         }
         .refreshable {
             await noteStore.fetch(directory: directory, background: true)
@@ -94,7 +94,7 @@ struct NoteListScreen: View {
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
-                guard !preferenceStore.shouldGrantiCloud else { return }
+                guard !preferenceStore.cloudAvailability.isDegraded else { return }
                 noteStore.openBlankNoteIfIdle()
             default:
                 break

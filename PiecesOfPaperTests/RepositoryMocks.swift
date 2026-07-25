@@ -186,6 +186,11 @@ final class NoteMetadataCacheRepositoryMock: NoteMetadataCacheRepositoryProtocol
     }
 }
 
+struct UbiquityStatusMock: UbiquityStatusProviding {
+    var hasAccount = true
+    var containerUrl: URL? = URL(fileURLWithPath: "/container/Documents")
+}
+
 final class PreferenceRepositoryMock: PreferenceRepositoryProtocol {
     var enablediCloud = false
     var enabledAutoSave = true
