@@ -7,7 +7,9 @@ enum FilePath {
     }
 
     static var isiCloudActive: Bool {
-        PreferenceRepository().getEnablediCloud() && iCloudUrl != nil
+        CloudAvailability.determine(enablediCloud: PreferenceRepository().getEnablediCloud(),
+                                    hasAccount: FileManager.default.ubiquityIdentityToken != nil,
+                                    containerUrl: iCloudUrl) == .available
     }
 
     // Seam for tests; production resolves the real ubiquity container.

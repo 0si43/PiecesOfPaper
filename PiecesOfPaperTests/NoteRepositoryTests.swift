@@ -75,8 +75,17 @@ struct NoteRepositoryTests {
         let corruptUrl = directory.appendingPathComponent("corrupt.pop")
         try Data("not a property list".utf8).write(to: corruptUrl)
 
-        await #expect(throws: NoteRepositoryError.self) {
+        // Must stay fileOpenFailed: a local file has no ubiquitous download
+        // status and must not be diagnosed as an undownloaded iCloud item.
+        // The fileNotDownloaded branch itself needs a real iCloud container,
+        // so it is covered via mocks at the store layer instead.
+        do {
             _ = try await NoteRepository().open(fileUrl: corruptUrl)
+            Issue.record("expected open to throw")
+        } catch NoteRepositoryError.fileOpenFailed {
+            // expected
+        } catch {
+            Issue.record("expected fileOpenFailed, got \(error)")
         }
     }
 

@@ -42,10 +42,42 @@ struct PreferenceStoreTests {
         #expect(!mock.getEnabledInfiniteScroll())
     }
 
-    @Test func test_shouldGrantiCloud_isFalseWheniCloudDisabled() {
+    @Test func test_cloudAvailability_isUserDisabled_wheniCloudToggleOff() {
         let mock = PreferenceRepositoryMock()
         mock.enablediCloud = false
-        let store = PreferenceStore(repository: mock)
-        #expect(!store.shouldGrantiCloud)
+        let store = PreferenceStore(repository: mock, ubiquityStatus: UbiquityStatusMock())
+        #expect(store.cloudAvailability == .userDisabled)
+    }
+
+    @Test func test_cloudAvailability_isSignedOut_whenNoAccount() {
+        let mock = PreferenceRepositoryMock()
+        mock.enablediCloud = true
+        let store = PreferenceStore(repository: mock,
+                                    ubiquityStatus: UbiquityStatusMock(hasAccount: false, containerUrl: nil))
+        #expect(store.cloudAvailability == .signedOut)
+    }
+
+    @Test func test_cloudAvailability_isDriveUnavailable_whenContainerMissing() {
+        let mock = PreferenceRepositoryMock()
+        mock.enablediCloud = true
+        let store = PreferenceStore(repository: mock,
+                                    ubiquityStatus: UbiquityStatusMock(hasAccount: true, containerUrl: nil))
+        #expect(store.cloudAvailability == .driveUnavailable)
+    }
+
+    @Test func test_cloudAvailability_isAvailable_whenAllConditionsMet() {
+        let mock = PreferenceRepositoryMock()
+        mock.enablediCloud = true
+        let store = PreferenceStore(repository: mock, ubiquityStatus: UbiquityStatusMock())
+        #expect(store.cloudAvailability == .available)
+    }
+
+    @Test func test_cloudAvailability_refreshesWhenToggleChanges() {
+        let mock = PreferenceRepositoryMock()
+        mock.enablediCloud = false
+        let store = PreferenceStore(repository: mock, ubiquityStatus: UbiquityStatusMock())
+        #expect(store.cloudAvailability == .userDisabled)
+        store.enablediCloud = true
+        #expect(store.cloudAvailability == .available)
     }
 }

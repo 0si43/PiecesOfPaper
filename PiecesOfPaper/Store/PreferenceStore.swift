@@ -4,11 +4,13 @@ import Foundation
 @MainActor
 final class PreferenceStore {
     private let repository: PreferenceRepositoryProtocol
+    private let ubiquityStatus: UbiquityStatusProviding
 
     var enablediCloud: Bool {
         didSet {
             repository.setEnablediCloud(enablediCloud)
             FilePath.makeDirectoryIfNeeded()
+            refreshCloudAvailability()
         }
     }
 
@@ -24,15 +26,23 @@ final class PreferenceStore {
         }
     }
 
-    var shouldGrantiCloud: Bool {
-        guard enablediCloud else { return false }
-        return FileManager.default.ubiquityIdentityToken == nil
-    }
+    // Stored, not computed: the system inputs (account, container URL) are not
+    // observable, so views would never re-render on a computed property
+    private(set) var cloudAvailability: CloudAvailability = .userDisabled
 
-    init(repository: PreferenceRepositoryProtocol = PreferenceRepository()) {
+    init(repository: PreferenceRepositoryProtocol = PreferenceRepository(),
+         ubiquityStatus: UbiquityStatusProviding = UbiquityStatusProvider()) {
         self.repository = repository
+        self.ubiquityStatus = ubiquityStatus
         self.enablediCloud = repository.getEnablediCloud()
         self.enabledAutoSave = repository.getEnabledAutoSave()
         self.enabledInfiniteScroll = repository.getEnabledInfiniteScroll()
+        refreshCloudAvailability()
+    }
+
+    func refreshCloudAvailability() {
+        cloudAvailability = CloudAvailability.determine(enablediCloud: enablediCloud,
+                                                        hasAccount: ubiquityStatus.hasAccount,
+                                                        containerUrl: ubiquityStatus.containerUrl)
     }
 }

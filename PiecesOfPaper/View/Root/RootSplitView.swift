@@ -58,6 +58,7 @@ struct RootSplitView: View {
             noteStore.onLegacyTagsDecoded = { tagStore.restoreIfEmpty($0) }
             FilePath.startObservingUbiquityChanges {
                 FilePath.makeDirectoryIfNeeded()
+                preferenceStore.refreshCloudAvailability()
                 Task { await noteStore.applyCloudUpdate() }
             }
         }
@@ -67,14 +68,19 @@ struct RootSplitView: View {
         .alert("", isPresented: $noteStore.showExternalOpenAlert) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text(NoteStoreError.openFailed(count: 1).localizedDescription)
+            Text(NoteStoreError.openFailure(from: noteStore.externalOpenError ?? NoteRepositoryError.fileOpenFailed(path: ""),
+                                            count: 1).localizedDescription)
         }
         // The store owner, so each transition is handled once per app, not
         // once per NoteListScreen instance
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
-                guard !preferenceStore.shouldGrantiCloud else { return }
+                // The ubiquity observer already re-resolved the container on
+                // willEnterForeground; this picks up input changes that don't
+                // move the storage location (e.g. the account token)
+                preferenceStore.refreshCloudAvailability()
+                guard !preferenceStore.cloudAvailability.isDegraded else { return }
                 noteStore.sceneDidBecomeActive()
             case .background:
                 noteStore.sceneDidEnterBackground()

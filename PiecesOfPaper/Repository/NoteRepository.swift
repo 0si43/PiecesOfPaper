@@ -19,6 +19,7 @@ struct NoteFileAttributes: Equatable {
 }
 
 protocol NoteRepositoryProtocol: AnyObject {
+    @MainActor var isCloudStorageActive: Bool { get }
     @MainActor func getFileAttributes(directory: NoteDirectory) async -> [NoteFileAttributes]
     func fileAttributes(at fileUrl: URL) -> NoteFileAttributes?
     @MainActor func setCloudUpdateHandler(_ handler: @escaping @MainActor () -> Void)
@@ -35,6 +36,10 @@ protocol NoteRepositoryProtocol: AnyObject {
 final class NoteRepository: NoteRepositoryProtocol {
     @MainActor private var cloudMonitor: CloudNoteMonitor?
     @MainActor private var cloudUpdateHandler: (@MainActor () -> Void)?
+
+    @MainActor var isCloudStorageActive: Bool {
+        FilePath.isiCloudActive
+    }
 
     @MainActor
     func getFileAttributes(directory: NoteDirectory) async -> [NoteFileAttributes] {
@@ -144,8 +149,19 @@ final class NoteRepository: NoteRepositoryProtocol {
             await document.close()
             return NoteData(entity: document.entity, fileURL: fileUrl)
         } else {
-            throw NoteRepositoryError.fileOpenFailed(path: fileUrl.path)
+            throw openFailureError(for: fileUrl)
         }
+    }
+
+    // UIDocument.open() reports only Bool, so the undownloaded case is
+    // reconstructed from the item's downloading status; local files have no
+    // ubiquitous resource values and keep the corrupt-file diagnosis.
+    private func openFailureError(for fileUrl: URL) -> NoteRepositoryError {
+        let values = try? fileUrl.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey])
+        if let status = values?.ubiquitousItemDownloadingStatus, status != .current {
+            return .fileNotDownloaded(path: fileUrl.path)
+        }
+        return .fileOpenFailed(path: fileUrl.path)
     }
 
     @MainActor
@@ -223,6 +239,7 @@ final class NoteRepository: NoteRepositoryProtocol {
 
 enum NoteRepositoryError: LocalizedError {
     case fileOpenFailed(path: String)
+    case fileNotDownloaded(path: String)
     case fileNotFound(path: String)
     case saveFailed(path: String, underlying: Error?)
     case saveVerificationFailed(path: String)
@@ -232,6 +249,8 @@ enum NoteRepositoryError: LocalizedError {
         switch self {
         case .fileOpenFailed(let path):
             "Failed to open file at \(path)."
+        case .fileNotDownloaded(let path):
+            "The note at \(path) has not finished downloading from iCloud."
         case .fileNotFound(let path):
             "No file exists at \(path)."
         case let .saveFailed(path, underlying):

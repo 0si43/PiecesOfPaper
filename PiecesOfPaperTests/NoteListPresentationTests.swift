@@ -40,6 +40,21 @@ struct NoteListPresentationTests {
         #expect(presentation.noteToShare == nil)
     }
 
+    @Test func test_requestShare_alertsDownloadFailureDistinctly() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let entry = try #require(noteStore.inboxIndex.first)
+        repositoryMock.openErrors = [entry.fileURL: NoteRepositoryError.fileNotDownloaded(path: entry.fileURL.path)]
+        presentation.requestShare(entry, from: noteStore)
+        for _ in 0..<100 where presentation.alert == nil {
+            await Task.yield()
+        }
+        guard case .error(let error) = presentation.alert else {
+            Issue.record("expected error alert")
+            return
+        }
+        #expect(error as? NoteStoreError == .downloadFailed(count: 1))
+    }
+
     @Test func test_isAlertPresented_clearsTheAlertWhenSetToFalse() {
         presentation.alert = .archiveAll
         #expect(presentation.isAlertPresented)

@@ -8,7 +8,7 @@ struct SettingView: View {
     var body: some View {
         @Bindable var preferenceStore = preferenceStore
         List {
-            Section(header: Text("Preference")) {
+            Section(header: Text("Preference"), footer: preferenceFooter) {
                 Toggle(isOn: $preferenceStore.enablediCloud) {
                     Label("Enable iCloud", systemImage: "icloud")
                 }
@@ -34,6 +34,17 @@ struct SettingView: View {
             }
         }
         .foregroundColor(.primary)
+    }
+
+    @ViewBuilder private var preferenceFooter: some View {
+        switch preferenceStore.cloudAvailability {
+        case .signedOut:
+            Text("iCloud is on, but this device is not signed in to iCloud. Notes are stored on this device only.")
+        case .driveUnavailable:
+            Text("iCloud is on, but iCloud Drive is not available for this app. Notes are stored on this device only.")
+        case .available, .userDisabled:
+            EmptyView()
+        }
     }
 }
 

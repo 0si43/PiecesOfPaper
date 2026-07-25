@@ -34,6 +34,11 @@ final class NoteStore {
     /// External opens can fail while no note list is mounted, so this one is
     /// presented by RootSplitView rather than by a list screen
     var showExternalOpenAlert = false
+    private(set) var externalOpenError: Error?
+    /// Set on the cloud→local transition while the iCloud preference is still
+    /// on, so the list screen can explain why the visible notes changed
+    private(set) var didFallBackToLocalStorage = false
+    private var lastFetchUsedCloudStorage: Bool?
     @ObservationIgnored private var hasBecomeActive = false
     @ObservationIgnored private var lastEnteredBackground: Date?
 
@@ -47,7 +52,7 @@ final class NoteStore {
 
     // Cell tasks, canvas taps, and filter hydration can request the same file
     // at once; one UIDocument open serves all of them.
-    private var inFlightLoads: [URL: Task<NoteData?, Never>] = [:]
+    private var inFlightLoads: [URL: Task<Result<NoteData, Error>, Never>] = [:]
 
     // Pull-to-refresh, the Reload button, and cloud updates can request the
     // same directory at once; one enumeration serves all of them.
@@ -114,6 +119,7 @@ final class NoteStore {
     }
 
     private func performFetch(directory: NoteDirectory) async {
+        trackStorageModeTransition()
         let entries = await noteRepository.getFileAttributes(directory: directory)
             .filter { !pendingFileOperationUrls.contains($0.fileURL) }
             .map {
@@ -134,6 +140,21 @@ final class NoteStore {
         }
     }
 
+    // Snapshotted once per fetch so a flip cannot land between the mode check
+    // and the enumeration. The preference guard keeps the user-initiated
+    // "Use device storage" path (toggle off, then refetch) warn-free.
+    private func trackStorageModeTransition() {
+        let usingCloud = noteRepository.isCloudStorageActive
+        if lastFetchUsedCloudStorage == true, !usingCloud, preferenceRepository.getEnablediCloud() {
+            didFallBackToLocalStorage = true
+        }
+        lastFetchUsedCloudStorage = usingCloud
+    }
+
+    func acknowledgeLocalStorageFallback() {
+        didFallBackToLocalStorage = false
+    }
+
     /// Called when the iCloud metadata query reports remote changes,
     /// so the list follows sync progress without a manual reload.
     func applyCloudUpdate() async {
@@ -146,25 +167,35 @@ final class NoteStore {
     /// Opens one document, records its listing metadata, and hands the loaded
     /// note to the caller to use and discard. The store never retains the drawing.
     func loadNote(_ entry: NoteIndexEntry) async -> NoteData? {
+        try? await loadNoteResult(entry).get()
+    }
+
+    /// Like `loadNote`, for callers that surface why the open failed
+    /// (corrupt file vs. undownloaded iCloud item).
+    func loadNoteResult(_ entry: NoteIndexEntry) async -> Result<NoteData, Error> {
         if let inFlight = inFlightLoads[entry.fileURL] {
             return await inFlight.value
         }
         let load = Task { [noteRepository] in
-            try? await noteRepository.open(fileUrl: entry.fileURL)
+            do {
+                return Result<NoteData, Error>.success(try await noteRepository.open(fileUrl: entry.fileURL))
+            } catch {
+                return Result<NoteData, Error>.failure(error)
+            }
         }
         inFlightLoads[entry.fileURL] = load
-        let note = await load.value
+        let result = await load.value
         inFlightLoads[entry.fileURL] = nil
         // A delete or move started while this open was in flight already dropped
         // the entry; recording metadata here would resurrect the dead file name.
-        if let note, !pendingFileOperationUrls.contains(entry.fileURL) {
+        if case .success(let note) = result, !pendingFileOperationUrls.contains(entry.fileURL) {
             metadataByFileName[entry.fileName] = NoteMetadata(id: note.entity.id,
                                                               tagIds: note.entity.tagIds,
                                                               updatedDate: entry.updatedDate)
             salvageLegacyTags(of: note)
             schedulePersist()
         }
-        return note
+        return result
     }
 
     func validMetadata(for entry: NoteIndexEntry) -> NoteMetadata? {
@@ -179,8 +210,12 @@ final class NoteStore {
 
 extension NoteStore {
     func duplicate(_ entry: NoteIndexEntry, in directory: NoteDirectory) async throws {
-        guard let note = await loadNote(entry) else {
-            throw NoteStoreError.openFailed(count: 1)
+        let note: NoteData
+        switch await loadNoteResult(entry) {
+        case .success(let loaded):
+            note = loaded
+        case .failure(let error):
+            throw NoteStoreError.openFailure(from: error, count: 1)
         }
         let newNote: NoteData? = await withCheckedContinuation { continuation in
             noteRepository.duplicate(note, in: directory) { continuation.resume(returning: $0) }
@@ -375,6 +410,7 @@ extension NoteStore {
         } catch {
             scopedUrl?.stopAccessingSecurityScopedResource()
             guard !Task.isCancelled else { return }
+            externalOpenError = error
             showExternalOpenAlert = true
         }
     }

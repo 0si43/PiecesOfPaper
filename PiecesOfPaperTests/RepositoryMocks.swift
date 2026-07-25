@@ -3,6 +3,8 @@ import PencilKit
 @testable import Pieces_of_Paper
 
 final class NoteRepositoryMock: NoteRepositoryProtocol {
+    @MainActor var isCloudStorageActive = true
+
     enum TestFile: CaseIterable {
         case file1, file2, file3
 
@@ -45,6 +47,8 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
 
     var notes: [NoteData]
     var failingUrls: Set<URL> = []
+    /// Per-URL error thrown by open(); takes precedence over failingUrls
+    var openErrors: [URL: Error] = [:]
     var moveShouldThrow = false
     var moveFailingUrls: Set<URL> = []
     var deleteShouldThrow = false
@@ -115,6 +119,9 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         await Task.yield()
         if suspendOpens {
             await withCheckedContinuation { pendingOpens.append($0) }
+        }
+        if let error = openErrors[fileUrl] {
+            throw error
         }
         if failingUrls.contains(fileUrl) {
             throw NoteRepositoryError.fileOpenFailed(path: fileUrl.path)
@@ -204,6 +211,11 @@ final class NoteMetadataCacheRepositoryMock: NoteMetadataCacheRepositoryProtocol
             saves += 1
         }
     }
+}
+
+struct UbiquityStatusMock: UbiquityStatusProviding {
+    var hasAccount = true
+    var containerUrl: URL? = URL(fileURLWithPath: "/container/Documents")
 }
 
 final class PreferenceRepositoryMock: PreferenceRepositoryProtocol {

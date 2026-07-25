@@ -34,12 +34,19 @@ struct NoteListScreen: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            guard !preferenceStore.shouldGrantiCloud else {
+            switch preferenceStore.cloudAvailability {
+            // Deliberately no fetch: the user decides between iCloud and local
+            // first. isLoading must still be cleared or the ProgressView behind
+            // the alert spins forever.
+            case .signedOut:
                 presentation.alert = .iCloudDenied
-                return
+                noteStore.isLoading = false
+            case .driveUnavailable:
+                presentation.alert = .iCloudDriveDisabled
+                noteStore.isLoading = false
+            case .available, .userDisabled:
+                await noteStore.fetch(directory: directory)
             }
-
-            await noteStore.fetch(directory: directory)
         }
         .refreshable {
             await noteStore.fetch(directory: directory, background: true)
@@ -67,18 +74,27 @@ struct NoteListScreen: View {
                isPresented: $presentation.isAlertPresented,
                presenting: presentation.alert) { alert in
                 switch alert {
-                case .iCloudDenied:
+                case .iCloudDenied, .iCloudDriveDisabled:
                     iCloudButton
                     localStorageButton
                 case .archiveAll:
                     archiveActionButton
-                case .error:
+                case .localFallback, .error:
                     Text("OK")
                 }
             } message: { alert in
                 switch alert {
                 case .iCloudDenied:
-                    return Text("The app could not access your iCloud Drive. You should change setting")
+                    return Text("""
+                        iCloud is enabled for this app, but this device is not signed in to iCloud. \
+                        Sign in from Settings, or use device storage.
+                        """)
+                case .iCloudDriveDisabled:
+                    return Text("""
+                        iCloud Drive appears to be disabled for this app. \
+                        Allow this app in Settings > Apple Account > iCloud > iCloud Drive, \
+                        or use device storage.
+                        """)
                 case .archiveAll:
                     let operationText = isTargetDirectoryArchived ? "unarchived" : "archived"
                     let countText = noteStore.displayEntries(for: directory).count
@@ -86,9 +102,19 @@ struct NoteListScreen: View {
                         Are you sure you want to \(operationText) \(countText) notes?
                     """
                     return Text(alertText)
+                case .localFallback:
+                    return Text("""
+                        iCloud is no longer available, so your notes are now shown from device storage. \
+                        Notes saved in iCloud will reappear when iCloud is available again.
+                        """)
                 case let .error(error):
                     return Text(error.localizedDescription)
                 }
+        }
+        .onChange(of: noteStore.didFallBackToLocalStorage) { _, didFallBack in
+            guard didFallBack else { return }
+            presentation.alert = .localFallback
+            noteStore.acknowledgeLocalStorageFallback()
         }
         // Outermost so the grid, its cells, and the sheets above all see it
         .environment(presentation)
@@ -109,6 +135,9 @@ struct NoteListScreen: View {
 
     private var toolbarItems: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
+            if preferenceStore.cloudAvailability.isDegraded {
+                degradedCloudIndicator
+            }
             Menu {
                 Button {
                     presentation.alert = .archiveAll
@@ -147,6 +176,19 @@ struct NoteListScreen: View {
         }
     }
 
+    // Re-presents the availability alert so the user can act after having
+    // dismissed it once
+    private var degradedCloudIndicator: some View {
+        Button {
+            presentation.alert = preferenceStore.cloudAvailability == .signedOut
+                ? .iCloudDenied
+                : .iCloudDriveDisabled
+        } label: {
+            Image(systemName: "icloud.slash")
+        }
+        .accessibilityLabel("iCloud unavailable. Notes are stored on this device.")
+    }
+
     private func activityViewController(note: NoteData) -> UIActivityViewControllerWrapper {
         UIActivityViewControllerWrapper(
             activityItems: [note.entity.drawing.lightModeImage(scale: displayScale)]
@@ -160,7 +202,7 @@ struct NoteListScreen: View {
             guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
             UIApplication.shared.open(url)
         } label: {
-            Text("Use iCloud")
+            Text("Open Settings")
         }
     }
 

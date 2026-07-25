@@ -64,12 +64,13 @@ struct NoteThumbnailView: View {
         guard !isOpening else { return }
         isOpening = true
         Task {
-            let note = await noteStore.loadNote(entry)
+            let result = await noteStore.loadNoteResult(entry)
             isOpening = false
-            if let note {
+            switch result {
+            case .success(let note):
                 noteStore.openedNote = note
-            } else {
-                presentation.presentOpenFailed()
+            case .failure(let error):
+                presentation.presentOpenFailure(error)
             }
         }
     }
