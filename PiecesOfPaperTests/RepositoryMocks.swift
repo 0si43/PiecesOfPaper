@@ -46,6 +46,7 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     var notes: [NoteData]
     var failingUrls: Set<URL> = []
     var moveShouldThrow = false
+    var moveFailingUrls: Set<URL> = []
     var deleteShouldThrow = false
     @MainActor private(set) var deletedUrls: [URL] = []
     @MainActor private(set) var movedUrls: [URL] = []
@@ -133,7 +134,7 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     @MainActor
     func move(fileUrl: URL, to directory: NoteDirectory) async throws -> URL {
         await suspendFileOperationIfNeeded()
-        if moveShouldThrow {
+        if moveShouldThrow || moveFailingUrls.contains(fileUrl) {
             throw NoteRepositoryError.directoryNotAvailable
         }
         movedUrls.append(fileUrl)

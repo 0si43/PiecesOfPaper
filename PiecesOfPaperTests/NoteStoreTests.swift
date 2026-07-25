@@ -202,15 +202,54 @@ struct NoteStoreTests {
         #expect(noteStore.displayArchivedEntries.isEmpty)
     }
 
-    @Test func test_allArchive_movesEveryEntryInOrder() async {
+    @Test func test_allArchive_movesEveryEntryInOrder() async throws {
         await noteStore.fetch(directory: .inbox)
         let urls = noteStore.inboxIndex.map(\.fileURL)
 
-        await noteStore.allArchive()
+        try await noteStore.allArchive()
 
         #expect(repositoryMock.movedUrls == urls)
         #expect(noteStore.inboxIndex.isEmpty)
         #expect(noteStore.archivedIndex.count == urls.count)
+    }
+
+    @Test func test_allArchive_movesRemainingNotesAndThrowsAggregateErrorWhenOneMoveFails() async {
+        await noteStore.fetch(directory: .inbox)
+        let failingUrl = NoteRepositoryMock.TestFile.file2.url
+        repositoryMock.moveFailingUrls = [failingUrl]
+
+        await #expect(throws: NoteStoreError.bulkMoveFailed(count: 1)) {
+            try await noteStore.allArchive()
+        }
+
+        #expect(noteStore.inboxIndex.map(\.fileURL) == [failingUrl])
+        #expect(noteStore.archivedIndex.count == 2)
+    }
+
+    @Test func test_allArchive_reportsTotalCountWhenEveryMoveFails() async {
+        await noteStore.fetch(directory: .inbox)
+        repositoryMock.moveShouldThrow = true
+
+        await #expect(throws: NoteStoreError.bulkMoveFailed(count: 3)) {
+            try await noteStore.allArchive()
+        }
+
+        #expect(noteStore.inboxIndex.count == 3)
+        #expect(noteStore.archivedIndex.isEmpty)
+    }
+
+    @Test func test_allUnarchive_throwsAggregateErrorWhenAMoveFails() async throws {
+        await noteStore.fetch(directory: .inbox)
+        try await noteStore.allArchive()
+        let archivedUrl = try #require(noteStore.archivedIndex.first?.fileURL)
+        repositoryMock.moveFailingUrls = [archivedUrl]
+
+        await #expect(throws: NoteStoreError.bulkMoveFailed(count: 1)) {
+            try await noteStore.allUnarchive()
+        }
+
+        #expect(noteStore.archivedIndex.map(\.fileURL) == [archivedUrl])
+        #expect(noteStore.inboxIndex.count == 2)
     }
 
     // MARK: - Tag operations

@@ -200,13 +200,28 @@ extension NoteStore {
         try await move(entry, to: .inbox)
     }
 
-    /// Best effort: a note whose move fails stays in place, and the rest still move.
-    func allArchive() async {
-        for entry in inboxIndex { try? await archive(entry) }
+    /// Continues past individual failures — a note whose move fails stays in
+    /// place (each move rolls itself back), and the total is reported at the end.
+    func allArchive() async throws {
+        try await moveAll(inboxIndex, to: .archived)
     }
 
-    func allUnarchive() async {
-        for entry in archivedIndex { try? await unarchive(entry) }
+    func allUnarchive() async throws {
+        try await moveAll(archivedIndex, to: .inbox)
+    }
+
+    private func moveAll(_ entries: [NoteIndexEntry], to directory: NoteDirectory) async throws {
+        var failedCount = 0
+        for entry in entries {
+            do {
+                try await move(entry, to: directory)
+            } catch {
+                failedCount += 1
+            }
+        }
+        if failedCount > 0 {
+            throw NoteStoreError.bulkMoveFailed(count: failedCount)
+        }
     }
 
     private func move(_ entry: NoteIndexEntry, to directory: NoteDirectory) async throws {
