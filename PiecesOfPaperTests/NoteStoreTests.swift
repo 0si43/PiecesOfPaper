@@ -44,6 +44,47 @@ struct NoteStoreTests {
         #expect(noteStore.inboxIndex.map(\.fileURL) == [NoteRepositoryMock.TestFile.file1.url])
     }
 
+    @Test func test_fetch_coalescesOverlappingFetchesForTheSameDirectory() async {
+        repositoryMock.suspendGetFileAttributes = true
+
+        async let first: Void = noteStore.fetch(directory: .inbox)
+        async let second: Void = noteStore.fetch(directory: .inbox)
+        await waitUntil { repositoryMock.hasPendingGetFileAttributes }
+        repositoryMock.suspendGetFileAttributes = false
+        repositoryMock.resumePendingGetFileAttributes()
+        _ = await (first, second)
+
+        #expect(repositoryMock.getFileAttributesCallCount == 1)
+        #expect(noteStore.inboxIndex.count == 3)
+    }
+
+    @Test func test_fetch_runsAgainAfterThePreviousFetchCompletes() async {
+        await noteStore.fetch(directory: .inbox)
+        await noteStore.fetch(directory: .inbox)
+        #expect(repositoryMock.getFileAttributesCallCount == 2)
+    }
+
+    @Test func test_fetch_foregroundJoinerShowsSpinnerWhileJoinedBackgroundFetchRuns() async {
+        // isLoading starts true; the initial foreground fetch settles it to false
+        await noteStore.fetch(directory: .inbox)
+        repositoryMock.suspendGetFileAttributes = true
+
+        async let backgroundFetch: Void = noteStore.fetch(directory: .inbox, background: true)
+        await waitUntil { repositoryMock.hasPendingGetFileAttributes }
+        #expect(!noteStore.isLoading)
+
+        async let foregroundFetch: Void = noteStore.fetch(directory: .inbox)
+        await waitUntil { noteStore.isLoading }
+        #expect(noteStore.isLoading)
+
+        repositoryMock.suspendGetFileAttributes = false
+        repositoryMock.resumePendingGetFileAttributes()
+        _ = await (backgroundFetch, foregroundFetch)
+
+        #expect(!noteStore.isLoading)
+        #expect(repositoryMock.getFileAttributesCallCount == 2)
+    }
+
     // file1 has the oldest filename timestamp (created) but the newest
     // modification date (updated), so the two sort keys produce opposite orders
     @Test func test_displayEntries_sortsBothKeysAndOrdersOnIndexAlone() async {

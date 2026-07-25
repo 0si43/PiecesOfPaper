@@ -60,6 +60,10 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     @MainActor var suspendOpens = false
     @MainActor private var pendingOpens: [CheckedContinuation<Void, Never>] = []
     @MainActor var hasPendingOpen: Bool { !pendingOpens.isEmpty }
+    @MainActor private(set) var getFileAttributesCallCount = 0
+    @MainActor var suspendGetFileAttributes = false
+    @MainActor private var pendingGetFileAttributes: [CheckedContinuation<Void, Never>] = []
+    @MainActor var hasPendingGetFileAttributes: Bool { !pendingGetFileAttributes.isEmpty }
     private(set) var cloudUpdateHandler: (@MainActor () -> Void)?
 
     @MainActor
@@ -74,13 +78,25 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         pendingFileOperations.removeAll()
     }
 
+    @MainActor
+    func resumePendingGetFileAttributes() {
+        pendingGetFileAttributes.forEach { $0.resume() }
+        pendingGetFileAttributes.removeAll()
+    }
+
     init(notes: [NoteData]) {
         self.notes = notes
     }
 
     @MainActor
     func getFileAttributes(directory: NoteDirectory) async -> [NoteFileAttributes] {
-        directory == .inbox ? enumeratedAttributes : []
+        getFileAttributesCallCount += 1
+        // Suspend once so overlapping fetches actually overlap on the main actor
+        await Task.yield()
+        if suspendGetFileAttributes {
+            await withCheckedContinuation { pendingGetFileAttributes.append($0) }
+        }
+        return directory == .inbox ? enumeratedAttributes : []
     }
 
     func fileAttributes(at fileUrl: URL) -> NoteFileAttributes? {
