@@ -46,6 +46,10 @@ final class NoteStore {
     // at once; one UIDocument open serves all of them.
     private var inFlightLoads: [URL: Task<NoteData?, Never>] = [:]
 
+    // Pull-to-refresh, the Reload button, and cloud updates can request the
+    // same directory at once; one enumeration serves all of them.
+    private var inFlightFetches: [NoteDirectory: Task<Void, Never>] = [:]
+
     // Coordinated deletes and moves take an unbounded amount of time, so the
     // index is updated optimistically. The pending set hides files whose
     // operation has not landed yet from enumeration results, preventing a
@@ -96,6 +100,17 @@ final class NoteStore {
     func fetch(directory: NoteDirectory, background: Bool = false) async {
         defer { if !background { isLoading = false } }
         if !background { isLoading = true }
+        if let inFlight = inFlightFetches[directory] {
+            await inFlight.value
+            return
+        }
+        let fetchTask = Task { await performFetch(directory: directory) }
+        inFlightFetches[directory] = fetchTask
+        await fetchTask.value
+        inFlightFetches[directory] = nil
+    }
+
+    private func performFetch(directory: NoteDirectory) async {
         let entries = await noteRepository.getFileAttributes(directory: directory)
             .filter { !pendingFileOperationUrls.contains($0.fileURL) }
             .map {
@@ -103,9 +118,8 @@ final class NoteStore {
                                creationDate: $0.creationDate,
                                contentModificationDate: $0.contentModificationDate)
             }
-        // Wholesale assignment keeps overlapping fetches last-writer-wins; the
-        // equality guard avoids re-rendering (and re-running cell load tasks)
-        // when nothing changed.
+        // The equality guard avoids re-rendering (and re-running cell load
+        // tasks) when nothing changed.
         switch directory {
         case .inbox:
             if entries != inboxIndex { inboxIndex = entries }
@@ -200,13 +214,28 @@ extension NoteStore {
         try await move(entry, to: .inbox)
     }
 
-    /// Best effort: a note whose move fails stays in place, and the rest still move.
-    func allArchive() async {
-        for entry in inboxIndex { try? await archive(entry) }
+    /// Continues past individual failures — a note whose move fails stays in
+    /// place (each move rolls itself back), and the total is reported at the end.
+    func allArchive() async throws {
+        try await moveAll(inboxIndex, to: .archived)
     }
 
-    func allUnarchive() async {
-        for entry in archivedIndex { try? await unarchive(entry) }
+    func allUnarchive() async throws {
+        try await moveAll(archivedIndex, to: .inbox)
+    }
+
+    private func moveAll(_ entries: [NoteIndexEntry], to directory: NoteDirectory) async throws {
+        var failedCount = 0
+        for entry in entries {
+            do {
+                try await move(entry, to: directory)
+            } catch {
+                failedCount += 1
+            }
+        }
+        if failedCount > 0 {
+            throw NoteStoreError.bulkMoveFailed(count: failedCount)
+        }
     }
 
     private func move(_ entry: NoteIndexEntry, to directory: NoteDirectory) async throws {
