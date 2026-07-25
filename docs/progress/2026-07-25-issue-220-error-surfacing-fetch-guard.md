@@ -1,0 +1,4 @@
+- [x] Surface bulk archive/unarchive failures and coalesce overlapping fetches (issue #220, PR #257)
+  - Bulk moves continue past per-note failures and throw an aggregate `bulkMoveFailed(count:)`, presented via the existing list alert
+  - `NoteStore.fetch` dedupes concurrent same-directory enumerations with an `inFlightFetches` task map (same pattern as `inFlightLoads`)
+  - Issue item on `refreshable { Task { ... } }` was already resolved by 6ac8cf4; no change needed
