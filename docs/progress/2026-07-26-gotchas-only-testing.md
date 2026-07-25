@@ -1,0 +1,2 @@
+- [x] Document -only-testing zero-match pitfall with swift-testing (issue #260, PR #261)
+  - Function-level `-only-testing` filters can run zero tests and still report TEST SUCCEEDED; filter at suite level and check the `✔ Test run with N tests` count
