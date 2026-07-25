@@ -135,6 +135,9 @@ struct NoteListScreen: View {
 
     private var toolbarItems: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
+            if preferenceStore.cloudAvailability.isDegraded {
+                degradedCloudIndicator
+            }
             Menu {
                 Button {
                     presentation.alert = .archiveAll
@@ -171,6 +174,19 @@ struct NoteListScreen: View {
             }
             .accessibilityLabel("New Note")
         }
+    }
+
+    // Re-presents the availability alert so the user can act after having
+    // dismissed it once
+    private var degradedCloudIndicator: some View {
+        Button {
+            presentation.alert = preferenceStore.cloudAvailability == .signedOut
+                ? .iCloudDenied
+                : .iCloudDriveDisabled
+        } label: {
+            Image(systemName: "icloud.slash")
+        }
+        .accessibilityLabel("iCloud unavailable. Notes are stored on this device.")
     }
 
     private func activityViewController(note: NoteData) -> UIActivityViewControllerWrapper {
