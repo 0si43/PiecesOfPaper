@@ -236,7 +236,7 @@ enum NoteRepositoryError: LocalizedError {
             "Failed to open file at \(path)."
         case .fileNotFound(let path):
             "No file exists at \(path)."
-        case .saveFailed(let path, let underlying):
+        case let .saveFailed(path, underlying):
             if let underlying {
                 "Failed to write \(path): \(underlying.localizedDescription)"
             } else {
