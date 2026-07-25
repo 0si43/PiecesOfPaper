@@ -1,5 +1,6 @@
 import UIKit
 import PencilKit
+import os
 
 final class NoteDocument: UIDocument {
     var entity: NoteEntity
@@ -60,7 +61,9 @@ final class NoteDocument: UIDocument {
             try NSFileVersion.removeOtherVersionsOfItem(at: fileURL)
             conflictVersions.forEach { $0.isResolved = true }
         } catch {
-            print("failed to resolve conflict versions: ", error.localizedDescription)
+            Logger.noteDocument.error(
+                "Failed to resolve conflict versions: \(error.localizedDescription, privacy: .public)"
+            )
         }
     }
 
