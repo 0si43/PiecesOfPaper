@@ -12,13 +12,6 @@ struct NoteRepositoryTests {
         return url
     }
 
-    private func save(_ entity: NoteEntity, to fileUrl: URL,
-                      with repository: NoteRepository) async -> Bool {
-        await withCheckedContinuation { continuation in
-            repository.save(entity, to: fileUrl) { continuation.resume(returning: $0) }
-        }
-    }
-
     @Test func save_retargetsStaleLegacyUrlToMigratedFile() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -27,9 +20,8 @@ struct NoteRepositoryTests {
         let staleUrl = directory.appendingPathComponent("note.plist")
         let entity = NoteEntity(drawing: PKDrawing())
 
-        let success = await save(entity, to: staleUrl, with: NoteRepository())
+        try await NoteRepository().save(entity, to: staleUrl)
 
-        #expect(success)
         #expect(!FileManager.default.fileExists(atPath: staleUrl.path))
         let saved = try PropertyListDecoder().decode(NoteEntity.self,
                                                      from: Data(contentsOf: migratedUrl))
@@ -66,8 +58,17 @@ struct NoteRepositoryTests {
         #expect(note.fileURL == fileUrl)
     }
 
-    // A missing file is not testable here: open intentionally treats it as an
-    // undownloaded iCloud item and waits for the download indefinitely
+    // A missing local file fails fast; only genuine ubiquitous items are
+    // allowed to wait for their download inside open()
+    @Test func open_throwsForMissingNonUbiquitousFile() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        await #expect(throws: NoteRepositoryError.self) {
+            _ = try await NoteRepository().open(fileUrl: directory.appendingPathComponent("missing.pop"))
+        }
+    }
+
     @Test func open_throwsForCorruptFile() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -131,6 +132,42 @@ struct NoteRepositoryTests {
         }
     }
 
+    // A fresh container starts without InboxFolder/Archived; the first save
+    // must not fail on the missing parent
+    @Test func save_createsMissingParentDirectory() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let fileUrl = directory.appendingPathComponent("nested/InboxFolder/note.pop")
+        let entity = NoteEntity(drawing: PKDrawing.stub())
+
+        try await NoteRepository().save(entity, to: fileUrl)
+
+        let saved = try PropertyListDecoder().decode(NoteEntity.self, from: Data(contentsOf: fileUrl))
+        #expect(saved.id == entity.id)
+    }
+
+    // The thrown error carries the reason captured via UIDocument.handleError,
+    // which the completion Bool alone never exposes
+    @Test func save_throwsWithUnderlyingReasonWhenWriteFails() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        // A plain file occupies the parent path, so the write cannot succeed
+        let blocker = directory.appendingPathComponent("blocked")
+        try Data().write(to: blocker)
+        let fileUrl = blocker.appendingPathComponent("note.pop")
+
+        do {
+            try await NoteRepository().save(NoteEntity(drawing: PKDrawing()), to: fileUrl)
+            Issue.record("save should throw for an unwritable target")
+        } catch let error as NoteRepositoryError {
+            guard case .saveFailed(_, let underlying) = error else {
+                Issue.record("unexpected error case: \(error)")
+                return
+            }
+            #expect(underlying != nil)
+        }
+    }
+
     @Test func save_writesToLegacyUrlWhileItStillExists() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -138,9 +175,8 @@ struct NoteRepositoryTests {
         try PropertyListEncoder().encode(NoteEntity(drawing: PKDrawing())).write(to: legacyUrl)
         let entity = NoteEntity(drawing: PKDrawing())
 
-        let success = await save(entity, to: legacyUrl, with: NoteRepository())
+        try await NoteRepository().save(entity, to: legacyUrl)
 
-        #expect(success)
         #expect(!FileManager.default.fileExists(atPath: directory.appendingPathComponent("note.pop").path))
         let saved = try PropertyListDecoder().decode(NoteEntity.self,
                                                      from: Data(contentsOf: legacyUrl))

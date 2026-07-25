@@ -56,6 +56,10 @@ struct RootSplitView: View {
         }
         .onAppear {
             noteStore.onLegacyTagsDecoded = { tagStore.restoreIfEmpty($0) }
+            FilePath.startObservingUbiquityChanges {
+                FilePath.makeDirectoryIfNeeded()
+                Task { await noteStore.applyCloudUpdate() }
+            }
         }
         .onOpenURL { url in
             noteStore.handleIncomingURL(url)

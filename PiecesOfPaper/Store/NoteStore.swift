@@ -1,5 +1,6 @@
 import Foundation
 import PencilKit
+import os
 
 @Observable
 @MainActor
@@ -289,10 +290,9 @@ extension NoteStore {
             updatedDate: previous?.updatedDate ?? entry(for: note.fileURL)?.updatedDate ?? note.entity.updatedDate
         )
         schedulePersist()
-        let success: Bool = await withCheckedContinuation { continuation in
-            noteRepository.save(updated.entity, to: updated.fileURL) { continuation.resume(returning: $0) }
-        }
-        guard success else {
+        do {
+            try await noteRepository.save(updated.entity, to: updated.fileURL)
+        } catch {
             metadataByFileName[note.fileName] = previous
             schedulePersist()
             throw NoteStoreError.saveFailed
@@ -396,25 +396,19 @@ extension NoteStore {
         inboxIndex.count >= 5
     }
 
-    func save(drawing: PKDrawing, to note: NoteData, completion: @escaping (NoteData?) -> Void) {
+    func save(drawing: PKDrawing, to note: NoteData) async throws -> NoteData {
         var payload = note
         // Tags edited from the list while the canvas held this snapshot live
         // in the metadata cache, not in the snapshot
         payload.entity.tagIds = currentTagIds(for: note)
         guard drawing != payload.entity.drawing else {
-            completion(payload)
-            return
+            return payload
         }
         payload.entity.drawing = drawing
         payload.entity.updatedDate = Date()
-        noteRepository.save(payload.entity, to: payload.fileURL) { [weak self] success in
-            if success {
-                self?.applySaved(payload)
-                completion(payload)
-            } else {
-                completion(nil)
-            }
-        }
+        try await noteRepository.save(payload.entity, to: payload.fileURL)
+        applySaved(payload)
+        return payload
     }
 
     /// Refreshes the index entry and metadata for a note just written to disk.
@@ -434,9 +428,22 @@ extension NoteStore {
             upsertEntry(entry, into: &archivedIndex)
         } else if note.isInInbox {
             upsertEntry(entry, into: &inboxIndex)
+        } else if let fallback = note.fallbackDirectory {
+            // The note sits in a managed folder of some other container: the
+            // storage location changed between minting the URL and saving
+            // (issue #225). Dropping it here would hide a file that saved
+            // fine, so list it; the entry lasts until the next wholesale fetch.
+            Logger.noteStore.warning("""
+            Saved note \(note.fileURL.path, privacy: .public) is outside the current container \
+            (inbox: \(FilePath.inboxUrl?.path ?? "nil", privacy: .public))
+            """)
+            switch fallback {
+            case .inbox: upsertEntry(entry, into: &inboxIndex)
+            case .archived: upsertEntry(entry, into: &archivedIndex)
+            }
         }
-        // Notes outside both directories (opened in place from the Files app)
-        // are edited at their own URL and never listed
+        // Notes outside any managed folder (opened in place from the Files
+        // app) are edited at their own URL and never listed
     }
 
     // MARK: - Private helpers

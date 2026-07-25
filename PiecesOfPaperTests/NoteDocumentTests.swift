@@ -52,6 +52,13 @@ struct NoteDocumentTests {
             try document.load(fromContents: NSObject(), ofType: nil)
         }
     }
+
+    @Test func handleError_recordsTheError() {
+        let document = makeDocument()
+        let error = NSError(domain: "test", code: 1)
+        document.handleError(error, userInteractionPermitted: false)
+        #expect(document.lastHandledError as NSError? == error)
+    }
 }
 
 struct NoteEntityCodingTests {
