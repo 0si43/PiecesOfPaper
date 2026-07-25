@@ -105,7 +105,7 @@ device and the real Files app. Background: PR #208.
   the note list, and settings are currently unreachable from idb. Planned complement: a
   Simulator-only keyboard shortcut driven by `idb ui key` (issue #196 follow-up).
   Workaround until then: to exercise the note list, build a throwaway build with the
-  `noteStore.openBlankNoteIfIdle()` call in `NoteListScreen` stubbed out — the app then
+  `noteStore.sceneDidBecomeActive()` call in `RootSplitView` stubbed out — the app then
   launches into the list instead of a blank canvas. Revert the stub and rebuild before
   running the verification that goes into the PR.
   To land directly on a sidebar page instead (Quick Tutorial, Setting, Tag List), change
