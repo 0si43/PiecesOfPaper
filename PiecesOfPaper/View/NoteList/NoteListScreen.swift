@@ -5,7 +5,6 @@ struct NoteListScreen: View {
     let directory: NoteDirectory
     @Environment(NoteStore.self) private var noteStore
     @Environment(PreferenceStore.self) private var preferenceStore
-    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.displayScale) private var displayScale
     @State private var showListOrderSettingView = false
     @State private var presentation = NoteListPresentation()
@@ -116,15 +115,6 @@ struct NoteListScreen: View {
             guard didFallBack else { return }
             presentation.alert = .localFallback
             noteStore.acknowledgeLocalStorageFallback()
-        }
-        .onChange(of: scenePhase) { _, phase in
-            switch phase {
-            case .active:
-                guard !preferenceStore.cloudAvailability.isDegraded else { return }
-                noteStore.openBlankNoteIfIdle()
-            default:
-                break
-            }
         }
         // Outermost so the grid, its cells, and the sheets above all see it
         .environment(presentation)

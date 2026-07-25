@@ -66,18 +66,21 @@ struct RootSplitView: View {
             Text(NoteStoreError.openFailure(from: noteStore.externalOpenError ?? NoteRepositoryError.fileOpenFailed(path: ""),
                                             count: 1).localizedDescription)
         }
-        // The store owner, so the flush happens once per app, not once per
-        // NoteListParentView
+        // The store owner, so each transition is handled once per app, not
+        // once per NoteListScreen instance
         .onChange(of: scenePhase) { _, phase in
             switch phase {
-            case .background:
-                noteStore.flushMetadataCache()
             case .active:
                 Task {
                     await FilePath.revalidateiCloudUrl()
                     preferenceStore.refreshCloudAvailability()
                     await noteStore.applyCloudUpdate()
                 }
+                guard !preferenceStore.cloudAvailability.isDegraded else { return }
+                noteStore.sceneDidBecomeActive()
+            case .background:
+                noteStore.sceneDidEnterBackground()
+                noteStore.flushMetadataCache()
             default:
                 break
             }

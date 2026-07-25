@@ -38,6 +38,8 @@ final class NoteStore {
     /// on, so the list screen can explain why the visible notes changed
     private(set) var didFallBackToLocalStorage = false
     private var lastFetchUsedCloudStorage: Bool?
+    @ObservationIgnored private var hasBecomeActive = false
+    @ObservationIgnored private var lastEnteredBackground: Date?
 
     // MARK: - Dependencies
     private let noteRepository: NoteRepositoryProtocol
@@ -348,6 +350,29 @@ extension NoteStore {
     func openBlankNoteIfIdle() {
         guard openedNote == nil, !isHandlingExternalOpen else { return }
         openNewNote()
+    }
+
+    /// Not cold-launch-only: iOS keeps the process alive for days, so "open the
+    /// app next morning" is usually a foreground resume. The threshold keeps
+    /// the open-and-write experience for those while short app switches resume
+    /// quietly.
+    static let autoOpenBackgroundThreshold: TimeInterval = 30 * 60
+
+    func sceneDidEnterBackground(now: Date = .now) {
+        lastEnteredBackground = now
+    }
+
+    /// Auto-opens a blank note on cold launch or after a long background stay.
+    /// Brief interruptions (.inactive bounces, short app switches) never
+    /// re-trigger it
+    func sceneDidBecomeActive(now: Date = .now) {
+        let isColdLaunch = !hasBecomeActive
+        hasBecomeActive = true
+        let resumedAfterLongBackground = lastEnteredBackground
+            .map { now.timeIntervalSince($0) >= Self.autoOpenBackgroundThreshold } ?? false
+        lastEnteredBackground = nil
+        guard isColdLaunch || resumedAfterLongBackground else { return }
+        openBlankNoteIfIdle()
     }
 
     /// Synchronous onOpenURL entry point. Sets the suppression flag before any

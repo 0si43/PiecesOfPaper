@@ -96,4 +96,51 @@ struct NoteStoreCanvasPresentationTests {
         await noteStore.externalOpenTask?.value
         #expect(noteStore.openedNote == notes[0])
     }
+
+    @Test func test_sceneDidBecomeActive_opensBlankNoteOnColdLaunch() {
+        noteStore.sceneDidBecomeActive(now: .now)
+        #expect(noteStore.openedNote != nil)
+    }
+
+    @Test func test_sceneDidBecomeActive_skipsResumeAfterShortBackground() {
+        let launch = Date(timeIntervalSinceReferenceDate: 0)
+        noteStore.sceneDidBecomeActive(now: launch)
+        noteStore.openedNote = nil
+        noteStore.sceneDidEnterBackground(now: launch.addingTimeInterval(60))
+        noteStore.sceneDidBecomeActive(now: launch.addingTimeInterval(120))
+        #expect(noteStore.openedNote == nil)
+    }
+
+    @Test func test_sceneDidBecomeActive_opensAfterLongBackground() {
+        let launch = Date(timeIntervalSinceReferenceDate: 0)
+        noteStore.sceneDidBecomeActive(now: launch)
+        noteStore.openedNote = nil
+        noteStore.sceneDidEnterBackground(now: launch.addingTimeInterval(60))
+        noteStore.sceneDidBecomeActive(
+            now: launch.addingTimeInterval(60 + NoteStore.autoOpenBackgroundThreshold)
+        )
+        #expect(noteStore.openedNote != nil)
+    }
+
+    @Test func test_sceneDidBecomeActive_skipsActiveBounceWithoutBackground() {
+        let launch = Date(timeIntervalSinceReferenceDate: 0)
+        noteStore.sceneDidBecomeActive(now: launch)
+        noteStore.openedNote = nil
+        noteStore.sceneDidBecomeActive(
+            now: launch.addingTimeInterval(NoteStore.autoOpenBackgroundThreshold * 2)
+        )
+        #expect(noteStore.openedNote == nil)
+    }
+
+    @Test func test_sceneDidBecomeActive_keepsOpenNoteAfterLongBackground() {
+        let launch = Date(timeIntervalSinceReferenceDate: 0)
+        noteStore.sceneDidBecomeActive(now: launch)
+        let note = NoteData.createTestData()
+        noteStore.openedNote = note
+        noteStore.sceneDidEnterBackground(now: launch.addingTimeInterval(60))
+        noteStore.sceneDidBecomeActive(
+            now: launch.addingTimeInterval(60 + NoteStore.autoOpenBackgroundThreshold)
+        )
+        #expect(noteStore.openedNote == note)
+    }
 }
