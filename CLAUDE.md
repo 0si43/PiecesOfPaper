@@ -17,6 +17,15 @@ xcodebuild -project <absolute path>/PiecesOfPaper.xcodeproj -scheme PiecesOfPape
 
 - Pass `-project` as an absolute path; the `platform=iOS Simulator,` prefix is required (see docs/GOTCHAS.md for both).
 
+## Lint
+
+- Run `swiftlint` before each commit, not after batching several. Opt-in rules
+  (e.g. `force_unwrapping`) apply to `PiecesOfPaperTests` too, and fixing a
+  warning after later commits exist forces a history rewrite.
+- `xcodebuild` includes a SwiftLint autocorrect build phase ("Correcting ..."),
+  so a build or test run can rewrite source files. Check `git status` after
+  builds before assuming the working tree still matches the last commit.
+
 ## Verification
 
 - Changes that touch the canvas or PencilKit rendering (PKCanvasView, PKDrawing, thumbnails) must be verified on a physical iPad with an Apple Pencil before merge. PencilKit keeps process-wide renderer state that the Simulator and unit tests cannot exercise — rendering `PKDrawing.image` off the main thread breaks stroke drawing app-wide on device only (#187). More PencilKit pitfalls: docs/GOTCHAS.md.
