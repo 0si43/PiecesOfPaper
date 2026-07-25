@@ -175,16 +175,9 @@ struct CanvasView: View {
     }
 
     private var activityViewController: UIActivityViewControllerWrapper {
-        var image = UIImage()
-        let trait = UITraitCollection(userInterfaceStyle: .light)
-        trait.performAsCurrent {
-            image = note.entity.drawing.image(
-                from: note.entity.drawing.bounds,
-                scale: displayScale
-            )
-        }
-
-        return UIActivityViewControllerWrapper(activityItems: [image])
+        UIActivityViewControllerWrapper(
+            activityItems: [note.entity.drawing.lightModeImage(scale: displayScale)]
+        )
     }
 
     private func done() {

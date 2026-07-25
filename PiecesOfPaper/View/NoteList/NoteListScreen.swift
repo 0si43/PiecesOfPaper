@@ -158,14 +158,9 @@ struct NoteListScreen: View {
     }
 
     private func activityViewController(note: NoteData) -> UIActivityViewControllerWrapper {
-        let drawing = note.entity.drawing
-        var image = UIImage()
-        let trait = UITraitCollection(userInterfaceStyle: .light)
-        trait.performAsCurrent {
-            image = drawing.image(from: drawing.bounds, scale: displayScale)
-        }
-
-        return UIActivityViewControllerWrapper(activityItems: [image])
+        UIActivityViewControllerWrapper(
+            activityItems: [note.entity.drawing.lightModeImage(scale: displayScale)]
+        )
     }
 
     // MARK: - Alert Components
