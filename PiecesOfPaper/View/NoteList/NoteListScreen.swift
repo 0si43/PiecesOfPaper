@@ -200,14 +200,9 @@ struct NoteListScreen: View {
     }
 
     private func activityViewController(note: NoteData) -> UIActivityViewControllerWrapper {
-        let drawing = note.entity.drawing
-        var image = UIImage()
-        let trait = UITraitCollection(userInterfaceStyle: .light)
-        trait.performAsCurrent {
-            image = drawing.image(from: drawing.bounds, scale: displayScale)
-        }
-
-        return UIActivityViewControllerWrapper(activityItems: [image])
+        UIActivityViewControllerWrapper(
+            activityItems: [note.entity.drawing.lightModeImage(scale: displayScale)]
+        )
     }
 
     // MARK: - Alert Components
@@ -235,10 +230,14 @@ struct NoteListScreen: View {
     private var archiveActionButton: some View {
         Button(role: .destructive) {
             Task {
-                if isTargetDirectoryArchived {
-                    await noteStore.allUnarchive()
-                } else {
-                    await noteStore.allArchive()
+                do {
+                    if isTargetDirectoryArchived {
+                        try await noteStore.allUnarchive()
+                    } else {
+                        try await noteStore.allArchive()
+                    }
+                } catch {
+                    presentation.alert = .error(error)
                 }
             }
         } label: {

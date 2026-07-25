@@ -90,6 +90,11 @@ device and the real Files app. Background: PR #208.
   `noteStore.openBlankNoteIfIdle()` call in `NoteListParentView` stubbed out — the app then
   launches into the list instead of a blank canvas. Revert the stub and rebuild before
   running the verification that goes into the PR.
+  To land directly on a sidebar page instead (Quick Tutorial, Setting, Tag List), change
+  the initial `selection` in `RootSplitView` to that page (e.g. `.tutorial`) in the
+  throwaway build — the detail pane shows the page at launch, no blank note opens, and
+  idb swipes scroll it directly (used for the PR #247 screenshots). Same rule: revert and
+  rebuild before the verification that goes into the PR.
 - **Companion version**: the brew bottle is idb-companion 1.1.8 (built 2022). `ui swipe`
   verified against the iOS 18.3.1 and iOS 26.3 simulator runtimes.
 - idb cannot inject touches into physical devices (iOS restriction); this workflow is

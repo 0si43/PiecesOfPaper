@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 protocol NoteMetadataCacheRepositoryProtocol: Sendable {
     /// Keyed by file name; see NoteIndexEntry.fileName
@@ -41,7 +42,9 @@ struct NoteMetadataCacheRepository: NoteMetadataCacheRepositoryProtocol {
             let data = try JSONEncoder().encode(file)
             try data.write(to: fileUrl, options: .atomic)
         } catch {
-            print("Could not write the note metadata cache: ", error.localizedDescription)
+            Logger.noteMetadataCache.error(
+                "Could not write the note metadata cache: \(error.localizedDescription, privacy: .public)"
+            )
         }
     }
 }

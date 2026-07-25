@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 protocol TagRepositoryProtocol {
     // Coordination happens off the main actor inside CoordinatedFileAccess, so
@@ -83,7 +84,7 @@ struct TagRepository: TagRepositoryProtocol {
                 }
             }
         } catch {
-            print(error.localizedDescription)
+            Logger.tagRepository.error("Failed to read the tag list: \(error.localizedDescription, privacy: .public)")
             return []
         }
     }
@@ -115,7 +116,7 @@ struct TagRepository: TagRepositoryProtocol {
             }
             return true
         } catch {
-            print(error.localizedDescription)
+            Logger.tagRepository.error("Failed to save the tag list: \(error.localizedDescription, privacy: .public)")
             return false
         }
     }
@@ -128,7 +129,7 @@ struct TagRepository: TagRepositoryProtocol {
         do {
             return try decoder.decode([TagEntity].self, from: content)
         } catch {
-            print("Data file format error: ", error.localizedDescription)
+            Logger.tagRepository.error("Tag list file format error: \(error.localizedDescription, privacy: .public)")
             return []
         }
     }
@@ -137,7 +138,9 @@ struct TagRepository: TagRepositoryProtocol {
         do {
             try fileManager.startDownloadingUbiquitousItem(at: url)
         } catch {
-            print(error.localizedDescription)
+            Logger.tagRepository.error(
+                "Failed to start downloading the tag list: \(error.localizedDescription, privacy: .public)"
+            )
         }
     }
 }

@@ -50,6 +50,7 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     /// Per-URL error thrown by open(); takes precedence over failingUrls
     var openErrors: [URL: Error] = [:]
     var moveShouldThrow = false
+    var moveFailingUrls: Set<URL> = []
     var deleteShouldThrow = false
     @MainActor private(set) var deletedUrls: [URL] = []
     @MainActor private(set) var movedUrls: [URL] = []
@@ -63,6 +64,10 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     @MainActor var suspendOpens = false
     @MainActor private var pendingOpens: [CheckedContinuation<Void, Never>] = []
     @MainActor var hasPendingOpen: Bool { !pendingOpens.isEmpty }
+    @MainActor private(set) var getFileAttributesCallCount = 0
+    @MainActor var suspendGetFileAttributes = false
+    @MainActor private var pendingGetFileAttributes: [CheckedContinuation<Void, Never>] = []
+    @MainActor var hasPendingGetFileAttributes: Bool { !pendingGetFileAttributes.isEmpty }
     private(set) var cloudUpdateHandler: (@MainActor () -> Void)?
 
     @MainActor
@@ -77,13 +82,25 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         pendingFileOperations.removeAll()
     }
 
+    @MainActor
+    func resumePendingGetFileAttributes() {
+        pendingGetFileAttributes.forEach { $0.resume() }
+        pendingGetFileAttributes.removeAll()
+    }
+
     init(notes: [NoteData]) {
         self.notes = notes
     }
 
     @MainActor
     func getFileAttributes(directory: NoteDirectory) async -> [NoteFileAttributes] {
-        directory == .inbox ? enumeratedAttributes : []
+        getFileAttributesCallCount += 1
+        // Suspend once so overlapping fetches actually overlap on the main actor
+        await Task.yield()
+        if suspendGetFileAttributes {
+            await withCheckedContinuation { pendingGetFileAttributes.append($0) }
+        }
+        return directory == .inbox ? enumeratedAttributes : []
     }
 
     func fileAttributes(at fileUrl: URL) -> NoteFileAttributes? {
@@ -140,7 +157,7 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
     @MainActor
     func move(fileUrl: URL, to directory: NoteDirectory) async throws -> URL {
         await suspendFileOperationIfNeeded()
-        if moveShouldThrow {
+        if moveShouldThrow || moveFailingUrls.contains(fileUrl) {
             throw NoteRepositoryError.directoryNotAvailable
         }
         movedUrls.append(fileUrl)

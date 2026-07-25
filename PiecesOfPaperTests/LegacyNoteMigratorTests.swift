@@ -2,6 +2,15 @@ import Testing
 import Foundation
 @testable import Pieces_of_Paper
 
+private final class MoveFailingFileManager: FileManager {
+    private(set) var attemptedSources: [URL] = []
+
+    override func moveItem(at srcURL: URL, to dstURL: URL) throws {
+        attemptedSources.append(srcURL)
+        throw CocoaError(.fileWriteNoPermission)
+    }
+}
+
 struct LegacyNoteMigratorTests {
     private func makeTemporaryDirectory() throws -> URL {
         let url = FileManager.default.temporaryDirectory
@@ -56,6 +65,20 @@ struct LegacyNoteMigratorTests {
         LegacyNoteMigrator.migrate(in: directory)
 
         #expect(!FileManager.default.fileExists(atPath: directory.path))
+    }
+
+    @Test func migrate_continuesAfterMoveFailure() throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try Data("a".utf8).write(to: directory.appendingPathComponent("a.plist"))
+        try Data("b".utf8).write(to: directory.appendingPathComponent("b.plist"))
+        let fileManager = MoveFailingFileManager()
+
+        LegacyNoteMigrator.migrate(in: directory, fileManager: fileManager)
+
+        #expect(fileManager.attemptedSources.count == 2)
+        let fileNames = try FileManager.default.contentsOfDirectory(atPath: directory.path).sorted()
+        #expect(fileNames == ["a.plist", "b.plist"])
     }
 
     @Test func migrate_ignoresUnrelatedAndHiddenFiles() throws {

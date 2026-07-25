@@ -64,9 +64,8 @@ struct NoteInformationView: View {
                 if tags.isEmpty {
                     Text("No tag")
                 } else {
-                    ScrollView(.horizontal) {
-                        TagHStack(tags: tags)
-                    }
+                    TagHStack(tags: tags)
+                        .frame(minHeight: 60)
                 }
             }
         }
@@ -74,7 +73,9 @@ struct NoteInformationView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     NoteInformationView(note: NoteData.createTestData())
         .environment(TagStore())
 }
+#endif

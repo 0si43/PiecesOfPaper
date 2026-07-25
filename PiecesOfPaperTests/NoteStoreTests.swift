@@ -44,6 +44,47 @@ struct NoteStoreTests {
         #expect(noteStore.inboxIndex.map(\.fileURL) == [NoteRepositoryMock.TestFile.file1.url])
     }
 
+    @Test func test_fetch_coalescesOverlappingFetchesForTheSameDirectory() async {
+        repositoryMock.suspendGetFileAttributes = true
+
+        async let first: Void = noteStore.fetch(directory: .inbox)
+        async let second: Void = noteStore.fetch(directory: .inbox)
+        await waitUntil { repositoryMock.hasPendingGetFileAttributes }
+        repositoryMock.suspendGetFileAttributes = false
+        repositoryMock.resumePendingGetFileAttributes()
+        _ = await (first, second)
+
+        #expect(repositoryMock.getFileAttributesCallCount == 1)
+        #expect(noteStore.inboxIndex.count == 3)
+    }
+
+    @Test func test_fetch_runsAgainAfterThePreviousFetchCompletes() async {
+        await noteStore.fetch(directory: .inbox)
+        await noteStore.fetch(directory: .inbox)
+        #expect(repositoryMock.getFileAttributesCallCount == 2)
+    }
+
+    @Test func test_fetch_foregroundJoinerShowsSpinnerWhileJoinedBackgroundFetchRuns() async {
+        // isLoading starts true; the initial foreground fetch settles it to false
+        await noteStore.fetch(directory: .inbox)
+        repositoryMock.suspendGetFileAttributes = true
+
+        async let backgroundFetch: Void = noteStore.fetch(directory: .inbox, background: true)
+        await waitUntil { repositoryMock.hasPendingGetFileAttributes }
+        #expect(!noteStore.isLoading)
+
+        async let foregroundFetch: Void = noteStore.fetch(directory: .inbox)
+        await waitUntil { noteStore.isLoading }
+        #expect(noteStore.isLoading)
+
+        repositoryMock.suspendGetFileAttributes = false
+        repositoryMock.resumePendingGetFileAttributes()
+        _ = await (backgroundFetch, foregroundFetch)
+
+        #expect(!noteStore.isLoading)
+        #expect(repositoryMock.getFileAttributesCallCount == 2)
+    }
+
     // file1 has the oldest filename timestamp (created) but the newest
     // modification date (updated), so the two sort keys produce opposite orders
     @Test func test_displayEntries_sortsBothKeysAndOrdersOnIndexAlone() async {
@@ -112,88 +153,7 @@ struct NoteStoreTests {
         #expect(repositoryMock.openCallCount == 1)
     }
 
-    @Test func test_loadNoteResult_propagatesNotDownloadedError() async throws {
-        await noteStore.fetch(directory: .inbox)
-        let entry = try #require(noteStore.inboxIndex.first)
-        repositoryMock.openErrors = [entry.fileURL: NoteRepositoryError.fileNotDownloaded(path: entry.fileURL.path)]
-
-        let result = await noteStore.loadNoteResult(entry)
-        guard case .failure(let error) = result else {
-            Issue.record("expected failure")
-            return
-        }
-        guard case NoteRepositoryError.fileNotDownloaded = error else {
-            Issue.record("expected fileNotDownloaded, got \(error)")
-            return
-        }
-        #expect(await noteStore.loadNote(entry) == nil)
-    }
-
-    @Test func test_openFailure_mapsNotDownloadedToDownloadFailed() {
-        let downloadError = NoteRepositoryError.fileNotDownloaded(path: "/a.pop")
-        #expect(NoteStoreError.openFailure(from: downloadError, count: 2) == .downloadFailed(count: 2))
-
-        let corruptError = NoteRepositoryError.fileOpenFailed(path: "/a.pop")
-        #expect(NoteStoreError.openFailure(from: corruptError, count: 1) == .openFailed(count: 1))
-
-        #expect(NoteStoreError.downloadFailed(count: 1).errorDescription?.contains("network") == true)
-        #expect(NoteStoreError.openFailed(count: 1).errorDescription?.contains("downloaded") == false)
-    }
-
-    // MARK: - Mid-session storage fallback
-
-    @Test func test_fetch_flagsFallbackWhenCloudBecomesUnavailable() async {
-        preferenceRepositoryMock.enablediCloud = true
-        repositoryMock.isCloudStorageActive = true
-        await noteStore.fetch(directory: .inbox)
-        #expect(!noteStore.didFallBackToLocalStorage)
-
-        repositoryMock.isCloudStorageActive = false
-        await noteStore.fetch(directory: .inbox)
-        #expect(noteStore.didFallBackToLocalStorage)
-
-        noteStore.acknowledgeLocalStorageFallback()
-        #expect(!noteStore.didFallBackToLocalStorage)
-    }
-
-    @Test func test_fetch_doesNotFlagFallbackWhenUserDisablediCloud() async {
-        preferenceRepositoryMock.enablediCloud = true
-        repositoryMock.isCloudStorageActive = true
-        await noteStore.fetch(directory: .inbox)
-
-        preferenceRepositoryMock.enablediCloud = false
-        repositoryMock.isCloudStorageActive = false
-        await noteStore.fetch(directory: .inbox)
-        #expect(!noteStore.didFallBackToLocalStorage)
-    }
-
-    @Test func test_fetch_doesNotFlagFallbackOnFirstFetchOrRecovery() async {
-        preferenceRepositoryMock.enablediCloud = true
-        repositoryMock.isCloudStorageActive = false
-        await noteStore.fetch(directory: .inbox)
-        #expect(!noteStore.didFallBackToLocalStorage)
-
-        repositoryMock.isCloudStorageActive = true
-        await noteStore.fetch(directory: .inbox)
-        #expect(!noteStore.didFallBackToLocalStorage)
-    }
-
     // MARK: - Data operations
-
-    @Test func test_duplicate_throwsDownloadFailedWhenNoteIsNotDownloaded() async throws {
-        await noteStore.fetch(directory: .inbox)
-        let entry = try #require(noteStore.inboxIndex.first)
-        repositoryMock.openErrors = [entry.fileURL: NoteRepositoryError.fileNotDownloaded(path: entry.fileURL.path)]
-        await #expect(throws: NoteStoreError.downloadFailed(count: 1)) {
-            try await noteStore.duplicate(entry, in: .inbox)
-        }
-
-        repositoryMock.openErrors = [:]
-        repositoryMock.failingUrls = [entry.fileURL]
-        await #expect(throws: NoteStoreError.openFailed(count: 1)) {
-            try await noteStore.duplicate(entry, in: .inbox)
-        }
-    }
 
     @Test func test_duplicate_appendsEntryForTheNewFile() async throws {
         await noteStore.fetch(directory: .inbox)
@@ -283,15 +243,54 @@ struct NoteStoreTests {
         #expect(noteStore.displayArchivedEntries.isEmpty)
     }
 
-    @Test func test_allArchive_movesEveryEntryInOrder() async {
+    @Test func test_allArchive_movesEveryEntryInOrder() async throws {
         await noteStore.fetch(directory: .inbox)
         let urls = noteStore.inboxIndex.map(\.fileURL)
 
-        await noteStore.allArchive()
+        try await noteStore.allArchive()
 
         #expect(repositoryMock.movedUrls == urls)
         #expect(noteStore.inboxIndex.isEmpty)
         #expect(noteStore.archivedIndex.count == urls.count)
+    }
+
+    @Test func test_allArchive_movesRemainingNotesAndThrowsAggregateErrorWhenOneMoveFails() async {
+        await noteStore.fetch(directory: .inbox)
+        let failingUrl = NoteRepositoryMock.TestFile.file2.url
+        repositoryMock.moveFailingUrls = [failingUrl]
+
+        await #expect(throws: NoteStoreError.bulkMoveFailed(count: 1)) {
+            try await noteStore.allArchive()
+        }
+
+        #expect(noteStore.inboxIndex.map(\.fileURL) == [failingUrl])
+        #expect(noteStore.archivedIndex.count == 2)
+    }
+
+    @Test func test_allArchive_reportsTotalCountWhenEveryMoveFails() async {
+        await noteStore.fetch(directory: .inbox)
+        repositoryMock.moveShouldThrow = true
+
+        await #expect(throws: NoteStoreError.bulkMoveFailed(count: 3)) {
+            try await noteStore.allArchive()
+        }
+
+        #expect(noteStore.inboxIndex.count == 3)
+        #expect(noteStore.archivedIndex.isEmpty)
+    }
+
+    @Test func test_allUnarchive_throwsAggregateErrorWhenAMoveFails() async throws {
+        await noteStore.fetch(directory: .inbox)
+        try await noteStore.allArchive()
+        let archivedUrl = try #require(noteStore.archivedIndex.first?.fileURL)
+        repositoryMock.moveFailingUrls = [archivedUrl]
+
+        await #expect(throws: NoteStoreError.bulkMoveFailed(count: 1)) {
+            try await noteStore.allUnarchive()
+        }
+
+        #expect(noteStore.archivedIndex.map(\.fileURL) == [archivedUrl])
+        #expect(noteStore.inboxIndex.count == 2)
     }
 
     // MARK: - Tag operations

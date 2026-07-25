@@ -6,6 +6,7 @@ enum NoteStoreError: LocalizedError, Equatable {
     case saveFailed
     case deleteFailed
     case moveFailed
+    case bulkMoveFailed(count: Int)
 
     var errorDescription: String? {
         switch self {
@@ -19,6 +20,8 @@ enum NoteStoreError: LocalizedError, Equatable {
             "Failed to delete the note."
         case .moveFailed:
             "Failed to move the note."
+        case .bulkMoveFailed(let count):
+            "Failed to move \(count) note(s). They remain in place."
         }
     }
 
