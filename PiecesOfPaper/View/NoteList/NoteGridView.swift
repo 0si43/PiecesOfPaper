@@ -12,13 +12,14 @@ struct NoteGridView: View {
             Spacer(minLength: 30.0)
             LazyVGrid(columns: [gridItem]) {
                 ForEach(noteStore.displayEntries(for: directory)) { entry in
+                    let tags = tagStore.tags(ids: noteStore.tagIds(for: entry))
                     VStack {
-                        NoteThumbnailView(entry: entry)
+                        NoteThumbnailView(entry: entry, tags: tags)
                         .contextMenu {
                             contextMenu(entry: entry)
                         }
                         NoteListTagHStack(
-                            tags: tagStore.tags(ids: noteStore.tagIds(for: entry)),
+                            tags: tags,
                             action: {
                                 presentation.requestTag(entry, from: noteStore)
                             }
