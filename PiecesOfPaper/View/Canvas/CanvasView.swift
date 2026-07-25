@@ -1,7 +1,6 @@
 import SwiftUI
 import PencilKit
 import StoreKit
-import LinkPresentation
 
 struct CanvasView: View {
     @State private var note: NoteData
@@ -176,16 +175,9 @@ struct CanvasView: View {
     }
 
     private var activityViewController: UIActivityViewControllerWrapper {
-        var image = UIImage()
-        let trait = UITraitCollection(userInterfaceStyle: .light)
-        trait.performAsCurrent {
-            image = note.entity.drawing.image(
-                from: note.entity.drawing.bounds,
-                scale: displayScale
-            )
-        }
-
-        return UIActivityViewControllerWrapper(activityItems: [image])
+        UIActivityViewControllerWrapper(
+            activityItems: [note.entity.drawing.lightModeImage(scale: displayScale)]
+        )
     }
 
     private func done() {
@@ -213,7 +205,9 @@ struct CanvasView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     CanvasView(note: NoteData.createTestData())
         .environment(NoteStore())
 }
+#endif

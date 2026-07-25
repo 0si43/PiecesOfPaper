@@ -52,6 +52,7 @@ struct ListOrderSettingView: View {
             TagHStack(tags: filteringTags,
                       action: { removed in listOrder.filterBy.removeAll { $0 == removed } },
                       deletable: true)
+                .frame(minHeight: 60)
                 .padding(.horizontal)
             VStack {
                 HStack {
@@ -61,6 +62,7 @@ struct ListOrderSettingView: View {
                 }
                 .padding(.horizontal)
                 TagHStack(tags: nonFilteringTags, action: { listOrder.filterBy.append($0) })
+                    .frame(minHeight: 60)
                     .padding(.horizontal)
             }
             .background(Color.gray.opacity(0.2))

@@ -18,12 +18,12 @@ struct NoteGridView: View {
                         .contextMenu {
                             contextMenu(entry: entry)
                         }
-                        NoteListTagHStack(
-                            tags: tags,
-                            action: {
+                        TagHStack(tags: tags)
+                            .frame(width: 250, height: 40)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
                                 presentation.requestTag(entry, from: noteStore)
                             }
-                        )
                             .padding(.horizontal)
                     }
                 }

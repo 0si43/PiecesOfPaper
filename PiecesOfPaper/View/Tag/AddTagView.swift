@@ -25,6 +25,7 @@ struct AddTagView: View {
     var body: some View {
         List {
             TagHStack(tags: tagsToNote, action: remove, deletable: true)
+                .frame(minHeight: 60)
             Section(header: Text("Select tag which you want to add")) {
                 ForEach(tagsNotToNote, id: \.id) { tag in
                     HStack {
@@ -70,8 +71,10 @@ struct AddTagView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     AddTagView(note: NoteData.createTestData())
         .environment(NoteStore())
         .environment(TagStore())
 }
+#endif
