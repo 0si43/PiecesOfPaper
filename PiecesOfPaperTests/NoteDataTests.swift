@@ -44,6 +44,16 @@ struct NoteDataTests {
         #expect(!note.isInInbox)
     }
 
+    @Test func fallbackDirectory_classifiesByParentFolderName() {
+        func note(atPath path: String) -> NoteData {
+            NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: URL(fileURLWithPath: path))
+        }
+        #expect(note(atPath: "/anywhere/InboxFolder/test.pop").fallbackDirectory == .inbox)
+        #expect(note(atPath: "/anywhere/Archived/test.pop").fallbackDirectory == .archived)
+        #expect(note(atPath: "/anywhere/Other/test.pop").fallbackDirectory == nil)
+        #expect(note(atPath: "/anywhere/InboxFolder2/test.pop").fallbackDirectory == nil)
+    }
+
     @Test func equatable_detectsEntityChange() {
         let note = NoteData.createTestData()
         var modified = note

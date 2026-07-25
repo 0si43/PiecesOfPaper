@@ -47,15 +47,20 @@ enum FilePath {
         ]
         ubiquityObservers = names.map { name in
             NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { _ in
-                // A never-resolved cache has no dependents yet, so there is
-                // nothing to report; the next iCloudUrl access resolves fresh.
-                guard let previous = cachediCloudResolution else { return }
-                invalidateiCloudUrlCache()
-                if iCloudUrl != previous {
+                if refreshReportingLocationChange() {
                     onLocationChanged()
                 }
             }
         }
+    }
+
+    /// Re-resolves the container and reports whether the storage location
+    /// actually moved. A never-resolved cache has no dependents yet, so there
+    /// is nothing to report; the next iCloudUrl access resolves fresh.
+    static func refreshReportingLocationChange() -> Bool {
+        guard let previous = cachediCloudResolution else { return false }
+        invalidateiCloudUrlCache()
+        return iCloudUrl != previous
     }
 
     static var documentDirectoryUrl: URL? {

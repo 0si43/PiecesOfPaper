@@ -301,6 +301,19 @@ struct NoteStoreTests {
         #expect(noteStore.archivedIndex.isEmpty)
     }
 
+    // A note saved into a managed folder of another container (the storage
+    // location changed mid-session, issue #225) is still listed
+    @Test func test_applySaved_fallsBackToFolderNameForForeignContainer() {
+        let foreignInboxUrl = URL(fileURLWithPath: "/other-container/InboxFolder/note.pop")
+        noteStore.applySaved(NoteData.createTestData(fileURL: foreignInboxUrl))
+        #expect(noteStore.inboxIndex.map(\.fileURL) == [foreignInboxUrl])
+        #expect(noteStore.archivedIndex.isEmpty)
+
+        let foreignArchivedUrl = URL(fileURLWithPath: "/other-container/Archived/note.pop")
+        noteStore.applySaved(NoteData.createTestData(fileURL: foreignArchivedUrl))
+        #expect(noteStore.archivedIndex.map(\.fileURL) == [foreignArchivedUrl])
+    }
+
     @Test func test_applySaved_thenFetchDoesNotDuplicate() async {
         noteStore.applySaved(NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url))
         await noteStore.fetch(directory: .inbox)
