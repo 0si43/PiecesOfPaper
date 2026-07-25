@@ -1,7 +1,6 @@
 import SwiftUI
 import PencilKit
 import StoreKit
-import LinkPresentation
 
 struct CanvasView: View {
     @State private var note: NoteData
