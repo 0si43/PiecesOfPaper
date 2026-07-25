@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 enum FilePath {
     static var savingUrl: URL? {
@@ -75,11 +76,24 @@ enum FilePath {
     static func makeDirectoryIfNeeded() {
         guard let inboxUrl = FilePath.inboxUrl, let archivedUrl = FilePath.archivedUrl else { return }
         if !FileManager.default.fileExists(atPath: inboxUrl.path) {
-            try? FileManager.default.createDirectory(at: inboxUrl, withIntermediateDirectories: false)
+            createDirectory(at: inboxUrl)
         }
 
         if !FileManager.default.fileExists(atPath: archivedUrl.path) {
-            try? FileManager.default.createDirectory(at: archivedUrl, withIntermediateDirectories: false)
+            createDirectory(at: archivedUrl)
+        }
+    }
+
+    // Intermediate directories stay off: the parent is the system-provided
+    // Documents directory, so a missing parent should surface in the log
+    // instead of being silently created
+    private static func createDirectory(at url: URL) {
+        do {
+            try FileManager.default.createDirectory(at: url, withIntermediateDirectories: false)
+        } catch {
+            Logger.filePath.error(
+                "Failed to create directory at \(url.path, privacy: .public): \(error.localizedDescription, privacy: .public)"
+            )
         }
     }
 }
