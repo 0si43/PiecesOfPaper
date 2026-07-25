@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 /// Renames legacy `.plist` notes to the current note file extension.
 ///
@@ -24,7 +25,9 @@ enum LegacyNoteMigrator {
                 do {
                     try fileManager.moveItem(at: source, to: destination)
                 } catch {
-                    print("Could not migrate legacy note \(fileName): ", error.localizedDescription)
+                    Logger.legacyNoteMigrator.error(
+                        "Could not migrate legacy note \(fileName, privacy: .public): \(error.localizedDescription, privacy: .public)"
+                    )
                 }
             } else if fileName.hasPrefix("."), fileName.hasSuffix(legacySuffix + ".icloud") {
                 // Undownloaded placeholder ".<name>.plist.icloud": request the
@@ -35,7 +38,9 @@ enum LegacyNoteMigrator {
                         at: directoryUrl.appendingPathComponent(realName)
                     )
                 } catch {
-                    print("Could not start downloading legacy note \(realName): ", error.localizedDescription)
+                    Logger.legacyNoteMigrator.error(
+                        "Could not start downloading legacy note \(realName, privacy: .public): \(error.localizedDescription, privacy: .public)"
+                    )
                 }
             }
         }

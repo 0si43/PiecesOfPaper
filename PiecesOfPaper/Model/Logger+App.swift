@@ -9,4 +9,5 @@ extension Logger {
     static let noteMetadataCache = Logger(subsystem: subsystem, category: "NoteMetadataCache")
     static let noteDocument = Logger(subsystem: subsystem, category: "NoteDocument")
     static let filePath = Logger(subsystem: subsystem, category: "FilePath")
+    static let legacyNoteMigrator = Logger(subsystem: subsystem, category: "LegacyNoteMigrator")
 }
