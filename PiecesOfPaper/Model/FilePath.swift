@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 
 enum FilePath {
     static var savingUrl: URL? {
@@ -9,17 +9,53 @@ enum FilePath {
         PreferenceRepository().getEnablediCloud() && iCloudUrl != nil
     }
 
+    // Seam for tests; production resolves the real ubiquity container.
+    static var ubiquityContainerProvider: () -> URL? = {
+        FileManager.default.url(forUbiquityContainerIdentifier: nil)
+    }
+
     // url(forUbiquityContainerIdentifier:) is slow and not meant for the main thread,
     // but it is called from computed properties all over the app. Resolve it once and reuse.
-    private static var cachediCloudUrl: URL?
+    // The nil outcome is cached too: retrying a late-resolving container would flip
+    // savingUrl from local to iCloud mid-session, stranding just-saved notes outside
+    // both listed directories (issue #225). Re-resolution only happens through
+    // invalidateiCloudUrlCache().
+    private static var cachediCloudResolution: URL??
     static var iCloudUrl: URL? {
-        if let cachediCloudUrl {
-            return cachediCloudUrl
+        if let resolution = cachediCloudResolution {
+            return resolution
         }
-        guard let url = FileManager.default.url(forUbiquityContainerIdentifier: nil) else { return nil }
-        let documentsUrl = url.appendingPathComponent("Documents")
-        cachediCloudUrl = documentsUrl
+        let documentsUrl = ubiquityContainerProvider()?.appendingPathComponent("Documents")
+        cachediCloudResolution = documentsUrl
         return documentsUrl
+    }
+
+    static func invalidateiCloudUrlCache() {
+        cachediCloudResolution = nil
+    }
+
+    private static var ubiquityObservers: [NSObjectProtocol] = []
+
+    /// Re-resolves the container when the iCloud identity may have changed
+    /// (account switch, or any change made while the app was backgrounded) and
+    /// reports only actual location changes so the caller can re-fetch.
+    static func startObservingUbiquityChanges(onLocationChanged: @escaping () -> Void) {
+        guard ubiquityObservers.isEmpty else { return }
+        let names: [Notification.Name] = [
+            .NSUbiquityIdentityDidChange,
+            UIApplication.willEnterForegroundNotification
+        ]
+        ubiquityObservers = names.map { name in
+            NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { _ in
+                // A never-resolved cache has no dependents yet, so there is
+                // nothing to report; the next iCloudUrl access resolves fresh.
+                guard let previous = cachediCloudResolution else { return }
+                invalidateiCloudUrlCache()
+                if iCloudUrl != previous {
+                    onLocationChanged()
+                }
+            }
+        }
     }
 
     static var documentDirectoryUrl: URL? {
