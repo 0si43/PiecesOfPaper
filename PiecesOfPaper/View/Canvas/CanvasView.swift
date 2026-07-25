@@ -16,6 +16,7 @@ struct CanvasView: View {
     @State private var showUnsavedAlert = false
     @State private var showDrawingInformation = false
     @State private var showSaveFailedAlert = false
+    @State private var saveFailedMessage = ""
     @State private var savingDrawing: PKDrawing?
     @State private var queuedSave: (drawing: PKDrawing, completion: ((Bool) -> Void)?)?
 
@@ -55,14 +56,17 @@ struct CanvasView: View {
             return
         }
         savingDrawing = drawing
-        noteStore.save(drawing: drawing, to: note) { savedNote in
-            savingDrawing = nil
-            if let savedNote {
-                note = savedNote
-            } else {
+        Task {
+            do {
+                note = try await noteStore.save(drawing: drawing, to: note)
+                savingDrawing = nil
+                completion?(true)
+            } catch {
+                savingDrawing = nil
+                saveFailedMessage = error.localizedDescription
                 showSaveFailedAlert = true
+                completion?(false)
             }
-            completion?(savedNote != nil)
             if let next = queuedSave {
                 queuedSave = nil
                 save(drawing: next.drawing, completion: next.completion)
@@ -120,7 +124,7 @@ struct CanvasView: View {
                isPresented: $showSaveFailedAlert) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("Your latest changes may not be persisted.")
+            Text("Your latest changes may not be persisted.\n\(saveFailedMessage)")
         }
     }
 

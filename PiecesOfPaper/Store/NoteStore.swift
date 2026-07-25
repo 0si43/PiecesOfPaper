@@ -258,10 +258,9 @@ extension NoteStore {
             updatedDate: previous?.updatedDate ?? entry(for: note.fileURL)?.updatedDate ?? note.entity.updatedDate
         )
         schedulePersist()
-        let success: Bool = await withCheckedContinuation { continuation in
-            noteRepository.save(updated.entity, to: updated.fileURL) { continuation.resume(returning: $0) }
-        }
-        guard success else {
+        do {
+            try await noteRepository.save(updated.entity, to: updated.fileURL)
+        } catch {
             metadataByFileName[note.fileName] = previous
             schedulePersist()
             throw NoteStoreError.saveFailed
@@ -342,25 +341,19 @@ extension NoteStore {
         inboxIndex.count >= 5
     }
 
-    func save(drawing: PKDrawing, to note: NoteData, completion: @escaping (NoteData?) -> Void) {
+    func save(drawing: PKDrawing, to note: NoteData) async throws -> NoteData {
         var payload = note
         // Tags edited from the list while the canvas held this snapshot live
         // in the metadata cache, not in the snapshot
         payload.entity.tagIds = currentTagIds(for: note)
         guard drawing != payload.entity.drawing else {
-            completion(payload)
-            return
+            return payload
         }
         payload.entity.drawing = drawing
         payload.entity.updatedDate = Date()
-        noteRepository.save(payload.entity, to: payload.fileURL) { [weak self] success in
-            if success {
-                self?.applySaved(payload)
-                completion(payload)
-            } else {
-                completion(nil)
-            }
-        }
+        try await noteRepository.save(payload.entity, to: payload.fileURL)
+        applySaved(payload)
+        return payload
     }
 
     /// Refreshes the index entry and metadata for a note just written to disk.

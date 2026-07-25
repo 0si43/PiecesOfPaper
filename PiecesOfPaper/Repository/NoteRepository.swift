@@ -1,4 +1,5 @@
 import UIKit
+import os
 
 enum NoteDirectory: String {
     case inbox, archived
@@ -22,7 +23,7 @@ protocol NoteRepositoryProtocol: AnyObject {
     func fileAttributes(at fileUrl: URL) -> NoteFileAttributes?
     @MainActor func setCloudUpdateHandler(_ handler: @escaping @MainActor () -> Void)
     @MainActor func open(fileUrl: URL) async throws -> NoteData
-    func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void)
+    @MainActor func save(_ entity: NoteEntity, to fileUrl: URL) async throws
     // Coordination happens off the main actor inside CoordinatedFileAccess, so
     // these only hop back here to keep callers and the index on one actor.
     @MainActor func delete(fileUrl: URL) async throws
@@ -32,6 +33,8 @@ protocol NoteRepositoryProtocol: AnyObject {
 }
 
 final class NoteRepository: NoteRepositoryProtocol {
+    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "PiecesOfPaper",
+                                       category: "NoteRepository")
     @MainActor private var cloudMonitor: CloudNoteMonitor?
     @MainActor private var cloudUpdateHandler: (@MainActor () -> Void)?
 
@@ -133,14 +136,39 @@ final class NoteRepository: NoteRepositoryProtocol {
         }
     }
 
-    func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void) {
+    @MainActor
+    func save(_ entity: NoteEntity, to fileUrl: URL) async throws {
         let targetUrl = resolveMigratedUrl(fileUrl)
+        let directoryUrl = targetUrl.deletingLastPathComponent()
+        // .forCreating does not create intermediate directories; without this a
+        // missing parent (fresh container, storage location change) fails the
+        // save with no user-visible reason.
+        if !FileManager.default.fileExists(atPath: directoryUrl.path) {
+            try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
+        }
         // The transient document lives until the completion handler fires,
         // which keeps its conflict observer active for the whole save.
         let document = NoteDocument(fileURL: targetUrl, entity: entity)
         let saveOperation: UIDocument.SaveOperation =
             FileManager.default.fileExists(atPath: targetUrl.path) ? .forOverwriting : .forCreating
-        document.save(to: targetUrl, for: saveOperation, completionHandler: completion)
+        let success = await withCheckedContinuation { continuation in
+            document.save(to: targetUrl, for: saveOperation) { continuation.resume(returning: $0) }
+        }
+        guard success else {
+            Self.logger.error("""
+            Save failed at \(targetUrl.path, privacy: .public): \
+            \(String(describing: document.lastHandledError), privacy: .public)
+            """)
+            throw NoteRepositoryError.saveFailed(path: targetUrl.path, underlying: document.lastHandledError)
+        }
+        // UIDocument can report success while leaving nothing usable on disk
+        // (issue #225 reports drawings vanishing right after save); trust the
+        // file system over the completion flag.
+        let fileSize = (try? FileManager.default.attributesOfItem(atPath: targetUrl.path))?[.size] as? Int ?? 0
+        guard fileSize > 0 else {
+            Self.logger.error("Save reported success but no data exists at \(targetUrl.path, privacy: .public)")
+            throw NoteRepositoryError.saveVerificationFailed(path: targetUrl.path)
+        }
     }
 
     @MainActor
@@ -183,12 +211,22 @@ final class NoteRepository: NoteRepositoryProtocol {
 
 enum NoteRepositoryError: LocalizedError {
     case fileOpenFailed(path: String)
+    case saveFailed(path: String, underlying: Error?)
+    case saveVerificationFailed(path: String)
     case directoryNotAvailable
 
     var errorDescription: String? {
         switch self {
         case .fileOpenFailed(let path):
             "Failed to open file at \(path)."
+        case .saveFailed(let path, let underlying):
+            if let underlying {
+                "Failed to write \(path): \(underlying.localizedDescription)"
+            } else {
+                "Failed to write \(path)."
+            }
+        case .saveVerificationFailed(let path):
+            "The save finished but no data exists at \(path)."
         case .directoryNotAvailable:
             "Directory is not available."
         }

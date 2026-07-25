@@ -12,13 +12,6 @@ struct NoteRepositoryTests {
         return url
     }
 
-    private func save(_ entity: NoteEntity, to fileUrl: URL,
-                      with repository: NoteRepository) async -> Bool {
-        await withCheckedContinuation { continuation in
-            repository.save(entity, to: fileUrl) { continuation.resume(returning: $0) }
-        }
-    }
-
     @Test func save_retargetsStaleLegacyUrlToMigratedFile() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -27,9 +20,8 @@ struct NoteRepositoryTests {
         let staleUrl = directory.appendingPathComponent("note.plist")
         let entity = NoteEntity(drawing: PKDrawing())
 
-        let success = await save(entity, to: staleUrl, with: NoteRepository())
+        try await NoteRepository().save(entity, to: staleUrl)
 
-        #expect(success)
         #expect(!FileManager.default.fileExists(atPath: staleUrl.path))
         let saved = try PropertyListDecoder().decode(NoteEntity.self,
                                                      from: Data(contentsOf: migratedUrl))
@@ -138,9 +130,8 @@ struct NoteRepositoryTests {
         try PropertyListEncoder().encode(NoteEntity(drawing: PKDrawing())).write(to: legacyUrl)
         let entity = NoteEntity(drawing: PKDrawing())
 
-        let success = await save(entity, to: legacyUrl, with: NoteRepository())
+        try await NoteRepository().save(entity, to: legacyUrl)
 
-        #expect(success)
         #expect(!FileManager.default.fileExists(atPath: directory.appendingPathComponent("note.pop").path))
         let saved = try PropertyListDecoder().decode(NoteEntity.self,
                                                      from: Data(contentsOf: legacyUrl))

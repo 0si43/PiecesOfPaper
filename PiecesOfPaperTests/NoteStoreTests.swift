@@ -348,21 +348,18 @@ struct NoteStoreSaveDrawingTests {
         )
     }
 
-    @Test func test_saveDrawing_skipsWhenDrawingUnchanged() {
+    @Test func test_saveDrawing_skipsWhenDrawingUnchanged() async throws {
         let note = NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url)
-        var saved: NoteData?
-        noteStore.save(drawing: note.entity.drawing, to: note) { saved = $0 }
+        let saved = try await noteStore.save(drawing: note.entity.drawing, to: note)
         #expect(saved == note)
         #expect(noteStore.inboxIndex.isEmpty)
         #expect(repositoryMock.saveCallCount == 0)
     }
 
-    @Test func test_saveDrawing_persistsAndUpdatesIndexOnSuccess() throws {
+    @Test func test_saveDrawing_persistsAndUpdatesIndexOnSuccess() async throws {
         let note = NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url)
         let drawing = PKDrawing.stub()
-        var result: NoteData?
-        noteStore.save(drawing: drawing, to: note) { result = $0 }
-        let saved = try #require(result)
+        let saved = try await noteStore.save(drawing: drawing, to: note)
         #expect(saved.entity.drawing == drawing)
         #expect(saved.entity.updatedDate > note.entity.updatedDate)
         let entry = try #require(noteStore.inboxIndex.first { $0.fileURL == note.fileURL })
@@ -370,17 +367,12 @@ struct NoteStoreSaveDrawingTests {
         #expect(noteStore.metadataByFileName[note.fileName]?.id == note.entity.id)
     }
 
-    @Test func test_saveDrawing_returnsNilAndKeepsIndexOnFailure() {
+    @Test func test_saveDrawing_throwsAndKeepsIndexOnFailure() async {
         repositoryMock.saveShouldSucceed = false
         let note = NoteData.createTestData(fileURL: NoteRepositoryMock.TestFile.file1.url)
-        var completionCalled = false
-        var saved: NoteData?
-        noteStore.save(drawing: PKDrawing.stub(), to: note) {
-            saved = $0
-            completionCalled = true
+        await #expect(throws: NoteRepositoryError.self) {
+            try await noteStore.save(drawing: PKDrawing.stub(), to: note)
         }
-        #expect(completionCalled)
-        #expect(saved == nil)
         #expect(noteStore.inboxIndex.isEmpty)
     }
 
@@ -390,10 +382,8 @@ struct NoteStoreSaveDrawingTests {
         let tag = TagEntity(name: "test", color: CodableUIColor(uiColor: .red))
         try await noteStore.addTag(tag, to: staleSnapshot)
 
-        var result: NoteData?
-        noteStore.save(drawing: PKDrawing.stub(), to: staleSnapshot) { result = $0 }
+        let saved = try await noteStore.save(drawing: PKDrawing.stub(), to: staleSnapshot)
 
-        let saved = try #require(result)
         #expect(saved.entity.tagIds == [tag.id])
         #expect(noteStore.currentTagIds(for: staleSnapshot) == [tag.id])
     }
