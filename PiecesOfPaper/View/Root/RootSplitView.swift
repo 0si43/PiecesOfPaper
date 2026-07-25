@@ -63,7 +63,8 @@ struct RootSplitView: View {
         .alert("", isPresented: $noteStore.showExternalOpenAlert) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text(NoteStoreError.openFailed(count: 1).localizedDescription)
+            Text(NoteStoreError.openFailure(from: noteStore.externalOpenError ?? NoteRepositoryError.fileOpenFailed(path: ""),
+                                            count: 1).localizedDescription)
         }
         // The store owner, so the flush happens once per app, not once per
         // NoteListParentView

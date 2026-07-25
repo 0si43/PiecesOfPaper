@@ -129,8 +129,19 @@ final class NoteRepository: NoteRepositoryProtocol {
             await document.close()
             return NoteData(entity: document.entity, fileURL: fileUrl)
         } else {
-            throw NoteRepositoryError.fileOpenFailed(path: fileUrl.path)
+            throw openFailureError(for: fileUrl)
         }
+    }
+
+    // UIDocument.open() reports only Bool, so the undownloaded case is
+    // reconstructed from the item's downloading status; local files have no
+    // ubiquitous resource values and keep the corrupt-file diagnosis.
+    private func openFailureError(for fileUrl: URL) -> NoteRepositoryError {
+        let values = try? fileUrl.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey])
+        if let status = values?.ubiquitousItemDownloadingStatus, status != .current {
+            return .fileNotDownloaded(path: fileUrl.path)
+        }
+        return .fileOpenFailed(path: fileUrl.path)
     }
 
     func save(_ entity: NoteEntity, to fileUrl: URL, completion: @escaping (Bool) -> Void) {
@@ -183,12 +194,15 @@ final class NoteRepository: NoteRepositoryProtocol {
 
 enum NoteRepositoryError: LocalizedError {
     case fileOpenFailed(path: String)
+    case fileNotDownloaded(path: String)
     case directoryNotAvailable
 
     var errorDescription: String? {
         switch self {
         case .fileOpenFailed(let path):
             "Failed to open file at \(path)."
+        case .fileNotDownloaded(let path):
+            "The note at \(path) has not finished downloading from iCloud."
         case .directoryNotAvailable:
             "Directory is not available."
         }

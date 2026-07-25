@@ -45,6 +45,8 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
 
     var notes: [NoteData]
     var failingUrls: Set<URL> = []
+    /// Per-URL error thrown by open(); takes precedence over failingUrls
+    var openErrors: [URL: Error] = [:]
     var moveShouldThrow = false
     var deleteShouldThrow = false
     @MainActor private(set) var deletedUrls: [URL] = []
@@ -98,6 +100,9 @@ final class NoteRepositoryMock: NoteRepositoryProtocol {
         await Task.yield()
         if suspendOpens {
             await withCheckedContinuation { pendingOpens.append($0) }
+        }
+        if let error = openErrors[fileUrl] {
+            throw error
         }
         if failingUrls.contains(fileUrl) {
             throw NoteRepositoryError.fileOpenFailed(path: fileUrl.path)

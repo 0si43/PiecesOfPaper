@@ -23,28 +23,30 @@ final class NoteListPresentation {
         set { if !newValue { alert = nil } }
     }
 
-    func presentOpenFailed() {
-        alert = .error(NoteStoreError.openFailed(count: 1))
+    func presentOpenFailure(_ error: Error) {
+        alert = .error(NoteStoreError.openFailure(from: error, count: 1))
     }
 
     // Open-then-present: both sheets take a loaded NoteData, so the document
     // must be opened before the sheet shows
     func requestShare(_ entry: NoteIndexEntry, from store: NoteStore) {
         Task {
-            if let note = await store.loadNote(entry) {
+            switch await store.loadNoteResult(entry) {
+            case .success(let note):
                 noteToShare = note
-            } else {
-                presentOpenFailed()
+            case .failure(let error):
+                presentOpenFailure(error)
             }
         }
     }
 
     func requestTag(_ entry: NoteIndexEntry, from store: NoteStore) {
         Task {
-            if let note = await store.loadNote(entry) {
+            switch await store.loadNoteResult(entry) {
+            case .success(let note):
                 noteToTag = note
-            } else {
-                presentOpenFailed()
+            case .failure(let error):
+                presentOpenFailure(error)
             }
         }
     }
