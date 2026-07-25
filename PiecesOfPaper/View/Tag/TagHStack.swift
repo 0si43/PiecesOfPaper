@@ -9,18 +9,18 @@ struct TagHStack: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
                 ForEach(tags, id: \.id) { tag in
-                    if deletable {
-                        DeletableTag(entity: tag)
-                            .onTapGesture { action?(tag) }
+                    // Attach the tap gesture only when a per-tag action exists:
+                    // an always-attached gesture would swallow taps meant for a
+                    // caller's whole-strip gesture (NoteGridView)
+                    if let action {
+                        Tag(entity: tag, deletable: deletable)
+                            .onTapGesture { action(tag) }
                     } else {
-                        Tag(entity: tag)
-                            .onTapGesture { action?(tag) }
+                        Tag(entity: tag, deletable: deletable)
                     }
-
                 }
             }
         }
-        .frame(minHeight: 60)
     }
 }
 
@@ -29,4 +29,5 @@ struct TagHStack: View {
     let yellow = TagEntity(id: UUID(), name: "yellow", color: CodableUIColor(uiColor: .yellow))
     let red = TagEntity(id: UUID(), name: "red", color: CodableUIColor(uiColor: .red))
     return TagHStack(tags: [blue, yellow, red])
+        .frame(minHeight: 60)
 }
