@@ -21,14 +21,22 @@ enum LegacyNoteMigrator {
                 // waiting for coordination would stall the list. Failures are
                 // skipped and retried on the next enumeration, and URLs left
                 // pointing at the old name are absorbed by resolveMigratedUrl.
-                try? fileManager.moveItem(at: source, to: destination)
+                do {
+                    try fileManager.moveItem(at: source, to: destination)
+                } catch {
+                    print("Could not migrate legacy note \(fileName): ", error.localizedDescription)
+                }
             } else if fileName.hasPrefix("."), fileName.hasSuffix(legacySuffix + ".icloud") {
                 // Undownloaded placeholder ".<name>.plist.icloud": request the
                 // download so a later pass can rename the materialized file.
                 let realName = String(fileName.dropFirst().dropLast(".icloud".count))
-                try? fileManager.startDownloadingUbiquitousItem(
-                    at: directoryUrl.appendingPathComponent(realName)
-                )
+                do {
+                    try fileManager.startDownloadingUbiquitousItem(
+                        at: directoryUrl.appendingPathComponent(realName)
+                    )
+                } catch {
+                    print("Could not start downloading legacy note \(realName): ", error.localizedDescription)
+                }
             }
         }
     }
