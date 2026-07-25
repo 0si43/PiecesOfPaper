@@ -8,6 +8,7 @@ final class NoteListPresentation {
     enum Alert {
         case iCloudDenied
         case iCloudDriveDisabled
+        case localFallback
         case archiveAll
         case error(Error)
     }

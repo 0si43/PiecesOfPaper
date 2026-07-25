@@ -140,6 +140,44 @@ struct NoteStoreTests {
         #expect(NoteStoreError.openFailed(count: 1).errorDescription?.contains("downloaded") == false)
     }
 
+    // MARK: - Mid-session storage fallback
+
+    @Test func test_fetch_flagsFallbackWhenCloudBecomesUnavailable() async {
+        preferenceRepositoryMock.enablediCloud = true
+        repositoryMock.isCloudStorageActive = true
+        await noteStore.fetch(directory: .inbox)
+        #expect(!noteStore.didFallBackToLocalStorage)
+
+        repositoryMock.isCloudStorageActive = false
+        await noteStore.fetch(directory: .inbox)
+        #expect(noteStore.didFallBackToLocalStorage)
+
+        noteStore.acknowledgeLocalStorageFallback()
+        #expect(!noteStore.didFallBackToLocalStorage)
+    }
+
+    @Test func test_fetch_doesNotFlagFallbackWhenUserDisablediCloud() async {
+        preferenceRepositoryMock.enablediCloud = true
+        repositoryMock.isCloudStorageActive = true
+        await noteStore.fetch(directory: .inbox)
+
+        preferenceRepositoryMock.enablediCloud = false
+        repositoryMock.isCloudStorageActive = false
+        await noteStore.fetch(directory: .inbox)
+        #expect(!noteStore.didFallBackToLocalStorage)
+    }
+
+    @Test func test_fetch_doesNotFlagFallbackOnFirstFetchOrRecovery() async {
+        preferenceRepositoryMock.enablediCloud = true
+        repositoryMock.isCloudStorageActive = false
+        await noteStore.fetch(directory: .inbox)
+        #expect(!noteStore.didFallBackToLocalStorage)
+
+        repositoryMock.isCloudStorageActive = true
+        await noteStore.fetch(directory: .inbox)
+        #expect(!noteStore.didFallBackToLocalStorage)
+    }
+
     // MARK: - Data operations
 
     @Test func test_duplicate_throwsDownloadFailedWhenNoteIsNotDownloaded() async throws {

@@ -34,6 +34,10 @@ final class NoteStore {
     /// presented by RootSplitView rather than by a list screen
     var showExternalOpenAlert = false
     private(set) var externalOpenError: Error?
+    /// Set on the cloud→local transition while the iCloud preference is still
+    /// on, so the list screen can explain why the visible notes changed
+    private(set) var didFallBackToLocalStorage = false
+    private var lastFetchUsedCloudStorage: Bool?
 
     // MARK: - Dependencies
     private let noteRepository: NoteRepositoryProtocol
@@ -97,6 +101,7 @@ final class NoteStore {
     func fetch(directory: NoteDirectory, background: Bool = false) async {
         defer { if !background { isLoading = false } }
         if !background { isLoading = true }
+        trackStorageModeTransition()
         let entries = await noteRepository.getFileAttributes(directory: directory)
             .filter { !pendingFileOperationUrls.contains($0.fileURL) }
             .map {
@@ -116,6 +121,21 @@ final class NoteStore {
         if !listOrder(for: directory).filterBy.isEmpty {
             ensureMetadataForFilter(directory: directory)
         }
+    }
+
+    // Snapshotted once per fetch so a flip cannot land between the mode check
+    // and the enumeration. The preference guard keeps the user-initiated
+    // "Use device storage" path (toggle off, then refetch) warn-free.
+    private func trackStorageModeTransition() {
+        let usingCloud = noteRepository.isCloudStorageActive
+        if lastFetchUsedCloudStorage == true, !usingCloud, preferenceRepository.getEnablediCloud() {
+            didFallBackToLocalStorage = true
+        }
+        lastFetchUsedCloudStorage = usingCloud
+    }
+
+    func acknowledgeLocalStorageFallback() {
+        didFallBackToLocalStorage = false
     }
 
     /// Called when the iCloud metadata query reports remote changes,

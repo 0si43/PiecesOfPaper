@@ -3,6 +3,8 @@ import PencilKit
 @testable import Pieces_of_Paper
 
 final class NoteRepositoryMock: NoteRepositoryProtocol {
+    @MainActor var isCloudStorageActive = true
+
     enum TestFile: CaseIterable {
         case file1, file2, file3
 

@@ -80,7 +80,7 @@ struct NoteListScreen: View {
                     localStorageButton
                 case .archiveAll:
                     archiveActionButton
-                case .error:
+                case .localFallback, .error:
                     Text("OK")
                 }
             } message: { alert in
@@ -103,9 +103,19 @@ struct NoteListScreen: View {
                         Are you sure you want to \(operationText) \(countText) notes?
                     """
                     return Text(alertText)
+                case .localFallback:
+                    return Text("""
+                        iCloud is no longer available, so your notes are now shown from device storage. \
+                        Notes saved in iCloud will reappear when iCloud is available again.
+                        """)
                 case let .error(error):
                     return Text(error.localizedDescription)
                 }
+        }
+        .onChange(of: noteStore.didFallBackToLocalStorage) { _, didFallBack in
+            guard didFallBack else { return }
+            presentation.alert = .localFallback
+            noteStore.acknowledgeLocalStorageFallback()
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
