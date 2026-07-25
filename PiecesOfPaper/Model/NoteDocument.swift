@@ -3,8 +3,6 @@ import PencilKit
 import os
 
 final class NoteDocument: UIDocument {
-    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "PiecesOfPaper",
-                                       category: "NoteDocument")
     var entity: NoteEntity
     /// UIDocument reports the reason a read/write failed only through
     /// handleError, never through the save/open completion Bool.
@@ -43,7 +41,7 @@ final class NoteDocument: UIDocument {
 
     override func handleError(_ error: Error, userInteractionPermitted: Bool) {
         lastHandledError = error
-        Self.logger.error("""
+        Logger.noteDocument.error("""
         UIDocument error for \(self.fileURL.lastPathComponent, privacy: .public): \
         \(String(describing: error), privacy: .public)
         """)
@@ -75,7 +73,9 @@ final class NoteDocument: UIDocument {
             try NSFileVersion.removeOtherVersionsOfItem(at: fileURL)
             conflictVersions.forEach { $0.isResolved = true }
         } catch {
-            print("failed to resolve conflict versions: ", error.localizedDescription)
+            Logger.noteDocument.error(
+                "Failed to resolve conflict versions: \(error.localizedDescription, privacy: .public)"
+            )
         }
     }
 

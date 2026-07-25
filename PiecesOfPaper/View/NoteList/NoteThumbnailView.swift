@@ -3,6 +3,7 @@ import PencilKit
 
 struct NoteThumbnailView: View {
     let entry: NoteIndexEntry
+    let tags: [TagEntity]
     @Environment(NoteStore.self) private var noteStore
     @Environment(NoteListPresentation.self) private var presentation
     @State private var thumbnail: UIImage?
@@ -28,7 +29,8 @@ struct NoteThumbnailView: View {
                 }
             }
         })
-        .accessibilityLabel("Note")
+        .accessibilityLabel(Self.accessibilityLabel(updatedDate: entry.updatedDate,
+                                                    tagNames: tags.map(\.name)))
         .task(id: entry.updatedDate) {
             let key = ThumbnailCache.key(for: entry)
             if let cached = ThumbnailCache.shared.cached(key: key),
@@ -43,6 +45,17 @@ struct NoteThumbnailView: View {
             guard !Task.isCancelled else { return }
             thumbnail = await ThumbnailCache.shared.thumbnail(for: note.entity.drawing, key: key)
         }
+    }
+
+    // Notes have no title, so the update date (and tag names, once the
+    // metadata cache knows them) is what distinguishes them under VoiceOver
+    static func accessibilityLabel(updatedDate: Date, tagNames: [String],
+                                   locale: Locale = .current) -> String {
+        let date = updatedDate.formatted(
+            Date.FormatStyle(date: .abbreviated, time: .shortened).locale(locale)
+        )
+        guard !tagNames.isEmpty else { return "Note, \(date)" }
+        return "Note, \(date), tags: \(tagNames.joined(separator: ", "))"
     }
 
     // Open-then-present: CanvasView reads the drawing synchronously in
@@ -65,7 +78,8 @@ struct NoteThumbnailView: View {
 #Preview {
     NoteThumbnailView(entry: NoteIndexEntry(fileURL: URL(fileURLWithPath: "/preview/2026-01-01-00-00-000000.pop"),
                                             creationDate: nil,
-                                            contentModificationDate: nil))
+                                            contentModificationDate: nil),
+                      tags: [])
         .environment(NoteStore())
         .environment(NoteListPresentation())
 }

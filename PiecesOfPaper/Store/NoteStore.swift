@@ -5,8 +5,6 @@ import os
 @Observable
 @MainActor
 final class NoteStore {
-    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "PiecesOfPaper",
-                                       category: "NoteStore")
     // MARK: - Primary data (Single Source of Truth)
     private(set) var inboxIndex = [NoteIndexEntry]()
     private(set) var archivedIndex = [NoteIndexEntry]()
@@ -381,7 +379,7 @@ extension NoteStore {
             // storage location changed between minting the URL and saving
             // (issue #225). Dropping it here would hide a file that saved
             // fine, so list it; the entry lasts until the next wholesale fetch.
-            Self.logger.warning("""
+            Logger.noteStore.warning("""
             Saved note \(note.fileURL.path, privacy: .public) is outside the current container \
             (inbox: \(FilePath.inboxUrl?.path ?? "nil", privacy: .public))
             """)

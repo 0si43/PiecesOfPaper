@@ -33,8 +33,6 @@ protocol NoteRepositoryProtocol: AnyObject {
 }
 
 final class NoteRepository: NoteRepositoryProtocol {
-    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "PiecesOfPaper",
-                                       category: "NoteRepository")
     @MainActor private var cloudMonitor: CloudNoteMonitor?
     @MainActor private var cloudUpdateHandler: (@MainActor () -> Void)?
 
@@ -133,7 +131,7 @@ final class NoteRepository: NoteRepositoryProtocol {
                 let isUbiquitous = (try? fileUrl.resourceValues(forKeys: [.isUbiquitousItemKey]))?
                     .isUbiquitousItem ?? false
                 if !isUbiquitous {
-                    Self.logger.error("Open target missing and not ubiquitous: \(fileUrl.path, privacy: .public)")
+                    Logger.noteRepository.error("Open target missing and not ubiquitous: \(fileUrl.path, privacy: .public)")
                     throw NoteRepositoryError.fileNotFound(path: fileUrl.path)
                 }
             }
@@ -169,7 +167,7 @@ final class NoteRepository: NoteRepositoryProtocol {
             document.save(to: targetUrl, for: saveOperation) { continuation.resume(returning: $0) }
         }
         guard success else {
-            Self.logger.error("""
+            Logger.noteRepository.error("""
             Save failed at \(targetUrl.path, privacy: .public): \
             \(String(describing: document.lastHandledError), privacy: .public)
             """)
@@ -180,7 +178,7 @@ final class NoteRepository: NoteRepositoryProtocol {
         // file system over the completion flag.
         let fileSize = (try? FileManager.default.attributesOfItem(atPath: targetUrl.path))?[.size] as? Int ?? 0
         guard fileSize > 0 else {
-            Self.logger.error("Save reported success but no data exists at \(targetUrl.path, privacy: .public)")
+            Logger.noteRepository.error("Save reported success but no data exists at \(targetUrl.path, privacy: .public)")
             throw NoteRepositoryError.saveVerificationFailed(path: targetUrl.path)
         }
     }
