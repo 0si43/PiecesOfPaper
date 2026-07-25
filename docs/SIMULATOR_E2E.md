@@ -51,10 +51,11 @@ coordinate values).
 |-|-|
 | `idb ui swipe --udid $UDID x1 y1 x2 y2 --duration 0.5` | Draws one stroke on the canvas |
 | `idb ui tap --udid $UDID x y` | Single tap — starts a dot stroke under `.anyInput`, so not usable for the UI toggle |
+| `idb ui tap --udid $UDID x y --duration 1.2` | Long press — opens context menus. A same-point `ui swipe` does NOT register as a long press |
 | `idb ui key --udid $UDID <HID keycode>` (`--shift/--control/--option/--command`) | Hardware-keyboard event |
 | `idb ui text --udid $UDID "..."` | Types text |
 | `idb ui describe-all --udid $UDID` | Accessibility tree as JSON |
-| `idb screenshot --udid $UDID out.png` | Screenshot |
+| `xcrun simctl io $UDID screenshot out.png` | Screenshot (`idb screenshot` can fail with "No Image available to encode") |
 
 Assertions that need no screenshot diffing:
 
@@ -67,6 +68,23 @@ Assertions that need no screenshot diffing:
 Verified example: two swipes (`100 300 300 500`, `300 500 150 650`), then `describe-all`
 returned two "Pen, black" elements with matching frames and a new plist appeared in
 InboxFolder.
+
+## Seeding notes and tags without drawing
+
+List, tag, and share flows need existing notes; they can be seeded from macOS without
+drawing anything. A macOS `swift` script that mirrors the app's formats — `NoteEntity`
+encoded with `PropertyListEncoder` into `Documents/InboxFolder/<timestamp>.pop`, and a
+`[TagEntity]` JSON array into `Documents/Library/taglist.json` — written into the app
+container (`xcrun simctl get_app_container $UDID Individual.LikeAPaper data`) appears in
+the note list on the next launch, with tag strips rendered from the seeded `tagIds`.
+Keep the seeded drawing an empty `PKDrawing()` (see docs/GOTCHAS.md on PencilKit
+rendering off-device). Combined with the note-list stub below, this verified the tag
+sheet, filter chips, and share sheet for PR #248 entirely from the command line.
+
+Seed (and re-query the container path) only while no other session is using the
+simulator: parallel sessions install their own builds over each other and the data
+container can be replaced under you. Run verification on a dedicated simulator
+(`xcrun simctl create`, or any device no other session uses), not the shared default.
 
 ## Opening a note file via URL (onOpenURL path)
 
