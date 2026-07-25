@@ -121,9 +121,23 @@ final class NoteRepository: NoteRepositoryProtocol {
 
     @MainActor
     func open(fileUrl: URL) async throws -> NoteData {
-        // No fileExists guard: an undownloaded iCloud note has no local file yet.
-        // Kick off the download and let UIDocument's coordinated read wait for it.
-        try? FileManager.default.startDownloadingUbiquitousItem(at: fileUrl)
+        // No blanket fileExists guard: an undownloaded iCloud note has no local
+        // file yet. Kick off the download and let UIDocument's coordinated read
+        // wait for it. But a missing file that is not a ubiquitous item can
+        // never arrive, and open() on it waits forever — fail fast instead
+        // (stale index entry, note deleted from another device).
+        if !FileManager.default.fileExists(atPath: fileUrl.path) {
+            do {
+                try FileManager.default.startDownloadingUbiquitousItem(at: fileUrl)
+            } catch {
+                let isUbiquitous = (try? fileUrl.resourceValues(forKeys: [.isUbiquitousItemKey]))?
+                    .isUbiquitousItem ?? false
+                if !isUbiquitous {
+                    Self.logger.error("Open target missing and not ubiquitous: \(fileUrl.path, privacy: .public)")
+                    throw NoteRepositoryError.fileNotFound(path: fileUrl.path)
+                }
+            }
+        }
         let document = NoteDocument(fileURL: fileUrl)
         let isSuccess = await document.open()
         // Close only after a successful open: close() on a failed document
@@ -211,6 +225,7 @@ final class NoteRepository: NoteRepositoryProtocol {
 
 enum NoteRepositoryError: LocalizedError {
     case fileOpenFailed(path: String)
+    case fileNotFound(path: String)
     case saveFailed(path: String, underlying: Error?)
     case saveVerificationFailed(path: String)
     case directoryNotAvailable
@@ -219,6 +234,8 @@ enum NoteRepositoryError: LocalizedError {
         switch self {
         case .fileOpenFailed(let path):
             "Failed to open file at \(path)."
+        case .fileNotFound(let path):
+            "No file exists at \(path)."
         case .saveFailed(let path, let underlying):
             if let underlying {
                 "Failed to write \(path): \(underlying.localizedDescription)"
