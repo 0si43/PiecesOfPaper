@@ -71,8 +71,10 @@ struct AddTagView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     AddTagView(note: NoteData.createTestData())
         .environment(NoteStore())
         .environment(TagStore())
 }
+#endif

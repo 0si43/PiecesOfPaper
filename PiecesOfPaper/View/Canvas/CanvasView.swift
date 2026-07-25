@@ -205,7 +205,9 @@ struct CanvasView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     CanvasView(note: NoteData.createTestData())
         .environment(NoteStore())
 }
+#endif

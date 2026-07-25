@@ -73,7 +73,9 @@ struct NoteInformationView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     NoteInformationView(note: NoteData.createTestData())
         .environment(TagStore())
 }
+#endif

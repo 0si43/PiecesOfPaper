@@ -28,6 +28,7 @@ struct NoteData: Identifiable, Equatable {
     }
 }
 
+#if DEBUG
 extension NoteData {
     static func createTestData(fileURL: URL? = nil) -> NoteData {
         guard let url = fileURL ?? FilePath.inboxUrl?
@@ -38,3 +39,4 @@ extension NoteData {
         return NoteData(entity: NoteEntity(drawing: PKDrawing()), fileURL: url)
     }
 }
+#endif
