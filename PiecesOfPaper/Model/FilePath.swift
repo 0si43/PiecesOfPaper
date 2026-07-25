@@ -62,13 +62,16 @@ enum FilePath {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     }
 
-    // avoided to conflict the name of "Documents/Inbox/"
+    // "InboxFolder", not "Inbox": avoided to conflict the name of "Documents/Inbox/"
+    static let inboxDirectoryName = "InboxFolder"
+    static let archivedDirectoryName = "Archived"
+
     static var inboxUrl: URL? {
-        savingUrl?.appendingPathComponent("InboxFolder")
+        savingUrl?.appendingPathComponent(inboxDirectoryName)
     }
 
     static var archivedUrl: URL? {
-        savingUrl?.appendingPathComponent("Archived")
+        savingUrl?.appendingPathComponent(archivedDirectoryName)
     }
 
     static var libraryUrl: URL? {

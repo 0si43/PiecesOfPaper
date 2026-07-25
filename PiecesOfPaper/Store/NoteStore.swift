@@ -1,9 +1,12 @@
 import Foundation
 import PencilKit
+import os
 
 @Observable
 @MainActor
 final class NoteStore {
+    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "PiecesOfPaper",
+                                       category: "NoteStore")
     // MARK: - Primary data (Single Source of Truth)
     private(set) var inboxIndex = [NoteIndexEntry]()
     private(set) var archivedIndex = [NoteIndexEntry]()
@@ -373,9 +376,22 @@ extension NoteStore {
             upsertEntry(entry, into: &archivedIndex)
         } else if note.isInInbox {
             upsertEntry(entry, into: &inboxIndex)
+        } else if let fallback = note.fallbackDirectory {
+            // The note sits in a managed folder of some other container: the
+            // storage location changed between minting the URL and saving
+            // (issue #225). Dropping it here would hide a file that saved
+            // fine, so list it; the entry lasts until the next wholesale fetch.
+            Self.logger.warning("""
+            Saved note \(note.fileURL.path, privacy: .public) is outside the current container \
+            (inbox: \(FilePath.inboxUrl?.path ?? "nil", privacy: .public))
+            """)
+            switch fallback {
+            case .inbox: upsertEntry(entry, into: &inboxIndex)
+            case .archived: upsertEntry(entry, into: &archivedIndex)
+            }
         }
-        // Notes outside both directories (opened in place from the Files app)
-        // are edited at their own URL and never listed
+        // Notes outside any managed folder (opened in place from the Files
+        // app) are edited at their own URL and never listed
     }
 
     // MARK: - Private helpers

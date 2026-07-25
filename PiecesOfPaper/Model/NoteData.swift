@@ -26,6 +26,17 @@ struct NoteData: Identifiable, Equatable {
         return fileURL.resolvingSymlinksInPath().path
             .hasPrefix(directoryUrl.resolvingSymlinksInPath().path + "/")
     }
+
+    /// Directory membership by folder name alone, for notes whose absolute
+    /// location no longer matches the current container — the storage location
+    /// can change between minting the note URL and saving it (issue #225).
+    var fallbackDirectory: NoteDirectory? {
+        switch fileURL.deletingLastPathComponent().lastPathComponent {
+        case FilePath.inboxDirectoryName: .inbox
+        case FilePath.archivedDirectoryName: .archived
+        default: nil
+        }
+    }
 }
 
 extension NoteData {
