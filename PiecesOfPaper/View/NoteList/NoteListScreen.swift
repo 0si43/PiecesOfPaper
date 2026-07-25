@@ -36,8 +36,15 @@ struct NoteListScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             switch preferenceStore.cloudAvailability {
-            case .signedOut, .driveUnavailable:
+            // Deliberately no fetch: the user decides between iCloud and local
+            // first. isLoading must still be cleared or the ProgressView behind
+            // the alert spins forever.
+            case .signedOut:
                 presentation.alert = .iCloudDenied
+                noteStore.isLoading = false
+            case .driveUnavailable:
+                presentation.alert = .iCloudDriveDisabled
+                noteStore.isLoading = false
             case .available, .userDisabled:
                 await noteStore.fetch(directory: directory)
             }
@@ -68,7 +75,7 @@ struct NoteListScreen: View {
                isPresented: $presentation.isAlertPresented,
                presenting: presentation.alert) { alert in
                 switch alert {
-                case .iCloudDenied:
+                case .iCloudDenied, .iCloudDriveDisabled:
                     iCloudButton
                     localStorageButton
                 case .archiveAll:
@@ -79,7 +86,16 @@ struct NoteListScreen: View {
             } message: { alert in
                 switch alert {
                 case .iCloudDenied:
-                    return Text("The app could not access your iCloud Drive. You should change setting")
+                    return Text("""
+                        iCloud is enabled for this app, but this device is not signed in to iCloud. \
+                        Sign in from Settings, or use device storage.
+                        """)
+                case .iCloudDriveDisabled:
+                    return Text("""
+                        iCloud Drive appears to be disabled for this app. \
+                        Allow this app in Settings > Apple Account > iCloud > iCloud Drive, \
+                        or use device storage.
+                        """)
                 case .archiveAll:
                     let operationText = isTargetDirectoryArchived ? "unarchived" : "archived"
                     let countText = noteStore.displayEntries(for: directory).count
@@ -175,7 +191,7 @@ struct NoteListScreen: View {
             guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
             UIApplication.shared.open(url)
         } label: {
-            Text("Use iCloud")
+            Text("Open Settings")
         }
     }
 

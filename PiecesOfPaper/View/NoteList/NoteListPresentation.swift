@@ -7,6 +7,7 @@ import Foundation
 final class NoteListPresentation {
     enum Alert {
         case iCloudDenied
+        case iCloudDriveDisabled
         case archiveAll
         case error(Error)
     }
