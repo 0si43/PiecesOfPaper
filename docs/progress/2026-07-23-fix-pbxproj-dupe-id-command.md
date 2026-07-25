@@ -1,0 +1,3 @@
+- [x] Fix the pbxproj duplicate-ID detection command in GOTCHAS (issue #244, PR #245)
+  - The documented `A[0-9A-F]{24}` is 25 chars and matches none of the 24-char IDs, so it always reported no duplicates; corrected to `A7[0-9A-F]{22}`
+  - PR #236 shipped a build-breaking collision this way; added a note that renumbering to the next free ID during a merge collides again on the next merge
