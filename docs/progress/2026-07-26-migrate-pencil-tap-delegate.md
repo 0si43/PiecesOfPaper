@@ -1,0 +1,3 @@
+- [x] Take the pencil double tap through `pencilInteraction(_:didReceiveTap:)` (issue #292, PR #295)
+  - `IPHONEOS_DEPLOYMENT_TARGET` is 17.0, so the deprecated `pencilInteractionDidTap(_:)` stays as the iOS 17.0-17.4 path behind a shared `performPreferredTapAction()`; UIKit stops calling it once the replacement exists, so the two never both fire
+  - Not unit-testable: `UIPencilInteraction.Tap` has `init` as `NS_UNAVAILABLE` and `preferredTapAction` is a systemwide value, so which delegate method UIKit picks is only observable on a device
