@@ -105,6 +105,12 @@ simulator: parallel sessions install their own builds over each other and the da
 container can be replaced under you. Run verification on a dedicated simulator
 (`xcrun simctl create`, or any device no other session uses), not the shared default.
 
+Your own re-installs swap it too, with no other session involved: the path
+`get_app_container` returns after `simctl install` differs from the one it returned
+before, and the earlier seed belongs to the old container. Seed *after* the final
+install and re-query the path every time — otherwise the app launches with an empty
+note list, which reads as a load failure rather than a missing seed.
+
 ## Opening a note file via URL (onOpenURL path)
 
 ```sh
@@ -115,6 +121,12 @@ delivers the file URL to the app's `onOpenURL` handler — both while the app is
 (canvas swap) and from a cold launch — without automating the Files app. It cannot
 exercise the security-scope path (files outside the app container); that still needs a
 device and the real Files app. Background: PR #208.
+
+Because the control panel is tappable at launch, this also reaches the canvas's own UI
+for a *chosen* note: `openurl` a seeded note, then `idb ui tap` the Note Information
+button to capture that note's info popover. The four states of issue #267 — no tags,
+tags overflowing the row, a long file name, and the DEBUG ID row — were verified this
+way, with no gesture injection.
 
 ## Limitations
 
