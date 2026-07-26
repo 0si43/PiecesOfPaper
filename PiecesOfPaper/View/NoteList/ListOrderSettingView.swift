@@ -72,11 +72,9 @@ struct ListOrderSettingView: View {
         }
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Done")
-                }
+                // The pickers write straight through the binding, so this only
+                // dismisses
+                SheetCloseButton { dismiss() }
             }
         }
         .navigationTitle("Sort & Filter")

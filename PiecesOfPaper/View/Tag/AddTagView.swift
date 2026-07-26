@@ -49,11 +49,7 @@ struct AddTagView: View {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     // Only dismisses: a tap on a tag is applied as it happens,
                     // so there is nothing here to confirm or cancel
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("Done")
-                    }
+                    SheetCloseButton { dismiss() }
                 }
             }
         }
