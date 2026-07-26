@@ -275,7 +275,7 @@ struct CanvasView: View {
         if noteStore.canRequestReview,
            !reviewRequested,
            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-            SKStoreReviewController.requestReview(in: windowScene)
+            AppStore.requestReview(in: windowScene)
             reviewRequested = true
         }
     }
