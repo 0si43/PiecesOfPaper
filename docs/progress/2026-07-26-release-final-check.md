@@ -22,3 +22,6 @@
     write-back stamped, the entry from the `NSMetadataQuery` — so an enumeration landing between a
     tag edit and the next render emptied a row whose tags were on disk
   - The date still gates the thumbnail and the hydration pass, which is what it actually answers
+- [x] Give the tag sheet a header with a close button (issue #314, PR #305)
+  - `AddTagView` wraps itself in a `NavigationStack` with a title and Done, the way `TagEditorView`
+    already does; before it, the only way out was a tap outside the card
