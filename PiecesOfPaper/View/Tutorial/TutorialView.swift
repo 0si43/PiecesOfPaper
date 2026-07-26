@@ -115,7 +115,7 @@ struct TutorialView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.yellow.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
+        .background(Color.calloutBackground, in: RoundedRectangle(cornerRadius: 12))
     }
 
     private var faq: some View {
