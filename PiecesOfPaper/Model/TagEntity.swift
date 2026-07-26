@@ -1,14 +1,13 @@
 import Foundation
 import SwiftUI
 
+// Equality is memberwise: an id-only == told SwiftUI that a renamed tag was
+// unchanged, so edits never reached the screen. Callers that mean "the same tag,
+// whatever it is called now" compare .id explicitly.
 struct TagEntity: Codable, Identifiable, Equatable {
     var id = UUID()
     var name: String
     var color: CodableUIColor
-
-    static func == (lhs: TagEntity, rhs: TagEntity) -> Bool {
-        lhs.id == rhs.id
-    }
 }
 
 struct CodableUIColor: Codable, Equatable {

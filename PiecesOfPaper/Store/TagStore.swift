@@ -40,7 +40,7 @@ final class TagStore {
     }
 
     func remove(_ tag: TagEntity) {
-        tags.removeAll { $0 == tag }
+        tags.removeAll { $0.id == tag.id }
         saveOrRollback()
     }
 
@@ -89,12 +89,16 @@ final class TagStore {
         tags.filter { !ids.contains($0.id) }
     }
 
+    // filterBy is a persisted copy of the tag, so it goes stale on every edit;
+    // only its id can be matched against the live list
     func filteringTags(from filterBy: [TagEntity]) -> [TagEntity] {
-        tags.filter { filterBy.contains($0) }
+        let ids = Set(filterBy.map(\.id))
+        return tags.filter { ids.contains($0.id) }
     }
 
     func nonFilteringTags(from filterBy: [TagEntity]) -> [TagEntity] {
-        tags.filter { !filterBy.contains($0) }
+        let ids = Set(filterBy.map(\.id))
+        return tags.filter { !ids.contains($0.id) }
     }
 
     func reload() {

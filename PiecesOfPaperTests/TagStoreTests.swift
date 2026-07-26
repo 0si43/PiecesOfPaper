@@ -52,7 +52,6 @@ struct TagStoreTests {
         #expect(tagStore.tags == initialTags)
     }
 
-    // TagEntity's == compares ids only, so a rename has to be asserted field by field
     @Test func test_update_replacesAndPersists() async {
         await waitForInitialLoad()
         var edited = initialTags[0]
@@ -124,6 +123,19 @@ struct TagStoreTests {
         tagStore.remove(initialTags[0])
         await waitUntil { tagStore.tags == initialTags }
         #expect(tagStore.tags == initialTags)
+    }
+
+    // ListOrder.filterBy persists a copy of the tag, so it holds the pre-edit
+    // name after a rename and can only be matched by id
+    @Test func test_filteringTags_matchesAStaleFilterCopyOfARenamedTag() async {
+        await waitForInitialLoad()
+        var edited = initialTags[0]
+        edited.name = "renamed"
+        tagStore.update(edited)
+        await waitUntil { !repositoryMock.saveAllCalls.isEmpty }
+
+        #expect(tagStore.filteringTags(from: [initialTags[0]]).map(\.name) == ["renamed"])
+        #expect(tagStore.nonFilteringTags(from: [initialTags[0]]).map(\.name) == ["memo"])
     }
 
     @Test func test_reload_appliesTheLatestReadWhenCalledRepeatedly() async {
