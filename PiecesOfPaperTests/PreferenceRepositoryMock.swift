@@ -6,11 +6,13 @@ final class PreferenceRepositoryMock: PreferenceRepositoryProtocol {
     var enabledAutoSave = true
     var enabledInfiniteScroll = true
     var appearanceMode: AppearanceMode = .system
+    var lastSeenWhatsNewVersion: String?
     var listOrders: [String: ListOrder] = [:]
     private(set) var setEnablediCloudCalls: [Bool] = []
     private(set) var setEnabledAutoSaveCalls: [Bool] = []
     private(set) var setEnabledInfiniteScrollCalls: [Bool] = []
     private(set) var setAppearanceModeCalls: [AppearanceMode] = []
+    private(set) var setLastSeenWhatsNewVersionCalls: [String] = []
     private(set) var setListOrderCalls: [(directoryName: String, listOrder: ListOrder)] = []
 
     func getEnablediCloud() -> Bool { enablediCloud }
@@ -39,6 +41,13 @@ final class PreferenceRepositoryMock: PreferenceRepositoryProtocol {
     func setAppearanceMode(_ value: AppearanceMode) {
         appearanceMode = value
         setAppearanceModeCalls.append(value)
+    }
+
+    func getLastSeenWhatsNewVersion() -> String? { lastSeenWhatsNewVersion }
+
+    func setLastSeenWhatsNewVersion(_ value: String) {
+        lastSeenWhatsNewVersion = value
+        setLastSeenWhatsNewVersionCalls.append(value)
     }
 
     func getListOrder(directoryName: String) -> ListOrder {

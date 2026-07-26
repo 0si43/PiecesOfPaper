@@ -32,6 +32,11 @@ final class PreferenceStore {
         }
     }
 
+    // Written through markWhatsNewSeen instead of the didSet the other preferences use:
+    // an optional is already initialized to nil before init runs, so the seeding
+    // assignment below counts as a mutation and would re-persist on every launch
+    private(set) var lastSeenWhatsNewVersion: String?
+
     // Stored, not computed: the system inputs (account, container URL) are not
     // observable, so views would never re-render on a computed property
     private(set) var cloudAvailability: CloudAvailability = .userDisabled
@@ -44,7 +49,20 @@ final class PreferenceStore {
         self.enabledAutoSave = repository.getEnabledAutoSave()
         self.enabledInfiniteScroll = repository.getEnabledInfiniteScroll()
         self.appearanceMode = repository.getAppearanceMode()
+        self.lastSeenWhatsNewVersion = repository.getLastSeenWhatsNewVersion()
         refreshCloudAvailability()
+    }
+
+    // Takes the version rather than reading ReleaseNote.all: the Store layer receives
+    // Model values through the repository, and the rule stays testable against
+    // orderings the shipped release list does not contain
+    func hasUnseenWhatsNew(latestVersion: String) -> Bool {
+        lastSeenWhatsNewVersion != latestVersion
+    }
+
+    func markWhatsNewSeen(version: String) {
+        lastSeenWhatsNewVersion = version
+        repository.setLastSeenWhatsNewVersion(version)
     }
 
     func refreshCloudAvailability() {
