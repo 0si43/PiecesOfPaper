@@ -42,3 +42,13 @@
 - [x] Name the split view column after the pages it lists (issue #318, PR #305)
   - `RootSplitView.sideBarList` → `pageList`: the column is pushed as a full screen in a compact
     size class, so it is only a sidebar on iPad, and SwiftUI spells sidebar as one word anyway
+- [x] Run the CI tests on an Xcode that has the iOS 26 SDK (issue #320, PR #305)
+  - `#available(iOS 26.0, *)` is a runtime check, so `SheetCloseButton` still needed `ButtonRole.close`
+    in the SDK it compiles against. The `macos-15` image defaults to Xcode 16.4, and the workflow now
+    selects the newest `Xcode_26*.app` and fails loudly when the image carries none
+- [x] Count what the bulk move touches, not what the filter shows (issue #322, PR #305)
+  - The confirmation counted `displayEntries(for:)`, which the tag filter narrows, while
+    `allArchive()` / `allUnarchive()` pass the whole index to `moveAll` — with two of fifty notes on
+    screen it asked about two and moved fifty
+  - `NoteStore.entryCount(for:)` answers the unfiltered count and the message says "all N notes", so
+    the number cannot be read as the visible subset
