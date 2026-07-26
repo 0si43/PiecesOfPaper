@@ -25,3 +25,9 @@
 - [x] Give the tag sheet a header with a close button (issue #314, PR #305)
   - `AddTagView` wraps itself in a `NavigationStack` with a title and Done, the way `TagEditorView`
     already does; before it, the only way out was a tap outside the card
+- [x] Close the tag and sort sheets with a close control instead of Done (issue #316, PR #305)
+  - Both sheets apply their changes as they are made, so the trailing button only dismisses.
+    `SheetCloseButton` holds the runtime branch: `ButtonRole.close` from iOS 26, an `xmark` before
+    it — a declaration `@available` would have taken the fallback down with it
+  - `TagEditorView` (commits a draft) and `CanvasView` (can raise the unsaved-changes alert) keep
+    their Done labels
