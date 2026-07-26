@@ -38,18 +38,18 @@ xcrun simctl spawn $UDID defaults write Individual.LikeAPaper iCloud_disabled -b
 xcrun simctl launch $UDID Individual.LikeAPaper
 ```
 
+The app launches straight into a fullscreen canvas (see "Simulator testing" in
+[CLAUDE.md](../CLAUDE.md)); drawing works immediately because Simulator builds use
+`drawingPolicy = .anyInput`. The canvas chrome is visible from launch — a floating
+panel with Note Information, Share and Done in the top-right corner — so those three
+are tappable without any gesture injection.
+
 `defaults write` only lands **before the app has written that key itself**. Once the app is
 running, cfprefsd holds the domain: an external write does not reach it, and `defaults read`
 keeps returning the older on-disk value. Use it to seed initial state, and drive every later
 change through the app's own UI. When the two disagree, what the app displays is the truth —
 an appearance-setting check read `appearance_mode = dark` from `defaults` while the app was
 showing, and had persisted, Light. Background: PR #264.
-
-The app launches straight into a fullscreen canvas (see "Simulator testing" in
-[CLAUDE.md](../CLAUDE.md)); drawing works immediately because Simulator builds use
-`drawingPolicy = .anyInput`. The canvas chrome is visible from launch — a floating
-panel with Note Information, Share and Done in the top-right corner — so those three
-are tappable without any gesture injection.
 
 ## Operating and asserting
 
