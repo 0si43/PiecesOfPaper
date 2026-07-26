@@ -1,0 +1,5 @@
+- [x] Add an in-app appearance setting: System / Light / Dark (issue #262, PR #264)
+  - `PreferenceStore` ownership moved up to `PiecesOfPaperApp` as `@State`, so all scenes share one instance instead of each iPad window holding its own
+  - `.preferredColorScheme` is attached in `RootSplitView`, not the App's `Scene` body: reading the store from a `View` body is what guarantees Observation re-evaluates it
+  - `ThumbnailCache` renders under an explicit interface style and keys on it; the previous ambient-trait render could put dark ink on a dark tile once the app appearance can differ from the system's
+  - Tag chips pinned to a light base with black text, and the tutorial callout given a dynamic colour via the new `View/Color+App.swift`
