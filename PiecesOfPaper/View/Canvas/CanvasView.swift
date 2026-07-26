@@ -29,6 +29,10 @@ struct CanvasView: View {
     private var tapGesture: some Gesture {
         TapGesture(count: 1)
             .onEnded { _ in
+                // Paper-only mode hides the tool picker, and .default degrades to pencil-only
+                // without one, so entering it would leave a finger-drawing user unable to draw.
+                // Normally moot — the drawing gesture recognizer takes the tap first
+                guard hideExceptPaper || UIPencilInteraction.prefersPencilOnlyDrawing else { return }
                 toggleUIVisibility()
             }
     }
@@ -36,6 +40,11 @@ struct CanvasView: View {
     private func toggleUIVisibility() {
         hideExceptPaper.toggle()
         setToolPickerVisible(!hideExceptPaper)
+    }
+
+    private func revealUI() {
+        hideExceptPaper = false
+        setToolPickerVisible(true)
     }
 
     private func setToolPickerVisible(_ isVisible: Bool) {
@@ -87,7 +96,8 @@ struct CanvasView: View {
                             toolPicker: $toolPicker,
                             isToolPickerVisible: !hideExceptPaper,
                             saveAction: { save(drawing: $0) },
-                            onToggleUI: { toggleUIVisibility() })
+                            onToggleUI: { toggleUIVisibility() },
+                            onRevealUI: { revealUI() })
         .onAppear {
             canvasView.drawing = note.entity.drawing
             initialContentSize(windowSize: windowSize)

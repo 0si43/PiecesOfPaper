@@ -39,8 +39,9 @@ xcrun simctl launch $UDID Individual.LikeAPaper
 ```
 
 The app launches straight into a fullscreen canvas (see "Simulator testing" in
-[CLAUDE.md](../CLAUDE.md)); drawing works immediately because Simulator builds use
-`drawingPolicy = .anyInput`. The canvas chrome is visible from launch — a floating
+[CLAUDE.md](../CLAUDE.md)); drawing works immediately because Simulator builds override
+`drawingPolicy` to `.anyInput`, independently of the system "Only Draw with Apple Pencil"
+setting that governs it on device. The canvas chrome is visible from launch — a floating
 panel with Note Information, Share and Done in the top-right corner — so those three
 are tappable without any gesture injection.
 
@@ -107,7 +108,9 @@ device and the real Files app. Background: PR #208.
   from idb — but the chrome is visible at launch, so `idb ui tap` on Done reaches the note
   list without it (verified on iPad Pro 11-inch, iOS 26.5). Planned complement for the
   toggle itself: a Simulator-only keyboard shortcut driven by `idb ui key` (issue #196
-  follow-up).
+  follow-up). Note the mode is narrower on device: it is only offered while the system
+  "Only Draw with Apple Pencil" setting is on (issue #271, and the `.default` policy entry
+  in [GOTCHAS.md](GOTCHAS.md)); the Simulator's two-finger tap bypasses that guard.
 - **Sidebar pages**: to land directly on Quick Tutorial, Setting or Tag List, change the
   initial `selection` in `RootSplitView` to that page (e.g. `.tutorial`) in a throwaway
   build — the detail pane shows the page at launch, no blank note opens, and idb swipes

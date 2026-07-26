@@ -33,10 +33,14 @@ struct TutorialView: View {
             When you launch the app, a blank white canvas fills the screen with the drawing tools \
             ready, so you can immediately start writing with your Apple Pencil
             """)
+            Bullet("""
+            You can also draw with your finger: turn off Only Draw with Apple Pencil, either from \
+            the drawing tools' menu or in the iOS Settings app under Apple Pencil
+            """)
             Bullet("Double-tapping the Apple Pencil switches to eraser mode")
             Bullet("""
-            Tapping the screen with your finger hides the controls for a plain sheet of paper, \
-            and tapping again brings them back
+            While Only Draw with Apple Pencil is on, tapping the screen with your finger hides the \
+            controls for a plain sheet of paper, and tapping again brings them back
             """)
             Bullet("""
             The Done button, in the floating panel in the top right, closes the window
