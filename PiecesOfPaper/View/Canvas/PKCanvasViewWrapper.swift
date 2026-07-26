@@ -13,9 +13,16 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
     private let saveAction: (PKDrawing) -> Void
     private let onToggleUI: (() -> Void)?
     private let onRevealUI: (() -> Void)?
-    private var defaultTool = PKInkingTool(.pen, color: .black, width: 1)
-    private var previousTool: PKTool
-    private var currentTool: PKTool
+    private var previousToolItem: PKToolPickerItem?
+    private var currentToolItem: PKToolPickerItem?
+
+    private var penItem: PKToolPickerItem? {
+        toolPicker.toolItems.first { ($0 as? PKToolPickerInkingItem)?.inkingTool.inkType == .pen }
+    }
+
+    private var eraserItem: PKToolPickerItem? {
+        toolPicker.toolItems.first { $0 is PKToolPickerEraserItem }
+    }
 
     init(canvasView: Binding<PKCanvasView>,
          toolPicker: Binding<PKToolPicker>,
@@ -33,8 +40,6 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
         self.saveAction = saveAction
         self.onToggleUI = onToggleUI
         self.onRevealUI = onRevealUI
-        self.previousTool = defaultTool
-        self.currentTool = defaultTool
     }
 
     func makeUIView(context: Context) -> PKCanvasView {
@@ -44,7 +49,11 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
         canvasView.drawingPolicy = .anyInput
         #endif
         toolPicker.addObserver(canvasView)
-        toolPicker.selectedTool = defaultTool
+        // Selects the pen only: unlike the deprecated selectedTool setter this cannot
+        // also force the item's colour and width, so the item keeps its own
+        if let penItem {
+            toolPicker.selectedToolItem = penItem
+        }
         // becomeFirstResponder() is a no-op while the view has no window, and
         // makeUIView runs before SwiftUI installs it
         let canvas = canvasView
@@ -70,6 +79,10 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
             super.init()
             canvasViewWrapper.canvasView.delegate = self
             canvasViewWrapper.toolPicker.addObserver(self)
+            // Seeded because the observer only reports selections the user makes, so the
+            // pen makeUIView selects would otherwise leave both of these nil
+            parent.previousToolItem = canvasViewWrapper.penItem
+            parent.currentToolItem = canvasViewWrapper.penItem
             let pencilInteraction = UIPencilInteraction()
             pencilInteraction.delegate = self
             parent.canvasView.addInteraction(pencilInteraction)
@@ -124,9 +137,9 @@ extension PKCanvasViewWrapper.Coordinator: PKCanvasViewDelegate {
 
 // MARK: - PKToolPickerObserver
 extension PKCanvasViewWrapper.Coordinator: PKToolPickerObserver {
-    func toolPickerSelectedToolDidChange(_ toolPicker: PKToolPicker) {
-        parent.previousTool = parent.currentTool
-        parent.currentTool = toolPicker.selectedTool
+    func toolPickerSelectedToolItemDidChange(_ toolPicker: PKToolPicker) {
+        parent.previousToolItem = parent.currentToolItem
+        parent.currentToolItem = toolPicker.selectedToolItem
     }
 }
 
@@ -143,14 +156,15 @@ extension PKCanvasViewWrapper.Coordinator: UIPencilInteractionDelegate {
     }
 
     private func switchPreviousTool() {
-        parent.toolPicker.selectedTool = parent.previousTool
+        guard let previousToolItem = parent.previousToolItem else { return }
+        parent.toolPicker.selectedToolItem = previousToolItem
     }
 
     private func switchEraser() {
-        if parent.currentTool is PKEraserTool {
-            parent.toolPicker.selectedTool = parent.previousTool
-        } else {
-            parent.toolPicker.selectedTool = PKEraserTool(.vector)
+        if parent.currentToolItem is PKToolPickerEraserItem {
+            switchPreviousTool()
+        } else if let eraserItem = parent.eraserItem {
+            parent.toolPicker.selectedToolItem = eraserItem
         }
     }
 
