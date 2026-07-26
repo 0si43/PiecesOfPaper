@@ -1,0 +1,3 @@
+- [x] Document the share/export, simulator defaults, and pbxproj pitfalls from PR #264 (issue #274, PR #275)
+  - New "Sharing / export" section in GOTCHAS: `PKDrawing.image` renders on a transparent background, `LPLinkMetadata.iconProvider` vs `imageProvider`, and metadata having to ride on the item it describes
+  - `defaults write` in SIMULATOR_E2E only lands before the app has written that key itself; afterwards cfprefsd holds the domain and what the app displays is the truth

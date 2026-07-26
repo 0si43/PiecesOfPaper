@@ -45,6 +45,13 @@ setting that governs it on device. The canvas chrome is visible from launch — 
 panel with Note Information, Share and Done in the top-right corner — so those three
 are tappable without any gesture injection.
 
+`defaults write` only lands **before the app has written that key itself**. Once the app is
+running, cfprefsd holds the domain: an external write does not reach it, and `defaults read`
+keeps returning the older on-disk value. Use it to seed initial state, and drive every later
+change through the app's own UI. When the two disagree, what the app displays is the truth —
+an appearance-setting check read `appearance_mode = dark` from `defaults` while the app was
+showing, and had persisted, Light. Background: PR #264.
+
 ## Operating and asserting
 
 All coordinates are in points, not pixels (a screenshot from a 2x device is twice the
@@ -54,11 +61,28 @@ coordinate values).
 |-|-|
 | `idb ui swipe --udid $UDID x1 y1 x2 y2 --duration 0.5` | Draws one stroke on the canvas |
 | `idb ui tap --udid $UDID x y` | Single tap — starts a dot stroke under `.anyInput`, so not usable for the UI toggle |
+| `idb ui tap --udid $UDID x y --duration 0.15` | Tap that SwiftUI controls register (see below) |
 | `idb ui tap --udid $UDID x y --duration 1.2` | Long press — opens context menus. A same-point `ui swipe` does NOT register as a long press |
 | `idb ui key --udid $UDID <HID keycode>` (`--shift/--control/--option/--command`) | Hardware-keyboard event |
 | `idb ui text --udid $UDID "..."` | Types text |
 | `idb ui describe-all --udid $UDID` | Accessibility tree as JSON |
 | `xcrun simctl io $UDID screenshot out.png` | Screenshot (`idb screenshot` can fail with "No Image available to encode") |
+
+A zero-duration `ui tap` can miss a SwiftUI control without reporting anything: tapping
+the Auto Save `Toggle` at the exact frame `describe-all` gave left its `AXValue` at 1,
+while `--duration 0.15` at the same point flipped it. Read the control's `AXValue` back
+instead of assuming the tap landed. The same applies to `ui swipe` on the canvas — a
+swipe that lands outside the drawable area adds no stroke and reports success, so check
+the stroke count before drawing conclusions from what did *not* happen afterwards.
+Background: issue #290.
+Wait 3–4 seconds between an action and the screenshot or `describe-all` that checks it.
+A presentation started from a SwiftUI update pass is deferred a runloop turn and then
+animates, so a screenshot taken immediately shows the *previous* state — which reads as
+"the tap did nothing" and sends you diagnosing hit-testing that is not broken.
+
+Out-of-process UI is invisible to `describe-all`: `UIActivityViewController`'s rows are
+served by a remote view service and return nothing, so the share sheet is asserted from a
+screenshot and driven by tapping computed coordinates (screenshot pixels ÷ device scale).
 
 Assertions that need no screenshot diffing:
 
@@ -89,6 +113,12 @@ simulator: parallel sessions install their own builds over each other and the da
 container can be replaced under you. Run verification on a dedicated simulator
 (`xcrun simctl create`, or any device no other session uses), not the shared default.
 
+Your own re-installs swap it too, with no other session involved: the path
+`get_app_container` returns after `simctl install` differs from the one it returned
+before, and the earlier seed belongs to the old container. Seed *after* the final
+install and re-query the path every time — otherwise the app launches with an empty
+note list, which reads as a load failure rather than a missing seed.
+
 ## Opening a note file via URL (onOpenURL path)
 
 ```sh
@@ -99,6 +129,12 @@ delivers the file URL to the app's `onOpenURL` handler — both while the app is
 (canvas swap) and from a cold launch — without automating the Files app. It cannot
 exercise the security-scope path (files outside the app container); that still needs a
 device and the real Files app. Background: PR #208.
+
+Because the control panel is tappable at launch, this also reaches the canvas's own UI
+for a *chosen* note: `openurl` a seeded note, then `idb ui tap` the Note Information
+button to capture that note's info popover. The four states of issue #267 — no tags,
+tags overflowing the row, a long file name, and the DEBUG ID row — were verified this
+way, with no gesture injection.
 
 ## Limitations
 
@@ -111,6 +147,29 @@ device and the real Files app. Background: PR #208.
   follow-up). Note the mode is narrower on device: it is only offered while the system
   "Only Draw with Apple Pencil" setting is on (issue #271, and the `.default` policy entry
   in [GOTCHAS.md](GOTCHAS.md)); the Simulator's two-finger tap bypasses that guard.
+- **No canvas geometry**: `describe-all` lists the strokes but exposes no scroll view, so
+  `PKCanvasView.contentSize` cannot be asserted. The infinite-scroll growth is covered by
+  `PiecesOfPaperTests/PKCanvasViewWrapperTests.swift` instead. Background: issue #269.
+- **Preferences cannot be changed while the canvas is open**: Setting sits behind the
+  `fullScreenCover`, so a single window cannot toggle a preference mid-canvas. A user can
+  with two iPad windows sharing the one `PreferenceStore` (`UIApplicationSupportsMultipleScenes`
+  is on, which is why the store is owned by the App — PR #264), but idb cannot create the
+  second scene.
+- **idb cannot tap the tool picker's ⋯ popover**: `describe-all` lists its rows (Auto-Minimize,
+  Draw with Finger, Pencil Settings…) as `CheckBox`/`Button` elements with plausible frames, but
+  taps at those coordinates have no effect — tried several points inside the row and a longer
+  `--duration`, with the menu staying open throughout. Tapping the ⋯ button itself works, so this
+  is specific to the popover. To drive "Only Draw with Apple Pencil", write the preference behind
+  it and relaunch the app:
+  `xcrun simctl spawn $UDID defaults write com.apple.UIKit UIPencilOnlyDrawWithPencilKey -bool YES`
+  (`YES` = pencil only, so the switch reads off). The key came from the runtime's UIKitCore
+  strings; find others the same way:
+  `strings "$(xcrun simctl runtime list -v | …)/RuntimeRoot/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore" | grep -i <name>`.
+  Background: PR #281.
+- **The first gesture after opening a menu is spent dismissing it**: a `ui swipe` delivered while
+  the picker's ⋯ menu is open closes the menu and draws nothing, which reads as "drawing is
+  broken" — the same swipe repeated draws normally. Check `describe-all` for the menu rows before
+  operating, and assert state both before and after each injection.
 - **Sidebar pages**: to land directly on Quick Tutorial, Setting or Tag List, change the
   initial `selection` in `RootSplitView` to that page (e.g. `.tutorial`) in a throwaway
   build — the detail pane shows the page at launch, no blank note opens, and idb swipes
@@ -120,6 +179,12 @@ device and the real Files app. Background: PR #208.
   verified against the iOS 18.3.1 and iOS 26.3 simulator runtimes.
 - idb cannot inject touches into physical devices (iOS restriction); this workflow is
   Simulator-only. Canvas changes still require physical-iPad verification per CLAUDE.md.
+- **`osascript` / System Events is not a fallback**: driving the Simulator window through
+  AppleScript has no success path from a Claude Code session — without accessibility
+  permission the AppleEvent simply times out, blocking for two minutes and returning
+  nothing (hit while trying to read the Simulator's window coordinates). Inject touches
+  with idb; when idb cannot do it (multi-touch, above), change the app or seed the state
+  instead of automating the window.
 
 ## References
 
