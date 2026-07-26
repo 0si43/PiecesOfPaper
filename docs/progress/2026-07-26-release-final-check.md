@@ -16,3 +16,9 @@
     sort sheet and tutorial
   - `ListOrder` gained a `label` property the way `AppearanceMode` has one, because its raw values
     are the persisted sort setting; `ListOrderTests` pins them
+- [x] Read a list row's tags without requiring the dates to match (issue #312, PR #305)
+  - `tagIds(for:)` went through `validMetadata`, which compares the metadata cache's date with the
+    index entry's. On iCloud those come from different sources — the cache from the local file the
+    write-back stamped, the entry from the `NSMetadataQuery` — so an enumeration landing between a
+    tag edit and the next render emptied a row whose tags were on disk
+  - The date still gates the thumbnail and the hydration pass, which is what it actually answers
