@@ -67,6 +67,15 @@ coordinate values).
 | `idb ui describe-all --udid $UDID` | Accessibility tree as JSON |
 | `xcrun simctl io $UDID screenshot out.png` | Screenshot (`idb screenshot` can fail with "No Image available to encode") |
 
+Wait 3–4 seconds between an action and the screenshot or `describe-all` that checks it.
+A presentation started from a SwiftUI update pass is deferred a runloop turn and then
+animates, so a screenshot taken immediately shows the *previous* state — which reads as
+"the tap did nothing" and sends you diagnosing hit-testing that is not broken.
+
+Out-of-process UI is invisible to `describe-all`: `UIActivityViewController`'s rows are
+served by a remote view service and return nothing, so the share sheet is asserted from a
+screenshot and driven by tapping computed coordinates (screenshot pixels ÷ device scale).
+
 Assertions that need no screenshot diffing:
 
 - **Strokes**: `describe-all` lists each PencilKit stroke as an element with
