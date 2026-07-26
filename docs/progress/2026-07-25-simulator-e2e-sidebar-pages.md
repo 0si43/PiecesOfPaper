@@ -1,2 +1,0 @@
-- [x] Document the initial-selection workaround for reaching sidebar pages in Simulator E2E (issue #255, PR #256)
-  - `docs/SIMULATOR_E2E.md` Limitations: a throwaway build with `RootSplitView`'s initial `selection` set to the target page reaches Quick Tutorial / Setting / Tag List directly, lighter than stubbing `openBlankNoteIfIdle()`

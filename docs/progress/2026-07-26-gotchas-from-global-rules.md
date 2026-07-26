@@ -1,4 +1,0 @@
-- [x] Move three iOS-specific facts from the machine-local rulebook into the repository docs (issue #283, PR #284)
-  - Touch consumption vs. the exit path, and SwiftUI's undeclared alert buttons, go to `docs/GOTCHAS.md`; the `osascript` dead end goes to `docs/SIMULATOR_E2E.md` Limitations
-  - Found with `/doctor`: the facts lived only in `~/.claude/CLAUDE.md`, so they were invisible in review and sat far from the entries they belong next to
-  - The general review habits stay in the personal rulebook — only the project-specific facts moved

@@ -1,5 +1,0 @@
-- [x] Improve readability of the Quick Tutorial page (issue #243, PR #247)
-  - Rebuilt `TutorialView` from one multi-line `Text` literal into section headers (`Label` + SF Symbol), real bullet rows, and FAQ question/answer pairs, all as private views in the same file
-  - Column capped at 720pt and centered in the split-view detail pane; "Important Notes" styled as a tinted callout
-  - Copy cleanup only: `Basis` → `Basics`, actual Setting toggle names spelled out, overloaded bullets split, dangling nested Archive item folded into its parent
-  - The issue's proposed `Bullet` `level` parameter was dropped as dead code — no nested bullets remain after the copy cleanup

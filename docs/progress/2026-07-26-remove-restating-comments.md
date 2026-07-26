@@ -1,3 +1,0 @@
-- [x] Trim five comments that only restate the code (issue #277, PR #278)
-  - Audited all 508 comment lines in 58 Swift files; the Why-not convention was already followed almost everywhere, so only five comments qualified
-  - Left doc comments whose first sentence restates the declaration but whose later sentences carry the why: the first sentence is the Xcode Quick Help summary line

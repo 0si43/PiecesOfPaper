@@ -1,1 +1,0 @@
-- [x] Set up Claude Code documentation: GOTCHAS.md and the progress log system (issue #194, PR #195)

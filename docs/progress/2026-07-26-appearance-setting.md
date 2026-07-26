@@ -1,9 +1,0 @@
-- [x] Add an in-app appearance setting: System / Light / Dark (issue #262, PR #264)
-  - `PreferenceStore` ownership moved up to `PiecesOfPaperApp` as `@State`, so all scenes share one instance instead of each iPad window holding its own
-  - `.preferredColorScheme` is attached in `RootSplitView`, not the App's `Scene` body: reading the store from a `View` body is what guarantees Observation re-evaluates it
-  - `ThumbnailCache` renders under an explicit interface style and keys on it; the previous ambient-trait render could put dark ink on a dark tile once the app appearance can differ from the system's
-  - Tag chips pinned to a light base with black text, and the tutorial callout given a dynamic colour via the new `View/Color+App.swift`
-  - The shared note image now fills white before drawing, like the QuickLook and Thumbnail extensions already did: `PKDrawing.image` leaves the background transparent, so a viewer in dark mode composited it on black and the dark ink disappeared
-- [x] Name the note in the share sheet header instead of showing "PNG image" (issue #270, PR #264)
-  - The image is wrapped in a `NoteShareItemSource`; metadata used to hang off a second item whose `itemForActivityType` returned nil, so iOS described the remaining bare `UIImage` by its type
-  - `LPLinkMetadata.iconProvider`, not `imageProvider`, is what puts the drawing in the header. The iPad popover form of the sheet shows no icon either way

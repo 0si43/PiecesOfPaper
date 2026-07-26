@@ -1,2 +1,0 @@
-- [x] Limit blank-note auto-open to cold launch and long background resume (issue #252, PR #253)
-  - scenePhase handling consolidated into RootSplitView; NoteStore gates openBlankNoteIfIdle with a 30-minute background threshold (injectable clock, unit-tested)

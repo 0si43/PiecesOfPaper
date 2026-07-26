@@ -1,3 +1,0 @@
-- [x] Record the idb tap duration trap and two canvas verification limits (issue #290, PR #291)
-  - A zero-duration `idb ui tap` misses SwiftUI controls silently, and a `ui swipe` outside the drawable area adds no stroke while still reporting success — the latter nearly turned "nothing was saved with autosave off" into a false pass during #269
-  - Limitations gained `PKCanvasView.contentSize` (no scroll view in the accessibility tree) and the fact that preferences cannot be changed while the canvas is open

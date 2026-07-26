@@ -1,6 +1,0 @@
-- [x] Improve iCloud error handling and fallback visibility (issue #224, PR #254)
-  - New `CloudAvailability` model (userDisabled / signedOut / driveUnavailable / available) with injectable `UbiquityStatusProviding`; `FilePath.isiCloudActive` and `PreferenceStore` both derive from it
-  - `FilePath` now caches the absent container URL too (`URL??`) so the storage mode cannot flip mid-operation; `revalidateiCloudUrl()` on scene activation is the only mid-session refresh
-  - Kept the no-fetch policy on availability alerts but fixed the latent endless-spinner bug (`isLoading` never cleared on the alert path)
-  - Download failures (`fileNotDownloaded` via `ubiquitousItemDownloadingStatus`) now surface as a network hint, split from the corrupt-file message
-  - Degraded-mode `icloud.slash` toolbar indicator + Settings footer; one-time alert on mid-session cloud→local fallback (user-initiated switch stays silent)

@@ -1,4 +1,0 @@
-- [x] Route the canvas preference reads through PreferenceStore (issue #269, PR #280)
-  - `PKCanvasViewWrapper` takes the autosave and infinite scroll flags as closures alongside `saveAction`; `CanvasView` supplies them from `@Environment(PreferenceStore.self)`, capturing the store explicitly so the read is not a frozen `@Environment` copy. Closures rather than `Bool`s because the empty `updateUIView` freezes `Coordinator.parent`
-  - `MainActor.assumeIsolated` turned out to be unnecessary: `PKCanvasViewDelegate` is `NS_SWIFT_UI_ACTOR`, so `canvasViewDrawingDidChange` is an isolated witness. Both preference reads had to move into it because the private `updateContentSizeIfNeeded` helper is not a witness and inherits no isolation
-  - First tests over the autosave gate (`PKCanvasViewWrapperTests`), including the value changing after the coordinator was made; confirmed to fail against a probe that freezes the flags at init
