@@ -31,3 +31,11 @@
     it — a declaration `@available` would have taken the fallback down with it
   - `TagEditorView` (commits a draft) and `CanvasView` (can raise the unsaved-changes alert) keep
     their Done labels
+- [x] Bring the tutorial and the archive wording in line with the app (issue #317, PR #305)
+  - Dropped three passages the app has outgrown: the claim that iCloud notes need the Files app to
+    download (PR #192 lists them and `NoteRepository.open` starts the download), the Important Notes
+    callout about hanging past ~500 files (the index opens no documents; the known hang went in
+    PR #208), and "double-tapping the Apple Pencil switches to eraser" (the handler follows
+    `UIPencilInteraction.preferredTapAction`)
+  - The tutorial section, the bulk-move confirmation and the note information row now say Trash,
+    the name the sidebar and the menu use. `Color.calloutBackground` went with the callout
