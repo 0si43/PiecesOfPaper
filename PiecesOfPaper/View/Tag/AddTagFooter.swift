@@ -2,16 +2,7 @@ import SwiftUI
 
 struct AddTagFooter: View {
     private(set) var onSave: (TagEntity) -> Void
-    @State private var tagName: String = "🏷Tag"
-    private var tagColor: CodableUIColor {
-        CodableUIColor(uiColor: UIColor(color))
-    }
-
-    @State private var color: Color = .blue
     @State private var isTapped = false
-    private var tagEntity: TagEntity {
-        TagEntity(name: tagName, color: tagColor)
-    }
 
     var body: some View {
         HStack {
@@ -28,44 +19,13 @@ struct AddTagFooter: View {
         }
         .accessibilityLabel("Add Tag")
         .accessibilityAddTraits(.isButton)
+        // A fresh entity per presentation, snapshotted by the editor: keeping the
+        // draft here let a cancelled or already saved tag reappear the next time
         .sheet(isPresented: $isTapped) {
-            NavigationStack {
-                VStack {
-                    Tag(entity: tagEntity)
-                    HStack {
-                        Text("Tag Name: ")
-                        TextField("", text: $tagName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                    }
-                    .padding()
-                    ColorPicker("Tag Color", selection: $color, supportsOpacity: false)
-                    .padding()
-                    Spacer()
-                }
-                .toolbar {
-                    ToolbarItemGroup(placement: .navigationBarLeading) {
-                        Button(action: cancel) {
-                            Text("Cancel")
-                            .foregroundColor(.red)
-                        }
-                    }
-                    ToolbarItemGroup(placement: .navigationBarTrailing) {
-                        Button(action: save) {
-                            Text("Done")
-                        }
-                    }
-                }
-            }
+            TagEditorView(title: "New Tag",
+                          tag: TagEntity(name: "🏷Tag", color: CodableUIColor(uiColor: .systemBlue)),
+                          onSave: onSave)
         }
-    }
-
-    private func cancel() {
-        isTapped.toggle()
-    }
-
-    private func save() {
-        onSave(tagEntity)
-        isTapped.toggle()
     }
 }
 
