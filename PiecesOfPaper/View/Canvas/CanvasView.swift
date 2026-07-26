@@ -29,6 +29,10 @@ struct CanvasView: View {
     private var tapGesture: some Gesture {
         TapGesture(count: 1)
             .onEnded { _ in
+                // Paper-only mode hides the tool picker, and .default degrades to pencil-only
+                // without one, so entering it would leave a finger-drawing user unable to draw.
+                // Normally moot — the drawing gesture recognizer takes the tap first
+                guard hideExceptPaper || UIPencilInteraction.prefersPencilOnlyDrawing else { return }
                 toggleUIVisibility()
             }
     }

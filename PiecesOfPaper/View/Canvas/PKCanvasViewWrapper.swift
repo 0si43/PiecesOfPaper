@@ -30,12 +30,7 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
         #if targetEnvironment(simulator)
         // The Simulator has no Apple Pencil; allow mouse (finger) input so drawing is testable
         canvasView.drawingPolicy = .anyInput
-        #else
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            canvasView.drawingPolicy = .pencilOnly
-        }
         #endif
-        toolPicker.showsDrawingPolicyControls = false
         toolPicker.addObserver(canvasView)
         toolPicker.selectedTool = defaultTool
         // becomeFirstResponder() is a no-op while the view has no window, and
