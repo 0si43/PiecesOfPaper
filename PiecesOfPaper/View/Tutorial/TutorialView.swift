@@ -30,13 +30,16 @@ struct TutorialView: View {
             Bullet("Pieces of Paper is designed specifically for iPad and Apple Pencil")
             Bullet("The iOS app exists but offers limited practical value")
             Bullet("""
-            When you launch the app, it displays a blank white canvas across the entire screen, \
-            and you can immediately start writing with your Apple Pencil
+            When you launch the app, a blank white canvas fills the screen with the drawing tools \
+            ready, so you can immediately start writing with your Apple Pencil
             """)
             Bullet("Double-tapping the Apple Pencil switches to eraser mode")
             Bullet("""
-            Tapping the screen with your finger reveals additional tools, \
-            and pressing the Done button in the top right closes the window
+            Tapping the screen with your finger hides the controls for a plain sheet of paper, \
+            and tapping again brings them back
+            """)
+            Bullet("""
+            The Done button, in the floating panel in the top right, closes the window
             """)
             Bullet("The app features auto-save, which can be turned off in Setting > Auto Save")
         }

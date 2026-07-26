@@ -40,7 +40,9 @@ xcrun simctl launch $UDID Individual.LikeAPaper
 
 The app launches straight into a fullscreen canvas (see "Simulator testing" in
 [CLAUDE.md](../CLAUDE.md)); drawing works immediately because Simulator builds use
-`drawingPolicy = .anyInput`.
+`drawingPolicy = .anyInput`. The canvas chrome is visible from launch — a floating
+panel with Note Information, Share and Done in the top-right corner — so those three
+are tappable without any gesture injection.
 
 ## Operating and asserting
 
@@ -100,19 +102,17 @@ device and the real Files app. Background: PR #208.
 ## Limitations
 
 - **No multi-touch**: idb's HID surface is single-touch (`multi-tap` is sequential taps at
-  one point, not two fingers). The Simulator-only two-finger tap that toggles the tool
-  picker / navigation bar (`CanvasView.toggleUIVisibility`) cannot be injected, so Done,
-  the note list, and settings are currently unreachable from idb. Planned complement: a
-  Simulator-only keyboard shortcut driven by `idb ui key` (issue #196 follow-up).
-  Workaround until then: to exercise the note list, build a throwaway build with the
-  `noteStore.sceneDidBecomeActive()` call in `RootSplitView` stubbed out — the app then
-  launches into the list instead of a blank canvas. Revert the stub and rebuild before
-  running the verification that goes into the PR.
-  To land directly on a sidebar page instead (Quick Tutorial, Setting, Tag List), change
-  the initial `selection` in `RootSplitView` to that page (e.g. `.tutorial`) in the
-  throwaway build — the detail pane shows the page at launch, no blank note opens, and
-  idb swipes scroll it directly (used for the PR #247 screenshots). Same rule: revert and
-  rebuild before the verification that goes into the PR.
+  one point, not two fingers). The Simulator-only two-finger tap that hides the chrome
+  (`CanvasView.toggleUIVisibility`) cannot be injected, so paper-only mode is unreachable
+  from idb — but the chrome is visible at launch, so `idb ui tap` on Done reaches the note
+  list without it (verified on iPad Pro 11-inch, iOS 26.5). Planned complement for the
+  toggle itself: a Simulator-only keyboard shortcut driven by `idb ui key` (issue #196
+  follow-up).
+- **Sidebar pages**: to land directly on Quick Tutorial, Setting or Tag List, change the
+  initial `selection` in `RootSplitView` to that page (e.g. `.tutorial`) in a throwaway
+  build — the detail pane shows the page at launch, no blank note opens, and idb swipes
+  scroll it directly (used for the PR #247 screenshots). Revert the change and rebuild
+  before running the verification that goes into the PR.
 - **Companion version**: the brew bottle is idb-companion 1.1.8 (built 2022). `ui swipe`
   verified against the iOS 18.3.1 and iOS 26.3 simulator runtimes.
 - idb cannot inject touches into physical devices (iOS restriction); this workflow is
