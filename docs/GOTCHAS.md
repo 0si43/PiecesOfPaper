@@ -3,6 +3,12 @@
 Pitfalls encountered during development, split out of [CLAUDE.md](../CLAUDE.md).
 Each entry links to the issue/PR where the details live.
 
+## Architecture / layering
+
+The app is View + Store + Repository + Model, with dependencies running one way: View sees only Stores (through `@Environment`), Stores take Repository protocols by injection, Repositories use Model types. `RootSplitView` owns the three Stores and injects them. ViewModels were removed in PR #186.
+
+- **`FilePath` reading the iCloud preference directly is a deliberate exception**: `FilePath.isiCloudActive` constructs a `PreferenceRepository()` inline, so a Model type depends on the Repository layer — and since `NoteRepository` and `TagRepository` depend on `FilePath` for path resolution, that closes a `Model → Repository → Model` cycle. It is the only remaining inversion. Don't "fix" it by reflex: unlike the canvas case (issue #269), where `PKCanvasViewWrapper` already accepted closures from the SwiftUI side and the fix was two closures, there is no cheap seam here. `FilePath` is an `enum` namespace of static computed properties called with no arguments from pure value types (`NoteData`, `NoteIndexEntry`) and from tests, so parameterizing it by storage mode means touching every path property and roughly thirty call sites. The pull-based shape also has a property the alternatives lose: the flag is read at access time, so there is no seeding step to forget and no ordering hazard. Two costs to know about — tests that build URLs from `FilePath.inboxUrl` depend implicitly on whatever the flag returns in the test process, and `savingUrl` and `noteMetadataCacheFileUrl` read it separately, so the cache filename suffix and the directory in use are not resolved atomically (not reproduced, but nothing rules it out). Background: issue #308.
+
 ## PencilKit / Canvas
 
 - **Never call `PKDrawing.image(from:scale:)` off the main actor**: calling it even once from a background context (e.g. `Task.detached`) breaks `PKCanvasView` stroke rendering process-wide — the Pencil stops drawing and existing notes render blank. Device-only; the Simulator and unit tests cannot reproduce it. Render thumbnails via `MainActor.run`. Details: issue #187, PR #189.
