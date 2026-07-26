@@ -3,7 +3,7 @@
     is false, so people updating from 3.3.0 — which forced `.pencilOnly` and always had the tap —
     learn that finger drawing and the tap-to-hide gesture are exclusive
   - The app cannot change the setting itself: `prefersPencilOnlyDrawing` is a read-only class
-    property, so the alert points at the tool picker's menu and Settings > Apple Pencil
+    property, so the alert spells out the two steps through the tool picker's ••• menu
   - A tooltip on that menu button is impossible: `PKToolPicker.frameObscured(in:)` returns
     `CGRect.null` for the movable iPad palette, and a popover anchored to `accessoryItem` lays
     over the palette with no arrow. `Text` also drops `Image` interpolation in an alert message

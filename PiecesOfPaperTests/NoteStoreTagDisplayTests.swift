@@ -27,13 +27,19 @@ struct NoteStoreTagDisplayTests {
         NoteFileAttributes(fileURL: note.fileURL, creationDate: nil, contentModificationDate: date)
     }
 
-    @Test func test_tagIds_areVisibleRightAfterTheTagIsAdded() async throws {
+    /// The filter reads the same cache, so it loses the note in the same case.
+    /// The filter is set directly rather than through `setListOrder`, which
+    /// would start a hydration pass and re-open the document mid-assertion.
+    @Test func test_tagFilter_survivesAnEnumerationThatReportsADifferentDate() async throws {
         await noteStore.fetch(directory: .inbox)
         repositoryMock.savedFileAttributes[note.fileURL] = attributes(modifiedAt: Date(timeIntervalSince1970: 5_000))
-
         try await noteStore.addTag(tag, to: note)
 
-        #expect(noteStore.tagIds(for: try #require(entry)) == [tag.id])
+        repositoryMock.enumeratedAttributes = [attributes(modifiedAt: Date(timeIntervalSince1970: 5_001))]
+        await noteStore.applyCloudUpdate()
+        noteStore.inboxListOrder.filterBy = [tag]
+
+        #expect(noteStore.displayEntries(for: .inbox).map(\.fileURL) == [note.fileURL])
     }
 
     @Test func test_tagIds_surviveAnEnumerationThatReportsADifferentDate() async throws {
