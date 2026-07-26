@@ -18,6 +18,16 @@ struct SettingView: View {
                 Toggle(isOn: $preferenceStore.enabledInfiniteScroll) {
                     Label("Infinite Scroll", systemImage: "scroll")
                 }
+                // Not .segmented as elsewhere in the app: that style drops the
+                // label, breaking the Label(_:systemImage:) shape of the rows above
+                Picker(selection: $preferenceStore.appearanceMode) {
+                    ForEach(AppearanceMode.allCases) { mode in
+                        Text(mode.label)
+                            .tag(mode)
+                    }
+                } label: {
+                    Label("Appearance", systemImage: "circle.lefthalf.filled")
+                }
             }
             Section(header: Text("About")) {
                 if let url = repositoryUrl {

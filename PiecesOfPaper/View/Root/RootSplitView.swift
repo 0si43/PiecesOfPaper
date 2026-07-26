@@ -91,6 +91,10 @@ struct RootSplitView: View {
         }
         .environment(noteStore)
         .environment(tagStore)
+        // Read here, not in the App's Scene body: preferredColorScheme is a
+        // preference that flows up to the scene host, and reading the store from
+        // a View body is what guarantees Observation re-evaluates it
+        .preferredColorScheme(preferenceStore.appearanceMode.colorScheme)
     }
 
     private var sideBarList: some View {
