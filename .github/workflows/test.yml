@@ -11,6 +11,16 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - name: Select an Xcode with the iOS 26 SDK
+        run: |
+          xcode=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$xcode" ]; then
+            echo "No Xcode 26 on this runner image" >&2
+            ls -d /Applications/Xcode*.app >&2
+            exit 1
+          fi
+          sudo xcode-select -switch "$xcode"
+          xcodebuild -version
       - name: Wait for simulator device list
         run: |
           for i in $(seq 1 12); do
