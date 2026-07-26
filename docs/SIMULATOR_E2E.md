@@ -52,6 +52,14 @@ change through the app's own UI. When the two disagree, what the app displays is
 an appearance-setting check read `appearance_mode = dark` from `defaults` while the app was
 showing, and had persisted, Light. Background: PR #264.
 
+The domain also outlives `simctl uninstall`: cfprefsd keeps it cached, so a later `defaults write`
+of one key re-materializes every key it was holding. A "clean install" check seeded that way can
+start with flags the fresh app should never see — a one-time alert stayed suppressed after a full
+uninstall and reinstall because `finger_drawing_notice_acknowledged` came back alongside the
+`iCloud_disabled` seed, which read as the alert being broken. Delete the specific key after
+installing (`defaults delete <domain> <key>`), and check the result against the container rather
+than with `defaults read`, for the reason below. Background: issue #302.
+
 The read side stays unreliable even after the app is gone. With the app terminated,
 `xcrun simctl spawn $UDID defaults read Individual.LikeAPaper last_seen_whats_new_version`
 reported the pair as missing, while the app read the value back on its next launch — so a
