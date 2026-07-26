@@ -120,6 +120,12 @@ device and the real Files app. Background: PR #208.
   verified against the iOS 18.3.1 and iOS 26.3 simulator runtimes.
 - idb cannot inject touches into physical devices (iOS restriction); this workflow is
   Simulator-only. Canvas changes still require physical-iPad verification per CLAUDE.md.
+- **`osascript` / System Events is not a fallback**: driving the Simulator window through
+  AppleScript has no success path from a Claude Code session — without accessibility
+  permission the AppleEvent simply times out, blocking for two minutes and returning
+  nothing (hit while trying to read the Simulator's window coordinates). Inject touches
+  with idb; when idb cannot do it (multi-touch, above), change the app or seed the state
+  instead of automating the window.
 
 ## References
 
