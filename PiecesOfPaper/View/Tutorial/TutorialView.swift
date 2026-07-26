@@ -8,13 +8,11 @@ struct TutorialView: View {
                 Divider()
                 dataManagement
                 Divider()
-                archive
+                trash
                 Divider()
                 tag
                 Divider()
                 infiniteCanvas
-                Divider()
-                importantNotes
                 Divider()
                 faq
             }
@@ -37,7 +35,6 @@ struct TutorialView: View {
             You can also draw with your finger: turn off Only Draw with Apple Pencil, either from \
             the drawing tools' menu or in the iOS Settings app under Apple Pencil
             """)
-            Bullet("Double-tapping the Apple Pencil switches to eraser mode")
             Bullet("""
             While Only Draw with Apple Pencil is on, tapping the screen with your finger hides the \
             controls for a plain sheet of paper, and tapping again brings them back
@@ -60,21 +57,19 @@ struct TutorialView: View {
             You can also use local storage without iCloud. \
             Turn it off in Settings > Enable iCloud
             """)
-            Bullet("""
-            There is one major issue with iCloud integration. \
-            You cannot download files created on other devices directly from Pieces of Paper. \
-            Please note that you need to open the Files app to sync them
-            """)
         }
     }
 
-    private var archive: some View {
+    private var trash: some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: "Archive", systemImage: "archivebox")
-            Bullet("The app includes an archive feature")
-            Bullet("It's designed to work like Gmail's archive system (which you may not use, or may even dislike)")
+            SectionHeader(title: "Trash", systemImage: "trash")
+            Bullet("Notes you no longer want in the Inbox go to Trash")
             Bullet("""
-            Archiving an item doesn't delete the actual file — \
+            It's designed to work like Gmail's archive (which you may not use, or may even dislike): \
+            moving a note to Trash takes it out of the Inbox but keeps it
+            """)
+            Bullet("""
+            Moving a note to Trash doesn't delete the actual file — \
             additional steps are required for permanent deletion
             """)
         }
@@ -101,28 +96,6 @@ struct TutorialView: View {
             Bullet("Write something in the bottom-right corner of your note to expand the canvas")
             Bullet("Toggle this feature on or off in Settings > Infinite Scroll")
         }
-    }
-
-    private var importantNotes: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: "Important Notes", systemImage: "exclamationmark.triangle")
-            Bullet("""
-            I have identified an issue where files created in iCloud may become inaccessible. \
-            While the exact conditions are unknown, this can cause the entire app to hang
-            """)
-            Bullet("""
-            In the developer's environment, this occurred after creating more than 500 files. \
-            However, I've confirmed that other files remain usable once the problematic files are removed
-            """)
-            Bullet("""
-            If you encounter this issue, you can recover by creating a backup folder in your iCloud storage, \
-            backing up all files from Pieces of Paper's Inbox, \
-            and then attempting to delete everything in Inbox
-            """)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.calloutBackground, in: RoundedRectangle(cornerRadius: 12))
     }
 
     private var faq: some View {

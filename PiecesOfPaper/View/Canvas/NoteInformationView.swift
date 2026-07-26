@@ -41,8 +41,8 @@ struct NoteInformationView: View {
             }
             Divider()
             GridRow {
-                label("Archive Status")
-                Text(note.isArchived ? "Archived" : "Inbox")
+                label("Location")
+                Text(note.isArchived ? "Trash" : "Inbox")
                     .lineLimit(1)
             }
             Divider()
