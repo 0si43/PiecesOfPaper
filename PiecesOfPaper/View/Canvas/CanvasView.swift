@@ -7,6 +7,7 @@ struct CanvasView: View {
     @Environment(NoteStore.self) private var noteStore
     @Environment(\.dismiss) private var dismiss
     @Environment(\.displayScale) private var displayScale
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @AppStorage("review_requested") private var reviewRequested = false
     @State private var canvasView = PKCanvasView()
     @State private var toolPicker = PKToolPicker()
@@ -173,6 +174,11 @@ struct CanvasView: View {
         canvasView.contentOffset = .zero
     }
 
+    // Measured from the safe area, which already clears the sensor housing on iPhone
+    private var panelMargin: CGFloat {
+        horizontalSizeClass == .compact ? 12 : 20
+    }
+
     private var controlPanel: some View {
         HStack(spacing: 4) {
             Button {
@@ -214,8 +220,8 @@ struct CanvasView: View {
         .overlay(Capsule().strokeBorder(.separator, lineWidth: 0.5))
         .shadow(color: .black.opacity(0.12), radius: 8, y: 2)
         // Padding sits outside the capsule, so taps in the margin fall through to the canvas
-        .padding(.top, 8)
-        .padding(.trailing, 16)
+        .padding(.top, panelMargin)
+        .padding(.trailing, panelMargin)
         // opacity alone leaves the panel hit-testable and readable by VoiceOver
         .opacity(hideExceptPaper ? 0 : 1)
         .allowsHitTesting(!hideExceptPaper)
