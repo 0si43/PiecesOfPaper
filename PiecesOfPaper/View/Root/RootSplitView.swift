@@ -11,6 +11,7 @@ struct RootSplitView: View {
     private enum Page: String, CaseIterable {
         case inbox, trash
         case tag
+        case whatsNew
         case tutorial
         case setting
 
@@ -19,6 +20,7 @@ struct RootSplitView: View {
             case .inbox: "Inbox"
             case .trash: "Trash"
             case .tag: "Tag List"
+            case .whatsNew: "What's New"
             case .tutorial: "Quick Tutorial"
             case .setting: "Setting"
             }
@@ -36,6 +38,8 @@ struct RootSplitView: View {
                 NoteListScreen(directory: .archived)
             case .tag:
                 TagList()
+            case .whatsNew:
+                WhatsNewView()
             case .tutorial:
                 TutorialView()
             case .setting:
@@ -134,6 +138,16 @@ struct RootSplitView: View {
                 }
             }
             Section(header: Text("Tutorial")) {
+                NavigationLink(value: Page.whatsNew) {
+                    HStack {
+                        Label(Page.whatsNew.label, systemImage: "sparkles")
+                        if let latest = ReleaseNote.latest,
+                           preferenceStore.hasUnseenWhatsNew(latestVersion: latest.version) {
+                            Spacer()
+                            unreadDot
+                        }
+                    }
+                }
                 NavigationLink(value: Page.tutorial) {
                     Label(Page.tutorial.label, systemImage: "text.document")
                 }
@@ -145,6 +159,13 @@ struct RootSplitView: View {
             }
         }
         .navigationTitle("Pieces of Paper")
+    }
+
+    private var unreadDot: some View {
+        Circle()
+            .fill(.red)
+            .frame(width: 8, height: 8)
+            .accessibilityLabel("New")
     }
 }
 
