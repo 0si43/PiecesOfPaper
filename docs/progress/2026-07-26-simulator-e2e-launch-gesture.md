@@ -1,0 +1,2 @@
+- [x] Document that the first idb gesture after launch is dropped (issue #300, PR #301)
+  - A `ui swipe` right after `simctl launch` draws nothing although `describe-all` already lists the chrome, and two swipes in one shell command are both lost; the retry has to be a separate injection

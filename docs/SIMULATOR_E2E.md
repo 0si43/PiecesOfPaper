@@ -181,6 +181,11 @@ way, with no gesture injection.
   the picker's ⋯ menu is open closes the menu and draws nothing, which reads as "drawing is
   broken" — the same swipe repeated draws normally. Check `describe-all` for the menu rows before
   operating, and assert state both before and after each injection.
+- **The first gesture after `simctl launch` is dropped too**: a `ui swipe` sent right after launch
+  leaves the canvas empty even though `describe-all` already lists the control panel and the
+  picker; the next identical swipe draws. Two swipes issued in one shell command are both lost, so
+  the retry has to be a separate injection. Seen while comparing pen state across two builds, where
+  it first looked like the build under test had broken drawing. Background: PR #295.
 - **Sidebar pages**: to land directly on Quick Tutorial, Setting or Tag List, change the
   initial `selection` in `RootSplitView` to that page (e.g. `.tutorial`) in a throwaway
   build. The `selection` change alone does not keep the canvas away — `sceneDidBecomeActive`
