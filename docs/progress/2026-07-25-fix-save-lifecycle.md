@@ -1,5 +1,0 @@
-- [x] Harden the note save lifecycle against silent data loss (issue #225, PR #251)
-  - Chose hardening over the issue's live-UIDocument proposal: new notes cannot be opened before creation (GOTCHAS: open() on a missing file waits forever), and the bug is not locally reproducible
-  - Identified mechanism: `FilePath.iCloudUrl` cached only non-nil resolutions, so a late-resolving container flipped `savingUrl` mid-session and `applySaved` silently dropped the note from the index; the cache now holds nil too and re-resolves only via the new ubiquity-change/foreground observer
-  - `NoteRepository.save` is now async throwing: creates missing parent directories, verifies a non-empty file exists after the write, surfaces the reason captured by a new `UIDocument.handleError` override, and logs all failure branches via `os.Logger` for field diagnosis
-  - `applySaved` falls back to folder-name classification (with a warning log) instead of hiding notes saved into a foreign container; `open()` fails fast for missing non-ubiquitous files instead of waiting forever

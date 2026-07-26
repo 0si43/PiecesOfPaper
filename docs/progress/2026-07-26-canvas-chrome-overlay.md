@@ -1,5 +1,0 @@
-- [x] Show the canvas controls on launch as a floating overlay (issue #263, PR #265)
-  - Both bars are pinned to a constant (status bar hidden, navigation bar hidden) so the top safe-area inset never changes and the drawing no longer shifts when the chrome is toggled; the issue's proposal to pin the status bar visible was dropped to keep the canvas full-bleed and avoid status-bar-tap scroll-to-top
-  - `PKCanvasViewWrapper` takes the initial tool picker visibility as an init parameter and defers `becomeFirstResponder()` one runloop turn — `makeUIView` runs before SwiftUI installs the view
-  - Done is now reachable from `idb ui tap`, which lifts the SIMULATOR_E2E limitation that needed the un-injectable two-finger tap
-  - Also fixed: the unsaved-changes alert left the tool picker hidden when cancelled or when Save failed

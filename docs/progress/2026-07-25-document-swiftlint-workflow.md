@@ -1,2 +1,0 @@
-- [x] Document SwiftLint workflow in CLAUDE.md (issue #249, PR #250)
-  - Lint before each commit (opt-in rules cover tests too); xcodebuild's SwiftLint autocorrect phase can rewrite sources, so check git status after builds

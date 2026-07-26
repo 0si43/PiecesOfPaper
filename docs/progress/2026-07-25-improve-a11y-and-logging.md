@@ -1,4 +1,0 @@
-- [x] Improve accessibility labels, error visibility, and logging (issue #222, PR #246)
-  - Note thumbnail VoiceOver label is now "Note, \<updated date\>[, tags: ...]" instead of a bare "Note"; tag names are passed in from NoteGridView, which already resolves them for NoteListTagHStack
-  - New Logger+App.swift: os.Logger with subsystem Individual.LikeAPaper and per-type categories; all 6 print() error logs replaced. Error descriptions logged with privacy: .public (file-operation errors only, never note content)
-  - FilePath.makeDirectoryIfNeeded logs creation failures instead of try?; signature stays non-throwing (sole caller is a didSet observer) and withIntermediateDirectories stays false so a missing parent surfaces in the log

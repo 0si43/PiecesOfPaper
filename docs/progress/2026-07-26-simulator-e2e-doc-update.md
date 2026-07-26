@@ -1,3 +1,0 @@
-- [x] Update SIMULATOR_E2E.md with PR #248 verification findings (issue #258, PR #259)
-  - Long press is `idb ui tap --duration` (same-point swipe does not fire); screenshots via `xcrun simctl io` (`idb screenshot` can fail); stale `NoteListParentView` reference corrected to `NoteListScreen`
-  - New section on seeding notes/tags into the app container from macOS, with the dedicated-simulator caveat for parallel sessions
