@@ -52,6 +52,16 @@ change through the app's own UI. When the two disagree, what the app displays is
 an appearance-setting check read `appearance_mode = dark` from `defaults` while the app was
 showing, and had persisted, Light. Background: PR #264.
 
+The read side stays unreliable even after the app is gone. With the app terminated,
+`xcrun simctl spawn $UDID defaults read Individual.LikeAPaper last_seen_whats_new_version`
+reported the pair as missing, while the app read the value back on its next launch — so a
+`defaults read` that finds nothing is not evidence that a write never happened. Assert
+persistence against the container:
+
+```sh
+plutil -p "$(xcrun simctl get_app_container $UDID Individual.LikeAPaper data)/Library/Preferences/Individual.LikeAPaper.plist"
+```
+
 ## Operating and asserting
 
 All coordinates are in points, not pixels (a screenshot from a 2x device is twice the
@@ -186,6 +196,13 @@ way, with no gesture injection.
   strings; find others the same way:
   `strings "$(xcrun simctl runtime list -v | …)/RuntimeRoot/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore" | grep -i <name>`.
   Background: PR #281.
+  The same RuntimeRoot answers the opposite question — whether a console line is the app's.
+  `grep -rla "<message>" "$ROOT/System/Library"` placed `couldn't fetch remote operation IDs` in
+  FileProvider, `sendUserActivityToServer` in UserActivity and `Reading from public effective user
+  settings` in ManagedConfiguration, none of which the app calls: the app's own lines all carry an
+  `os.Logger` category under the `Individual.LikeAPaper` subsystem. Prove the sweep against a string
+  known to be present first (`UIPencilOnlyDrawWithPencilKey` in UIKitCore) — zero hits cannot tell
+  "not there" from "the search is broken".
 - **The first gesture after opening a menu is spent dismissing it**: a `ui swipe` delivered while
   the picker's ⋯ menu is open closes the menu and draws nothing, which reads as "drawing is
   broken" — the same swipe repeated draws normally. Check `describe-all` for the menu rows before
