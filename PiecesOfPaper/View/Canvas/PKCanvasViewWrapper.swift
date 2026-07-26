@@ -7,6 +7,7 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
     private let isToolPickerVisible: Bool
     private let saveAction: (PKDrawing) -> Void
     private let onToggleUI: (() -> Void)?
+    private let onRevealUI: (() -> Void)?
     private var defaultTool = PKInkingTool(.pen, color: .black, width: 1)
     private var previousTool: PKTool
     private var currentTool: PKTool
@@ -15,12 +16,14 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
          toolPicker: Binding<PKToolPicker>,
          isToolPickerVisible: Bool,
          saveAction: @escaping (PKDrawing) -> Void,
-         onToggleUI: (() -> Void)? = nil) {
+         onToggleUI: (() -> Void)? = nil,
+         onRevealUI: (() -> Void)? = nil) {
         self._canvasView = canvasView
         self._toolPicker = toolPicker
         self.isToolPickerVisible = isToolPickerVisible
         self.saveAction = saveAction
         self.onToggleUI = onToggleUI
+        self.onRevealUI = onRevealUI
         self.previousTool = defaultTool
         self.currentTool = defaultTool
     }
@@ -121,7 +124,7 @@ extension PKCanvasViewWrapper.Coordinator: UIPencilInteractionDelegate {
         switch action {
         case .switchPrevious:   switchPreviousTool()
         case .switchEraser:     switchEraser()
-        default:                showToolPicker()
+        default:                revealUI()
         }
     }
 
@@ -137,9 +140,11 @@ extension PKCanvasViewWrapper.Coordinator: UIPencilInteractionDelegate {
         }
     }
 
-    private func showToolPicker() {
-        parent.toolPicker.setVisible(!parent.toolPicker.isVisible, forFirstResponder: parent.canvasView)
-        parent.canvasView.becomeFirstResponder()
+    // Brings the whole chrome back rather than only the picker: with the picker
+    // visible a finger draws, so the tap that used to restore the control panel
+    // would be consumed and the panel left unreachable
+    private func revealUI() {
+        parent.onRevealUI?()
     }
 }
 

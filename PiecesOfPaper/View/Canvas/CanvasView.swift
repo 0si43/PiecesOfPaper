@@ -42,6 +42,11 @@ struct CanvasView: View {
         setToolPickerVisible(!hideExceptPaper)
     }
 
+    private func revealUI() {
+        hideExceptPaper = false
+        setToolPickerVisible(true)
+    }
+
     private func setToolPickerVisible(_ isVisible: Bool) {
         toolPicker.setVisible(isVisible, forFirstResponder: canvasView)
         canvasView.becomeFirstResponder()
@@ -91,7 +96,8 @@ struct CanvasView: View {
                             toolPicker: $toolPicker,
                             isToolPickerVisible: !hideExceptPaper,
                             saveAction: { save(drawing: $0) },
-                            onToggleUI: { toggleUIVisibility() })
+                            onToggleUI: { toggleUIVisibility() },
+                            onRevealUI: { revealUI() })
         .onAppear {
             canvasView.drawing = note.entity.drawing
             initialContentSize(windowSize: windowSize)
