@@ -207,6 +207,8 @@ struct CanvasView: View {
             .accessibilityLabel("Done")
         }
         .padding(.horizontal, 8)
+        // The navigation bar tinted its items with the label color, not the accent color
+        .tint(.primary)
         // A material alone is nearly invisible on a blank sheet; the border carries the outline
         .background(.regularMaterial, in: Capsule())
         .overlay(Capsule().strokeBorder(.separator, lineWidth: 0.5))
