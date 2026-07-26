@@ -144,10 +144,14 @@ struct CanvasView: View {
         .alert("Drawing with your finger", isPresented: $showFingerDrawingNotice) {
             Button("OK", role: .cancel) { fingerDrawingNoticeAcknowledged = true }
         } message: {
+            // The button is named in the text rather than pointed at: the setting lives in
+            // the tool picker, PencilKit's own movable window, which reports no frame to
+            // anchor to. Typed out rather than an Image interpolation, which an alert drops
             Text("""
-            Your finger draws on the canvas while Only Draw with Apple Pencil is off. \
-            Tapping the screen to hide the controls works only while that setting is on — \
-            change it from the drawing tools' menu or in Settings > Apple Pencil.
+            Tapping the screen to hide the controls works only while a finger cannot draw. To use it:
+
+            1. Tap ••• in the drawing tools
+            2. Turn on Only Draw with Apple Pencil
             """)
         }
     }
