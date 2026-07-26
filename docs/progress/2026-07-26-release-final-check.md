@@ -39,3 +39,6 @@
     `UIPencilInteraction.preferredTapAction`)
   - The tutorial section, the bulk-move confirmation and the note information row now say Trash,
     the name the sidebar and the menu use. `Color.calloutBackground` went with the callout
+- [x] Name the split view column after the pages it lists (issue #318, PR #305)
+  - `RootSplitView.sideBarList` → `pageList`: the column is pushed as a full screen in a compact
+    size class, so it is only a sidebar on iPad, and SwiftUI spells sidebar as one word anyway
