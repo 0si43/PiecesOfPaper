@@ -191,7 +191,8 @@ struct NoteListScreen: View {
 
     private func activityViewController(note: NoteData) -> UIActivityViewControllerWrapper {
         UIActivityViewControllerWrapper(
-            activityItems: [note.entity.drawing.lightModeImage(scale: displayScale)]
+            activityItems: [NoteShareItemSource(image: note.entity.drawing.lightModeImage(scale: displayScale),
+                                                updatedDate: note.entity.updatedDate)]
         )
     }
 

@@ -180,7 +180,8 @@ struct CanvasView: View {
 
     private var activityViewController: UIActivityViewControllerWrapper {
         UIActivityViewControllerWrapper(
-            activityItems: [note.entity.drawing.lightModeImage(scale: displayScale)]
+            activityItems: [NoteShareItemSource(image: note.entity.drawing.lightModeImage(scale: displayScale),
+                                                updatedDate: note.entity.updatedDate)]
         )
     }
 
