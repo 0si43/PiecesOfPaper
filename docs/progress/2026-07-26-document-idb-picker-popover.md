@@ -1,0 +1,3 @@
+- [x] Document the two idb limits found while verifying finger drawing (issue #285, PR #286)
+  - The tool picker's ⋯ popover ignores idb taps although `describe-all` lists its rows; drive "Only Draw with Apple Pencil" through `com.apple.UIKit` / `UIPencilOnlyDrawWithPencilKey` instead, with the `strings` recipe for finding such keys in the runtime's UIKitCore
+  - The first gesture after a menu opens is spent dismissing it, which reads as "drawing is broken" unless state is asserted before and after each injection
