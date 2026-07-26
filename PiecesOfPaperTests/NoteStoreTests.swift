@@ -193,7 +193,6 @@ struct NoteStoreTests {
         let entry = try #require(noteStore.inboxIndex.first)
 
         try await noteStore.delete(entry)
-        // The entry is already gone, so the second call is a no-op
         try await noteStore.delete(entry)
 
         #expect(repositoryMock.deletedUrls == [entry.fileURL])

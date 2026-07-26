@@ -32,7 +32,6 @@ struct NoteIndexEntryTests {
         #expect(entry.createdDate == fsModificationDate)
     }
 
-    // updatedDate comes from the fs content-modification date
     @Test func updatedDate_usesContentModificationDate() {
         let entry = NoteIndexEntry(fileURL: URL(fileURLWithPath: "/notes/\(timestampName)"),
                                    creationDate: fsCreationDate,
