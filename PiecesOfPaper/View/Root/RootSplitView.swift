@@ -3,7 +3,7 @@ import SwiftUI
 struct RootSplitView: View {
     @State private var noteStore = NoteStore()
     @State private var tagStore = TagStore()
-    @State private var preferenceStore = PreferenceStore()
+    @Environment(PreferenceStore.self) private var preferenceStore
     @State private var selection: Page? = .inbox
     @Environment(\.scenePhase) private var scenePhase
     @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
@@ -91,7 +91,6 @@ struct RootSplitView: View {
         }
         .environment(noteStore)
         .environment(tagStore)
-        .environment(preferenceStore)
     }
 
     private var sideBarList: some View {
@@ -147,4 +146,5 @@ struct RootSplitView: View {
 
 #Preview {
     RootSplitView()
+        .environment(PreferenceStore())
 }
