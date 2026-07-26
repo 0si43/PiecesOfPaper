@@ -3,3 +3,4 @@
   - `.preferredColorScheme` is attached in `RootSplitView`, not the App's `Scene` body: reading the store from a `View` body is what guarantees Observation re-evaluates it
   - `ThumbnailCache` renders under an explicit interface style and keys on it; the previous ambient-trait render could put dark ink on a dark tile once the app appearance can differ from the system's
   - Tag chips pinned to a light base with black text, and the tutorial callout given a dynamic colour via the new `View/Color+App.swift`
+  - The shared note image now fills white before drawing, like the QuickLook and Thumbnail extensions already did: `PKDrawing.image` leaves the background transparent, so a viewer in dark mode composited it on black and the dark ink disappeared
