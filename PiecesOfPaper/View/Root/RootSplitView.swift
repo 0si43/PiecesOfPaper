@@ -27,7 +27,7 @@ struct RootSplitView: View {
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            sideBarList
+            pageList
         } detail: {
             switch selection {
             case .inbox:
@@ -97,7 +97,7 @@ struct RootSplitView: View {
         .preferredColorScheme(preferenceStore.appearanceMode.colorScheme)
     }
 
-    private var sideBarList: some View {
+    private var pageList: some View {
         List(selection: $selection) {
             Section(header: Text("Folders")) {
                 NavigationLink(value: Page.inbox) {
