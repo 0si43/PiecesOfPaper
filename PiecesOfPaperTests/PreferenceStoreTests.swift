@@ -9,16 +9,19 @@ struct PreferenceStoreTests {
         mock.enabledAutoSave = false
         mock.enabledInfiniteScroll = false
         mock.appearanceMode = .dark
+        mock.lastSeenWhatsNewVersion = "4.0.0"
 
         let store = PreferenceStore(repository: mock)
         #expect(store.enablediCloud)
         #expect(!store.enabledAutoSave)
         #expect(!store.enabledInfiniteScroll)
         #expect(store.appearanceMode == .dark)
+        #expect(store.lastSeenWhatsNewVersion == "4.0.0")
         #expect(mock.setEnablediCloudCalls.isEmpty)
         #expect(mock.setEnabledAutoSaveCalls.isEmpty)
         #expect(mock.setEnabledInfiniteScrollCalls.isEmpty)
         #expect(mock.setAppearanceModeCalls.isEmpty)
+        #expect(mock.setLastSeenWhatsNewVersionCalls.isEmpty)
     }
 
     @Test func test_enablediCloud_persistsOnChange() {
@@ -51,6 +54,44 @@ struct PreferenceStoreTests {
         store.appearanceMode = .light
         #expect(mock.setAppearanceModeCalls == [.light])
         #expect(mock.getAppearanceMode() == .light)
+    }
+
+    @Test func test_markWhatsNewSeen_persistsTheVersion() {
+        let mock = PreferenceRepositoryMock()
+        let store = PreferenceStore(repository: mock)
+        store.markWhatsNewSeen(version: "4.0.0")
+        #expect(store.lastSeenWhatsNewVersion == "4.0.0")
+        #expect(mock.setLastSeenWhatsNewVersionCalls == ["4.0.0"])
+        #expect(mock.getLastSeenWhatsNewVersion() == "4.0.0")
+    }
+
+    @Test func test_markWhatsNewSeen_clearsTheUnseenFlag() {
+        let mock = PreferenceRepositoryMock()
+        let store = PreferenceStore(repository: mock)
+        #expect(store.hasUnseenWhatsNew(latestVersion: "4.0.0"))
+        store.markWhatsNewSeen(version: "4.0.0")
+        #expect(!store.hasUnseenWhatsNew(latestVersion: "4.0.0"))
+    }
+
+    // An absent key is what an upgrade from a version without the page looks like
+    @Test func test_hasUnseenWhatsNew_isTrue_whenNothingSeenYet() {
+        let mock = PreferenceRepositoryMock()
+        let store = PreferenceStore(repository: mock)
+        #expect(store.hasUnseenWhatsNew(latestVersion: "4.0.0"))
+    }
+
+    @Test func test_hasUnseenWhatsNew_isFalse_whenLatestAlreadySeen() {
+        let mock = PreferenceRepositoryMock()
+        mock.lastSeenWhatsNewVersion = "4.0.0"
+        let store = PreferenceStore(repository: mock)
+        #expect(!store.hasUnseenWhatsNew(latestVersion: "4.0.0"))
+    }
+
+    @Test func test_hasUnseenWhatsNew_isTrue_whenOnlyAnOlderVersionSeen() {
+        let mock = PreferenceRepositoryMock()
+        mock.lastSeenWhatsNewVersion = "4.0.0"
+        let store = PreferenceStore(repository: mock)
+        #expect(store.hasUnseenWhatsNew(latestVersion: "4.1.0"))
     }
 
     @Test func test_cloudAvailability_isUserDisabled_wheniCloudToggleOff() {

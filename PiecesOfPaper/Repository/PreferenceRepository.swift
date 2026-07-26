@@ -9,6 +9,8 @@ protocol PreferenceRepositoryProtocol {
     func setEnabledInfiniteScroll(_ value: Bool)
     func getAppearanceMode() -> AppearanceMode
     func setAppearanceMode(_ value: AppearanceMode)
+    func getLastSeenWhatsNewVersion() -> String?
+    func setLastSeenWhatsNewVersion(_ value: String)
     func getListOrder(directoryName: String) -> ListOrder
     func setListOrder(directoryName: String, listOrder: ListOrder)
 }
@@ -18,6 +20,7 @@ struct PreferenceRepository: PreferenceRepositoryProtocol {
     private let autoSaveDisabledKey = "autosave_disabled"
     private let infiniteScrollKey = "infinite_scroll_disabled"
     private let appearanceModeKey = "appearance_mode"
+    private let lastSeenWhatsNewVersionKey = "last_seen_whats_new_version"
     private let listOrderKey = "com.pop.listOrder."
 
     func getEnablediCloud() -> Bool {
@@ -54,6 +57,16 @@ struct PreferenceRepository: PreferenceRepositoryProtocol {
 
     func setAppearanceMode(_ value: AppearanceMode) {
         UserDefaults.standard.set(value.rawValue, forKey: appearanceModeKey)
+    }
+
+    // An absent key means the page has never been opened, which is what makes an
+    // upgrade from a version that predates it count as unread
+    func getLastSeenWhatsNewVersion() -> String? {
+        UserDefaults.standard.string(forKey: lastSeenWhatsNewVersionKey)
+    }
+
+    func setLastSeenWhatsNewVersion(_ value: String) {
+        UserDefaults.standard.set(value, forKey: lastSeenWhatsNewVersionKey)
     }
 
     func getListOrder(directoryName: String) -> ListOrder {
