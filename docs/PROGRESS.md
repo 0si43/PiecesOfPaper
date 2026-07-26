@@ -8,10 +8,11 @@ Only Current Status is edited by hand. The Work Log is appended to exclusively b
 
 ## Current Status
 
-- Phase: post-migration cleanup and feature work. The View + Store + Repository migration is complete (ViewModels removed in PR #186).
-- The device-only canvas breakage from off-main thumbnail rendering is fixed (issue #187, PR #189), and the on-device verification rule for PencilKit changes is documented in CLAUDE.md (PR #191).
-- Latest merge: iCloud notes are enumerated via NSMetadataQuery so undownloaded notes stay listed (PR #192).
-- Next: the only open issue is #184 — show note files as drawing thumbnails in the Files app (custom UTType + QuickLook Thumbnail Extension).
+- Phase: 4.0.0 is bumped for the App Store submission (version 4.0.0, build 30 — issue #303, PR #304). The release renames notes `.plist` → `.pop`, shows them in the Files app with thumbnails and previews, and raises the minimum to iOS 18.0.
+- The View + Store + Repository migration (PR #186) and the debt audit after it are done: lazy note index (PR #210), metadata cache (PR #234), normalized tag storage (PR #232), SwiftLint back to zero violations (PR #307).
+- Latest merges: an in-app What's New page with an unread sidebar marker (issue #319, PR #323), then the documentation passes from the release check (issues #324/#325, PRs #326/#327).
+- Next: #315 a one-command release pipeline, #313 xcodebuild rewriting project.pbxproj during ordinary builds, #273 localization beyond English.
+- #322 and #320 are open only because PR #305 carried their fixes without saying `Closes` — both are already in main.
 
 ## Work Log
 
