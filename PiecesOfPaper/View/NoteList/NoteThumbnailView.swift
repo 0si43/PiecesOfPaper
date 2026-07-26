@@ -6,8 +6,19 @@ struct NoteThumbnailView: View {
     let tags: [TagEntity]
     @Environment(NoteStore.self) private var noteStore
     @Environment(NoteListPresentation.self) private var presentation
+    @Environment(\.colorScheme) private var colorScheme
     @State private var thumbnail: UIImage?
     @State private var isOpening = false
+
+    // colorScheme is the effective one, i.e. after the appearance preference's
+    // override, so the thumbnail matches the tile it sits on
+    private var interfaceStyle: UIUserInterfaceStyle {
+        colorScheme == .dark ? .dark : .light
+    }
+
+    private var thumbnailKey: String {
+        ThumbnailCache.key(for: entry, style: interfaceStyle)
+    }
 
     var body: some View {
         Button(action: openCanvas, label: {
@@ -31,8 +42,8 @@ struct NoteThumbnailView: View {
         })
         .accessibilityLabel(Self.accessibilityLabel(updatedDate: entry.updatedDate,
                                                     tagNames: tags.map(\.name)))
-        .task(id: entry.updatedDate) {
-            let key = ThumbnailCache.key(for: entry)
+        .task(id: thumbnailKey) {
+            let key = thumbnailKey
             if let cached = ThumbnailCache.shared.cached(key: key),
                noteStore.validMetadata(for: entry) != nil {
                 thumbnail = cached
@@ -43,7 +54,9 @@ struct NoteThumbnailView: View {
             // appearance retries.
             guard let note = await noteStore.loadNote(entry) else { return }
             guard !Task.isCancelled else { return }
-            thumbnail = await ThumbnailCache.shared.thumbnail(for: note.entity.drawing, key: key)
+            thumbnail = await ThumbnailCache.shared.thumbnail(for: note.entity.drawing,
+                                                              key: key,
+                                                              style: interfaceStyle)
         }
     }
 
