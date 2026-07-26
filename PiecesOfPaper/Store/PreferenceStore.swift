@@ -26,6 +26,12 @@ final class PreferenceStore {
         }
     }
 
+    var appearanceMode: AppearanceMode {
+        didSet {
+            repository.setAppearanceMode(appearanceMode)
+        }
+    }
+
     // Stored, not computed: the system inputs (account, container URL) are not
     // observable, so views would never re-render on a computed property
     private(set) var cloudAvailability: CloudAvailability = .userDisabled
@@ -37,6 +43,7 @@ final class PreferenceStore {
         self.enablediCloud = repository.getEnablediCloud()
         self.enabledAutoSave = repository.getEnabledAutoSave()
         self.enabledInfiniteScroll = repository.getEnabledInfiniteScroll()
+        self.appearanceMode = repository.getAppearanceMode()
         refreshCloudAvailability()
     }
 

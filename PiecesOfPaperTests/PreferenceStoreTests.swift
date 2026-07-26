@@ -8,14 +8,17 @@ struct PreferenceStoreTests {
         mock.enablediCloud = true
         mock.enabledAutoSave = false
         mock.enabledInfiniteScroll = false
+        mock.appearanceMode = .dark
 
         let store = PreferenceStore(repository: mock)
         #expect(store.enablediCloud)
         #expect(!store.enabledAutoSave)
         #expect(!store.enabledInfiniteScroll)
+        #expect(store.appearanceMode == .dark)
         #expect(mock.setEnablediCloudCalls.isEmpty)
         #expect(mock.setEnabledAutoSaveCalls.isEmpty)
         #expect(mock.setEnabledInfiniteScrollCalls.isEmpty)
+        #expect(mock.setAppearanceModeCalls.isEmpty)
     }
 
     @Test func test_enablediCloud_persistsOnChange() {
@@ -40,6 +43,14 @@ struct PreferenceStoreTests {
         store.enabledInfiniteScroll = false
         #expect(mock.setEnabledInfiniteScrollCalls == [false])
         #expect(!mock.getEnabledInfiniteScroll())
+    }
+
+    @Test func test_appearanceMode_persistsOnChange() {
+        let mock = PreferenceRepositoryMock()
+        let store = PreferenceStore(repository: mock)
+        store.appearanceMode = .light
+        #expect(mock.setAppearanceModeCalls == [.light])
+        #expect(mock.getAppearanceMode() == .light)
     }
 
     @Test func test_cloudAvailability_isUserDisabled_wheniCloudToggleOff() {
