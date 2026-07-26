@@ -4,6 +4,7 @@ import PencilKit
 struct PKCanvasViewWrapper: UIViewRepresentable {
     @Binding private var canvasView: PKCanvasView
     @Binding private var toolPicker: PKToolPicker
+    private let isToolPickerVisible: Bool
     private let saveAction: (PKDrawing) -> Void
     private let onToggleUI: (() -> Void)?
     private var defaultTool = PKInkingTool(.pen, color: .black, width: 1)
@@ -12,10 +13,12 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
 
     init(canvasView: Binding<PKCanvasView>,
          toolPicker: Binding<PKToolPicker>,
+         isToolPickerVisible: Bool,
          saveAction: @escaping (PKDrawing) -> Void,
          onToggleUI: (() -> Void)? = nil) {
         self._canvasView = canvasView
         self._toolPicker = toolPicker
+        self.isToolPickerVisible = isToolPickerVisible
         self.saveAction = saveAction
         self.onToggleUI = onToggleUI
         self.previousTool = defaultTool
@@ -34,9 +37,16 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
         #endif
         toolPicker.showsDrawingPolicyControls = false
         toolPicker.addObserver(canvasView)
-        toolPicker.setVisible(false, forFirstResponder: canvasView)
-        canvasView.becomeFirstResponder()
         toolPicker.selectedTool = defaultTool
+        // becomeFirstResponder() is a no-op while the view has no window, and
+        // makeUIView runs before SwiftUI installs it
+        let canvas = canvasView
+        let picker = toolPicker
+        let visible = isToolPickerVisible
+        DispatchQueue.main.async {
+            picker.setVisible(visible, forFirstResponder: canvas)
+            canvas.becomeFirstResponder()
+        }
         return canvasView
     }
 
@@ -150,5 +160,6 @@ extension PKCanvasViewWrapper.Coordinator: UIScrollViewDelegate {
     @Previewable @State var toolPicker = PKToolPicker()
     PKCanvasViewWrapper(canvasView: $canvasView,
                         toolPicker: $toolPicker,
+                        isToolPickerVisible: true,
                         saveAction: { _ in })
 }
