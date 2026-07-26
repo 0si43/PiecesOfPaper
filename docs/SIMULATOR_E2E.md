@@ -45,6 +45,13 @@ setting that governs it on device. The canvas chrome is visible from launch — 
 panel with Note Information, Share and Done in the top-right corner — so those three
 are tappable without any gesture injection.
 
+`defaults write` only lands **before the app has written that key itself**. Once the app is
+running, cfprefsd holds the domain: an external write does not reach it, and `defaults read`
+keeps returning the older on-disk value. Use it to seed initial state, and drive every later
+change through the app's own UI. When the two disagree, what the app displays is the truth —
+an appearance-setting check read `appearance_mode = dark` from `defaults` while the app was
+showing, and had persisted, Light. Background: PR #264.
+
 ## Operating and asserting
 
 All coordinates are in points, not pixels (a screenshot from a 2x device is twice the
