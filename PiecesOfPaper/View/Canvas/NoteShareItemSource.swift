@@ -40,7 +40,9 @@ final class NoteShareItemSource: NSObject, UIActivityItemSource {
     func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
         let metadata = LPLinkMetadata()
         metadata.title = title
-        metadata.imageProvider = NSItemProvider(object: image)
+        // iconProvider, not imageProvider: the latter is the large preview used for
+        // links and leaves the header without a thumbnail here
+        metadata.iconProvider = NSItemProvider(object: image)
         return metadata
     }
 }
