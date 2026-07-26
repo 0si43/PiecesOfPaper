@@ -57,8 +57,18 @@ of one key re-materializes every key it was holding. A "clean install" check see
 start with flags the fresh app should never see — a one-time alert stayed suppressed after a full
 uninstall and reinstall because `finger_drawing_notice_acknowledged` came back alongside the
 `iCloud_disabled` seed, which read as the alert being broken. Delete the specific key after
-installing (`defaults delete <domain> <key>`) and confirm with `defaults read <domain>`.
-Background: issue #302.
+installing (`defaults delete <domain> <key>`), and check the result against the container rather
+than with `defaults read`, for the reason below. Background: issue #302.
+
+The read side stays unreliable even after the app is gone. With the app terminated,
+`xcrun simctl spawn $UDID defaults read Individual.LikeAPaper last_seen_whats_new_version`
+reported the pair as missing, while the app read the value back on its next launch — so a
+`defaults read` that finds nothing is not evidence that a write never happened. Assert
+persistence against the container:
+
+```sh
+plutil -p "$(xcrun simctl get_app_container $UDID Individual.LikeAPaper data)/Library/Preferences/Individual.LikeAPaper.plist"
+```
 
 ## Operating and asserting
 
@@ -74,6 +84,7 @@ coordinate values).
 | `idb ui key --udid $UDID <HID keycode>` (`--shift/--control/--option/--command`) | Hardware-keyboard event |
 | `idb ui text --udid $UDID "..."` | Types text |
 | `idb ui describe-all --udid $UDID` | Accessibility tree as JSON |
+| `idb ui describe-point --udid $UDID x y` | The single accessibility element under one point |
 | `xcrun simctl io $UDID screenshot out.png` | Screenshot (`idb screenshot` can fail with "No Image available to encode") |
 
 `idb ui text` types through the simulator's active keyboard, so a device created on a
@@ -102,6 +113,14 @@ animates, so a screenshot taken immediately shows the *previous* state — which
 Out-of-process UI is invisible to `describe-all`: `UIActivityViewController`'s rows are
 served by a remote view service and return nothing, so the share sheet is asserted from a
 screenshot and driven by tapping computed coordinates (screenshot pixels ÷ device scale).
+
+`describe-all` also stops at the sidebar. With the split view's sidebar open it returned eight
+top-level elements — the application, the title, Toggle sidebar, a `Sidebar` group, More Actions,
+New Note and the two empty-state labels — and none of the sidebar's rows. `describe-point` at a
+row's coordinates does return it, carrying the row's whole label: the What's New row reads
+`"What's New, New"` while its unread dot is up and `"What's New"` once it clears, which asserted
+that marker in both directions without diffing screenshots. Use `describe-point` for anything
+inside the sidebar's `List`. Background: issue #319, PR #323.
 
 Assertions that need no screenshot diffing:
 
@@ -185,6 +204,13 @@ way, with no gesture injection.
   strings; find others the same way:
   `strings "$(xcrun simctl runtime list -v | …)/RuntimeRoot/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore" | grep -i <name>`.
   Background: PR #281.
+  The same RuntimeRoot answers the opposite question — whether a console line is the app's.
+  `grep -rla "<message>" "$ROOT/System/Library"` placed `couldn't fetch remote operation IDs` in
+  FileProvider, `sendUserActivityToServer` in UserActivity and `Reading from public effective user
+  settings` in ManagedConfiguration, none of which the app calls: the app's own lines all carry an
+  `os.Logger` category under the `Individual.LikeAPaper` subsystem. Prove the sweep against a string
+  known to be present first (`UIPencilOnlyDrawWithPencilKey` in UIKitCore) — zero hits cannot tell
+  "not there" from "the search is broken".
 - **The first gesture after opening a menu is spent dismissing it**: a `ui swipe` delivered while
   the picker's ⋯ menu is open closes the menu and draws nothing, which reads as "drawing is
   broken" — the same swipe repeated draws normally. Check `describe-all` for the menu rows before
@@ -194,7 +220,11 @@ way, with no gesture injection.
   picker; the next identical swipe draws. Two swipes issued in one shell command are both lost, so
   the retry has to be a separate injection. Seen while comparing pen state across two builds, where
   it first looked like the build under test had broken drawing. Background: PR #295.
-- **Sidebar pages**: to land directly on Quick Tutorial, Setting or Tag List, change the
+- **Sidebar pages**: reachable on the shipping build in three taps, with no code change — tap Done
+  to dismiss the auto-opened canvas, tap the sidebar toggle at the top-left of the detail pane (the
+  sidebar starts collapsed, since `columnVisibility` defaults to `.detailOnly`), then tap the row.
+  Verified on iPad Pro 11-inch, iOS 26.5, for What's New and Quick Tutorial. Land *directly* on a
+  page only when those taps are in the way: change the
   initial `selection` in `RootSplitView` to that page (e.g. `.tutorial`) in a throwaway
   build. The `selection` change alone does not keep the canvas away — `sceneDidBecomeActive`
   still opens a blank note over the detail pane — but since the chrome is visible at launch,
