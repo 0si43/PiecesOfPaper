@@ -132,19 +132,7 @@ extension PKCanvasViewWrapper.Coordinator: PKToolPickerObserver {
 
 // MARK: - UIPencilInteractionDelegate
 extension PKCanvasViewWrapper.Coordinator: UIPencilInteractionDelegate {
-    @available(iOS 17.5, *)
     func pencilInteraction(_ interaction: UIPencilInteraction, didReceiveTap tap: UIPencilInteraction.Tap) {
-        performPreferredTapAction()
-    }
-
-    // Kept for iOS 17.0-17.4, where the method above does not exist. UIKit stops
-    // calling this one as soon as the replacement is implemented, so the two never
-    // both fire; deleting it would silently drop the gesture on those versions
-    func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
-        performPreferredTapAction()
-    }
-
-    private func performPreferredTapAction() {
         guard !parent.toolPicker.isVisible else { return }
         let action = UIPencilInteraction.preferredTapAction
         switch action {
