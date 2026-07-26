@@ -107,28 +107,42 @@ struct CanvasView: View {
                },
                content: { activityViewController })
         .alert("", isPresented: $showUnsavedAlert) {
-            Button {
-                save(drawing: canvasView.drawing) { success in
-                    if success {
-                        closeCanvas()
-                    }
-                }
-            } label: {
-                Text("Save")
-            }
-            Button(role: .destructive) {
-                dismiss()
-            } label: {
-                Text("Discard")
-            }
-         } message: {
-             Text("Save changes?")
+            unsavedAlertActions
+        } message: {
+            Text("Save changes?")
         }
         .alert("Failed to save the note",
                isPresented: $showSaveFailedAlert) {
             Button("OK", role: .cancel) {}
         } message: {
             Text("Your latest changes may not be persisted.\n\(saveFailedMessage)")
+        }
+    }
+
+    @ViewBuilder
+    private var unsavedAlertActions: some View {
+        Button {
+            save(drawing: canvasView.drawing) { success in
+                if success {
+                    closeCanvas()
+                } else {
+                    setToolPickerVisible(!hideExceptPaper)
+                }
+            }
+        } label: {
+            Text("Save")
+        }
+        Button(role: .destructive) {
+            dismiss()
+        } label: {
+            Text("Discard")
+        }
+        // Spelled out rather than left to SwiftUI's synthesized cancel button,
+        // which gives no hook to undo the setToolPickerVisible(false) in done()
+        Button(role: .cancel) {
+            setToolPickerVisible(!hideExceptPaper)
+        } label: {
+            Text("Cancel")
         }
     }
 
