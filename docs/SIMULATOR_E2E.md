@@ -68,6 +68,17 @@ coordinate values).
 | `idb ui describe-all --udid $UDID` | Accessibility tree as JSON |
 | `xcrun simctl io $UDID screenshot out.png` | Screenshot (`idb screenshot` can fail with "No Image available to encode") |
 
+`idb ui text` types through the simulator's active keyboard, so a device created on a
+Japanese Mac inherits kana input and `"renamed"` arrives as `れなめd`. Switch the keyboard
+and relaunch the app before typing into a field:
+
+```sh
+xcrun simctl spawn $UDID defaults write "Apple Global Domain" AppleKeyboards -array "en_US@sw=QWERTY;hw=Automatic"
+```
+
+Auto-capitalization still applies in a plain `TextField`, so the first character comes back
+upper-cased. Assert on what `describe-all` reports for the field, not on the string that was
+sent.
 A zero-duration `ui tap` can miss a SwiftUI control without reporting anything: tapping
 the Auto Save `Toggle` at the exact frame `describe-all` gave left its `AXValue` at 1,
 while `--duration 0.15` at the same point flipped it. Read the control's `AXValue` back
@@ -172,9 +183,13 @@ way, with no gesture injection.
   operating, and assert state both before and after each injection.
 - **Sidebar pages**: to land directly on Quick Tutorial, Setting or Tag List, change the
   initial `selection` in `RootSplitView` to that page (e.g. `.tutorial`) in a throwaway
-  build — the detail pane shows the page at launch, no blank note opens, and idb swipes
-  scroll it directly (used for the PR #247 screenshots). Revert the change and rebuild
-  before running the verification that goes into the PR.
+  build. The `selection` change alone does not keep the canvas away — `sceneDidBecomeActive`
+  still opens a blank note over the detail pane — but since the chrome is visible at launch,
+  one `idb ui tap` on Done dismisses it and the chosen page is underneath (verified on
+  iPhone 16 and iPad Pro 11-inch, iOS 26.5). On a build whose chrome is hidden at launch,
+  Done is unreachable and the `noteStore.sceneDidBecomeActive()` call has to be stubbed out
+  in the same throwaway build instead. Revert the change and rebuild before running the
+  verification that goes into the PR.
 - **Companion version**: the brew bottle is idb-companion 1.1.8 (built 2022). `ui swipe`
   verified against the iOS 18.3.1 and iOS 26.3 simulator runtimes.
 - idb cannot inject touches into physical devices (iOS restriction); this workflow is
