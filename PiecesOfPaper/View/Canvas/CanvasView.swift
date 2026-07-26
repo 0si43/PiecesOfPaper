@@ -10,7 +10,9 @@ struct CanvasView: View {
     @AppStorage("review_requested") private var reviewRequested = false
     @State private var canvasView = PKCanvasView()
     @State private var toolPicker = PKToolPicker()
-    @State private var hideExceptPaper = true
+    // Not persisted and not reset in onAppear: RootSplitView gives the cover an
+    // .id(note.id), so switching notes rebuilds this view with the initial value
+    @State private var hideExceptPaper = false
     @State private var isShowActivityView = false
     @State private var showUnsavedAlert = false
     @State private var showDrawingInformation = false
@@ -82,23 +84,26 @@ struct CanvasView: View {
     private func canvas(windowSize: CGSize) -> some View {
         PKCanvasViewWrapper(canvasView: $canvasView,
                             toolPicker: $toolPicker,
+                            isToolPickerVisible: !hideExceptPaper,
                             saveAction: { save(drawing: $0) },
                             onToggleUI: { toggleUIVisibility() })
         .onAppear {
             canvasView.drawing = note.entity.drawing
             initialContentSize(windowSize: windowSize)
-            hideExceptPaper = true
         }
         .gesture(tapGesture)
-        .statusBar(hidden: hideExceptPaper)
-        .toolbar(hideExceptPaper ? .hidden : .visible, for: .navigationBar)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            toolbarItemGroup
+        // The overlay is attached outside the gesture so its buttons take the tap
+        // first, and it never contributes to the layout of the canvas below it
+        .overlay(alignment: .topTrailing) {
+            controlPanel
         }
+        // Both bars are pinned to a constant: a top safe-area inset that changes
+        // with the chrome shifts the drawing inside the PKCanvasView
+        .statusBar(hidden: true)
+        .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $isShowActivityView,
                onDismiss: {
-                   setToolPickerVisible(true)
+                   setToolPickerVisible(!hideExceptPaper)
                },
                content: { activityViewController })
         .alert("", isPresented: $showUnsavedAlert) {
@@ -154,12 +159,15 @@ struct CanvasView: View {
         canvasView.contentOffset = .zero
     }
 
-    private var toolbarItemGroup: ToolbarItemGroup<some View> {
-        ToolbarItemGroup(placement: .navigationBarTrailing) {
+    private var controlPanel: some View {
+        HStack(spacing: 4) {
             Button {
                 showDrawingInformation.toggle()
             } label: {
                 Image(systemName: "info.circle")
+                    .imageScale(.large)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
             .accessibilityLabel("Note Information")
             .popover(isPresented: $showDrawingInformation) {
@@ -170,12 +178,35 @@ struct CanvasView: View {
                 isShowActivityView.toggle()
             } label: {
                 Image(systemName: "square.and.arrow.up")
+                    .imageScale(.large)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
             .accessibilityLabel("Share")
             Button(action: done) {
                 Text("Done")
+                    .fontWeight(.semibold)
+                    .frame(height: 44)
+                    .padding(.horizontal, 8)
+                    .contentShape(Rectangle())
             }
+            .accessibilityLabel("Done")
         }
+        .padding(.horizontal, 8)
+        // A material alone is nearly invisible on a blank sheet; the border carries the outline
+        .background(.regularMaterial, in: Capsule())
+        .overlay(Capsule().strokeBorder(.separator, lineWidth: 0.5))
+        .shadow(color: .black.opacity(0.12), radius: 8, y: 2)
+        // Padding sits outside the capsule, so taps in the margin fall through to the canvas
+        .padding(.top, 8)
+        .padding(.trailing, 16)
+        // opacity alone leaves the panel hit-testable and readable by VoiceOver
+        .opacity(hideExceptPaper ? 0 : 1)
+        .allowsHitTesting(!hideExceptPaper)
+        .accessibilityHidden(hideExceptPaper)
+        // Scoped to this subtree: an animated transaction reaching PKCanvasViewWrapper
+        // would put the PencilKit renderer in an animation it does not expect
+        .animation(.easeInOut(duration: 0.2), value: hideExceptPaper)
     }
 
     private var activityViewController: UIActivityViewControllerWrapper {
