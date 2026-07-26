@@ -1,0 +1,6 @@
+- [x] Add an in-app What's New page that accumulates release highlights (issue #319, PR #323)
+  - The page, not a launch modal: a sheet at the root would sit under the blank canvas `fullScreenCover` that `sceneDidBecomeActive` opens, the same failure as the alert entry in GOTCHAS
+  - `ReleaseNote.all` is the newest-first source for both the page and the unread marker; the shipped `MARKETING_VERSION` is deliberately not consulted, so a patch release with no entry raises no marker
+  - `PreferenceStore.hasUnseenWhatsNew(latestVersion:)` takes the version as an argument rather than reading `ReleaseNote.all`, keeping the Store's Model access on the repository path and the rule testable against orderings the shipped list does not contain
+  - The seen marker is written by `markWhatsNewSeen(version:)`, not a `didSet`: an optional stored property is initialized to `nil` before `init` runs, so under `@Observable` the seeding assignment counts as a mutation and re-persists on every launch (`test_init_readsValuesWithoutRePersisting` caught it)
+  - `SectionHeader` and `Bullet` left `TutorialView` for shared files so both pages share one style
