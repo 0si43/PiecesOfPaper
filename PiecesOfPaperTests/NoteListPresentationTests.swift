@@ -28,6 +28,17 @@ struct NoteListPresentationTests {
         #expect(presentation.alert == nil)
     }
 
+    @Test func test_requestShare_opensNoteAndPresentsSheet() async throws {
+        await noteStore.fetch(directory: .inbox)
+        let entry = try #require(noteStore.inboxIndex.first)
+        presentation.requestShare(entry, from: noteStore)
+        for _ in 0..<100 where presentation.noteToShare == nil {
+            await Task.yield()
+        }
+        #expect(presentation.noteToShare?.fileURL == entry.fileURL)
+        #expect(presentation.alert == nil)
+    }
+
     @Test func test_requestShare_alertsWhenOpenFails() async throws {
         await noteStore.fetch(directory: .inbox)
         let entry = try #require(noteStore.inboxIndex.first)
