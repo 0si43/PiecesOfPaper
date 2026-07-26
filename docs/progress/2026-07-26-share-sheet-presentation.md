@@ -1,0 +1,7 @@
+- [x] Present the share sheet from UIKit so iPad gets a popover instead of a narrow column (issue #268, PR #282)
+  - `UIActivityViewController` was the content of a SwiftUI `.sheet`, so iPad embedded it in a form-sheet container instead of letting it present itself
+  - New `ShareSheetPresenter` attaches an empty view controller with `.background` at the share trigger; it presents the activity controller and doubles as the popover's `sourceView`
+  - Canvas anchors to the share button and restores the tool picker from `completionWithItemsHandler`; the note list anchors at screen level with `permittedArrowDirections = []`, because its context menu has closed by the time the note finishes loading and a cell anchor can be removed by a refresh or archive
+  - `ShareLink` was the issue's original proposal and was rejected: the note list opens its document asynchronously (a `Transferable` closure is `Sendable`, cannot reach `NoteStore`, and would swallow the download-failure alert), and on the canvas `ShareLink(item:)` would rasterize the drawing on every autosave-driven body evaluation
+  - Anchoring only in a regular size class: `UIActivityViewController` returns a popover controller in compact too, and configuring it downgraded iPhone to an anchored card. Found by comparing against a build of the previous commit on the same simulator
+  - Deleted `UIActivityViewControllerWrapper`; `NoteListPresentation` and `NoteGridView` untouched, so the existing share tests remain the regression guard
