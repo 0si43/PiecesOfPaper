@@ -162,33 +162,6 @@ struct TutorialView: View {
     }
 }
 
-private struct SectionHeader: View {
-    let title: LocalizedStringKey
-    let systemImage: String
-
-    var body: some View {
-        Label(title, systemImage: systemImage)
-            .font(.title2.bold())
-    }
-}
-
-private struct Bullet: View {
-    private let text: LocalizedStringKey
-
-    init(_ text: LocalizedStringKey) {
-        self.text = text
-    }
-
-    var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text("•")
-                .foregroundStyle(.secondary)
-            Text(text)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-}
-
 private struct FAQItem: View {
     let question: LocalizedStringKey
     let answer: LocalizedStringKey
