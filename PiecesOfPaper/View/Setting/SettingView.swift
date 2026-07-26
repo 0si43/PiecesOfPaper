@@ -8,7 +8,7 @@ struct SettingView: View {
     var body: some View {
         @Bindable var preferenceStore = preferenceStore
         List {
-            Section(header: Text("Preference"), footer: preferenceFooter) {
+            Section(header: Text("Preferences"), footer: preferenceFooter) {
                 Toggle(isOn: $preferenceStore.enablediCloud) {
                     Label("Enable iCloud", systemImage: "icloud")
                 }
@@ -32,7 +32,7 @@ struct SettingView: View {
             Section(header: Text("About")) {
                 if let url = repositoryUrl {
                     Link(destination: url) {
-                        Label("Github Repository", systemImage: "ellipsis.curlybraces")
+                        Label("GitHub Repository", systemImage: "ellipsis.curlybraces")
                     }
                 }
 

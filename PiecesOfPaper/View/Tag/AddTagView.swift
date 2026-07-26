@@ -26,7 +26,7 @@ struct AddTagView: View {
         List {
             TagHStack(tags: tagsToNote, action: remove, deletable: true)
                 .frame(minHeight: 60)
-            Section(header: Text("Select tag which you want to add")) {
+            Section(header: Text("Select a tag to add")) {
                 ForEach(tagsNotToNote, id: \.id) { tag in
                     HStack {
                         Tag(entity: tag)

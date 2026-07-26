@@ -45,7 +45,7 @@ struct TutorialView: View {
             Bullet("""
             The Done button, in the floating panel in the top right, closes the window
             """)
-            Bullet("The app features auto-save, which can be turned off in Setting > Auto Save")
+            Bullet("The app saves automatically, which you can turn off in Settings > Auto Save")
         }
     }
 
@@ -58,7 +58,7 @@ struct TutorialView: View {
             """)
             Bullet("""
             You can also use local storage without iCloud. \
-            Turn it off in Setting > Enable iCloud
+            Turn it off in Settings > Enable iCloud
             """)
             Bullet("""
             There is one major issue with iCloud integration. \
@@ -74,7 +74,7 @@ struct TutorialView: View {
             Bullet("The app includes an archive feature")
             Bullet("It's designed to work like Gmail's archive system (which you may not use, or may even dislike)")
             Bullet("""
-            Archiving an item doesn't delete the actual file - \
+            Archiving an item doesn't delete the actual file — \
             additional steps are required for permanent deletion
             """)
         }
@@ -97,9 +97,9 @@ struct TutorialView: View {
     private var infiniteCanvas: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(title: "Infinite Canvas", systemImage: "scroll")
-            Bullet("You can use infinite canvas by default")
-            Bullet("Write something on the bottom-right corner of your note to expand the canvas")
-            Bullet("Toggle this feature on/off in Setting > Infinite Scroll")
+            Bullet("The infinite canvas is on by default")
+            Bullet("Write something in the bottom-right corner of your note to expand the canvas")
+            Bullet("Toggle this feature on or off in Settings > Infinite Scroll")
         }
     }
 
@@ -107,8 +107,8 @@ struct TutorialView: View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(title: "Important Notes", systemImage: "exclamationmark.triangle")
             Bullet("""
-            I have identified an issue where files created on iCloud may become inaccessible. \
-            While the exact conditions are unknown, this can potentially cause the entire app to hang
+            I have identified an issue where files created in iCloud may become inaccessible. \
+            While the exact conditions are unknown, this can cause the entire app to hang
             """)
             Bullet("""
             In the developer's environment, this occurred after creating more than 500 files. \
@@ -138,18 +138,18 @@ struct TutorialView: View {
             FAQItem(
                 question: "Where should I report bugs?",
                 answer: """
-                Please create an issue on [GitHub Repository](https://github.com/0si43/PiecesOfPaper). \
-                However, I cannot promise to fix every issue (as this is a free app!). \
+                Please open an issue in the [GitHub repository](https://github.com/0si43/PiecesOfPaper). \
+                However, I cannot promise to fix every issue (this is a free app!). \
                 If you're a developer, I'd be delighted to receive your pull requests!😁
                 """
             )
             FAQItem(
                 question: """
-                This app's bug ruined my notes! I worked hard on those notes and now they're gone! \
+                A bug in this app ruined my notes! I worked hard on those notes and now they're gone! \
                 This is terrible!
                 """,
                 answer: """
-                Sorry for your inconvenience. Please note that Pieces of Paper is developed by \
+                Sorry for the inconvenience. Please note that Pieces of Paper is developed by \
                 an individual developer and offered as a free app.
 
                 While I'm confident in the app's usability, I cannot guarantee 100% stability. \

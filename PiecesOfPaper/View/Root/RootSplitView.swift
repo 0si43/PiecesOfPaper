@@ -20,7 +20,7 @@ struct RootSplitView: View {
             case .trash: "Trash"
             case .tag: "Tag List"
             case .tutorial: "Quick Tutorial"
-            case .setting: "Setting"
+            case .setting: "Settings"
             }
         }
     }
@@ -108,12 +108,12 @@ struct RootSplitView: View {
                     Label(Page.trash.label, systemImage: "trash")
                 }
             }
-            Section(header: Text("Tag")) {
+            Section(header: Text("Tags")) {
                 NavigationLink(value: Page.tag) {
                     Label(Page.tag.label, systemImage: "tag")
                 }
             }
-            Section(header: Text("Manage raw data\n(Open Files App)")) {
+            Section(header: Text("Manage raw data\n(opens the Files app)")) {
                 Button {
                     if let path = FilePath.inboxUrl?.path(),
                        let url = URL(string: "shareddocuments://" + path),
@@ -138,7 +138,7 @@ struct RootSplitView: View {
                     Label(Page.tutorial.label, systemImage: "text.document")
                 }
             }
-            Section(header: Text("Setting")) {
+            Section(header: Text("Settings")) {
                 NavigationLink(value: Page.setting) {
                     Label(Page.setting.label, systemImage: "gearshape")
                 }

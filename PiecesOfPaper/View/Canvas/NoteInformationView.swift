@@ -63,7 +63,7 @@ struct NoteInformationView: View {
     private var tagsView: some View {
         let tags = tagStore.tags(ids: note.entity.tagIds)
         if tags.isEmpty {
-            Text("No tag")
+            Text("No tags")
         } else {
             TagHStack(tags: tags)
                 .frame(minHeight: 60)

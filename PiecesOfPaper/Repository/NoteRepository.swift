@@ -248,7 +248,7 @@ enum NoteRepositoryError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .fileOpenFailed(let path):
-            "Failed to open file at \(path)."
+            "Failed to open the file at \(path)."
         case .fileNotDownloaded(let path):
             "The note at \(path) has not finished downloading from iCloud."
         case .fileNotFound(let path):
@@ -260,9 +260,9 @@ enum NoteRepositoryError: LocalizedError {
                 "Failed to write \(path)."
             }
         case .saveVerificationFailed(let path):
-            "The save finished but no data exists at \(path)."
+            "The save finished, but no data exists at \(path)."
         case .directoryNotAvailable:
-            "Directory is not available."
+            "The directory is not available."
         }
     }
 }

@@ -28,7 +28,7 @@ struct TagEditorView: View {
             VStack {
                 Tag(entity: edited)
                 HStack {
-                    Text("Tag Name: ")
+                    Text("Tag Name")
                     TextField("", text: $draft.name)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
