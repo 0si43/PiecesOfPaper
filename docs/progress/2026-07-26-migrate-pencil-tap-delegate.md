@@ -1,4 +1,4 @@
-- [x] Take the pencil double tap through `pencilInteraction(_:didReceiveTap:)` (issue #292, PR #295)
-  - The replacement is iOS 17.5+ while the floor was 17.0, so raising the deployment target to iOS 18 (issue #297) was folded into the same PR and the deprecated `pencilInteractionDidTap(_:)` is gone rather than kept for 17.0-17.4. `@available` / `#available` appears nowhere else in the app target, so no other guard became dead
-  - Not unit-testable: `UIPencilInteraction.Tap` has `init` as `NS_UNAVAILABLE` and `preferredTapAction` is a systemwide value, so which delegate method UIKit picks is only observable on a device
+- [x] Raise the deployment target to iOS 18 and take the pencil double tap through `pencilInteraction(_:didReceiveTap:)` (issues #297 and #292, PR #295)
+  - The replacement callback is iOS 17.5+ while the floor was 17.0, so both went in one PR: raising the floor first made the migration a straight replacement, and the deprecated `pencilInteractionDidTap(_:)` is gone rather than kept for 17.0-17.4. `@available` / `#available` appears nowhere else in the app target, so no other guard became dead
   - The bump was confirmed to take effect rather than trusted to the pbxproj edit: `-showBuildSettings` reports 18.0, and `MinimumOSVersion` is 18.0 in the built app and in both QuickLook extensions
+  - Not unit-testable: `UIPencilInteraction.Tap` has `init` as `NS_UNAVAILABLE` and `preferredTapAction` is a systemwide value, so which delegate method UIKit picks is only observable on a device
