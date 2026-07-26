@@ -34,6 +34,9 @@ struct TagRepository: TagRepositoryProtocol {
     // Fixed ids so the in-memory defaults stay identical across launches:
     // notes reference tags by id, so ids regenerated per launch would detach
     // notes from their default tags.
+    // Not optional-handled: the arguments are literals checked at every build,
+    // so a nil here would be a typo, not a runtime condition.
+    // swiftlint:disable force_unwrapping
     private var defaultTags = [
         TagEntity(id: UUID(uuidString: "1D9C7A80-1E5B-4A61-9F0A-6C39F1A0D001")!,
                   name: "💡idea", color: CodableUIColor(uiColor: .systemYellow)),
@@ -44,6 +47,7 @@ struct TagRepository: TagRepositoryProtocol {
         TagEntity(id: UUID(uuidString: "1D9C7A80-1E5B-4A61-9F0A-6C39F1A0D004")!,
                   name: "🎨doodle", color: CodableUIColor(uiColor: .systemOrange))
     ]
+    // swiftlint:enable force_unwrapping
 
     private let tagListFileUrl: URL?
     private let fileManager: FileManager

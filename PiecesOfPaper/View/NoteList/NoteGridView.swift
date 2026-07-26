@@ -32,51 +32,27 @@ struct NoteGridView: View {
         .padding([.leading, .trailing])
     }
 
-    func contextMenu(entry: NoteIndexEntry) -> some View {
+    private func contextMenu(entry: NoteIndexEntry) -> some View {
         Group {
             Button {
-                Task {
-                    do {
-                        try await noteStore.duplicate(entry, in: directory)
-                    } catch {
-                        presentation.alert = .error(error)
-                    }
-                }
+                perform { try await noteStore.duplicate(entry, in: directory) }
             } label: {
                 Label("Duplicate", systemImage: "doc.on.doc")
             }
             if entry.isArchived {
                 Button {
-                    Task {
-                        do {
-                            try await noteStore.unarchive(entry)
-                        } catch {
-                            presentation.alert = .error(error)
-                        }
-                    }
+                    perform { try await noteStore.unarchive(entry) }
                 } label: {
                     Label("Move to Inbox", systemImage: "tray")
                 }
                 Button(role: .destructive) {
-                    Task {
-                        do {
-                            try await noteStore.delete(entry)
-                        } catch {
-                            presentation.alert = .error(error)
-                        }
-                    }
+                    perform { try await noteStore.delete(entry) }
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
             } else {
                 Button {
-                    Task {
-                        do {
-                            try await noteStore.archive(entry)
-                        } catch {
-                            presentation.alert = .error(error)
-                        }
-                    }
+                    perform { try await noteStore.archive(entry) }
                 } label: {
                     Label("Move to Trash", systemImage: "trash")
                 }
@@ -90,6 +66,16 @@ struct NoteGridView: View {
                 presentation.requestTag(entry, from: noteStore)
             } label: {
                 Label("Tag", systemImage: "tag")
+            }
+        }
+    }
+
+    private func perform(_ operation: @escaping () async throws -> Void) {
+        Task {
+            do {
+                try await operation()
+            } catch {
+                presentation.alert = .error(error)
             }
         }
     }
