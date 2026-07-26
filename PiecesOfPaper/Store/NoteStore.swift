@@ -37,6 +37,9 @@ final class NoteStore {
     /// Set on the cloud→local transition while the iCloud preference is still
     /// on, so the list screen can explain why the visible notes changed
     private(set) var didFallBackToLocalStorage = false
+    // Tri-state: nil until a fetch has established a mode. A three-case enum
+    // would satisfy the rule but reads worse at the one comparison below.
+    // swiftlint:disable:next discouraged_optional_boolean
     private var lastFetchUsedCloudStorage: Bool?
     @ObservationIgnored private var hasBecomeActive = false
     @ObservationIgnored private var lastEnteredBackground: Date?
