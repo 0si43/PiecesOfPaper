@@ -64,9 +64,6 @@ struct NoteListScreen: View {
                 )
             }
         }
-        .sheet(item: $presentation.noteToShare) { note in
-            activityViewController(note: note)
-        }
         .sheet(item: $presentation.noteToTag) { note in
             AddTagView(note: note)
         }
@@ -118,6 +115,17 @@ struct NoteListScreen: View {
         }
         // Outermost so the grid, its cells, and the sheets above all see it
         .environment(presentation)
+        // Outside the Group, whose branches would each get their own anchor: a torn-down anchor
+        // takes the popover with it. Unlike the sheets above it presents a UIKit controller, not
+        // SwiftUI content, so it does not need to sit inside the .environment chain
+        .shareSheet(item: $presentation.noteToShare,
+                    activityItems: { note in
+                        [NoteShareItemSource(image: note.entity.drawing.lightModeImage(scale: displayScale),
+                                             updatedDate: note.entity.updatedDate)]
+                    },
+                    // The context menu that started the share has closed by the time the note
+                    // finishes loading, so there is nothing left for an arrow to point at
+                    permittedArrowDirections: [])
     }
 
     // Not a bare ContentUnavailableView: `.refreshable` only exposes the
@@ -187,13 +195,6 @@ struct NoteListScreen: View {
             Image(systemName: "icloud.slash")
         }
         .accessibilityLabel("iCloud unavailable. Notes are stored on this device.")
-    }
-
-    private func activityViewController(note: NoteData) -> UIActivityViewControllerWrapper {
-        UIActivityViewControllerWrapper(
-            activityItems: [NoteShareItemSource(image: note.entity.drawing.lightModeImage(scale: displayScale),
-                                                updatedDate: note.entity.updatedDate)]
-        )
     }
 
     // MARK: - Alert Components

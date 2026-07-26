@@ -5,6 +5,7 @@ import StoreKit
 struct CanvasView: View {
     @State private var note: NoteData
     @Environment(NoteStore.self) private var noteStore
+    @Environment(PreferenceStore.self) private var preferenceStore
     @Environment(\.dismiss) private var dismiss
     @Environment(\.displayScale) private var displayScale
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -95,6 +96,10 @@ struct CanvasView: View {
         PKCanvasViewWrapper(canvasView: $canvasView,
                             toolPicker: $toolPicker,
                             isToolPickerVisible: !hideExceptPaper,
+                            // The store is captured explicitly: without a capture list these
+                            // close over the whole view, which reads @Environment outside body
+                            isAutoSaveEnabled: { [preferenceStore] in preferenceStore.enabledAutoSave },
+                            isInfiniteScrollEnabled: { [preferenceStore] in preferenceStore.enabledInfiniteScroll },
                             saveAction: { save(drawing: $0) },
                             onToggleUI: { toggleUIVisibility() },
                             onRevealUI: { revealUI() })
@@ -112,11 +117,6 @@ struct CanvasView: View {
         // with the chrome shifts the drawing inside the PKCanvasView
         .statusBar(hidden: true)
         .toolbar(.hidden, for: .navigationBar)
-        .sheet(isPresented: $isShowActivityView,
-               onDismiss: {
-                   setToolPickerVisible(!hideExceptPaper)
-               },
-               content: { activityViewController })
         .alert("", isPresented: $showUnsavedAlert) {
             unsavedAlertActions
         } message: {
@@ -205,7 +205,7 @@ struct CanvasView: View {
             }
             Button {
                 setToolPickerVisible(false)
-                isShowActivityView.toggle()
+                isShowActivityView = true
             } label: {
                 Image(systemName: "square.and.arrow.up")
                     .imageScale(.large)
@@ -217,6 +217,10 @@ struct CanvasView: View {
                     .contentShape(Rectangle())
             }
             .accessibilityLabel("Share")
+            // Attached to the button, not the panel, so the popover's arrow points at the glyph
+            .shareSheet(isPresented: $isShowActivityView,
+                        activityItems: { shareActivityItems },
+                        onDismiss: { setToolPickerVisible(!hideExceptPaper) })
             Button(action: done) {
                 Text("Done")
                     .fontWeight(.semibold)
@@ -245,11 +249,11 @@ struct CanvasView: View {
         .animation(.easeInOut(duration: 0.2), value: hideExceptPaper)
     }
 
-    private var activityViewController: UIActivityViewControllerWrapper {
-        UIActivityViewControllerWrapper(
-            activityItems: [NoteShareItemSource(image: note.entity.drawing.lightModeImage(scale: displayScale),
-                                                updatedDate: note.entity.updatedDate)]
-        )
+    // Read when the sheet is presented, not on every body evaluation: this renders the whole
+    // drawing twice at display scale, and the body re-runs on every autosave
+    private var shareActivityItems: [Any] {
+        [NoteShareItemSource(image: note.entity.drawing.lightModeImage(scale: displayScale),
+                             updatedDate: note.entity.updatedDate)]
     }
 
     private func done() {
@@ -281,5 +285,6 @@ struct CanvasView: View {
 #Preview {
     CanvasView(note: NoteData.createTestData())
         .environment(NoteStore())
+        .environment(PreferenceStore())
 }
 #endif
