@@ -66,6 +66,7 @@ coordinate values).
 | `idb ui key --udid $UDID <HID keycode>` (`--shift/--control/--option/--command`) | Hardware-keyboard event |
 | `idb ui text --udid $UDID "..."` | Types text |
 | `idb ui describe-all --udid $UDID` | Accessibility tree as JSON |
+| `idb ui describe-point --udid $UDID x y` | The single accessibility element under one point |
 | `xcrun simctl io $UDID screenshot out.png` | Screenshot (`idb screenshot` can fail with "No Image available to encode") |
 
 `idb ui text` types through the simulator's active keyboard, so a device created on a
@@ -94,6 +95,14 @@ animates, so a screenshot taken immediately shows the *previous* state — which
 Out-of-process UI is invisible to `describe-all`: `UIActivityViewController`'s rows are
 served by a remote view service and return nothing, so the share sheet is asserted from a
 screenshot and driven by tapping computed coordinates (screenshot pixels ÷ device scale).
+
+`describe-all` also stops at the sidebar. With the split view's sidebar open it returned eight
+top-level elements — the application, the title, Toggle sidebar, a `Sidebar` group, More Actions,
+New Note and the two empty-state labels — and none of the sidebar's rows. `describe-point` at a
+row's coordinates does return it, carrying the row's whole label: the What's New row reads
+`"What's New, New"` while its unread dot is up and `"What's New"` once it clears, which asserted
+that marker in both directions without diffing screenshots. Use `describe-point` for anything
+inside the sidebar's `List`. Background: issue #319, PR #323.
 
 Assertions that need no screenshot diffing:
 
@@ -186,7 +195,11 @@ way, with no gesture injection.
   picker; the next identical swipe draws. Two swipes issued in one shell command are both lost, so
   the retry has to be a separate injection. Seen while comparing pen state across two builds, where
   it first looked like the build under test had broken drawing. Background: PR #295.
-- **Sidebar pages**: to land directly on Quick Tutorial, Setting or Tag List, change the
+- **Sidebar pages**: reachable on the shipping build in three taps, with no code change — tap Done
+  to dismiss the auto-opened canvas, tap the sidebar toggle at the top-left of the detail pane (the
+  sidebar starts collapsed, since `columnVisibility` defaults to `.detailOnly`), then tap the row.
+  Verified on iPad Pro 11-inch, iOS 26.5, for What's New and Quick Tutorial. Land *directly* on a
+  page only when those taps are in the way: change the
   initial `selection` in `RootSplitView` to that page (e.g. `.tutorial`) in a throwaway
   build. The `selection` change alone does not keep the canvas away — `sceneDidBecomeActive`
   still opens a blank note over the detail pane — but since the chrome is visible at launch,
