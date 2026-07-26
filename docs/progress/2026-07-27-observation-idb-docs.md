@@ -1,0 +1,5 @@
+- [x] Document the Observation and idb findings from the What's New work (issue #324, PR #326)
+  - An optional stored property under `@Observable` fires `didSet` from `init`, so the store's usual persist-in-didSet shape re-persists on every launch — recorded in GOTCHAS with `test_init_readsValuesWithoutRePersisting` named as the guard
+  - `idb ui describe-all` returns nothing from inside the sidebar; `describe-point` returns the row with its whole label, which is how the unread marker was asserted in both directions
+  - Sidebar pages are reachable in three taps on the shipping build, so the throwaway-build advice is now the fallback rather than the default
+  - `defaults read` reports a key as missing even after the app that wrote it has terminated; the container's preferences plist is the reliable read
