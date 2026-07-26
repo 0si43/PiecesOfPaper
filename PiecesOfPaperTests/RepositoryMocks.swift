@@ -222,10 +222,12 @@ final class PreferenceRepositoryMock: PreferenceRepositoryProtocol {
     var enablediCloud = false
     var enabledAutoSave = true
     var enabledInfiniteScroll = true
+    var appearanceMode: AppearanceMode = .system
     var listOrders: [String: ListOrder] = [:]
     private(set) var setEnablediCloudCalls: [Bool] = []
     private(set) var setEnabledAutoSaveCalls: [Bool] = []
     private(set) var setEnabledInfiniteScrollCalls: [Bool] = []
+    private(set) var setAppearanceModeCalls: [AppearanceMode] = []
     private(set) var setListOrderCalls: [(directoryName: String, listOrder: ListOrder)] = []
 
     func getEnablediCloud() -> Bool { enablediCloud }
@@ -247,6 +249,13 @@ final class PreferenceRepositoryMock: PreferenceRepositoryProtocol {
     func setEnabledInfiniteScroll(_ value: Bool) {
         enabledInfiniteScroll = value
         setEnabledInfiniteScrollCalls.append(value)
+    }
+
+    func getAppearanceMode() -> AppearanceMode { appearanceMode }
+
+    func setAppearanceMode(_ value: AppearanceMode) {
+        appearanceMode = value
+        setAppearanceModeCalls.append(value)
     }
 
     func getListOrder(directoryName: String) -> ListOrder {

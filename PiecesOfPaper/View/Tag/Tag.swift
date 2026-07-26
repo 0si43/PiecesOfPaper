@@ -13,7 +13,12 @@ struct Tag: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
+        // Tag colors are RGBA frozen under a light trait and fill at 70%, so on a
+        // dark background they darken and lose contrast against the label. The
+        // chip keeps a light base in both appearances rather than adapting.
+        .foregroundStyle(.black)
         .background(entity.color.swiftUIColor)
+        .background(.white)
         .cornerRadius(4)
     }
 }

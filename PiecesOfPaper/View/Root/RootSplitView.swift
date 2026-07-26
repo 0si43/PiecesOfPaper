@@ -3,7 +3,7 @@ import SwiftUI
 struct RootSplitView: View {
     @State private var noteStore = NoteStore()
     @State private var tagStore = TagStore()
-    @State private var preferenceStore = PreferenceStore()
+    @Environment(PreferenceStore.self) private var preferenceStore
     @State private var selection: Page? = .inbox
     @Environment(\.scenePhase) private var scenePhase
     @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
@@ -91,7 +91,10 @@ struct RootSplitView: View {
         }
         .environment(noteStore)
         .environment(tagStore)
-        .environment(preferenceStore)
+        // Read here, not in the App's Scene body: preferredColorScheme is a
+        // preference that flows up to the scene host, and reading the store from
+        // a View body is what guarantees Observation re-evaluates it
+        .preferredColorScheme(preferenceStore.appearanceMode.colorScheme)
     }
 
     private var sideBarList: some View {
@@ -147,4 +150,5 @@ struct RootSplitView: View {
 
 #Preview {
     RootSplitView()
+        .environment(PreferenceStore())
 }

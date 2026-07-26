@@ -7,6 +7,8 @@ protocol PreferenceRepositoryProtocol {
     func setEnabledAutoSave(_ value: Bool)
     func getEnabledInfiniteScroll() -> Bool
     func setEnabledInfiniteScroll(_ value: Bool)
+    func getAppearanceMode() -> AppearanceMode
+    func setAppearanceMode(_ value: AppearanceMode)
     func getListOrder(directoryName: String) -> ListOrder
     func setListOrder(directoryName: String, listOrder: ListOrder)
 }
@@ -15,6 +17,7 @@ struct PreferenceRepository: PreferenceRepositoryProtocol {
     private let iCloudDisabledKey = "iCloud_disabled"
     private let autoSaveDisabledKey = "autosave_disabled"
     private let infiniteScrollKey = "infinite_scroll_disabled"
+    private let appearanceModeKey = "appearance_mode"
     private let listOrderKey = "com.pop.listOrder."
 
     func getEnablediCloud() -> Bool {
@@ -39,6 +42,18 @@ struct PreferenceRepository: PreferenceRepositoryProtocol {
 
     func setEnabledInfiniteScroll(_ value: Bool) {
         UserDefaults.standard.set(!value, forKey: infiniteScrollKey)
+    }
+
+    // Stored as its raw value, not through the Bool keys' "*_disabled" inversion
+    // (that trick only makes UserDefaults' false default mean "enabled") nor the
+    // JSONEncoder path ListOrder needs: an absent string already means .system
+    func getAppearanceMode() -> AppearanceMode {
+        guard let rawValue = UserDefaults.standard.string(forKey: appearanceModeKey) else { return .system }
+        return AppearanceMode(rawValue: rawValue) ?? .system
+    }
+
+    func setAppearanceMode(_ value: AppearanceMode) {
+        UserDefaults.standard.set(value.rawValue, forKey: appearanceModeKey)
     }
 
     func getListOrder(directoryName: String) -> ListOrder {
