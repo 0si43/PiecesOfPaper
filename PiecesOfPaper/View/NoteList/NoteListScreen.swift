@@ -95,10 +95,7 @@ struct NoteListScreen: View {
                 case .archiveAll:
                     let operationText = isTargetDirectoryArchived ? "unarchived" : "archived"
                     let countText = noteStore.displayEntries(for: directory).count
-                    let alertText = """
-                        Are you sure you want to \(operationText) \(countText) notes?
-                    """
-                    return Text(alertText)
+                    return Text("Are you sure you want to \(operationText) \(countText) notes?")
                 case .localFallback:
                     return Text("""
                         iCloud is no longer available, so your notes are now shown from device storage. \
