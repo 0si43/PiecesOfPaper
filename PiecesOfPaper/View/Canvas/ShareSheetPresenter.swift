@@ -91,12 +91,16 @@ final class ShareSheetAnchorController: UIViewController {
             return
         }
         let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        // Required, not optional: in a regular size class UIActivityViewController defaults to
-        // .popover and raises if presented without a source. The chain is optional because in a
-        // compact size class the style is a sheet and there is no popover controller to configure.
-        controller.popoverPresentationController?.sourceView = view
-        controller.popoverPresentationController?.sourceRect = sourceRect
-        controller.popoverPresentationController?.permittedArrowDirections = permittedArrowDirections
+        // Only where a popover is the right presentation. UIActivityViewController hands back a
+        // popover controller in a compact size class too, and configuring it keeps the popover
+        // style there — a card anchored to the button offering fewer actions than the full-height
+        // sheet iPhone gets when the controller is left to choose. In a regular size class the
+        // source is mandatory: the style is .popover and presenting without one raises.
+        if traitCollection.horizontalSizeClass == .regular {
+            controller.popoverPresentationController?.sourceView = view
+            controller.popoverPresentationController?.sourceRect = sourceRect
+            controller.popoverPresentationController?.permittedArrowDirections = permittedArrowDirections
+        }
         // Fires for a cancelled share too, including a tap outside the popover
         controller.completionWithItemsHandler = { [weak self] _, _, _, _ in
             guard let self else { return }
