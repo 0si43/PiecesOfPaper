@@ -11,12 +11,10 @@ protocol TagRepositoryProtocol {
 
 /// Where the tag list file stands relative to iCloud download state.
 enum TagListFileState {
-    /// The real file exists locally and can be read.
     case downloaded
     /// Only the ".taglist.json.icloud" placeholder exists: the file lives in
     /// iCloud but has not been downloaded yet.
     case inCloudOnly
-    /// Neither the file nor a placeholder exists locally.
     case absent
 
     static func check(for url: URL, fileManager: FileManager = .default) -> TagListFileState {
