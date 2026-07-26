@@ -3,6 +3,14 @@
 - Known pitfalls (PencilKit, Xcode, pbxproj): see [docs/GOTCHAS.md](docs/GOTCHAS.md)
 - Progress log: see [docs/PROGRESS.md](docs/PROGRESS.md). When resuming work, read its Current Status and any unconsolidated fragments in [docs/progress/](docs/progress/)
 
+## Scope
+
+- This is a free app maintained by one person. A defect in what the app *says* is worth fixing on
+  the spot; a defect that needs new code to cover a rare state is a judgement call for the
+  maintainer. Bring it with its cost and the alternatives rather than building it by reflex — the
+  finger-drawing notice appearing on a fresh install was reviewed, costed and deliberately left
+  alone (PR #305).
+
 ## Language
 
 - All GitHub-facing text is written in English: PR titles/bodies, issue titles/bodies, commit messages, and code comments.

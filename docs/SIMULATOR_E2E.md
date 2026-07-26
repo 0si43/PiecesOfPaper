@@ -52,6 +52,14 @@ change through the app's own UI. When the two disagree, what the app displays is
 an appearance-setting check read `appearance_mode = dark` from `defaults` while the app was
 showing, and had persisted, Light. Background: PR #264.
 
+The domain also outlives `simctl uninstall`: cfprefsd keeps it cached, so a later `defaults write`
+of one key re-materializes every key it was holding. A "clean install" check seeded that way can
+start with flags the fresh app should never see — a one-time alert stayed suppressed after a full
+uninstall and reinstall because `finger_drawing_notice_acknowledged` came back alongside the
+`iCloud_disabled` seed, which read as the alert being broken. Delete the specific key after
+installing (`defaults delete <domain> <key>`) and confirm with `defaults read <domain>`.
+Background: issue #302.
+
 ## Operating and asserting
 
 All coordinates are in points, not pixels (a screenshot from a 2x device is twice the
