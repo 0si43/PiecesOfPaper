@@ -199,6 +199,10 @@ struct CanvasView: View {
             } label: {
                 Image(systemName: "square.and.arrow.up")
                     .imageScale(.large)
+                    // The arrow overshoots the top of the symbol's box, so centering the
+                    // box hangs the tray below its neighbours. Apple's toolbars line the
+                    // tray's bottom edge up with theirs instead and let the arrow stick out
+                    .offset(y: -2)
                     .frame(width: 44, height: 44)
                     .contentShape(Rectangle())
             }
