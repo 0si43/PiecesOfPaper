@@ -11,7 +11,7 @@ struct TagEntity: Codable, Identifiable, Equatable {
     }
 }
 
-struct CodableUIColor: Codable {
+struct CodableUIColor: Codable, Equatable {
     var red: CGFloat = 0.0
     var green: CGFloat = 0.0
     var blue: CGFloat = 0.0

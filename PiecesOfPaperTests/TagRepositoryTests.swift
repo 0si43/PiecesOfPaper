@@ -122,6 +122,25 @@ struct TagRepositoryTests {
         #expect(FileManager.default.fileExists(atPath: placeholder.path))
     }
 
+    // Editing a default tag is the first write that persists the defaults, so the
+    // fixed default ids have to survive it
+    @Test func saveAll_persistsAnEditedDefaultTag() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let fileUrl = tagListUrl(in: directory)
+        let repository = TagRepository(tagListFileUrl: fileUrl)
+        var defaults = await repository.fetchAll()
+        defaults[0].name = "renamed"
+
+        #expect(await repository.saveAll(defaults))
+
+        let reloaded = await repository.fetchAll()
+        #expect(reloaded.count == 4)
+        #expect(reloaded.map(\.id) == defaults.map(\.id))
+        #expect(reloaded.first?.name == "renamed")
+        #expect(FileManager.default.fileExists(atPath: fileUrl.path))
+    }
+
     @Test func saveAll_createsLibraryDirectoryAndRoundTrips() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }

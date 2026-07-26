@@ -52,6 +52,56 @@ struct TagStoreTests {
         #expect(tagStore.tags == initialTags)
     }
 
+    // TagEntity's == compares ids only, so a rename has to be asserted field by field
+    @Test func test_update_replacesAndPersists() async {
+        await waitForInitialLoad()
+        var edited = initialTags[0]
+        edited.name = "renamed"
+        edited.color = CodableUIColor(uiColor: .systemGreen)
+        tagStore.update(edited)
+        await waitUntil { !repositoryMock.saveAllCalls.isEmpty }
+
+        #expect(tagStore.tags.map(\.id) == initialTags.map(\.id))
+        #expect(tagStore.tags.map(\.name) == ["renamed", "memo"])
+        #expect(tagStore.tags[0].color == CodableUIColor(uiColor: .systemGreen))
+        #expect(repositoryMock.saveAllCalls.last?.map(\.name) == ["renamed", "memo"])
+        #expect(repositoryMock.saveAllCalls.last?.first?.color == CodableUIColor(uiColor: .systemGreen))
+    }
+
+    @Test func test_update_rollsBackWhenSaveFails() async {
+        await waitForInitialLoad()
+        repositoryMock.saveShouldSucceed = false
+        var edited = initialTags[0]
+        edited.name = "renamed"
+        tagStore.update(edited)
+        await waitUntil { tagStore.tags.map(\.name) == initialTags.map(\.name) }
+
+        #expect(tagStore.tags.map(\.name) == initialTags.map(\.name))
+    }
+
+    @Test func test_update_ignoresUnknownId() async {
+        await waitForInitialLoad()
+        tagStore.update(TagEntity(name: "unknown", color: CodableUIColor(uiColor: .systemRed)))
+        // Let the store settle; it must not enqueue a save at all
+        for _ in 0..<50 { await Task.yield() }
+
+        #expect(tagStore.tags.map(\.name) == initialTags.map(\.name))
+        #expect(repositoryMock.saveAllCalls.isEmpty)
+    }
+
+    // The reload queued right after an edit must read the file the edit wrote
+    @Test func test_update_survivesAnImmediateReload() async {
+        await waitForInitialLoad()
+        var edited = initialTags[0]
+        edited.name = "renamed"
+        tagStore.update(edited)
+        tagStore.reload()
+        await waitUntil { !repositoryMock.saveAllCalls.isEmpty }
+        for _ in 0..<50 { await Task.yield() }
+
+        #expect(tagStore.tags.map(\.name) == ["renamed", "memo"])
+    }
+
     @Test func test_remove_removesAndPersists() async {
         await waitForInitialLoad()
         tagStore.remove(initialTags[0])

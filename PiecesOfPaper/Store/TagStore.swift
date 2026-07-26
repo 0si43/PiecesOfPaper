@@ -26,6 +26,14 @@ final class TagStore {
         saveOrRollback()
     }
 
+    // Drops an edit whose id is gone rather than re-adding it: the cloud monitor
+    // can reload a deletion made on another device while the editor is open
+    func update(_ tag: TagEntity) {
+        guard let index = tags.firstIndex(where: { $0.id == tag.id }) else { return }
+        tags[index] = tag
+        saveOrRollback()
+    }
+
     func remove(at offsets: IndexSet) {
         tags.remove(atOffsets: offsets)
         saveOrRollback()
