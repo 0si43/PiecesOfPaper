@@ -111,6 +111,21 @@ device and the real Files app. Background: PR #208.
   follow-up). Note the mode is narrower on device: it is only offered while the system
   "Only Draw with Apple Pencil" setting is on (issue #271, and the `.default` policy entry
   in [GOTCHAS.md](GOTCHAS.md)); the Simulator's two-finger tap bypasses that guard.
+- **idb cannot tap the tool picker's ⋯ popover**: `describe-all` lists its rows (Auto-Minimize,
+  Draw with Finger, Pencil Settings…) as `CheckBox`/`Button` elements with plausible frames, but
+  taps at those coordinates have no effect — tried several points inside the row and a longer
+  `--duration`, with the menu staying open throughout. Tapping the ⋯ button itself works, so this
+  is specific to the popover. To drive "Only Draw with Apple Pencil", write the preference behind
+  it and relaunch the app:
+  `xcrun simctl spawn $UDID defaults write com.apple.UIKit UIPencilOnlyDrawWithPencilKey -bool YES`
+  (`YES` = pencil only, so the switch reads off). The key came from the runtime's UIKitCore
+  strings; find others the same way:
+  `strings "$(xcrun simctl runtime list -v | …)/RuntimeRoot/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore" | grep -i <name>`.
+  Background: PR #281.
+- **The first gesture after opening a menu is spent dismissing it**: a `ui swipe` delivered while
+  the picker's ⋯ menu is open closes the menu and draws nothing, which reads as "drawing is
+  broken" — the same swipe repeated draws normally. Check `describe-all` for the menu rows before
+  operating, and assert state both before and after each injection.
 - **Sidebar pages**: to land directly on Quick Tutorial, Setting or Tag List, change the
   initial `selection` in `RootSplitView` to that page (e.g. `.tutorial`) in a throwaway
   build — the detail pane shows the page at launch, no blank note opens, and idb swipes
