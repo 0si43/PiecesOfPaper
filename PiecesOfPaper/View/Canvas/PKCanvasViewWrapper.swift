@@ -5,6 +5,11 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
     @Binding private var canvasView: PKCanvasView
     @Binding private var toolPicker: PKToolPicker
     private let isToolPickerVisible: Bool
+    // Closures rather than Bool: updateUIView is empty, so Coordinator.parent is
+    // frozen at the value makeCoordinator() captured, and a copied flag would go
+    // stale when the setting changes while the canvas is open
+    private let isAutoSaveEnabled: () -> Bool
+    private let isInfiniteScrollEnabled: () -> Bool
     private let saveAction: (PKDrawing) -> Void
     private let onToggleUI: (() -> Void)?
     private let onRevealUI: (() -> Void)?
@@ -15,12 +20,16 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
     init(canvasView: Binding<PKCanvasView>,
          toolPicker: Binding<PKToolPicker>,
          isToolPickerVisible: Bool,
+         isAutoSaveEnabled: @escaping () -> Bool,
+         isInfiniteScrollEnabled: @escaping () -> Bool,
          saveAction: @escaping (PKDrawing) -> Void,
          onToggleUI: (() -> Void)? = nil,
          onRevealUI: (() -> Void)? = nil) {
         self._canvasView = canvasView
         self._toolPicker = toolPicker
         self.isToolPickerVisible = isToolPickerVisible
+        self.isAutoSaveEnabled = isAutoSaveEnabled
+        self.isInfiniteScrollEnabled = isInfiniteScrollEnabled
         self.saveAction = saveAction
         self.onToggleUI = onToggleUI
         self.onRevealUI = onRevealUI
@@ -85,16 +94,21 @@ struct PKCanvasViewWrapper: UIViewRepresentable {
 
 // MARK: - PKCanvasViewDelegate
 extension PKCanvasViewWrapper.Coordinator: PKCanvasViewDelegate {
+    // Both preference reads live here rather than in the helper below:
+    // PKCanvasViewDelegate is NS_SWIFT_UI_ACTOR, so this witness is MainActor
+    // isolated and may touch the @MainActor PreferenceStore; the private helper
+    // is not a witness and inherits no isolation
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-        updateContentSizeIfNeeded(canvasView)
+        if parent.isInfiniteScrollEnabled() {
+            updateContentSizeIfNeeded(canvasView)
+        }
 
-        guard PreferenceRepository().getEnabledAutoSave() else { return }
+        guard parent.isAutoSaveEnabled() else { return }
         parent.saveAction(canvasView.drawing)
     }
 
     private func updateContentSizeIfNeeded(_ canvasView: PKCanvasView) {
-        guard !canvasView.drawing.bounds.isNull,
-              PreferenceRepository().getEnabledInfiniteScroll() else { return }
+        guard !canvasView.drawing.bounds.isNull else { return }
         let drawingWidth = canvasView.drawing.bounds.maxX
         if canvasView.contentSize.width * 9 / 10 < drawingWidth {
             canvasView.contentSize.width += canvasView.frame.width
@@ -161,5 +175,7 @@ extension PKCanvasViewWrapper.Coordinator: UIScrollViewDelegate {
     PKCanvasViewWrapper(canvasView: $canvasView,
                         toolPicker: $toolPicker,
                         isToolPickerVisible: true,
+                        isAutoSaveEnabled: { true },
+                        isInfiniteScrollEnabled: { true },
                         saveAction: { _ in })
 }
