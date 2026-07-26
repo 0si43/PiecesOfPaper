@@ -11,65 +11,63 @@ struct NoteInformationView: View {
     }()
 
     var body: some View {
-        HStack {
-            leftColumnView
-            Divider()
-            rightColumnView
-        }
-    }
-
-    private var leftColumnView: some View {
-        VStack {
-            Group {
-                #if DEBUG
-                Text("🛠" + "ID")
-                Divider()
-                #endif
-            }
-            Group {
-                Text("File Name")
-                Divider()
-                Text("Created Date")
-                Divider()
-                Text("Updated Date")
-                Divider()
-                Text("Archive Status")
-                Divider()
-                Text("Tags")
-            }
-        }
-        .scaledToFit()
-    }
-
-    private var rightColumnView: some View {
-        VStack {
-            Group {
-                #if DEBUG
+        Grid(alignment: .leading, verticalSpacing: 8) {
+            #if DEBUG
+            GridRow {
+                label("🛠ID")
                 Text("🛠" + note.entity.id.uuidString)
-                    .minimumScaleFactor(0.5)
-                Divider()
-                #endif
+                    .lineLimit(1)
+                    .truncationMode(.middle)
             }
-            Group {
+            Divider()
+            #endif
+            GridRow {
+                label("File Name")
                 Text(note.fileURL.lastPathComponent)
-                    .minimumScaleFactor(0.5)
-                Divider()
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+            }
+            Divider()
+            GridRow {
+                label("Created Date")
                 Text(dataFormatter.string(from: note.entity.createdDate))
-                Divider()
+                    .lineLimit(1)
+            }
+            Divider()
+            GridRow {
+                label("Updated Date")
                 Text(dataFormatter.string(from: note.entity.updatedDate))
-                Divider()
+                    .lineLimit(1)
+            }
+            Divider()
+            GridRow {
+                label("Archive Status")
                 Text(note.isArchived ? "Archived" : "Inbox")
-                Divider()
-                let tags = tagStore.tags(ids: note.entity.tagIds)
-                if tags.isEmpty {
-                    Text("No tag")
-                } else {
-                    TagHStack(tags: tags)
-                        .frame(minHeight: 60)
-                }
+                    .lineLimit(1)
+            }
+            Divider()
+            GridRow {
+                label("Tags")
+                tagsView
             }
         }
         .padding()
+    }
+
+    private func label(_ key: LocalizedStringKey) -> some View {
+        Text(key)
+            .foregroundStyle(.secondary)
+    }
+
+    @ViewBuilder
+    private var tagsView: some View {
+        let tags = tagStore.tags(ids: note.entity.tagIds)
+        if tags.isEmpty {
+            Text("No tag")
+        } else {
+            TagHStack(tags: tags)
+                .frame(minHeight: 60)
+        }
     }
 }
 
