@@ -59,7 +59,6 @@ final class NoteDocument: UIDocument {
         entity = try PropertyListDecoder().decode(NoteEntity.self, from: content)
     }
 
-    // The later is the winner
     private func resolveConflictIfNeeded() {
         guard documentState.contains(.inConflict) else { return }
         let conflictVersions = NSFileVersion.unresolvedConflictVersionsOfItem(at: fileURL) ?? []
