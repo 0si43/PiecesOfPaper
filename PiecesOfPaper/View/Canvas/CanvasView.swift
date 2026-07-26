@@ -10,6 +10,7 @@ struct CanvasView: View {
     @Environment(\.displayScale) private var displayScale
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @AppStorage("review_requested") private var reviewRequested = false
+    @AppStorage("finger_drawing_notice_acknowledged") private var fingerDrawingNoticeAcknowledged = false
     @State private var canvasView = PKCanvasView()
     @State private var toolPicker = PKToolPicker()
     // Not persisted and not reset in onAppear: RootSplitView gives the cover an
@@ -19,6 +20,7 @@ struct CanvasView: View {
     @State private var showUnsavedAlert = false
     @State private var showDrawingInformation = false
     @State private var showSaveFailedAlert = false
+    @State private var showFingerDrawingNotice = false
     @State private var saveFailedMessage = ""
     @State private var savingDrawing: PKDrawing?
     @State private var queuedSave: (drawing: PKDrawing, completion: ((Bool) -> Void)?)?
@@ -51,6 +53,16 @@ struct CanvasView: View {
     private func setToolPickerVisible(_ isVisible: Bool) {
         toolPicker.setVisible(isVisible, forFirstResponder: canvasView)
         canvasView.becomeFirstResponder()
+    }
+
+    // Users upgrading from a version that forced pencil-only drawing lose the tap
+    // above with nothing on screen to explain it, and the setting that decides it
+    // is read-only to the app. Skipped where the tap still works
+    private func presentFingerDrawingNoticeIfNeeded() {
+        guard !fingerDrawingNoticeAcknowledged,
+              UIDevice.current.userInterfaceIdiom == .pad,
+              !UIPencilInteraction.prefersPencilOnlyDrawing else { return }
+        showFingerDrawingNotice = true
     }
 
     private func hasUnsavedChanges() -> Bool {
@@ -106,6 +118,7 @@ struct CanvasView: View {
         .onAppear {
             canvasView.drawing = note.entity.drawing
             initialContentSize(windowSize: windowSize)
+            presentFingerDrawingNoticeIfNeeded()
         }
         .gesture(tapGesture)
         // The overlay is attached outside the gesture so its buttons take the tap
@@ -127,6 +140,19 @@ struct CanvasView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text("Your latest changes may not be persisted.\n\(saveFailedMessage)")
+        }
+        .alert("Drawing with your finger", isPresented: $showFingerDrawingNotice) {
+            Button("OK", role: .cancel) { fingerDrawingNoticeAcknowledged = true }
+        } message: {
+            // The button is named in the text rather than pointed at: the setting lives in
+            // the tool picker, PencilKit's own movable window, which reports no frame to
+            // anchor to. Typed out rather than an Image interpolation, which an alert drops
+            Text("""
+            Tapping the screen to hide the controls works only while a finger cannot draw. To use it:
+
+            1. Tap ••• in the drawing tools
+            2. Turn on Only Draw with Apple Pencil
+            """)
         }
     }
 

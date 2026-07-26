@@ -11,9 +11,14 @@ enum NoteStoreError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .openFailed(let count):
-            "Failed to load \(count) note(s). The file may be corrupted."
+            count == 1
+                ? "Failed to load the note. The file may be corrupted."
+                : "Failed to load \(count) notes. The files may be corrupted."
         case .downloadFailed(let count):
-            "Failed to download \(count) note(s) from iCloud. Check your network connection and try again."
+            """
+            Failed to download \(count == 1 ? "the note" : "\(count) notes") from iCloud. \
+            Check your network connection and try again.
+            """
         case .saveFailed:
             "Failed to save the note."
         case .deleteFailed:
@@ -21,7 +26,9 @@ enum NoteStoreError: LocalizedError, Equatable {
         case .moveFailed:
             "Failed to move the note."
         case .bulkMoveFailed(let count):
-            "Failed to move \(count) note(s). They remain in place."
+            count == 1
+                ? "Failed to move the note. It remains in place."
+                : "Failed to move \(count) notes. They remain in place."
         }
     }
 

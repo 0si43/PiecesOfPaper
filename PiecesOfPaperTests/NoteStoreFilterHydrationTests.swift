@@ -48,6 +48,17 @@ struct NoteStoreFilterHydrationTests {
         #expect(!noteStore.isFilterHydrating(for: .inbox))
     }
 
+    // What the bulk-move confirmation counts: the move ignores the filter, so
+    // the count must too
+    @Test func test_entryCount_ignoresTheTagFilter() async {
+        await noteStore.fetch(directory: .inbox)
+        noteStore.setListOrder(filterOrder, for: .inbox)
+        await waitUntilHydrated()
+
+        #expect(noteStore.displayInboxEntries.count == 1)
+        #expect(noteStore.entryCount(for: .inbox) == NoteRepositoryMock.TestFile.allCases.count)
+    }
+
     @Test func test_reactivatingFilter_skipsAlreadyLoadedMetadata() async {
         await noteStore.fetch(directory: .inbox)
         noteStore.setListOrder(filterOrder, for: .inbox)

@@ -6,6 +6,7 @@ struct AddTagView: View {
     let note: NoteData
     @Environment(NoteStore.self) private var noteStore
     @Environment(TagStore.self) private var tagStore
+    @Environment(\.dismiss) private var dismiss
     // This sheet owns its alert: one raised by the presenting screen would be
     // covered by the sheet and never appear
     @State private var saveError: Error?
@@ -23,19 +24,32 @@ struct AddTagView: View {
     }
 
     var body: some View {
-        List {
-            TagHStack(tags: tagsToNote, action: remove, deletable: true)
-                .frame(minHeight: 60)
-            Section(header: Text("Select tag which you want to add")) {
-                ForEach(tagsNotToNote, id: \.id) { tag in
-                    HStack {
-                        Tag(entity: tag)
-                        Spacer()
+        // Wrapped here rather than at the call site, the way TagEditorView is:
+        // without a bar the sheet can only be left by tapping outside it
+        NavigationStack {
+            List {
+                TagHStack(tags: tagsToNote, action: remove, deletable: true)
+                    .frame(minHeight: 60)
+                Section(header: Text("Select a tag to add")) {
+                    ForEach(tagsNotToNote, id: \.id) { tag in
+                        HStack {
+                            Tag(entity: tag)
+                            Spacer()
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            add(tag)
+                        }
                     }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        add(tag)
-                    }
+                }
+            }
+            .navigationTitle("Tags")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    // Only dismisses: a tap on a tag is applied as it happens,
+                    // so there is nothing here to confirm or cancel
+                    SheetCloseButton { dismiss() }
                 }
             }
         }

@@ -18,14 +18,25 @@ extension NoteStore {
         }
     }
 
+    /// Everything a bulk move will touch. `allArchive()` and `allUnarchive()`
+    /// iterate the index itself, so counting the displayed entries would
+    /// promise the filtered subset and move the rest anyway (issue #322).
+    func entryCount(for directory: NoteDirectory) -> Int {
+        switch directory {
+        case .inbox: inboxIndex.count
+        case .archived: archivedIndex.count
+        }
+    }
+
     private func reorderEntries(_ entries: [NoteIndexEntry], listOrder: ListOrder) -> [NoteIndexEntry] {
         var filtered = entries
         if !listOrder.filterBy.isEmpty {
             // Tags live inside each document, so only notes with loaded
-            // metadata can match while a filter is active.
+            // metadata can match while a filter is active — an entry with none
+            // has no tag ids and fails the non-empty filter below.
             filtered = filtered.filter { entry in
-                guard let metadata = validMetadata(for: entry) else { return false }
-                return listOrder.filterBy.allSatisfy { metadata.tagIds.contains($0.id) }
+                let tagIds = tagIds(for: entry)
+                return listOrder.filterBy.allSatisfy { tagIds.contains($0.id) }
             }
         }
         let ascending = listOrder.sortOrder == .ascending
@@ -54,8 +65,16 @@ extension NoteStore {
 
 extension NoteStore {
     /// Tag ids for a list row; empty until the row's document has been opened.
+    ///
+    /// Read straight from the cache rather than through `validMetadata`: that
+    /// check compares the cache's date with the index entry's, and on iCloud the
+    /// two come from different sources — the entry's from the metadata query, the
+    /// cache's from the local file the write-back stamped. Any enumeration
+    /// between a tag edit and the next render broke the match and emptied a row
+    /// whose tags were on disk. The date only says whether the rendered drawing
+    /// is stale, which is what the thumbnail still asks about.
     func tagIds(for entry: NoteIndexEntry) -> [UUID] {
-        validMetadata(for: entry)?.tagIds ?? []
+        metadataByFileName[entry.fileName]?.tagIds ?? []
     }
 
     func salvageLegacyTags(of note: NoteData) {

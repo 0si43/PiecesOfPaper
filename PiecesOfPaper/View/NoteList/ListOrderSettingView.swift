@@ -23,7 +23,7 @@ struct ListOrderSettingView: View {
             .padding(.horizontal)
             Picker("", selection: $listOrder.sortBy) {
                 ForEach(ListOrder.SortBy.allCases) { sortBy in
-                    Text(sortBy.rawValue)
+                    Text(sortBy.label)
                         .tag(sortBy)
                 }
             }
@@ -37,7 +37,7 @@ struct ListOrderSettingView: View {
             .padding(.horizontal)
             Picker("", selection: $listOrder.sortOrder) {
                 ForEach(ListOrder.SortOrder.allCases) { sortOrder in
-                    Text(sortOrder.rawValue)
+                    Text(sortOrder.label)
                         .tag(sortOrder)
                 }
             }
@@ -45,7 +45,7 @@ struct ListOrderSettingView: View {
             .padding()
             HStack {
                 Image(systemName: "line.3.horizontal.decrease.circle")
-                Text("Filter by")
+                Text("Filter By")
                 Spacer()
             }
             .padding(.horizontal)
@@ -72,14 +72,12 @@ struct ListOrderSettingView: View {
         }
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Done")
-                }
+                // The pickers write straight through the binding, so this only
+                // dismisses
+                SheetCloseButton { dismiss() }
             }
         }
-        .navigationTitle("Sort & filter condition")
+        .navigationTitle("Sort & Filter")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

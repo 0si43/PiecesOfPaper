@@ -22,14 +22,14 @@ struct RootSplitView: View {
             case .tag: "Tag List"
             case .whatsNew: "What's New"
             case .tutorial: "Quick Tutorial"
-            case .setting: "Setting"
+            case .setting: "Settings"
             }
         }
     }
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            sideBarList
+            pageList
         } detail: {
             switch selection {
             case .inbox:
@@ -101,7 +101,7 @@ struct RootSplitView: View {
         .preferredColorScheme(preferenceStore.appearanceMode.colorScheme)
     }
 
-    private var sideBarList: some View {
+    private var pageList: some View {
         List(selection: $selection) {
             Section(header: Text("Folders")) {
                 NavigationLink(value: Page.inbox) {
@@ -112,12 +112,12 @@ struct RootSplitView: View {
                     Label(Page.trash.label, systemImage: "trash")
                 }
             }
-            Section(header: Text("Tag")) {
+            Section(header: Text("Tags")) {
                 NavigationLink(value: Page.tag) {
                     Label(Page.tag.label, systemImage: "tag")
                 }
             }
-            Section(header: Text("Manage raw data\n(Open Files App)")) {
+            Section(header: Text("Manage raw data\n(opens the Files app)")) {
                 Button {
                     if let path = FilePath.inboxUrl?.path(),
                        let url = URL(string: "shareddocuments://" + path),
@@ -152,7 +152,7 @@ struct RootSplitView: View {
                     Label(Page.tutorial.label, systemImage: "text.document")
                 }
             }
-            Section(header: Text("Setting")) {
+            Section(header: Text("Settings")) {
                 NavigationLink(value: Page.setting) {
                     Label(Page.setting.label, systemImage: "gearshape")
                 }

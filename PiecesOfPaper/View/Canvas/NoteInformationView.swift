@@ -41,8 +41,8 @@ struct NoteInformationView: View {
             }
             Divider()
             GridRow {
-                label("Archive Status")
-                Text(note.isArchived ? "Archived" : "Inbox")
+                label("Location")
+                Text(location)
                     .lineLimit(1)
             }
             Divider()
@@ -54,6 +54,18 @@ struct NoteInformationView: View {
         .padding()
     }
 
+    /// Three outcomes, not two: a note opened in place from the Files app is
+    /// under neither managed directory, and calling that Inbox would be a lie
+    private var location: LocalizedStringKey {
+        if note.isArchived {
+            "Trash"
+        } else if note.isInInbox {
+            "Inbox"
+        } else {
+            "Outside the app's folders"
+        }
+    }
+
     private func label(_ key: LocalizedStringKey) -> some View {
         Text(key)
             .foregroundStyle(.secondary)
@@ -63,7 +75,7 @@ struct NoteInformationView: View {
     private var tagsView: some View {
         let tags = tagStore.tags(ids: note.entity.tagIds)
         if tags.isEmpty {
-            Text("No tag")
+            Text("No tags")
         } else {
             TagHStack(tags: tags)
                 .frame(minHeight: 60)

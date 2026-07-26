@@ -93,12 +93,14 @@ struct NoteListScreen: View {
                         or use device storage.
                         """)
                 case .archiveAll:
-                    let operationText = isTargetDirectoryArchived ? "unarchived" : "archived"
-                    let countText = noteStore.displayEntries(for: directory).count
-                    let alertText = """
-                        Are you sure you want to \(operationText) \(countText) notes?
-                    """
-                    return Text(alertText)
+                    // Named after the destination the button offers, not after
+                    // the archive the directory is called in code
+                    let destination = isTargetDirectoryArchived ? "Inbox" : "Trash"
+                    // The whole index moves, filter or no filter, and "all"
+                    // keeps the number from reading as the visible subset
+                    let count = noteStore.entryCount(for: directory)
+                    let subject = count == 1 ? "1 note" : "all \(count) notes"
+                    return Text("Are you sure you want to move \(subject) to \(destination)?")
                 case .localFallback:
                     return Text("""
                         iCloud is no longer available, so your notes are now shown from device storage. \
