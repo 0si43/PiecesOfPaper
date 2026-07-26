@@ -18,6 +18,16 @@ extension NoteStore {
         }
     }
 
+    /// Everything a bulk move will touch. `allArchive()` and `allUnarchive()`
+    /// iterate the index itself, so counting the displayed entries would
+    /// promise the filtered subset and move the rest anyway (issue #322).
+    func entryCount(for directory: NoteDirectory) -> Int {
+        switch directory {
+        case .inbox: inboxIndex.count
+        case .archived: archivedIndex.count
+        }
+    }
+
     private func reorderEntries(_ entries: [NoteIndexEntry], listOrder: ListOrder) -> [NoteIndexEntry] {
         var filtered = entries
         if !listOrder.filterBy.isEmpty {
