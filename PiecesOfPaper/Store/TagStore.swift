@@ -26,13 +26,21 @@ final class TagStore {
         saveOrRollback()
     }
 
+    // Drops an edit whose id is gone rather than re-adding it: the cloud monitor
+    // can reload a deletion made on another device while the editor is open
+    func update(_ tag: TagEntity) {
+        guard let index = tags.firstIndex(where: { $0.id == tag.id }) else { return }
+        tags[index] = tag
+        saveOrRollback()
+    }
+
     func remove(at offsets: IndexSet) {
         tags.remove(atOffsets: offsets)
         saveOrRollback()
     }
 
     func remove(_ tag: TagEntity) {
-        tags.removeAll { $0 == tag }
+        tags.removeAll { $0.id == tag.id }
         saveOrRollback()
     }
 
@@ -81,12 +89,16 @@ final class TagStore {
         tags.filter { !ids.contains($0.id) }
     }
 
+    // filterBy is a persisted copy of the tag, so it goes stale on every edit;
+    // only its id can be matched against the live list
     func filteringTags(from filterBy: [TagEntity]) -> [TagEntity] {
-        tags.filter { filterBy.contains($0) }
+        let ids = Set(filterBy.map(\.id))
+        return tags.filter { ids.contains($0.id) }
     }
 
     func nonFilteringTags(from filterBy: [TagEntity]) -> [TagEntity] {
-        tags.filter { !filterBy.contains($0) }
+        let ids = Set(filterBy.map(\.id))
+        return tags.filter { !ids.contains($0.id) }
     }
 
     func reload() {

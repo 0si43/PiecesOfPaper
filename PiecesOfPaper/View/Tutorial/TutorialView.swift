@@ -80,7 +80,7 @@ struct TutorialView: View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(title: "Tag", systemImage: "tag")
             Bullet("The app includes a tag feature")
-            Bullet("You can add/remove tags via Tag List")
+            Bullet("You can add/edit/remove tags via Tag List")
             Bullet("Tag list files are stored in iCloud or local storage")
             Bullet("The path is Library/taglist.json")
             Bullet("""

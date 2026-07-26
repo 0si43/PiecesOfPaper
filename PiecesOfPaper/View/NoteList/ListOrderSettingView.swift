@@ -50,7 +50,7 @@ struct ListOrderSettingView: View {
             }
             .padding(.horizontal)
             TagHStack(tags: filteringTags,
-                      action: { removed in listOrder.filterBy.removeAll { $0 == removed } },
+                      action: { removed in listOrder.filterBy.removeAll { $0.id == removed.id } },
                       deletable: true)
                 .frame(minHeight: 60)
                 .padding(.horizontal)
