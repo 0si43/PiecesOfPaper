@@ -167,13 +167,10 @@ final class NoteRepository: NoteRepositoryProtocol {
     @MainActor
     func save(_ entity: NoteEntity, to fileUrl: URL) async throws {
         let targetUrl = resolveMigratedUrl(fileUrl)
-        let directoryUrl = targetUrl.deletingLastPathComponent()
         // .forCreating does not create intermediate directories; without this a
         // missing parent (fresh container, storage location change) fails the
         // save with no user-visible reason.
-        if !FileManager.default.fileExists(atPath: directoryUrl.path) {
-            try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
-        }
+        try createDirectoryIfNeeded(at: targetUrl.deletingLastPathComponent())
         // The transient document lives until the completion handler fires,
         // which keeps its conflict observer active for the whole save.
         let document = NoteDocument(fileURL: targetUrl, entity: entity)
@@ -218,8 +215,20 @@ final class NoteRepository: NoteRepositoryProtocol {
     // move through this overload with a temporary directory instead.
     @MainActor
     func move(fileUrl: URL, toDirectoryAt directoryUrl: URL) async throws -> URL {
+        // Only a save has ever created a note directory, so a container whose
+        // owner never toggled the iCloud setting has InboxFolder but no
+        // Archived, and every move to Trash fails on the missing parent (#332).
+        try createDirectoryIfNeeded(at: directoryUrl)
         let toUrl = directoryUrl.appendingPathComponent(fileUrl.lastPathComponent)
         return try await CoordinatedFileAccess.move(from: fileUrl, to: toUrl)
+    }
+
+    // Intermediate directories on, unlike FilePath.createDirectory: there the
+    // parent is the system-provided Documents directory, so a missing one is a
+    // fault worth surfacing; here the note directory itself is what may be gone.
+    private func createDirectoryIfNeeded(at directoryUrl: URL) throws {
+        guard !FileManager.default.fileExists(atPath: directoryUrl.path) else { return }
+        try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
     }
 
     func duplicate(_ note: NoteData, in directory: NoteDirectory,
