@@ -209,4 +209,24 @@ struct NoteRepositoryTests {
                                                      from: Data(contentsOf: legacyUrl))
         #expect(saved.id == entity.id)
     }
+
+    // Duplicating from the Trash list targets Archived, which a container that
+    // has only ever been saved to does not have (#332)
+    @Test func duplicate_createsMissingDestinationDirectory() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let destination = directory.appendingPathComponent("Archived")
+        let note = NoteData(entity: NoteEntity(drawing: PKDrawing.stub()),
+                            fileURL: directory.appendingPathComponent("note.pop"))
+
+        let duplicated: NoteData? = await withCheckedContinuation { continuation in
+            NoteRepository().duplicate(note, inDirectoryAt: destination) {
+                continuation.resume(returning: $0)
+            }
+        }
+
+        let newUrl = try #require(duplicated?.fileURL)
+        #expect(newUrl.deletingLastPathComponent().path == destination.path)
+        #expect(FileManager.default.fileExists(atPath: newUrl.path))
+    }
 }

@@ -237,6 +237,25 @@ final class NoteRepository: NoteRepositoryProtocol {
             completion(nil)
             return
         }
+        duplicate(note, inDirectoryAt: directoryUrl, completion: completion)
+    }
+
+    // NoteDirectory resolves to the app container, so tests reach the save
+    // through this overload with a temporary directory instead.
+    func duplicate(_ note: NoteData, inDirectoryAt directoryUrl: URL,
+                   completion: @escaping (NoteData?) -> Void) {
+        do {
+            // Duplicating from the Trash list targets Archived, which a
+            // container that has only ever been saved to does not have (#332).
+            try createDirectoryIfNeeded(at: directoryUrl)
+        } catch {
+            Logger.noteRepository.error("""
+            Failed to create the duplicate destination \(directoryUrl.path, privacy: .public): \
+            \(error.localizedDescription, privacy: .public)
+            """)
+            completion(nil)
+            return
+        }
         let newUrl = directoryUrl.appendingPathComponent(FilePath.fileName)
         let entity = NoteEntity(drawing: note.entity.drawing)
         let newDocument = NoteDocument(fileURL: newUrl, entity: entity)
