@@ -60,6 +60,7 @@ struct RootSplitView: View {
         }
         .onAppear {
             noteStore.onLegacyTagsDecoded = { tagStore.restoreIfEmpty($0) }
+            FilePath.makeDirectoryIfNeeded()
             FilePath.startObservingUbiquityChanges {
                 FilePath.makeDirectoryIfNeeded()
                 preferenceStore.refreshCloudAvailability()

@@ -167,13 +167,10 @@ final class NoteRepository: NoteRepositoryProtocol {
     @MainActor
     func save(_ entity: NoteEntity, to fileUrl: URL) async throws {
         let targetUrl = resolveMigratedUrl(fileUrl)
-        let directoryUrl = targetUrl.deletingLastPathComponent()
         // .forCreating does not create intermediate directories; without this a
         // missing parent (fresh container, storage location change) fails the
         // save with no user-visible reason.
-        if !FileManager.default.fileExists(atPath: directoryUrl.path) {
-            try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
-        }
+        try createDirectoryIfNeeded(at: targetUrl.deletingLastPathComponent())
         // The transient document lives until the completion handler fires,
         // which keeps its conflict observer active for the whole save.
         let document = NoteDocument(fileURL: targetUrl, entity: entity)
@@ -218,13 +215,34 @@ final class NoteRepository: NoteRepositoryProtocol {
     // move through this overload with a temporary directory instead.
     @MainActor
     func move(fileUrl: URL, toDirectoryAt directoryUrl: URL) async throws -> URL {
+        try createDirectoryIfNeeded(at: directoryUrl)
         let toUrl = directoryUrl.appendingPathComponent(fileUrl.lastPathComponent)
         return try await CoordinatedFileAccess.move(from: fileUrl, to: toUrl)
+    }
+
+    private func createDirectoryIfNeeded(at directoryUrl: URL) throws {
+        guard !FileManager.default.fileExists(atPath: directoryUrl.path) else { return }
+        try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
     }
 
     func duplicate(_ note: NoteData, in directory: NoteDirectory,
                    completion: @escaping (NoteData?) -> Void) {
         guard let directoryUrl = directory.url else {
+            completion(nil)
+            return
+        }
+        duplicate(note, inDirectoryAt: directoryUrl, completion: completion)
+    }
+
+    func duplicate(_ note: NoteData, inDirectoryAt directoryUrl: URL,
+                   completion: @escaping (NoteData?) -> Void) {
+        do {
+            try createDirectoryIfNeeded(at: directoryUrl)
+        } catch {
+            Logger.noteRepository.error("""
+            Failed to create the duplicate destination \(directoryUrl.path, privacy: .public): \
+            \(error.localizedDescription, privacy: .public)
+            """)
             completion(nil)
             return
         }

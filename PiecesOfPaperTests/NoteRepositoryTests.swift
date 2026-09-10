@@ -129,6 +129,22 @@ struct NoteRepositoryTests {
         #expect(moved.id == entity.id)
     }
 
+    @Test func move_createsMissingDestinationDirectory() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let destination = directory.appendingPathComponent("Archived")
+        let fileUrl = directory.appendingPathComponent("note.pop")
+        let entity = NoteEntity(drawing: PKDrawing())
+        try PropertyListEncoder().encode(entity).write(to: fileUrl)
+
+        let newUrl = try await NoteRepository().move(fileUrl: fileUrl, toDirectoryAt: destination)
+
+        #expect(newUrl.deletingLastPathComponent().path == destination.path)
+        #expect(!FileManager.default.fileExists(atPath: fileUrl.path))
+        let moved = try PropertyListDecoder().decode(NoteEntity.self, from: Data(contentsOf: newUrl))
+        #expect(moved.id == entity.id)
+    }
+
     @Test func move_throwsWhenTheSourceIsMissing() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -190,5 +206,23 @@ struct NoteRepositoryTests {
         let saved = try PropertyListDecoder().decode(NoteEntity.self,
                                                      from: Data(contentsOf: legacyUrl))
         #expect(saved.id == entity.id)
+    }
+
+    @Test func duplicate_createsMissingDestinationDirectory() async throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let destination = directory.appendingPathComponent("Archived")
+        let note = NoteData(entity: NoteEntity(drawing: PKDrawing.stub()),
+                            fileURL: directory.appendingPathComponent("note.pop"))
+
+        let duplicated: NoteData? = await withCheckedContinuation { continuation in
+            NoteRepository().duplicate(note, inDirectoryAt: destination) {
+                continuation.resume(returning: $0)
+            }
+        }
+
+        let newUrl = try #require(duplicated?.fileURL)
+        #expect(newUrl.deletingLastPathComponent().path == destination.path)
+        #expect(FileManager.default.fileExists(atPath: newUrl.path))
     }
 }
