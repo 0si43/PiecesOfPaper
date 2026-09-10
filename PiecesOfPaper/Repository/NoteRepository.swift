@@ -215,17 +215,11 @@ final class NoteRepository: NoteRepositoryProtocol {
     // move through this overload with a temporary directory instead.
     @MainActor
     func move(fileUrl: URL, toDirectoryAt directoryUrl: URL) async throws -> URL {
-        // Only a save has ever created a note directory, so a container whose
-        // owner never toggled the iCloud setting has InboxFolder but no
-        // Archived, and every move to Trash fails on the missing parent (#332).
         try createDirectoryIfNeeded(at: directoryUrl)
         let toUrl = directoryUrl.appendingPathComponent(fileUrl.lastPathComponent)
         return try await CoordinatedFileAccess.move(from: fileUrl, to: toUrl)
     }
 
-    // Intermediate directories on, unlike FilePath.createDirectory: there the
-    // parent is the system-provided Documents directory, so a missing one is a
-    // fault worth surfacing; here the note directory itself is what may be gone.
     private func createDirectoryIfNeeded(at directoryUrl: URL) throws {
         guard !FileManager.default.fileExists(atPath: directoryUrl.path) else { return }
         try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
@@ -240,13 +234,9 @@ final class NoteRepository: NoteRepositoryProtocol {
         duplicate(note, inDirectoryAt: directoryUrl, completion: completion)
     }
 
-    // NoteDirectory resolves to the app container, so tests reach the save
-    // through this overload with a temporary directory instead.
     func duplicate(_ note: NoteData, inDirectoryAt directoryUrl: URL,
                    completion: @escaping (NoteData?) -> Void) {
         do {
-            // Duplicating from the Trash list targets Archived, which a
-            // container that has only ever been saved to does not have (#332).
             try createDirectoryIfNeeded(at: directoryUrl)
         } catch {
             Logger.noteRepository.error("""

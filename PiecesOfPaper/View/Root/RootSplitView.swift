@@ -60,10 +60,6 @@ struct RootSplitView: View {
         }
         .onAppear {
             noteStore.onLegacyTagsDecoded = { tagStore.restoreIfEmpty($0) }
-            // Not what keeps moving and duplicating working — those create
-            // their own destination. This is so a fresh container has both
-            // folders before anything is written, which the raw-data shortcuts
-            // below need. Idempotent, so the per-scene onAppear is fine.
             FilePath.makeDirectoryIfNeeded()
             FilePath.startObservingUbiquityChanges {
                 FilePath.makeDirectoryIfNeeded()

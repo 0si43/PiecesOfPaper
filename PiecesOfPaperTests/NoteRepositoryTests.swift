@@ -129,8 +129,6 @@ struct NoteRepositoryTests {
         #expect(moved.id == entity.id)
     }
 
-    // A container whose owner never toggled the iCloud setting has InboxFolder
-    // but no Archived, so the move has to create its own destination (#332)
     @Test func move_createsMissingDestinationDirectory() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -210,8 +208,6 @@ struct NoteRepositoryTests {
         #expect(saved.id == entity.id)
     }
 
-    // Duplicating from the Trash list targets Archived, which a container that
-    // has only ever been saved to does not have (#332)
     @Test func duplicate_createsMissingDestinationDirectory() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
